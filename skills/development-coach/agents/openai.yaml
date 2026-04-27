@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Coach"
+  short_description: "Learn by building real code"
+  default_prompt: "Use $development-coach to teach me this topic through explanation, practice, and review instead of doing the work for me."

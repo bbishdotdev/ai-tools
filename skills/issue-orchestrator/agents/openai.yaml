@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue Orchestrator"
+  short_description: "Plan and execute issue batches"
+  default_prompt: "Use $issue-orchestrator to triage a milestone, sequence the work, execute issues, verify acceptance criteria, and prepare PRs."

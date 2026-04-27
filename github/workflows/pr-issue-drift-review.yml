@@ -1,0 +1,51 @@
+name: PR Issue Drift Review
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+  checks: read
+
+jobs:
+  issue-drift-review:
+    name: Issue drift review
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    # To make this the literal final check inside a combined CI workflow,
+    # move this job into that workflow and add:
+    # needs: [typecheck, lint, test, e2e]
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect PR, diff, checks, and tagged issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node .github/scripts/collect-issue-drift-context.mjs
+
+      - name: Run issue drift reviewer agent
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ISSUE_DRIFT_MODEL: ${{ vars.ISSUE_DRIFT_MODEL || 'gpt-5.4-mini' }}
+          ISSUE_DRIFT_AGENT_INSTRUCTIONS: .github/agents/pr-issue-drift-reviewer.md
+          ISSUE_DRIFT_AGENT_CONTEXT: .agent-context
+          ISSUE_DRIFT_AGENT_OUTPUT: .agent-context/review.json
+        run: node .github/scripts/run-issue-drift-reviewer.mjs
+
+      - name: Submit PR review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node .github/scripts/submit-issue-drift-review.mjs

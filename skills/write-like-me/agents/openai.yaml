@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Like Me"
+  short_description: "Draft content in Brenden voice"
+  default_prompt: "Use $write-like-me to turn these rough notes into a clear post that sounds like me."
