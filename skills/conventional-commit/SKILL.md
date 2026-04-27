@@ -3,15 +3,19 @@ name: conventional-commit
 description: 'Prompt and workflow for generating conventional commit messages using a structured XML format. Guides users to create standardized, descriptive commit messages in line with the Conventional Commits specification, including instructions, examples, and validation.'
 ---
 
-### Instructions
+# Conventional Commit
+
+Generate standardized, descriptive commit messages in accordance with the Conventional Commits specification. Use the structured XML format below for planning, examples, validation, and the final command.
 
 ```xml
 	<description>This file contains a prompt template for generating conventional commit messages. It provides instructions, examples, and formatting guidelines to help users write standardized, descriptive commit messages in accordance with the Conventional Commits specification.</description>
 ```
 
-### Workflow
+## When to Use
 
-**Follow these steps:**
+Use this skill when the user wants to create a conventional commit message or commit staged changes with a standardized `type(scope): description` format.
+
+## Steps
 
 1. Run `git status` to review changed files.
 2. Run `git diff` or `git diff --cached` to inspect changes.
@@ -25,7 +29,7 @@ git commit -m "type(scope): description"
 
 6. Just execute this prompt and Copilot will handle the commit for you in the terminal.
 
-### Commit Message Structure
+Commit message structure:
 
 ```xml
 <commit-message>
@@ -37,7 +41,7 @@ git commit -m "type(scope): description"
 </commit-message>
 ```
 
-### Examples
+Examples:
 
 ```xml
 <examples>
@@ -50,7 +54,7 @@ git commit -m "type(scope): description"
 </examples>
 ```
 
-### Validation
+Validation:
 
 ```xml
 <validation>
@@ -62,7 +66,7 @@ git commit -m "type(scope): description"
 </validation>
 ```
 
-### Final Step
+Final step:
 
 ```xml
 <final-step>
