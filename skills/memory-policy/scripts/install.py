@@ -91,10 +91,10 @@ def main():
             raise SyncError('Installation incomplete; inspect these paths: ' + ', '.join(invalid))
         print(f'Applied {len(completed)} file changes. Existing native memory files were retained.')
         if args.activate_sync:
-            print('Synchronization activated. Codex and Claude use native memory; Cursor uses the explicit file bridge. No personal memories were created.')
+            print('Synchronization activated. Codex and Claude use native memory; Cursor uses the explicit file bridge. Existing approved bridge notes were projected; no new personal preferences were added.')
         else:
             print('Policy links installed. Native memory settings and content were not changed.')
-        print(f'Cursor global routing also uses the User Rules UI. Keep its rule aligned with {source / "rules/memory-policy.md"}.')
+        print('Cursor local user rules are installed. Account User Rules and cloud sessions are managed separately.')
     except (OSError, SyncError, UnicodeError) as error:
         parser.exit(1, str(error) + '\n')
 

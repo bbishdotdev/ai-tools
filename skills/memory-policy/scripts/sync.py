@@ -29,7 +29,10 @@ class Plan:
             'operation': self.operation, 'id': self.note_id, 'text': self.text,
             'destinations': self.destinations,
             'configuration': [{'path': str(path), 'sha256': file_hash(raw)} for path, raw in self.guards],
-            'files': [{'path': str(change.path), 'before': file_hash(change.before), 'after': file_hash(change.after)} for change in self.changes],
+            'files': [{
+                'path': str(change.path), 'before': file_hash(change.before), 'after': file_hash(change.after),
+                'dependencies': [{'path': str(path), 'sha256': file_hash(raw)} for path, raw in change.dependencies],
+            } for change in self.changes],
         }
         return hashlib.sha256(json.dumps(state, sort_keys=True, ensure_ascii=False).encode('utf-8')).hexdigest()
 
@@ -94,6 +97,9 @@ def apply_plan(profile, plan, reviewed_digest):
                 for path, expected in current.guards:
                     if read_file(path) != expected:
                         raise SyncError(f'Destination configuration changed at {path}; review a new plan')
+                for path, expected in change.dependencies:
+                    if read_file(path) != expected:
+                        raise SyncError(f'Projection source changed at {path}; inspect and review a new plan')
                 if change.before == change.after:
                     continue
                 atomic_change(change.path, change.before, change.after)
@@ -120,7 +126,7 @@ def apply_plan(profile, plan, reviewed_digest):
 def inspect(profile, destinations, note_id):
     validate_note(note_id)
     available = backends(profile)
-    report, values, complete, index_matches = {}, [], True, True
+    report, values, complete, derived_matches = {}, [], True, True
     for name in destinations:
         backend = available[name]
         try:
@@ -130,8 +136,11 @@ def inspect(profile, destinations, note_id):
         report[name] = {'readiness': backend.report(), **result}
         complete = complete and result['error'] is None
         values.extend(copy['content'] for copy in result['copies'])
-        index_matches = index_matches and all(copy.get('index_matches', True) for copy in result['copies'])
-    drift = len(set(values)) > 1 or not index_matches
+        derived_matches = (
+            derived_matches and all(copy.get('index_matches', True) for copy in result['copies'])
+            and result.get('projection', {}).get('current', True)
+        )
+    drift = len(set(values)) > 1 or not derived_matches
     state = 'unavailable' if not complete else 'drift' if drift else 'absent' if not any(value is not None for value in values) else 'consistent'
     return {
         'status': 'inspection', 'read_only': True, 'id': note_id, 'copy_state': state,

@@ -1,11 +1,17 @@
 ---
 name: memory-policy
-description: Approve and synchronize personal memories across Codex, Claude Code, and Cursor. Use before remembering, updating, forgetting, migrating, or synchronizing durable user preferences. Project knowledge belongs in project instructions, docs, or skills.
+description: Approve and synchronize durable personal memory writes across Codex, Claude Code, and Cursor. Use for creating, updating, deleting, migrating, or synchronizing memories. Do not invoke for ordinary recall or questions about an already stored preference.
 ---
 
 # Memory policy
 
 Synchronize approved personal memories with one shared command. Codex and Claude use their native memory files. Cursor uses the explicitly authorized file bridge because its ordinary desktop native interface is unavailable in the tested setup. Keep each product's native features enabled. Do not reopen the bridge decision or ask for setup approval again.
+
+## Recall
+
+For a question about an already stored memory, answer directly from supplied context. Do not start the approval workflow, read compatibility references, or run sync status. If this skill was invoked for ordinary recall, return to answering the question. If the fact is missing from context, read the relevant native memory source or Cursor bridge once. Investigate sync only when the user asks for diagnosis or stored copies conflict. Do not narrate routine retrieval or explain storage provenance unless asked.
+
+Cursor receives its approved personal notes inline through `~/.cursor/rules/personal-memories.mdc`, an always-applied generated rule. The bridge remains the source. Reading the bridge is a fallback, not a startup requirement.
 
 ## Before a memory change
 
@@ -16,7 +22,7 @@ Synchronize approved personal memories with one shared command. Codex and Claude
 
 ## Apply approved content
 
-Use `scripts/sync.py` for every approved create, update, or deletion. All three products are the default destinations. The installed adapters write Codex native files, a user-wide Claude native directory, and Cursor's bridge. The Cursor startup rule loads that bridge automatically. Keep the same approved meaning across products; format differences must not add facts or broaden the preference.
+Use `scripts/sync.py` for every approved create, update, or deletion. All three products are the default destinations. The installed adapters write Codex native files, a user-wide Claude native directory, and Cursor's bridge. The same reviewed operation refreshes Cursor's generated `personal-memories.mdc`, so fresh chats receive the approved text directly in context. Keep the same approved meaning across products; format differences must not add facts or broaden the preference.
 
 Preflight all destinations. If configuration has drifted or a destination is unavailable, repair the authorized installation when possible and retry the same approved operation. Do not silently save a partial copy or switch to private databases/RPCs. Cursor's configured bridge is an intentional installed destination, not a missing native adapter. A reduced destination set requires explicit approval of a partial save.
 
@@ -39,7 +45,7 @@ python3 ~/.agents/skills/memory-policy/scripts/sync.py delete NOTE_ID
 
 `set` and `delete` only preview. After checking the preview against the user's approval, repeat the unchanged command with `--apply-plan PLAN_SHA256` using the returned digest. Quote text safely or use a subprocess argument list. `set` creates or updates the same stable ID. The helper accepts up to 4096 UTF-8 bytes per note; this is a helper limit, not a product limit.
 
-For an explicitly approved partial save, place `--destinations codex,claude` before the command. Never add that option merely to work around a failed all-three preflight. `--home` is for disposable test profiles. The helper manages only its own marked entries and topic files; it does not migrate or remove arbitrary preexisting memories. Run `scripts/install.py --activate-sync --apply` to repair the already-authorized installation if needed; preview first and preserve unrelated configuration. Native generation settings must remain unchanged.
+For an explicitly approved partial save, place `--destinations codex,claude` before the command. Never add that option merely to work around a failed all-three preflight. `--home` is for disposable test profiles. Do not edit `personal-memories.mdc` by hand. It is generated from the managed bridge entries; arbitrary text outside those entries is not copied into it. The helper manages only its own marked entries and topic files; it does not migrate or remove arbitrary preexisting memories. Run `scripts/install.py --activate-sync --apply` to repair the already-authorized installation if needed; preview first and preserve unrelated configuration. Native generation settings must remain unchanged.
 
 ## Background writers and limits
 

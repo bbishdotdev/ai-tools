@@ -3,6 +3,8 @@ import json
 import re
 import tomllib
 
+from cursor_projection import plan_projection
+
 from memory_files import SyncError, atomic_change, file_hash, read_file, sync_lock, text_file
 from native_backends import (
     CLAUDE_INDEX, CODEX_MEMORY, CODEX_SUMMARY, CURSOR_END, CURSOR_INDEX,
@@ -143,6 +145,11 @@ def activation_changes(profile, router_change, cursor_config, claude_config, cla
         before = read_file(path)
         text_file(before, path)
         changes.append(FileChange(name, path, before, before if before is not None else content.encode('utf-8'), 'empty scaffold'))
+    bridge = next(change for change in changes if change.destination == 'cursor')
+    projection_path = profile.home / '.cursor/rules/personal-memories.mdc'
+    previous_projection = read_file(projection_path)
+    next_projection = plan_projection(bridge.before, bridge.after, previous_projection, bridge.path, projection_path)
+    changes.append(FileChange('cursor', projection_path, previous_projection, next_projection, 'generated projection', ((bridge.path, bridge.after),)))
     changes.extend([codex_config, claude_config, cursor_config, router_change])
     paths = [change.path for change in changes]
     if len(paths) != len(set(paths)):
@@ -168,6 +175,9 @@ def apply_changes(profile, changes):
                     if existing is not None and existing != change.before:
                         raise SyncError(f'Configuration backup collision at {backup}')
             for change in changes:
+                for path, expected in change.dependencies:
+                    if read_file(path) != expected:
+                        raise SyncError(f'Projection source changed at {path}; review a new activation plan')
                 if change.before == change.after:
                     continue
                 if change.kind == 'configuration' and change.before is not None:

@@ -14,6 +14,7 @@ from unittest.mock import patch
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import activation
+import cursor_projection
 import install
 import memory_files
 import native_backends
@@ -134,7 +135,7 @@ class ActivationTest(unittest.TestCase):
         bridge.write_bytes(original)
         result = self.apply(self.plan())
         self.assertEqual(result['status'], 'applied')
-        self.assertEqual(len(result['physical_file_readback']), 5)
+        self.assertEqual(len(result['physical_file_readback']), 6)
         self.assertEqual(result['storage_kinds'], {'codex': 'native', 'claude': 'native', 'cursor': 'file-bridge'})
         self.assertEqual(sync.inspect(self.profile, native_backends.DESTINATIONS, self.note_id)['copy_state'], 'consistent')
         self.assertEqual(self.apply(self.plan())['status'], 'unchanged')
@@ -209,6 +210,180 @@ class ActivationTest(unittest.TestCase):
         self.assertTrue(report['cursor']['local_policy_rule']['correct'])
         self.assertTrue(report['native_sync']['all_three_ready'])
         self.assertEqual(report['cursor']['synchronization']['directory'], str(directory))
+
+    def test_existing_bridge_notes_are_preloaded_without_unmanaged_text(self):
+        bridge = self.home / 'Work/.agents/memory-sync/cursor/MEMORY.md'
+        original = ('Unmanaged text must stay out.\n' + memory_files.block('z-style', 'I prefer café.\n  Keep these spaces.\n') + memory_files.block('a-process', 'I prefer concise plans.')).encode()
+        self.write(bridge, original)
+        self.activate()
+        rule = self.home / '.cursor/rules/personal-memories.mdc'
+        content = rule.read_bytes()
+        self.assertIn(b'alwaysApply: true', content)
+        self.assertIn(b'memorySyncVersion: 1', content)
+        self.assertIn(b'memorySyncGenerated: cursor-personal-memories', content)
+        self.assertNotIn(b'Unmanaged text must stay out.', content)
+        records = cursor_projection.projection_records(content, bridge, rule)
+        self.assertEqual(records, {'a-process': 'I prefer concise plans.', 'z-style': 'I prefer café.\n  Keep these spaces.\n'})
+        self.assertLess(content.index(b'a-process:begin'), content.index(b'z-style:begin'))
+        self.assertEqual(bridge.read_bytes(), original)
+        self.assertEqual(stat.S_IMODE(rule.stat().st_mode), 0o600)
+        self.assertIn('Applied 0 file changes.', self.activate().stdout)
+
+    def test_old_managed_router_is_upgraded_to_direct_recall_without_audits(self):
+        _, desired = install.cursor_local_rule(self.home, self.source)
+        old_body = (
+            f'{native_backends.CURSOR_START}\n'
+            'At the start of every new task, read the bridge memory file.\n'
+            f'{native_backends.CURSOR_END}\n'
+        )
+        old = desired[:desired.index(native_backends.CURSOR_START)] + old_body + '\nKeep my extra rule.\n'
+        self.write(self.router, old)
+        self.activate()
+        current = self.router.read_text()
+        self.assertIn('already supplied by the always-applied `personal-memories.mdc` rule', current)
+        self.assertIn('Answer ordinary recall questions directly', current)
+        self.assertIn('without running a memory-policy, status, or compatibility audit', current)
+        self.assertNotIn('At the start of every new task, read', current)
+        self.assertTrue(current.endswith('\nKeep my extra rule.\n'))
+
+    def test_projection_drift_is_visible_even_when_all_source_copies_match(self):
+        self.activate()
+        self.apply(self.plan())
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        projection.write_text(projection.read_text().replace('lilac-wren-12', 'stale-wren-15'))
+        backend = native_backends.backends(self.profile)['cursor'].report()
+        self.assertFalse(backend['ready'])
+        self.assertFalse(backend['projection']['current'])
+        self.assertEqual(backend['projection']['path'], str(projection))
+        report = sync.inspect(self.profile, native_backends.DESTINATIONS, self.note_id)
+        self.assertEqual(report['copy_state'], 'drift')
+        self.assertTrue(report['observed_drift'])
+        self.assertFalse(report['destinations']['cursor']['projection']['current'])
+        self.assertEqual(self.apply(self.plan())['status'], 'applied')
+        self.assertTrue(native_backends.backends(self.profile)['cursor'].report()['ready'])
+
+    def test_unrelated_projection_or_bridge_drift_blocks_sync_and_activation(self):
+        self.activate()
+        self.apply(self.plan())
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        bridge = self.home / 'Work/.agents/memory-sync/cursor/MEMORY.md'
+        other = sync.make_plan(self.profile, native_backends.DESTINATIONS, 'set', 'reply-style', 'I prefer short replies.')
+        self.apply(other)
+        projection_before, bridge_before = projection.read_bytes(), bridge.read_bytes()
+        for changed in [projection, bridge]:
+            changed.write_bytes(changed.read_bytes().replace(b'I prefer short replies.', b'An unapproved unrelated edit.'))
+            before = self.files()
+            with self.assertRaisesRegex(memory_files.SyncError, 'outside the approved note: reply-style'):
+                self.plan('My temporary memory verification phrase is approved-wren-16.')
+            self.assertEqual(self.files(), before)
+            result = self.installer(apply=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('projection drift', result.stderr)
+            self.assertEqual(self.files(), before)
+            projection.write_bytes(projection_before)
+            bridge.write_bytes(bridge_before)
+
+    def test_missing_projection_requires_explicit_installer_activation(self):
+        self.activate()
+        self.apply(self.plan())
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        projection.unlink()
+        before = self.files()
+        with self.assertRaisesRegex(memory_files.SyncError, 'Missing Cursor personal-memory rule'):
+            self.plan()
+        self.assertEqual(self.files(), before)
+        state = native_backends.backends(self.profile)['cursor'].report()
+        self.assertFalse(state['ready'])
+        self.assertFalse(state['projection']['exists'])
+        self.activate()
+        self.assertIn(self.text, projection.read_text())
+        self.assertEqual(self.apply(self.plan())['status'], 'unchanged')
+
+    def test_projection_collisions_and_malformed_markers_fail_before_writes(self):
+        self.activate()
+        self.apply(self.plan())
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        bridge = self.home / 'Work/.agents/memory-sync/cursor/MEMORY.md'
+        saved_projection, saved_bridge = projection.read_bytes(), bridge.read_bytes()
+        cases = [
+            (projection, b'# An unrelated user rule\n'),
+            (projection, saved_projection + b'<!-- memory-sync:broken:begin -->\n'),
+            (projection, saved_projection.replace(b'alwaysApply: true', b'alwaysApply: false')),
+            (bridge, saved_bridge + b'<!-- memory-sync:broken:begin -->\n'),
+        ]
+        for path, content in cases:
+            path.write_bytes(content)
+            before = self.files()
+            with self.assertRaises(memory_files.SyncError):
+                self.plan()
+            self.assertEqual(self.files(), before)
+            result = self.installer(apply=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(self.files(), before)
+            projection.write_bytes(saved_projection)
+            bridge.write_bytes(saved_bridge)
+
+    def test_projection_failure_retries_only_the_reviewed_note_for_each_operation(self):
+        self.activate()
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        keep = sync.make_plan(self.profile, native_backends.DESTINATIONS, 'set', 'reply-style', 'I prefer short replies.')
+        self.apply(keep)
+        for operation, text in [('set', self.text), ('set', 'My temporary memory verification phrase is blue-wren-13.'), ('delete', None)]:
+            with self.subTest(operation=operation, text=text):
+                plan = self.plan(text, operation)
+                original_change = memory_files.atomic_change
+
+                def fail_projection(path, before, after):
+                    if path == projection:
+                        raise OSError('simulated projection write failure')
+                    original_change(path, before, after)
+
+                with patch.object(sync, 'atomic_change', side_effect=fail_projection):
+                    result = self.apply(plan)
+                self.assertEqual(result['status'], 'partial_failure')
+                self.assertEqual(len(result['completed_paths']), 5)
+                self.assertFalse(result['physical_file_readback'][-1]['matches'])
+                fresh = self.plan(text, operation)
+                self.assertNotEqual(plan.digest(), fresh.digest())
+                with self.assertRaisesRegex(memory_files.SyncError, 'digest mismatch'):
+                    sync.apply_plan(self.profile, fresh, plan.digest())
+                retried = self.apply(fresh)
+                self.assertEqual(retried['completed_paths'], [str(projection)])
+                self.assertTrue(all(copy['matches'] for copy in retried['physical_file_readback']))
+                self.assertEqual(self.apply(self.plan(text, operation))['status'], 'unchanged')
+                self.assertEqual(projection.read_text().count('I prefer short replies.'), 1)
+        self.assertNotIn(self.note_id, projection.read_text())
+
+    def test_projection_dependency_catches_a_source_write_after_bridge_apply(self):
+        self.activate()
+        bridge = self.home / 'Work/.agents/memory-sync/cursor/MEMORY.md'
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        original_projection = projection.read_bytes()
+        original_change = memory_files.atomic_change
+
+        def edit_source_after_apply(path, before, after):
+            original_change(path, before, after)
+            if path == bridge:
+                bridge.write_bytes(bridge.read_bytes() + memory_files.block('unapproved-note', 'An unrelated native write.').encode())
+
+        with patch.object(sync, 'atomic_change', side_effect=edit_source_after_apply):
+            result = self.apply(self.plan())
+        self.assertEqual(result['status'], 'partial_failure')
+        self.assertIn('Projection source changed', result['error'])
+        self.assertEqual(projection.read_bytes(), original_projection)
+        with self.assertRaisesRegex(memory_files.SyncError, 'outside the approved note: unapproved-note'):
+            self.plan()
+
+    def test_projection_bytes_are_bound_to_the_reviewed_plan(self):
+        self.activate()
+        plan = self.plan()
+        projection = self.home / '.cursor/rules/personal-memories.mdc'
+        bridge = self.home / 'Work/.agents/memory-sync/cursor/MEMORY.md'
+        projection.write_bytes(cursor_projection.render_records({self.note_id: 'A changed current value.'}, bridge))
+        before = self.files()
+        with self.assertRaisesRegex(memory_files.SyncError, 'State changed'):
+            self.apply(plan)
+        self.assertEqual(self.files(), before)
 
     def test_managed_router_refresh_preserves_surrounding_user_text(self):
         _, current = install.cursor_local_rule(self.home, self.source)

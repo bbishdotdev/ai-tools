@@ -79,7 +79,7 @@ def main():
     desktop = Path('/usr/lib/chatgpt/resources/codex')
     report = {
         'read_only': True,
-        'scope': 'Local installation only; no cloud stores, private databases, or memory contents are read.',
+        'scope': 'Local installation only. Reads bridge and generated-rule bytes to compare the projection; memory contents are not printed. No cloud stores or private databases are read.',
         'policy_links': {str(path): {'correct': path.is_symlink() and path.resolve() == target.resolve(), 'target': str(target)} for path, target in links.items()},
         'codex': {
             'home': str(codex_home),
@@ -107,7 +107,7 @@ def main():
         'native_sync': {
             'helper_available': (Path(__file__).resolve().parent / 'sync.py').is_file(),
             'backend_readiness': {name: backend.report() for name, backend in native_backends.items()},
-            'all_three_ready': all(backend.error is None for backend in native_backends.values()),
+            'all_three_ready': all(backend.report()['ready'] for backend in native_backends.values()),
             'approval_coverage': 'Agent policy governs approval. Plan hashes bind reviewed bytes but do not prove consent or intercept native background memory writes.',
             'compatibility_reference': str(source / 'skills/memory-policy/references/native-interfaces.md'),
         },

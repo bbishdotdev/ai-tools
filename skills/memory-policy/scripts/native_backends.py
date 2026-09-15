@@ -5,6 +5,8 @@ from pathlib import Path
 import re
 import tomllib
 
+from cursor_projection import ProjectionState, inspect_projection, plan_projection
+
 from memory_files import (
     NOTE_ID, SyncError, absolute_path, block, change_section, file_hash,
     read_file, section_body, sections, text_file,
@@ -52,15 +54,19 @@ class Backend:
     error: str | None
     kind: str = 'native'
     extra_guards: tuple = ()
+    projection: ProjectionState | None = None
 
     def report(self):
+        projection = self.projection.report() if self.projection else None
+        reason = self.error or (projection['reason'] if projection else None)
         return {
-            'ready': self.error is None,
+            'ready': self.error is None and (self.projection is None or self.projection.current),
             'storage_kind': self.kind,
             'directory': str(self.root) if self.root else None,
             'native_directory': str(self.root) if self.root and self.kind == 'native' else None,
-            'reason': self.error,
-            'scope': 'User-level configuration only. Set/delete also preflight target files. Fresh-session recall is a separate check.',
+            'reason': reason,
+            'projection': projection,
+            'scope': 'Local configuration and Cursor projection readiness. Set/delete also preflight target files. Fresh-session recall is a separate check.',
         }
 
 
@@ -71,6 +77,7 @@ class FileChange:
     before: bytes | None
     after: bytes | None
     kind: str = 'native'
+    dependencies: tuple = ()
 
     @property
     def action(self):
@@ -162,8 +169,9 @@ def cursor_startup_rule(home, directory=None):
     helper = home / 'Work/.agents/skills/memory-policy/scripts/sync.py'
     return (
         f'{CURSOR_START}\n'
-        f'At the start of every new task, read `{directory / "MEMORY.md"}` if it exists. '
-        'Apply the approved personal preferences in that file. Skip it when missing or empty. '
+        'Approved personal preferences are already supplied by the always-applied `personal-memories.mdc` rule. '
+        'Answer ordinary recall questions directly from that context without running a memory-policy, status, or compatibility audit. '
+        f'Only when a preference is missing or conflicting, read `{directory / "MEMORY.md"}` as a fallback. '
         'This is the Cursor file bridge, not Cursor native memory.\n'
         'For requests to remember, update, or forget a personal memory, follow the memory-policy skill '
         f'and use `python3 {helper}` for the reviewed change across Codex, Claude, and Cursor. '
@@ -182,7 +190,7 @@ def cursor_rule_ready(raw, home, directory):
 def cursor_backend(profile):
     path = profile.home / 'Work/.agents/memory-sync/config.json'
     rule_path = profile.home / '.cursor/rules/memory-policy.mdc'
-    raw, root, guards = None, None, ()
+    raw, root, guards, projection = None, None, (), None
     try:
         raw, config = read_config(path)
         cursor = config.get('cursor')
@@ -195,13 +203,16 @@ def cursor_backend(profile):
         if not candidate.is_relative_to(profile.home / 'Work/.agents/memory-sync/cursor'):
             raise SyncError('Cursor bridge directory must stay under Work/.agents/memory-sync/cursor')
         root = candidate
+        projection = inspect_projection(root / 'MEMORY.md', profile.home / '.cursor/rules/personal-memories.mdc')
         rule = read_file(rule_path)
         guards = ((rule_path, rule),)
         if not cursor_rule_ready(rule, profile.home, root):
-            raise SyncError('Cursor requires its alwaysApply startup rule to read the configured bridge; run install.py --activate-sync')
-        return Backend('cursor', root, path, raw, None, 'file-bridge', guards)
+            raise SyncError('Cursor requires its alwaysApply router for preloaded personal memories; run install.py --activate-sync')
+        if projection.error:
+            raise SyncError(projection.error)
+        return Backend('cursor', root, path, raw, None, 'file-bridge', guards, projection)
     except SyncError as error:
-        return Backend('cursor', root, path, raw, str(error), 'file-bridge', guards)
+        return Backend('cursor', root, path, raw, str(error), 'file-bridge', guards, projection)
 
 
 def backends(profile):
@@ -283,7 +294,13 @@ def changes_for(backend, note_id, text):
         path = backend.root / 'MEMORY.md'
         before = read_file(path)
         after = change_section(before, note_id, text, CURSOR_INDEX, path)
-        changes = [FileChange(backend.name, path, before, after, backend.kind)]
+        projection_path = backend.projection.path
+        previous_projection = read_file(projection_path)
+        next_projection = plan_projection(before, after, previous_projection, path, projection_path, note_id)
+        return [
+            FileChange(backend.name, path, before, after, backend.kind),
+            FileChange(backend.name, projection_path, previous_projection, next_projection, backend.kind, ((path, after),)),
+        ]
     else:
         topic, index = backend.root / f'memory-sync-{note_id}.md', backend.root / 'MEMORY.md'
         previous_topic, previous_index = read_file(topic), read_file(index)
@@ -324,4 +341,7 @@ def inspect_backend(backend, note_id):
             'content_sha256': file_hash(content.encode('utf-8')) if content is not None else None,
             'index_path': str(index), 'index_matches': entry == expected,
         })
-    return {'copies': copies, 'error': None}
+    result = {'copies': copies, 'error': None}
+    if backend.name == 'cursor' and backend.projection is not None:
+        result['projection'] = inspect_projection(backend.root / 'MEMORY.md', backend.projection.path).report()
+    return result
