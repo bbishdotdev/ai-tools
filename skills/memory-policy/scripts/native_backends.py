@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import tomllib
 
+from cursor_hooks import HookState, inspect_hooks
 from cursor_projection import ProjectionState, inspect_projection, plan_projection
 
 from memory_files import (
@@ -55,6 +56,7 @@ class Backend:
     kind: str = 'native'
     extra_guards: tuple = ()
     projection: ProjectionState | None = None
+    context_hook: HookState | None = None
 
     def report(self):
         projection = self.projection.report() if self.projection else None
@@ -66,7 +68,8 @@ class Backend:
             'native_directory': str(self.root) if self.root and self.kind == 'native' else None,
             'reason': reason,
             'projection': projection,
-            'scope': 'Local configuration and Cursor projection readiness. Set/delete also preflight target files. Fresh-session recall is a separate check.',
+            'context_hook': self.context_hook.report() if self.context_hook else None,
+            'scope': 'Local configuration, Cursor projection, and context-hook registration readiness. Set/delete also preflight target files. Fresh-session recall is a separate check.',
         }
 
 
@@ -169,7 +172,8 @@ def cursor_startup_rule(home, directory=None):
     helper = home / 'Work/.agents/skills/memory-policy/scripts/sync.py'
     return (
         f'{CURSOR_START}\n'
-        'Approved personal preferences are already supplied by the always-applied `personal-memories.mdc` rule. '
+        'Approved personal preferences are supplied by the current synchronized snapshot with each prompt and by the always-applied `personal-memories.mdc` rule. '
+        'The newest synchronized snapshot supersedes older snapshots and cached copies, including when it is empty or unavailable. '
         'Answer ordinary recall questions directly from that context without running a memory-policy, status, or compatibility audit. '
         f'Only when a preference is missing or conflicting, read `{directory / "MEMORY.md"}` as a fallback. '
         'This is the Cursor file bridge, not Cursor native memory.\n'
@@ -190,7 +194,7 @@ def cursor_rule_ready(raw, home, directory):
 def cursor_backend(profile):
     path = profile.home / 'Work/.agents/memory-sync/config.json'
     rule_path = profile.home / '.cursor/rules/memory-policy.mdc'
-    raw, root, guards, projection = None, None, (), None
+    raw, root, guards, projection, hook = None, None, (), None, None
     try:
         raw, config = read_config(path)
         cursor = config.get('cursor')
@@ -205,14 +209,17 @@ def cursor_backend(profile):
         root = candidate
         projection = inspect_projection(root / 'MEMORY.md', profile.home / '.cursor/rules/personal-memories.mdc')
         rule = read_file(rule_path)
-        guards = ((rule_path, rule),)
+        hook = inspect_hooks(profile.home)
+        guards = ((rule_path, rule), (hook.path, hook.raw))
         if not cursor_rule_ready(rule, profile.home, root):
             raise SyncError('Cursor requires its alwaysApply router for preloaded personal memories; run install.py --activate-sync')
         if projection.error:
             raise SyncError(projection.error)
-        return Backend('cursor', root, path, raw, None, 'file-bridge', guards, projection)
+        if hook.error:
+            raise SyncError(hook.error)
+        return Backend('cursor', root, path, raw, None, 'file-bridge', guards, projection, hook)
     except SyncError as error:
-        return Backend('cursor', root, path, raw, str(error), 'file-bridge', guards, projection)
+        return Backend('cursor', root, path, raw, str(error), 'file-bridge', guards, projection, hook)
 
 
 def backends(profile):

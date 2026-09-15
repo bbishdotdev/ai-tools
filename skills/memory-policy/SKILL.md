@@ -11,7 +11,7 @@ Synchronize approved personal memories with one shared command. Codex and Claude
 
 For a question about an already stored memory, answer directly from supplied context. Do not start the approval workflow, read compatibility references, or run sync status. If this skill was invoked for ordinary recall, return to answering the question. If the fact is missing from context, read the relevant native memory source or Cursor bridge once. Investigate sync only when the user asks for diagnosis or stored copies conflict. Do not narrate routine retrieval or explain storage provenance unless asked.
 
-Cursor receives its approved personal notes inline through `~/.cursor/rules/personal-memories.mdc`, an always-applied generated rule. The bridge remains the source. Reading the bridge is a fallback, not a startup requirement.
+Cursor receives approved personal notes through `~/.cursor/rules/personal-memories.mdc` and a read-only `beforeSubmitPrompt` hook that supplies the current verified snapshot. The hook avoids cached rule discovery in already-open workspaces and supersedes older snapshots after updates or deletions. The bridge remains the source. Reading it with an agent tool is a fallback, not a startup requirement.
 
 ## Before a memory change
 
@@ -22,7 +22,7 @@ Cursor receives its approved personal notes inline through `~/.cursor/rules/pers
 
 ## Apply approved content
 
-Use `scripts/sync.py` for every approved create, update, or deletion. All three products are the default destinations. The installed adapters write Codex native files, a user-wide Claude native directory, and Cursor's bridge. The same reviewed operation refreshes Cursor's generated `personal-memories.mdc`, so fresh chats receive the approved text directly in context. Keep the same approved meaning across products; format differences must not add facts or broaden the preference.
+Use `scripts/sync.py` for every approved create, update, or deletion. All three products are the default destinations. The installed adapters write Codex native files, a user-wide Claude native directory, and Cursor's bridge. The same reviewed operation refreshes Cursor's generated `personal-memories.mdc`, and the read-only context hook supplies that current approved text before each prompt. Keep the same approved meaning across products; format differences must not add facts or broaden the preference.
 
 Preflight all destinations. If configuration has drifted or a destination is unavailable, repair the authorized installation when possible and retry the same approved operation. Do not silently save a partial copy or switch to private databases/RPCs. Cursor's configured bridge is an intentional installed destination, not a missing native adapter. A reduced destination set requires explicit approval of a partial save.
 
@@ -51,6 +51,6 @@ For an explicitly approved partial save, place `--destinations codex,claude` bef
 
 Apply this policy when extracting, consolidating, dreaming, or maintaining subagent memory whenever this instruction is available. A hook must check human approval for the exact operation; an agent-supplied `approved: true` is not evidence. Generic permission prompts are not a substitute for reviewing the memory content.
 
-A skill cannot guarantee control over internal background writers that never receive it. A watcher observes writes after the fact. Report unapproved drift without propagating it or automatically deleting it. Do not claim pre-write enforcement without testing that specific writer and its failure paths.
+The Cursor context hook only reads approved synchronized content for recall. It does not write, approve, or propagate memories. A skill cannot guarantee control over internal background writers that never receive it. A watcher observes writes after the fact. Report unapproved drift without propagating it or automatically deleting it. Do not claim pre-write enforcement without testing that specific writer and its failure paths.
 
 Do not disable native memory or silently change generation settings to make enforcement appear complete. If enabled native generation and mandatory approval cannot both be enforced, disclose the product limitation. Installation of this policy alone is not evidence that native synchronization works.

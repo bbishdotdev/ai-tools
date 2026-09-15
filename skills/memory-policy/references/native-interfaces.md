@@ -45,11 +45,13 @@ The installed Cursor 3.19.7 client explicitly supports user file rules: its rule
 
 The user authorized finishing the file bridge. Approved notes are synchronized to `~/Work/.agents/memory-sync/cursor/MEMORY.md`. The shared helper renders managed bridge entries directly into `~/.cursor/rules/personal-memories.mdc` with `alwaysApply: true`. Fresh chats receive that approved text as rule context. The policy router sends ordinary recall directly to the loaded facts and retains a bridge read only for missing context. The bridge config and exact policy-router bytes participate in each reviewed write plan. The generated memory rule is an additional reviewed output and receives the same byte comparison and file readback as the source copies. Unrelated projection drift blocks a write; retrying the same approved target can complete a partially written projection. Native Cursor features are left intact. Label its results as bridge readback, never native memory verification.
 
-Cursor's global User Rule routes memory operations to this skill. The user confirmed adding it through the UI. The installer also generates the local user rule `~/.cursor/rules/memory-policy.mdc`. The local setup includes an always-applied generated memory rule and a separate policy router. These local user rules do not provide remote or cloud filesystem access. The saved global User Rule remains an additional policy router.
+Cursor's global User Rule routes memory operations to this skill. The user confirmed adding it through the UI. The installer also generates the local user rule `~/.cursor/rules/memory-policy.mdc`. The local setup includes an always-applied generated memory rule, a separate policy router, and a read-only `beforeSubmitPrompt` hook. These local user rules do not provide remote or cloud filesystem access. The saved global User Rule remains an additional policy router.
 
 Sources: [Cursor rules and alwaysApply](https://cursor.com/docs/rules), [Cursor CLI parameters](https://cursor.com/docs/cli/reference/parameters), [Cursor SDK](https://cursor.com/docs/sdk/python), [Cursor APIs](https://cursor.com/docs/api), [hooks](https://cursor.com/docs/hooks), [skills](https://cursor.com/docs/skills).
 
 ## Shared helper verification
+
+The actual Cursor Agents window was tested in a fresh local `family-chef` chat with only “What is my memory test phrase?” After a normal Reload Window, it returned the approved phrase in about one second with zero tool calls. A fresh chat before that reload still used the workspace's cached rule discovery and read the files. Installed code confirms ancestor rules are cached while the workspace watcher watches its own root. The context hook addresses that refresh gap before each prompt.
 
 The three-destination helper passed disposable create, update, and deletion using its default destination set. All six files, including Cursor's generated rule, matched after each operation; inspection reported consistent copies followed by absence after deletion. Repeating create, delete, and activation made no changes. Unmanaged bridge text stayed intact and was excluded from the generated rule. Cursor's bridge config and recall router are checked and bound into each plan; its generated rule is a reviewed output with a source dependency checked before writing.
 
@@ -62,6 +64,8 @@ The focused local suite covers CLI behavior, exact byte preservation, idempotent
 ## Synchronization and approval limits
 
 The shared command applies the exact approved operation to the two native adapters and the configured Cursor bridge. It cannot make three products commit atomically. Preflight all destinations, preserve unrelated content, compare against the reviewed file revision, then read each changed file back. Report any partial failure and inspect before retrying.
+
+The Cursor context hook reads the current bridge and generated rule, verifies they agree, and returns approved facts as prompt context. It makes no memory writes and does not supply approval for any change. Missing or inconsistent copies produce no memory content; ordinary prompts remain allowed. Its JSON response stays within 9,000 UTF-8 bytes. Larger snapshots are not truncated; memory-specific questions use a direct bridge read as the fallback.
 
 Conversational approval is still required. A plan digest binds exact input, destinations, and observed files; it is not proof that a human approved the operation. Native writers do not honor the synchronizer's lock. No watcher, background approval hook, or automatic propagation of native-only edits is installed. A watcher would observe an unapproved write only after it happened.
 

@@ -3,6 +3,7 @@ import json
 import re
 import tomllib
 
+from cursor_hooks import hooks_configuration
 from cursor_projection import plan_projection
 
 from memory_files import SyncError, atomic_change, file_hash, read_file, sync_lock, text_file
@@ -150,7 +151,9 @@ def activation_changes(profile, router_change, cursor_config, claude_config, cla
     previous_projection = read_file(projection_path)
     next_projection = plan_projection(bridge.before, bridge.after, previous_projection, bridge.path, projection_path)
     changes.append(FileChange('cursor', projection_path, previous_projection, next_projection, 'generated projection', ((bridge.path, bridge.after),)))
-    changes.extend([codex_config, claude_config, cursor_config, router_change])
+    hook_path, hook_before, hook_after = hooks_configuration(profile.home)
+    hook_change = FileChange('cursor-hook', hook_path, hook_before, hook_after, 'configuration')
+    changes.extend([codex_config, claude_config, cursor_config, router_change, hook_change])
     paths = [change.path for change in changes]
     if len(paths) != len(set(paths)):
         raise SyncError('Activation destinations overlap; use separate native memory directories')

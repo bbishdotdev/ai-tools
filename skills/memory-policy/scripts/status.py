@@ -101,7 +101,8 @@ def main():
         'cursor': {
             'native_memory_status': 'Ordinary-desktop native memory remains unverified; no native rollout or private API was overridden.',
             'synchronization': native_backends['cursor'].report(),
-            'local_policy_rule': {'path': str(cursor_path), 'correct': cursor_correct, 'scope': 'Workspaces beneath the home directory; discovered through workspace ancestry.'},
+            'local_policy_rule': {'path': str(cursor_path), 'correct': cursor_correct, 'scope': 'Installed local user-file rule; an open Cursor window may cache discovered rules.'},
+            'context_hook': native_backends['cursor'].context_hook.report() if native_backends['cursor'].context_hook else None,
             'global_policy_rule': 'Verify in the User Rules UI against rules/memory-policy.md. This helper does not query account-held rules.',
         },
         'native_sync': {
