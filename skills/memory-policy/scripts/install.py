@@ -6,15 +6,19 @@ from pathlib import Path
 
 def installation_links(home, source, codex_home=None, claude_home=None):
     canonical = home / '.agents'
-    skill = canonical / 'skills/memory-policy'
-    policy = canonical / 'AGENTS.md'
+    workspace = home / 'Work'
+    skill = workspace / '.agents/skills/memory-policy'
+    policy = workspace / 'AGENTS.md'
     return {
         skill: source / 'skills/memory-policy',
         policy: source / 'rules/memory-policy.md',
-        (codex_home or home / '.codex') / 'AGENTS.md': policy,
-        (claude_home or home / '.claude') / 'CLAUDE.md': policy,
-        (claude_home or home / '.claude') / 'skills/memory-policy': skill,
-        home / '.cursor/skills/memory-policy': skill,
+        workspace / 'CLAUDE.md': policy,
+        canonical / 'skills/memory-policy': skill,
+        canonical / 'AGENTS.md': policy,
+        (codex_home or home / '.codex') / 'AGENTS.md': canonical / 'AGENTS.md',
+        (claude_home or home / '.claude') / 'CLAUDE.md': canonical / 'AGENTS.md',
+        (claude_home or home / '.claude') / 'skills/memory-policy': canonical / 'skills/memory-policy',
+        home / '.cursor/skills/memory-policy': canonical / 'skills/memory-policy',
     }
 
 

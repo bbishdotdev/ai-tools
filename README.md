@@ -81,11 +81,23 @@ python3 skills/memory-policy/scripts/install.py
 python3 skills/memory-policy/scripts/install.py --apply
 ```
 
-The first command previews the links. The second connects the shared skill through `~/.agents/skills/`, Claude, and Cursor, and links the Codex and Claude global instruction files to one policy router. It also generates a Cursor rule for projects beneath your home directory. It respects `CODEX_HOME` and `CLAUDE_CONFIG_DIR` and refuses to replace existing files. Keep this checkout in place because the links point to it.
+Use the permanent `~/Work/ai-tools` checkout as the versioned source. The first command previews the links. The second creates these Work-level entrypoints:
+
+- `~/Work/.agents/skills/memory-policy/` links to this repository's skill.
+- `~/Work/AGENTS.md` links to `rules/memory-policy.md`.
+- `~/Work/CLAUDE.md` links to `AGENTS.md`.
+
+The home-level `~/.agents`, Codex, Claude, and Cursor entrypoints route to that shared Work setup. The installer also generates a Cursor rule for projects beneath your home directory. It respects `CODEX_HOME` and `CLAUDE_CONFIG_DIR` and refuses to replace existing files. Keep the permanent checkout in place; runtime links must not target a task worktree. This installs local access on this machine, not remote or cloud filesystem access.
 
 Add the text from `rules/memory-policy.md` to Cursor's global User Rules through its UI. The rule only routes memory operations to the skill. Native memories remain in each product's native system.
 
 Check the local installation with `python3 ~/.agents/skills/memory-policy/scripts/status.py`. Native sync and background approval enforcement have not passed compatibility checks across all three tools, so no sync writer, hook, or watcher is installed. See the skill's native-interface reference for measured limits. The installer never changes existing memories or generation settings.
+
+To check discovery and policy handling, start a fresh chat in each app with a project under `~/Work` and send:
+
+> I’m considering remembering “Use short paragraphs.” Find our shared memory policy, show its resolved file path, and propose the memory without saving it. Also explain where “this app uses Convex” belongs and whether native sync across Codex, Claude, and Cursor is available.
+
+Each app should resolve the skill to `~/Work/ai-tools/skills/memory-policy/SKILL.md`, leave the proposal unsaved, route the Convex fact to project documentation or rules, and report native sync as unavailable. This checks discovery and policy handling, not native recall or background approval enforcement.
 
 Use `agents/` for custom agent modes. Copy them into `.claude/`, `.github/`, or wherever your tool supports custom agents.
 
