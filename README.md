@@ -17,6 +17,7 @@ Make the default behavior better.
 
 ## Current skills
 
+- `memory-policy`: require approval for personal memories and coordinate verified native destinations.
 - `refine`: stress-test a plan by asking hard questions until the decision tree is clear.
 - `milestone`: turn a product idea into a PRD-like milestone.
 - `github-issue`: turn vague work into clear GitHub issues with acceptance criteria, tests, and sequencing.
@@ -72,6 +73,19 @@ Install from a local checkout:
 ```bash
 npx skills add ./skills
 ```
+
+Install the shared memory policy from a stable checkout:
+
+```bash
+python3 skills/memory-policy/scripts/install.py
+python3 skills/memory-policy/scripts/install.py --apply
+```
+
+The first command previews the links. The second connects the shared skill through `~/.agents/skills/`, Claude, and Cursor, and links the Codex and Claude global instruction files to one policy router. It also generates a Cursor rule for projects beneath your home directory. It respects `CODEX_HOME` and `CLAUDE_CONFIG_DIR` and refuses to replace existing files. Keep this checkout in place because the links point to it.
+
+Add the text from `rules/memory-policy.md` to Cursor's global User Rules through its UI. The rule only routes memory operations to the skill. Native memories remain in each product's native system.
+
+Check the local installation with `python3 ~/.agents/skills/memory-policy/scripts/status.py`. Native sync and background approval enforcement have not passed compatibility checks across all three tools, so no sync writer, hook, or watcher is installed. See the skill's native-interface reference for measured limits. The installer never changes existing memories or generation settings.
 
 Use `agents/` for custom agent modes. Copy them into `.claude/`, `.github/`, or wherever your tool supports custom agents.
 
