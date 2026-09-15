@@ -91,13 +91,23 @@ The home-level `~/.agents`, Codex, Claude, and Cursor entrypoints route to that 
 
 Add the text from `rules/memory-policy.md` to Cursor's global User Rules through its UI. The rule only routes memory operations to the skill. Native memories remain in each product's native system.
 
-Check the local installation with `python3 ~/.agents/skills/memory-policy/scripts/status.py`. Native sync and background approval enforcement have not passed compatibility checks across all three tools, so no sync writer, hook, or watcher is installed. See the skill's native-interface reference for measured limits. The installer never changes existing memories or generation settings.
+Check the local installation with `python3 ~/.agents/skills/memory-policy/scripts/status.py`. The shared `sync.py` helper previews and applies approved additions, updates, and deletions to Codex and Claude native files. It preserves unrelated content and checks the reviewed file revision before writing. Run `python3 ~/.agents/skills/memory-policy/scripts/sync.py --help` for its interface. Previewing does not save a memory or proposal.
 
-To check discovery and policy handling, start a fresh chat in each app with a project under `~/Work` and send:
+All three products are the default destinations. Cursor's ordinary desktop native interface remains unavailable in the tested setup, so the default operation refuses to write anywhere. A reduced destination set requires the user's explicit approval of a partial save. A Cursor file bridge also requires an explicit choice because it would not be native recall. The installer and sync helper leave native memory settings unchanged. Codex needs its memory feature enabled; Claude needs a fixed absolute user-level `autoMemoryDirectory`. Changing Claude's directory does not migrate its old project memories. See [native compatibility](skills/memory-policy/references/native-interfaces.md) for evidence and limitations.
 
-> I’m considering remembering “Use short paragraphs.” Find our shared memory policy, show its resolved file path, and propose the memory without saving it. Also explain where “this app uses Convex” belongs and whether native sync across Codex, Claude, and Cursor is available.
+No watcher or background approval hook is installed. The skill governs agents that read it; it does not prove approval enforcement for internal background writers. A successful helper result proves local file readback. Fresh-session native recall is a separate test.
 
-Each app should resolve the skill to `~/Work/ai-tools/skills/memory-policy/SKILL.md`, leave the proposal unsaved, route the Convex fact to project documentation or rules, and report native sync as unavailable. This checks discovery and policy handling, not native recall or background approval enforcement.
+To check natural policy discovery, start a fresh chat in each app with a project under `~/Work` and send:
+
+> I’m considering remembering “Use short paragraphs.” What would you save? Don’t save it yet.
+
+The agent should find the shared policy without being told its path, propose a personal preference, and save nothing. A fact such as “this app uses Convex” belongs in project instructions or documentation.
+
+After every chosen destination is configured and available, test actual synchronization by asking one app:
+
+> Remember that my temporary memory verification phrase is amber-otter-42. I approve saving this exact temporary note across our configured destinations.
+
+Start unrelated fresh chats in all three apps and ask “What is my temporary memory verification phrase?” Do not include the answer, policy path, or earlier conversation. Each reply should name the phrase and identify its native source, or its bridge source if explicitly configured. Then approve a replacement phrase, repeat the fresh-chat check, and explicitly approve deletion. A destination that is pending or cannot recall the note has not passed. Creating three independent copies manually does not test synchronization.
 
 Use `agents/` for custom agent modes. Copy them into `.claude/`, `.github/`, or wherever your tool supports custom agents.
 

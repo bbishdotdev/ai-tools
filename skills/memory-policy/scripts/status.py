@@ -9,6 +9,7 @@ import tomllib
 
 sys.dont_write_bytecode = True
 from install import cursor_local_rule, installation_links
+from native_backends import CURSOR_UNAVAILABLE, Profile, backends
 
 
 def read_settings(path):
@@ -68,6 +69,7 @@ def main():
     if not isinstance(memory_settings, dict):
         memory_settings = {'read_error': 'ExpectedTable'}
     desktop = Path('/usr/lib/chatgpt/resources/codex')
+    native_backends = backends(Profile.load())
     report = {
         'read_only': True,
         'scope': 'Local installation only; no cloud stores, private databases, or memory contents are read.',
@@ -90,13 +92,15 @@ def main():
             'inventory': inventory(claude_roots),
         },
         'cursor': {
-            'native_memory_status': 'Unknown; no supported native memory read interface verified. Local file absence does not establish remote memory absence.',
+            'native_memory_status': CURSOR_UNAVAILABLE,
             'local_policy_rule': {'path': str(cursor_path), 'correct': cursor_path.is_file() and not cursor_path.is_symlink() and cursor_path.read_text() == cursor_content, 'scope': 'Workspaces beneath the home directory; discovered through workspace ancestry.'},
             'global_policy_rule': 'Verify in the User Rules UI against rules/memory-policy.md. This helper does not query account-held rules.',
         },
         'native_sync': {
-            'installed': False,
-            'reason': 'A global per-memory interface and approval coverage have not passed verification across all three products.',
+            'helper_available': (Path(__file__).resolve().parent / 'sync.py').is_file(),
+            'backend_readiness': {name: backend.report() for name, backend in native_backends.items()},
+            'all_three_ready': all(backend.error is None for backend in native_backends.values()),
+            'approval_coverage': 'Agent policy governs approval. Plan hashes bind reviewed bytes but do not prove consent or intercept native background memory writes.',
             'compatibility_reference': str(source / 'skills/memory-policy/references/native-interfaces.md'),
         },
     }

@@ -1,50 +1,62 @@
 # Native memory compatibility
 
-Verified 2026-09-14 on Linux. Recheck after client updates. The installed package provides a shared policy, an installer, and a read-only status helper. No native sync adapter, approval hook, daemon, or watcher is installed. Policy links alone do not prove that background writers obey them.
+Verified on Linux on 2026-09-14. Native-file create, update, deletion, and fresh-session recall passed for Codex and Claude Code in isolated profiles. Ordinary Cursor desktop native recall remains unverified. The shared sync command must check every requested destination before writing. A local file readback and a fresh-session recall test are different checks.
 
-| Product | Evidence | Qualification for automatic global sync |
+| Product | Verified native path | Current qualification |
 | --- | --- | --- |
-| Codex desktop 0.153.0-alpha.5 | Isolated native import, repeat, update, and source-file deletion succeeded for project resources. | Fails the required scope and selection criteria. The importer selects entire project collections and preserves project scope. Background consolidation and global recall were not proven. |
-| Codex CLI 0.153.2 | Generated protocol exposes the same memory migration shape. | Runtime import was tested with the desktop executable only. No per-fact approval or general native memory CRUD interface was found. |
-| Claude Code 2.1.261 | Isolated native Write succeeded with a non-denying hook and was blocked by explicit PreToolUse denial. | Foreground denial works. Background extraction/dream coverage and an approval-bound write helper remain unproven. |
-| Cursor 3.19.7 | Runtime customization UI and command/settings search exposed no native Memories management surface. | No supported native memory read/write/update/delete interface verified for the current account. Do not substitute the User Rules UI. |
+| Codex desktop 0.153.0-alpha.5 | `$CODEX_HOME/memories/memory_summary.md` and `MEMORY.md` | A native-file adapter passed create, update, deletion, and recall in unrelated working directories. Version-sensitive; background consolidation durability is not proven. |
+| Codex CLI 0.153.2 | Same configured memory root | The runtime recall probe used the desktop executable. Do not claim a separate CLI runtime test. |
+| Claude Code 2.1.261 | A fixed user-level `autoMemoryDirectory`, with `MEMORY.md` and typed topic files | Native-file adapter passed create, update, deletion, and recall in two unrelated working directories. Already-open sessions and background writers were not tested. |
+| Cursor 3.19.7 | An installed native user store exists, but ordinary desktop mounting is not verified | Cached rollout values plus installed source explain a likely disabled store harness. No usable native CRUD tool or public endpoint was verified. Do not write into an inactive store and claim recall. |
 
 ## Codex
 
-Native files are generated under `$CODEX_HOME/memories` (normally `~/.codex/memories`). The background extractor is independent of ordinary conversational skill selection. The installed feature listing initially reported `memories = false` and `external_agent_memory_import = false`; this policy installation does not change those settings. Do not report that native memory was enabled by this installation.
+Codex normally generates native Markdown under `$CODEX_HOME/memories`, usually `~/.codex/memories`. The `memories` feature must be enabled and `use_memories` must not be false. On this machine the feature was initially false; the policy installer did not disable or enable it. Keep generation settings unchanged unless the user explicitly chooses otherwise.
 
-The app-server protocol provides experimental `externalAgentConfig/detect` and `externalAgentConfig/import`. Select `migrationSource: "claude-code"`. A `MEMORY` item's `details.memory` contains project keys, not paths to individual memory files. Detection requires a reliable project working directory recovered from a source session.
+The native-file probe used a disposable home with `[features] memories = true`. It placed the same synthetic preference in `memory_summary.md` and `MEMORY.md`. Three fresh sessions recalled the original phrase, recalled its replacement from an unrelated working directory, then answered `UNKNOWN` after deletion. The question contained no phrase or memory path. Tools were prohibited and none were called, so recall came from the native injected summary. Authentication was mounted read-only; real memories and configuration were untouched.
 
-The disposable probe demonstrated that a second memory file in the selected project was also imported, even though a single-fact approval would not cover it. Repeating import created no duplicate files. Re-import reflected a source update and removed a deleted source file. These are resource synchronization results only. No authenticated native consolidation or fresh-session recall was tested.
+Codex's installed consolidation prompt treats edits since its previous memory baseline as authoritative input. This supports a file adapter, but does not prove that its managed entries survive every future consolidation. Official documentation discourages hand editing as the primary control. Recheck after upgrades and distinguish verified foreground recall from unverified background durability. A digest mismatch or missing managed entry requires inspection, not automatic recreation or propagation.
 
-Import creates `memories/extensions/external_agent_import/resources/<project-key>/scope.json` plus the project files. Its consolidation instructions preserve scope and prohibit promoting project content into global user preferences. Changing Claude to a global `autoMemoryDirectory` also falls outside the importer's discovery of `projects/*/memory`. Do not fabricate a project or edit Codex's generated files to pretend that this is a global per-fact interface.
+The native external-agent importer is a different interface. It selects entire Claude project collections and preserves their project scope. It is not suitable for synchronizing one approved global preference. No dedicated per-fact CRUD endpoint was found in the app-server protocol.
 
-Sources: [Codex memories](https://learn.chatgpt.com/docs/customization/memories), [native importer](https://github.com/openai/codex/blob/main/codex-rs/external-agent-migration/src/memory_import.rs), [source discovery](https://github.com/openai/codex/blob/main/codex-rs/external-agent-migration/src/memory.rs), [hooks](https://learn.chatgpt.com/docs/hooks).
+Sources: [Codex memories](https://learn.chatgpt.com/docs/customization/memories), [native importer](https://github.com/openai/codex/blob/main/codex-rs/external-agent-migration/src/memory_import.rs), [hooks](https://learn.chatgpt.com/docs/hooks).
 
 ## Claude Code
 
-Supported native Markdown normally lives in `~/.claude/projects/<scope>/memory/`, with a `MEMORY.md` index and topic files. `autoMemoryDirectory` can redirect future native memory to a user-wide directory. It does not migrate existing files. Persistent subagents have additional user, project, and local roots. This installation leaves all these settings and files intact.
+Claude supports direct editing and deletion of native Markdown. Its default storage is project-scoped. A fixed absolute user-level `autoMemoryDirectory` makes the native index available across working directories. Each synchronized note uses a topic file with `name`, `description`, and `type: user` frontmatter, linked from the native `MEMORY.md` index.
 
-The isolated foreground probe recorded a PreToolUse Write event. With explicit denial, no native file or PostToolUse event appeared; a non-denying control produced both the file and PostToolUse event. The account's background extraction/dream rollout settings prevented naturally exercising those writers. Their custom permission callbacks also mean ordinary interactive `ask` behavior cannot be assumed to cover them. No production hook is installed on the strength of the foreground test alone.
+The isolated probe kept `autoMemoryEnabled: true` and used four fresh sessions. Create was recalled from two unrelated directories, an update returned the replacement phrase, and deletion returned unknown. Traces showed reads of only the native topic during retrieval. Neither the prompt nor global instructions contained the phrase. Production settings and memories were untouched.
 
-An `ask` hook also blocked the isolated noninteractive foreground run. This does not prove that the background callback will honor `ask`.
+Setting a new global directory changes which native index future sessions load. It does not migrate old project memories. Preserve existing files and disclose that they will no longer be the default startup index. Migrating their contents needs review and approval of the specific personal notes. Do not copy project or app facts into global memory.
 
-The control wrote to the native directory but serialized line breaks literally, so its frontmatter was not validated. This was a path-level permission test, not a proof of native indexing or recall.
+A separate isolated hook probe verified that an explicit PreToolUse denial blocks a foreground native Write. Background extraction and dreaming could not be naturally exercised under the account's rollout settings. Their custom permission callbacks mean ordinary interactive `ask` prompts cannot be assumed to cover them. Subagent native memory has separate roots. No claim of universal pre-write approval enforcement follows from these tests.
 
-Sources: [memory storage](https://code.claude.com/docs/en/memory#storage-location), [hooks](https://code.claude.com/docs/en/hooks#pretooluse-decision-control), [persistent subagent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory).
+Sources: [audit and edit memory](https://code.claude.com/docs/en/memory#audit-and-edit-your-memory), [storage location](https://code.claude.com/docs/en/memory#storage-location), [hooks](https://code.claude.com/docs/en/hooks#pretooluse-decision-control), [subagent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory).
 
 ## Cursor
 
-Current installed source distinguishes generated knowledge-base records from User Rules. Its private knowledge-base RPCs are not a supported native-memory integration. The current public API documentation does not provide a native-memory CRUD endpoint. Absence of a local memory directory says nothing about server-held state.
+The installed client has a native user filesystem store under `~/.local/state/cursor/agent-stores/cursor_agent_stores/<user>/files`. Its existence alone does not establish that chats mount, ingest, or recall it.
 
-An isolated `--user-data-dir` UI probe unexpectedly connected to the existing account's Agents window. Only UI inspection was performed, and the probe process was closed. Do not assume that flag isolates Cursor Agents state. A future mutation probe needs stronger isolation or a separately authorized account session.
+Read-only inspection found these cached evaluated rollout values: `agent_store_sync_client=false`, `agent_store_principal_local_mounts=false`, and `agent_store_local_user_mount=true`. Installed extension code starts the ordinary desktop store harness only when the sync-client gate passes. Without the harness, `getMountedAgentStores` returns no stores. This is an inference from a cached bootstrap plus installed code, not a live feature-gate query or a conclusion about every cloud session.
 
-Use Cursor's global User Rules UI for the short router from `rules/memory-policy.md`. Installed source discovers `.cursor/rules` through workspace ancestors. The installer generates `~/.cursor/rules/memory-policy.mdc` from the canonical router for projects beneath the home directory. It does not establish coverage for projects elsewhere. Global skill links are separate from this always-applied router. A cloud or remote agent also needs access to the shared skill; local installation does not install it on other hosts.
+No public setting to enable that rollout or native memory CRUD tool was found. Do not modify private databases, invoke undocumented KnowledgeBase RPCs, or override rollout gates. The runtime's durable `MEMORIES.md` instructions belong to an automation principal mount, not ordinary global desktop memory. SDK-supplied local stores also do not establish ordinary desktop recall.
 
-The user confirmed adding the router to Cursor’s global User Rules on 2026-09-14. This completes the manual routing setup step; the saved text was not independently read back. The local generated rule is also installed for home-directory workspaces. Native memory synchronization and background approval coverage remain unverified.
+A shared-file recall bridge could make approved preferences available to Cursor while retaining native features. It is a separate architecture and requires the user's agreement before substituting it for native synchronization. Label its results as bridge readback, never native memory verification.
 
-Sources: [Cursor APIs](https://cursor.com/docs/api), [hooks](https://cursor.com/docs/hooks), [skills](https://cursor.com/docs/skills), [historical native memory release](https://cursor.com/changelog/1-2).
+Cursor's global User Rule routes memory operations to this skill. The user confirmed adding it through the UI. The installer also generates `~/.cursor/rules/memory-policy.mdc` for workspaces under the home directory. Neither routing mechanism is itself a native memory store. Local links do not provide remote or cloud access.
 
-## Criteria before adding a writer
+Sources: [Cursor CLI parameters](https://cursor.com/docs/cli/reference/parameters), [Cursor SDK](https://cursor.com/docs/sdk/python), [Cursor APIs](https://cursor.com/docs/api), [hooks](https://cursor.com/docs/hooks), [skills](https://cursor.com/docs/skills).
 
-Require observable native create, readback, update, deletion, and recall from an unrelated project. Verify that repeated application does not duplicate content, that every imported fact is approved, and that native consolidation does not discard approved content or propagate unapproved content. Test foreground, background, and subagent writers separately. A hook failure or unavailable product must have an explicit outcome. Do not expand an approval when retrying a failed destination.
+## Shared helper verification
+
+The delivered helper was separately exercised through its CLI against disposable native profiles. It generated both Codex files and Claude's native topic and index, updated the same note ID, and deleted it. Six fresh native sessions passed: both apps returned the original synthetic phrase after create, the replacement phrase after update in an unrelated working directory, and `UNKNOWN` after deletion. All six used zero tools; the value came from native context. The prompts contained neither the phrase nor a file path. Hashes of 17 real configuration, routing, and native-memory files remained unchanged.
+
+The focused local suite covers CLI behavior, exact byte preservation, idempotent retries, stale plans, invalid configuration, file collisions, index placement, cooperating locks, concurrent native/configuration edits, partial failures, and final readback. Run it from the source checkout with `python3 -B -m unittest discover -s skills/memory-policy/tests -v`. These deterministic tests complement the runtime probes; they do not substitute for native recall after a client update.
+
+## Synchronization and approval limits
+
+A shared command can apply the exact approved operation to verified native files. It cannot make three products commit atomically. Preflight all destinations, preserve unrelated content, compare against the reviewed file revision, then read each changed file back. Report any partial failure and inspect before retrying.
+
+Conversational approval is still required. A plan digest binds exact input, destinations, and observed files; it is not proof that a human approved the operation. Native writers do not honor the synchronizer's lock. No watcher, background approval hook, or automatic propagation of native-only edits is installed. A watcher would observe an unapproved write only after it happened.
+
+Fresh-session recall is the acceptance test after activation. Create one explicitly approved disposable personal note, ask for it in unrelated fresh chats without supplying the value or policy path, update it and repeat, then approve deletion and verify fresh chats no longer recall it. Clear provenance matters because a transcript or an instruction-file copy can otherwise make a failed native adapter look successful.
