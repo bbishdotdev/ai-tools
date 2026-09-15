@@ -17,10 +17,14 @@ CLAUDE_INDEX_LINES = 200
 CODEX_SUMMARY = "v1\n\n## User Profile\n\n## User preferences\n\n## General Tips\n\n## What's in Memory\n"
 CODEX_MEMORY = '# Personal memories\n'
 CLAUDE_INDEX = '# User memories\n'
+CURSOR_INDEX = '# Approved personal memories\n'
+CURSOR_RULE_HEADER = '---\ndescription: Shared native memory approval policy\nalwaysApply: true\n---\n\n'
+CURSOR_START = '<!-- memory-sync-cursor-startup:begin -->'
+CURSOR_END = '<!-- memory-sync-cursor-startup:end -->'
 CURSOR_UNAVAILABLE = (
     'No verified ordinary-desktop native memory adapter for Cursor. The inspected cached '
     'rollout disables its native user-store harness; this is not a live gate check. '
-    'No shared-file bridge or private API is used.'
+    'Run install.py --activate-sync to configure the explicitly authorized file bridge; no private API is used.'
 )
 
 
@@ -46,11 +50,15 @@ class Backend:
     config_path: Path | None
     config_bytes: bytes | None
     error: str | None
+    kind: str = 'native'
+    extra_guards: tuple = ()
 
     def report(self):
         return {
             'ready': self.error is None,
-            'native_directory': str(self.root) if self.root else None,
+            'storage_kind': self.kind,
+            'directory': str(self.root) if self.root else None,
+            'native_directory': str(self.root) if self.root and self.kind == 'native' else None,
             'reason': self.error,
             'scope': 'User-level configuration only. Set/delete also preflight target files. Fresh-session recall is a separate check.',
         }
@@ -62,6 +70,7 @@ class FileChange:
     path: Path
     before: bytes | None
     after: bytes | None
+    kind: str = 'native'
 
     @property
     def action(self):
@@ -148,11 +157,58 @@ def claude_backend(profile):
         return Backend('claude', root, path, raw, str(error))
 
 
+def cursor_startup_rule(home, directory=None):
+    directory = directory or home / 'Work/.agents/memory-sync/cursor'
+    helper = home / 'Work/.agents/skills/memory-policy/scripts/sync.py'
+    return (
+        f'{CURSOR_START}\n'
+        f'At the start of every new task, read `{directory / "MEMORY.md"}` if it exists. '
+        'Apply the approved personal preferences in that file. Skip it when missing or empty. '
+        'This is the Cursor file bridge, not Cursor native memory.\n'
+        'For requests to remember, update, or forget a personal memory, follow the memory-policy skill '
+        f'and use `python3 {helper}` for the reviewed change across Codex, Claude, and Cursor. '
+        'Do not write the bridge directly. Require approval of the exact memory change.\n'
+        f'{CURSOR_END}\n'
+    )
+
+
+def cursor_rule_ready(raw, home, directory):
+    text = text_file(raw, home / '.cursor/rules/memory-policy.mdc')
+    frontmatter = re.match(r'\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)', text, re.DOTALL)
+    always = frontmatter and re.search(r'^alwaysApply: true\r?$', frontmatter[1], re.MULTILINE)
+    return bool(always and text.count(CURSOR_START) == 1 and text.count(CURSOR_END) == 1 and cursor_startup_rule(home, directory) in text)
+
+
+def cursor_backend(profile):
+    path = profile.home / 'Work/.agents/memory-sync/config.json'
+    rule_path = profile.home / '.cursor/rules/memory-policy.mdc'
+    raw, root, guards = None, None, ()
+    try:
+        raw, config = read_config(path)
+        cursor = config.get('cursor')
+        if type(config.get('version')) is not int or config['version'] != 1 or not isinstance(cursor, dict):
+            raise SyncError(CURSOR_UNAVAILABLE)
+        configured = cursor.get('directory')
+        if cursor.get('mode') != 'file-bridge' or not isinstance(configured, str) or '\x00' in configured or not Path(configured).is_absolute():
+            raise SyncError('Cursor bridge requires mode file-bridge and an absolute directory in its version-1 configuration')
+        candidate = absolute_path(configured)
+        if not candidate.is_relative_to(profile.home / 'Work/.agents/memory-sync/cursor'):
+            raise SyncError('Cursor bridge directory must stay under Work/.agents/memory-sync/cursor')
+        root = candidate
+        rule = read_file(rule_path)
+        guards = ((rule_path, rule),)
+        if not cursor_rule_ready(rule, profile.home, root):
+            raise SyncError('Cursor requires its alwaysApply startup rule to read the configured bridge; run install.py --activate-sync')
+        return Backend('cursor', root, path, raw, None, 'file-bridge', guards)
+    except SyncError as error:
+        return Backend('cursor', root, path, raw, str(error), 'file-bridge', guards)
+
+
 def backends(profile):
     return {
         'codex': codex_backend(profile),
         'claude': claude_backend(profile),
-        'cursor': Backend('cursor', None, None, None, CURSOR_UNAVAILABLE),
+        'cursor': cursor_backend(profile),
     }
 
 
@@ -223,6 +279,11 @@ def changes_for(backend, note_id, text):
             payload = codex_payload(note_id, text, summary) if text is not None else None
             after = change_section(before, note_id, payload, initial, path, after_version=summary)
             changes.append(FileChange(backend.name, path, before, after))
+    elif backend.name == 'cursor':
+        path = backend.root / 'MEMORY.md'
+        before = read_file(path)
+        after = change_section(before, note_id, text, CURSOR_INDEX, path)
+        changes = [FileChange(backend.name, path, before, after, backend.kind)]
     else:
         topic, index = backend.root / f'memory-sync-{note_id}.md', backend.root / 'MEMORY.md'
         previous_topic, previous_index = read_file(topic), read_file(index)
@@ -247,6 +308,10 @@ def inspect_backend(backend, note_id):
             raw = read_file(path)
             content = codex_note(raw, note_id, path, summary)
             copies.append({'path': str(path), 'content': content, 'content_sha256': file_hash(content.encode('utf-8')) if content is not None else None})
+    elif backend.name == 'cursor':
+        path = backend.root / 'MEMORY.md'
+        content = section_body(read_file(path), note_id, path)
+        copies.append({'path': str(path), 'content': content, 'content_sha256': file_hash(content.encode('utf-8')) if content is not None else None})
     else:
         topic, index = backend.root / f'memory-sync-{note_id}.md', backend.root / 'MEMORY.md'
         content = topic_note(read_file(topic), note_id, topic)

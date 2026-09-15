@@ -9,7 +9,9 @@ import tomllib
 
 sys.dont_write_bytecode = True
 from install import cursor_local_rule, installation_links
-from native_backends import CURSOR_UNAVAILABLE, Profile, backends
+from native_backends import Profile, backends
+from activation import update_cursor_router
+from memory_files import SyncError, read_file
 
 
 def read_settings(path):
@@ -64,12 +66,17 @@ def main():
     if isinstance(configured, str) and Path(configured).expanduser().is_absolute():
         claude_roots.append(Path(configured).expanduser())
     links = installation_links(home, source, codex_home, claude_home)
-    cursor_path, cursor_content = cursor_local_rule(home, source)
+    native_backends = backends(Profile.load())
+    cursor_path, cursor_content = cursor_local_rule(home, source, native_backends['cursor'].root)
+    try:
+        cursor_before = read_file(cursor_path)
+        cursor_correct = cursor_before is not None and update_cursor_router(cursor_before, cursor_content) == cursor_before
+    except (OSError, SyncError, UnicodeError):
+        cursor_correct = False
     memory_settings = codex.get('memories', {})
     if not isinstance(memory_settings, dict):
         memory_settings = {'read_error': 'ExpectedTable'}
     desktop = Path('/usr/lib/chatgpt/resources/codex')
-    native_backends = backends(Profile.load())
     report = {
         'read_only': True,
         'scope': 'Local installation only; no cloud stores, private databases, or memory contents are read.',
@@ -92,8 +99,9 @@ def main():
             'inventory': inventory(claude_roots),
         },
         'cursor': {
-            'native_memory_status': CURSOR_UNAVAILABLE,
-            'local_policy_rule': {'path': str(cursor_path), 'correct': cursor_path.is_file() and not cursor_path.is_symlink() and cursor_path.read_text() == cursor_content, 'scope': 'Workspaces beneath the home directory; discovered through workspace ancestry.'},
+            'native_memory_status': 'Ordinary-desktop native memory remains unverified; no native rollout or private API was overridden.',
+            'synchronization': native_backends['cursor'].report(),
+            'local_policy_rule': {'path': str(cursor_path), 'correct': cursor_correct, 'scope': 'Workspaces beneath the home directory; discovered through workspace ancestry.'},
             'global_policy_rule': 'Verify in the User Rules UI against rules/memory-policy.md. This helper does not query account-held rules.',
         },
         'native_sync': {

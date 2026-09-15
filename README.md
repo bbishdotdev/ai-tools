@@ -77,25 +77,27 @@ npx skills add ./skills
 Install the shared memory policy from a stable checkout:
 
 ```bash
-python3 skills/memory-policy/scripts/install.py
-python3 skills/memory-policy/scripts/install.py --apply
+python3 skills/memory-policy/scripts/install.py --activate-sync
+python3 skills/memory-policy/scripts/install.py --activate-sync --apply
 ```
 
-Use the permanent `~/Work/ai-tools` checkout as the versioned source. The first command previews the links. The second creates these Work-level entrypoints:
+Use the permanent `~/Work/ai-tools` checkout as the versioned source. The first command previews installation and activation. The second applies them and creates these Work-level entrypoints:
 
 - `~/Work/.agents/skills/memory-policy/` links to this repository's skill.
 - `~/Work/AGENTS.md` links to `rules/memory-policy.md`.
 - `~/Work/CLAUDE.md` links to `AGENTS.md`.
 
-The home-level `~/.agents`, Codex, Claude, and Cursor entrypoints route to that shared Work setup. The installer also generates a Cursor rule for projects beneath your home directory. It respects `CODEX_HOME` and `CLAUDE_CONFIG_DIR` and refuses to replace existing files. Keep the permanent checkout in place; runtime links must not target a task worktree. This installs local access on this machine, not remote or cloud filesystem access.
+The home-level `~/.agents`, Codex, Claude, and Cursor entrypoints route to that shared Work setup. The installer also generates a Cursor rule for projects beneath your home directory. It respects `CODEX_HOME` and `CLAUDE_CONFIG_DIR` and refuses to replace unrelated instruction files. Activation updates only the requested memory settings and the managed Cursor router, with backups. Keep the permanent checkout in place; runtime links must not target a task worktree. This installs local access on this machine, not remote or cloud filesystem access.
 
-Add the text from `rules/memory-policy.md` to Cursor's global User Rules through its UI. The rule only routes memory operations to the skill. Native memories remain in each product's native system.
+Add the text from `rules/memory-policy.md` to Cursor's global User Rules through its UI. The rule routes memory operations to the shared skill. The installed Cursor rule additionally loads its bridge at the start of a task. Codex and Claude read their native memories.
 
-Check the local installation with `python3 ~/.agents/skills/memory-policy/scripts/status.py`. The shared `sync.py` helper previews and applies approved additions, updates, and deletions to Codex and Claude native files. It preserves unrelated content and checks the reviewed file revision before writing. Run `python3 ~/.agents/skills/memory-policy/scripts/sync.py --help` for its interface. Previewing does not save a memory or proposal.
+Check the local installation with `python3 ~/.agents/skills/memory-policy/scripts/status.py`. The shared `sync.py` helper previews and applies approved additions, updates, and deletions to all three destinations. It preserves unrelated content and checks the reviewed file revision before writing. Previewing does not save a memory or proposal.
 
-All three products are the default destinations. Cursor's ordinary desktop native interface remains unavailable in the tested setup, so the default operation refuses to write anywhere. A reduced destination set requires the user's explicit approval of a partial save. A Cursor file bridge also requires an explicit choice because it would not be native recall. The installer and sync helper leave native memory settings unchanged. Codex needs its memory feature enabled; Claude needs a fixed absolute user-level `autoMemoryDirectory`. Changing Claude's directory does not migrate its old project memories. See [native compatibility](skills/memory-policy/references/native-interfaces.md) for evidence and limitations.
+Codex uses `$CODEX_HOME/memories`. Claude uses a fixed user-wide native directory, defaulting to `~/Work/.agents/memory-sync/claude`. Cursor reads `~/Work/.agents/memory-sync/cursor/MEMORY.md` through its always-applied startup rule. Cursor's file bridge is deliberately labeled as a bridge; it does not pretend to be an unavailable native interface. Native features stay enabled.
 
-No watcher or background approval hook is installed. The skill governs agents that read it; it does not prove approval enforcement for internal background writers. A successful helper result proves local file readback. Fresh-session native recall is a separate test.
+Activation enables Codex memory use and Claude auto memory while preserving generation settings, unrelated configuration, and hooks. Existing Claude project memory files stay intact; future sessions use the configured global index. No existing memories are automatically migrated. Configuration/router changes are backed up locally under `~/Work/.agents/memory-sync/backups`, outside this repository. The installer is idempotent and the shared paths resolve to the permanent Work checkout.
+
+The agent checks exact conversational approval before calling the shared helper. The helper binds writes to a reviewed plan and checks all three destinations before writing. No watcher propagates arbitrary native edits, and no claim is made that internal background writers honor the conversational approval policy. See [compatibility and verification](skills/memory-policy/references/native-interfaces.md) for the tested scope.
 
 To check natural policy discovery, start a fresh chat in each app with a project under `~/Work` and send:
 
@@ -103,7 +105,7 @@ To check natural policy discovery, start a fresh chat in each app with a project
 
 The agent should find the shared policy without being told its path, propose a personal preference, and save nothing. A fact such as “this app uses Convex” belongs in project instructions or documentation.
 
-After every chosen destination is configured and available, test actual synchronization by asking one app:
+To test synchronization after activation, ask one app:
 
 > Remember that my temporary memory verification phrase is amber-otter-42. I approve saving this exact temporary note across our configured destinations.
 

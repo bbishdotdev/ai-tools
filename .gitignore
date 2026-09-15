@@ -19,3 +19,5 @@ Gemfile.lock
 
 # macOS metadata
 .DS_Store
+
+__pycache__/

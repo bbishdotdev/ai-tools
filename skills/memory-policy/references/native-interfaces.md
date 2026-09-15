@@ -1,17 +1,17 @@
-# Native memory compatibility
+# Memory sync compatibility
 
-Verified on Linux on 2026-09-14. Native-file create, update, deletion, and fresh-session recall passed for Codex and Claude Code in isolated profiles. Ordinary Cursor desktop native recall remains unverified. The shared sync command must check every requested destination before writing. A local file readback and a fresh-session recall test are different checks.
+Verified on Linux on 2026-09-14. Native-file create, update, deletion, and fresh-session recall passed for Codex and Claude Code in isolated profiles. Cursor uses the user-authorized file bridge with an automatically applied startup rule. Its ordinary native interface remains unverified and is not used. The shared sync command checks every requested destination before writing. A local file readback and a fresh-session recall test are different checks.
 
 | Product | Verified native path | Current qualification |
 | --- | --- | --- |
 | Codex desktop 0.153.0-alpha.5 | `$CODEX_HOME/memories/memory_summary.md` and `MEMORY.md` | A native-file adapter passed create, update, deletion, and recall in unrelated working directories. Version-sensitive; background consolidation durability is not proven. |
 | Codex CLI 0.153.2 | Same configured memory root | The runtime recall probe used the desktop executable. Do not claim a separate CLI runtime test. |
 | Claude Code 2.1.261 | A fixed user-level `autoMemoryDirectory`, with `MEMORY.md` and typed topic files | Native-file adapter passed create, update, deletion, and recall in two unrelated working directories. Already-open sessions and background writers were not tested. |
-| Cursor 3.19.7 | An installed native user store exists, but ordinary desktop mounting is not verified | Cached rollout values plus installed source explain a likely disabled store harness. No usable native CRUD tool or public endpoint was verified. Do not write into an inactive store and claim recall. |
+| Cursor 3.19.7 | `~/Work/.agents/memory-sync/cursor/MEMORY.md`, loaded by the installed always-applied rule | Explicit file bridge. Config, startup rule, content, update, and deletion are checked by the shared helper. This is not native Cursor memory. |
 
 ## Codex
 
-Codex normally generates native Markdown under `$CODEX_HOME/memories`, usually `~/.codex/memories`. The `memories` feature must be enabled and `use_memories` must not be false. On this machine the feature was initially false; the policy installer did not disable or enable it. Keep generation settings unchanged unless the user explicitly chooses otherwise.
+Codex normally generates native Markdown under `$CODEX_HOME/memories`, usually `~/.codex/memories`. The `memories` feature must be enabled and `use_memories` must not be false. The activation command enables the memory feature and use of memories. It preserves native generation settings and unrelated configuration.
 
 The native-file probe used a disposable home with `[features] memories = true`. It placed the same synthetic preference in `memory_summary.md` and `MEMORY.md`. Three fresh sessions recalled the original phrase, recalled its replacement from an unrelated working directory, then answered `UNKNOWN` after deletion. The question contained no phrase or memory path. Tools were prohibited and none were called, so recall came from the native injected summary. Authentication was mounted read-only; real memories and configuration were untouched.
 
@@ -41,13 +41,17 @@ Read-only inspection found these cached evaluated rollout values: `agent_store_s
 
 No public setting to enable that rollout or native memory CRUD tool was found. Do not modify private databases, invoke undocumented KnowledgeBase RPCs, or override rollout gates. The runtime's durable `MEMORIES.md` instructions belong to an automation principal mount, not ordinary global desktop memory. SDK-supplied local stores also do not establish ordinary desktop recall.
 
-A shared-file recall bridge could make approved preferences available to Cursor while retaining native features. It is a separate architecture and requires the user's agreement before substituting it for native synchronization. Label its results as bridge readback, never native memory verification.
+The user authorized finishing the file bridge. Approved notes are synchronized to `~/Work/.agents/memory-sync/cursor/MEMORY.md`. The generated always-applied Cursor rule instructs fresh tasks to read that file and apply its preferences. The bridge config and exact startup-rule bytes participate in each reviewed write plan, so missing or changed routing blocks a write. Native Cursor features are left intact. Label its results as bridge readback, never native memory verification.
 
-Cursor's global User Rule routes memory operations to this skill. The user confirmed adding it through the UI. The installer also generates `~/.cursor/rules/memory-policy.mdc` for workspaces under the home directory. Neither routing mechanism is itself a native memory store. Local links do not provide remote or cloud access.
+Cursor's global User Rule routes memory operations to this skill. The user confirmed adding it through the UI. The installer also generates `~/.cursor/rules/memory-policy.mdc` for workspaces under the home directory. The local rule includes bridge loading at task startup. This covers workspaces beneath the home directory; local links do not provide remote or cloud access. The saved global User Rule remains an additional policy router.
 
 Sources: [Cursor CLI parameters](https://cursor.com/docs/cli/reference/parameters), [Cursor SDK](https://cursor.com/docs/sdk/python), [Cursor APIs](https://cursor.com/docs/api), [hooks](https://cursor.com/docs/hooks), [skills](https://cursor.com/docs/skills).
 
 ## Shared helper verification
+
+The three-destination helper passed disposable create, update, and deletion using its default destination set. All five native/bridge files matched after each operation, and inspection reported consistent copies followed by absence after deletion. Cursor's bridge config and startup rule are checked and bound into each plan. Its desktop app exited before a fresh-chat UI probe could connect, so Cursor conversational recall was not independently exercised in this run.
+
+Production activation completed with all three backends ready, all nine shared links correct, and the generated Cursor startup rule correct. All 17 preexisting native memory files retained their hashes. Configuration comparisons confirmed only requested activation settings changed; native generation settings and Claude hooks were preserved. Changed configuration/router files have private local backups. A repeated activation preview reported no changes. No personal notes were added by activation.
 
 The delivered helper was separately exercised through its CLI against disposable native profiles. It generated both Codex files and Claude's native topic and index, updated the same note ID, and deleted it. Six fresh native sessions passed: both apps returned the original synthetic phrase after create, the replacement phrase after update in an unrelated working directory, and `UNKNOWN` after deletion. All six used zero tools; the value came from native context. The prompts contained neither the phrase nor a file path. Hashes of 17 real configuration, routing, and native-memory files remained unchanged.
 
@@ -55,8 +59,8 @@ The focused local suite covers CLI behavior, exact byte preservation, idempotent
 
 ## Synchronization and approval limits
 
-A shared command can apply the exact approved operation to verified native files. It cannot make three products commit atomically. Preflight all destinations, preserve unrelated content, compare against the reviewed file revision, then read each changed file back. Report any partial failure and inspect before retrying.
+The shared command applies the exact approved operation to the two native adapters and the configured Cursor bridge. It cannot make three products commit atomically. Preflight all destinations, preserve unrelated content, compare against the reviewed file revision, then read each changed file back. Report any partial failure and inspect before retrying.
 
 Conversational approval is still required. A plan digest binds exact input, destinations, and observed files; it is not proof that a human approved the operation. Native writers do not honor the synchronizer's lock. No watcher, background approval hook, or automatic propagation of native-only edits is installed. A watcher would observe an unapproved write only after it happened.
 
-Fresh-session recall is the acceptance test after activation. Create one explicitly approved disposable personal note, ask for it in unrelated fresh chats without supplying the value or policy path, update it and repeat, then approve deletion and verify fresh chats no longer recall it. Clear provenance matters because a transcript or an instruction-file copy can otherwise make a failed native adapter look successful.
+Fresh-session recall is the acceptance test after activation. Create one explicitly approved disposable personal note, ask for it in unrelated fresh chats without supplying the value or policy path, update it and repeat, then approve deletion and verify fresh chats no longer recall it. The verification value should appear only in the chosen stores, with Cursor using its labeled bridge. Clear provenance matters because a transcript or an instruction-file copy can otherwise make a failed native adapter look successful.

@@ -39,7 +39,7 @@ class Plan:
             'text': self.text, 'destinations': self.destinations, 'plan_sha256': self.digest(),
             'approval': 'The digest binds these bytes to this plan. It does not prove human approval. Obtain approval of the exact change before applying.',
             'changes': [{
-                'destination': change.destination, 'path': str(change.path), 'action': change.action,
+                'destination': change.destination, 'storage_kind': change.kind, 'path': str(change.path), 'action': change.action,
                 'before_sha256': file_hash(change.before), 'after_sha256': file_hash(change.after),
                 'edit': exact_edit(change.before, change.after) if change.before != change.after else None,
             } for change in self.changes],
@@ -59,12 +59,12 @@ def make_plan(profile, destinations, operation, note_id, text):
     selected = [available[name] for name in destinations]
     errors = [f'{backend.name}: {backend.error}' for backend in selected if backend.error]
     if errors:
-        raise SyncError('Native preflight failed before memory writes. ' + ' '.join(errors))
-    guards = tuple((backend.config_path, backend.config_bytes) for backend in selected)
+        raise SyncError('Destination preflight failed before memory writes. ' + ' '.join(errors))
+    guards = tuple(guard for backend in selected for guard in ((backend.config_path, backend.config_bytes), *backend.extra_guards))
     changes = tuple(change for backend in selected for change in changes_for(backend, note_id, text))
     paths = [change.path for change in changes]
     if len(paths) != len(set(paths)) or set(paths).intersection(path for path, _ in guards):
-        raise SyncError('Native destinations overlap; configure distinct native memory directories before syncing')
+        raise SyncError('Memory destinations overlap; configure distinct storage directories before syncing')
     return Plan(operation, note_id, text, destinations, guards, changes)
 
 
@@ -93,7 +93,7 @@ def apply_plan(profile, plan, reviewed_digest):
             for change in current.changes:
                 for path, expected in current.guards:
                     if read_file(path) != expected:
-                        raise SyncError(f'Native configuration changed at {path}; review a new plan')
+                        raise SyncError(f'Destination configuration changed at {path}; review a new plan')
                 if change.before == change.after:
                     continue
                 atomic_change(change.path, change.before, change.after)
@@ -110,9 +110,9 @@ def apply_plan(profile, plan, reviewed_digest):
             }
         return {
             'status': 'applied' if completed else 'unchanged', 'id': current.note_id,
-            'destinations': current.destinations, 'completed_paths': completed,
+            'destinations': current.destinations, 'storage_kinds': {change.destination: change.kind for change in current.changes}, 'completed_paths': completed,
             'physical_file_readback': readback,
-            'native_recall': 'Not tested by this command. Verify in fresh native sessions.',
+            'native_recall': 'Not tested by this command. Verify in fresh sessions of all selected apps.',
             'concurrency': 'Cooperating sync commands share a lock. Native writers do not; cross-file atomicity is not guaranteed.',
         }
 
@@ -141,7 +141,7 @@ def inspect(profile, destinations, note_id):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Review and synchronize approved personal native memories. Dry-run by default; native settings are never changed.')
+    parser = argparse.ArgumentParser(description='Review and synchronize approved personal memories through native Codex/Claude files and the Cursor file bridge. Dry-run by default; native settings are never changed.')
     parser.add_argument('--home', type=Path, help='Disposable home. Ignores CODEX_HOME and CLAUDE_CONFIG_DIR and requires Claude native memory inside this home.')
     parser.add_argument('--destinations', type=parse_destinations, default=DESTINATIONS, help='Default codex,claude,cursor. Use a subset only when the user explicitly authorizes partial synchronization.')
     commands = parser.add_subparsers(dest='command', required=True)
