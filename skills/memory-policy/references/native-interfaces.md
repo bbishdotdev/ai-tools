@@ -41,7 +41,7 @@ An isolated `--user-data-dir` UI probe unexpectedly connected to the existing ac
 
 Use Cursor's global User Rules UI for the short router from `rules/memory-policy.md`. Installed source discovers `.cursor/rules` through workspace ancestors. The installer generates `~/.cursor/rules/memory-policy.mdc` from the canonical router for projects beneath the home directory. It does not establish coverage for projects elsewhere. Global skill links are separate from this always-applied router. A cloud or remote agent also needs access to the shared skill; local installation does not install it on other hosts.
 
-The authorized attempt to add the global User Rule through the supported UI could not reach a save. Temporary windows repeatedly exited before the editor opened; the original Cursor instance was preserved. The global User Rule remains pending. Add the canonical router through Customize → Rules → User → New and verify its text. The local generated rule is already installed for home-directory workspaces.
+The user confirmed adding the router to Cursor’s global User Rules on 2026-09-14. This completes the manual routing setup step; the saved text was not independently read back. The local generated rule is also installed for home-directory workspaces. Native memory synchronization and background approval coverage remain unverified.
 
 Sources: [Cursor APIs](https://cursor.com/docs/api), [hooks](https://cursor.com/docs/hooks), [skills](https://cursor.com/docs/skills), [historical native memory release](https://cursor.com/changelog/1-2).
 
