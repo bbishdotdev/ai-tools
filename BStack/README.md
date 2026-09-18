@@ -1,6 +1,16 @@
 # BStack
 
-BStack is being assembled one component at a time. It currently has a pinned PStack import, a separate BStack policy layer, and repository-local CLI adapters.
+BStack is Brenden Bishop's integrated collection of engineering and SDLC workflows, agent adapters, and custom skills. It builds on open-source work, with source attribution and BStack's changes tracked separately.
+
+The engineering foundation is [PStack by Lauren "poteto" Tan](https://github.com/cursor/plugins/tree/main/pstack). The planned SDLC foundation is a selection from [Matt Pocock's skills](https://github.com/mattpocock/skills). BStack connects these workflows and adds Brenden's operating preferences. See [credits and source relationships](ATTRIBUTION.md) for authors, licenses, and the distinction between imported, adapted, and original work.
+
+BStack names the whole collection. **Poteto Mode** remains the name of its PStack-based engineering mode. The adapter command design keeps `/poteto-mode`; collection-wide automatic activation is a separate setting.
+
+## Direction and current scope
+
+The goal is one distributable plugin that connects engineering and SDLC workflows across Codex, Claude Code, and Cursor, with CLI verification also covering Grok. Planned additions include shared memory and context handling, local-first work planning, GitHub templates and CI jobs, and selected Matt Pocock skills. Those pieces will join the package in reviewed steps.
+
+Today, BStack has a pinned PStack import, a separate BStack policy layer, customized `unslop`, and repository-local CLI adapters and verification. Matt Pocock's skills have not been imported. Shared memory integration, local work management, desktop verification, and distributable plugin packaging remain future work. The [opt-in auto-mode design](audit/auto-mode-design.md) is also pending implementation; the current repository POC still enables automatic routing.
 
 Start with [how PStack works and the simplification options](audit/pstack.md). Use the [catalog](audit/catalog.md) to review individual skills and playbooks.
 
@@ -8,7 +18,13 @@ Start with [how PStack works and the simplification options](audit/pstack.md). U
 
 The import remains a source installation, not a distributable BStack plugin. The router POC adds repository-local instructions and adapters for Codex, Claude Code, Cursor, and Grok. It does not run PStack model setup or enable its automations. The upstream instructions in `engineering/` still describe PStack's original environment. The active [BStack router](shared/skills/bstack-router/SKILL.md) applies scoped routing, capability-based tool choices, risk-based architecture, and evidence reporting over that source. This is an instruction policy, not an implementation of every provider adapter.
 
-See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records BStack-owned overlays and replacement skills separately from their pinned upstream review bases. The same arrangement can support selected Matt Pocock skills later; none have been imported yet.
+## Selective upstream updates
+
+BStack keeps reviewed source pins and adopts upstream improvements deliberately. It does not automatically follow the latest upstream release. Maintainers can review a newer snapshot or port selected improvements into BStack-owned adaptations without replacing unrelated choices.
+
+See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records BStack-owned overlays and replacement skills separately from their pinned upstream review bases. The same arrangement can support selected Matt Pocock skills later.
+
+## Verification and source records
 
 The [policy-layer report](audit/bstack-layers.md) describes the approved behavior changes, source separation, and CLI verification scope.
 

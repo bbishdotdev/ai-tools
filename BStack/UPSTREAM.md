@@ -2,9 +2,11 @@
 
 `engineering/` contains exact files from the pinned PStack source and its selected cursor-team-kit companions. [pstack-provenance.json](pstack-provenance.json) records their repository, commit, source paths, hashes, and file modes. Keep local adaptations outside this directory.
 
+BStack adopts upstream changes selectively. A new upstream release does not require a BStack update. Keep the current pin until a reviewed change is worth adopting. [Credits and source relationships](ATTRIBUTION.md) identifies the authors and notices to preserve for both complete updates and selected improvements.
+
 [layers.json](layers.json) maps each adaptation to a source manifest and the upstream file versions used as its review bases. These hashes record the dependency versions the adaptation targets. They do not certify that upstream behavior is safe or that every indirect dependency has been reviewed.
 
-The active [BStack router](shared/skills/bstack-router/SKILL.md) adds portable policy around the unchanged upstream router and playbooks. Its review bases cover that entry, the bundled playbooks, and direct workflow dependencies with their supporting files. The [shared unslop skill](shared/skills/unslop/SKILL.md) replaces the upstream unslop skill when BStack routes writing work. Its code-maverick origin is recorded in the layer manifest. The upstream unslop copy remains available for comparison. Both files from the customized skill were preserved when it moved to `shared/skills/unslop/`.
+The active [BStack router](shared/skills/bstack-router/SKILL.md) adds portable policy around the unchanged upstream router and playbooks. Its review bases cover that entry, the bundled playbooks, and direct workflow dependencies with their supporting files. The [shared unslop skill](shared/skills/unslop/SKILL.md) replaces the upstream unslop skill when BStack routes writing work. Its code-maverick origin is recorded in the layer manifest. The upstream unslop copy remains available for comparison. Both files from the customized skill were preserved when it moved to `shared/skills/unslop/`; attribution metadata was added afterward. The recorded origin hashes describe that initial import.
 
 The manifest describes the relationship. The active router and host adapters put that relationship into the agent's instruction flow. A file listed as an override does not automatically replace arbitrary explicit reads of its upstream counterpart. Model compliance still needs behavioral verification.
 
@@ -36,9 +38,22 @@ The JSON report lists changed and removed imported files, new files under PStack
 
 Record the candidate's Git commit while reviewing it. This file comparison does not authenticate its commit identity or certify a clean checkout. A change outside a layer's listed bases can still affect behavior through an indirect dependency. Review semantics even when there is no textual merge conflict and no directly affected base.
 
-## Adopt an approved update
+## Adopt selected improvements
 
-Keep upstream changes and BStack changes in separate local commits on the working branch. No push or PR is part of these commands.
+Use this path to take a useful upstream change while keeping the rest of BStack's reviewed source pin.
+
+1. Review the candidate change and its dependencies. Decide which behavior to adopt and how it interacts with BStack's policy.
+2. Port the selected change into a BStack-owned overlay or whole-skill replacement. Keep the pinned vendor files and their source manifest unchanged. Register a new replacement in `layers.json` when needed and connect it to the active routing policy.
+3. Record the upstream repository, exact commit, affected source paths, selected change, and BStack adjustments in the adaptation's reference documentation. Link that record from its skill. Preserve the upstream credit and license notice. Record the same adoption in the Git commit so the code and its lineage can be reviewed together.
+4. Run the source and layer checks, then verification for the affected behavior. Unchanged vendor review bases keep their existing hashes; they still identify the source underneath the adaptation.
+
+Do not mix newer files into the vendor snapshot and label the whole snapshot with one newer commit. A selected improvement belongs in the adaptation history unless its source is imported and tracked as a separate, accurately recorded snapshot.
+
+Candidate comparison is implemented. Selecting, porting, recording, and applying improvements are manual steps. The checker validates source integrity and layer references; it does not verify a backport's correctness or completeness.
+
+## Adopt a newer source snapshot
+
+Use this path when a newer baseline is worth adopting. Keep upstream changes and BStack changes in separate local commits on the working branch. No push or PR is part of these commands.
 
 1. Import the approved upstream files and refresh their source manifest manually. Include removals, additions selected for import, file modes, source paths, commit, and version. Put only the upstream update and its lock in that commit.
 2. Review the router policy and whole-skill overrides against the changed source. Adapt them as needed, then refresh their reviewed base hashes in `layers.json`. Put those adaptations and reviewed hashes in a second commit. The layer check is expected to fail between these commits when a recorded base changed.

@@ -1,6 +1,12 @@
 ---
 name: bstack-router
 description: Route engineering work through BStack's pinned PStack workflows with portable capabilities, scoped execution, and visible evidence. Use for BStack engineering tasks or when the repository's standing instructions load this router.
+metadata:
+  author: Brenden Bishop
+  relationship: BStack policy overlay for PStack's Poteto Mode and workflows
+  upstream-author: Lauren "poteto" Tan
+  upstream-source: https://github.com/cursor/plugins/tree/main/pstack
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # BStack router
