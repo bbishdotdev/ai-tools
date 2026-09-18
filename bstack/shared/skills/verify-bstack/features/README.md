@@ -8,5 +8,6 @@ The POC verifies real CLI sessions against bstack's policy entry and its pinned 
 - [After-tool reminder](after-tool-reminder.md): Cursor/Grok native fallback, once-per-turn emission, and tool-free limits.
 - [Context recovery](context-recovery.md): resume and actual compaction recovery.
 - [CLI discovery](cli-discovery.md): installed clients, versions, selection, missing tools, and capability gaps.
+- [Consumer installation](installation.md): skills.sh file installation, selected overrides, dependencies, notices, and the boundary before native agent execution.
 
 Run doctor first. Capture commands, exit codes, model responses, and hook output receipts in `.bstack/verification/`. A missing client, missing authentication, unsupported hook, or unexercised surface must remain visible in the report. Test receipts exist only during verification; they do not turn the production reminder into a transcript analyzer.

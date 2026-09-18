@@ -26,6 +26,8 @@ See [upstream updates and layer ownership](UPSTREAM.md) before changing an impor
 
 ## Verification and source records
 
+The [skills.sh installation probe](audit/skills-install.md) successfully copied skills for all four CLI targets but found missing package dependencies and notices, incorrect override selection, and absent host setup. The source tree needs a release layout before it can provide the integrated consumer installation described above.
+
 The [policy-layer report](audit/bstack-layers.md) describes the approved behavior changes, source separation, and CLI verification scope.
 
 The historical [router POC results](audit/router-poc.md) record 12 passing routing checks against the original entry across Codex, Claude Code, Cursor, and Grok, with explicit hook-support gaps. The [router adapter](shared/router/README.md) now points its short reminder to bstack's entry. The [maintainer verification skill](shared/skills/verify-bstack/SKILL.md) discovers installed CLIs, drives resumed sessions, checks fresh hook receipts, and captures native compaction evidence. Its policy probes evaluate the new layer separately. Runtime transcripts live in gitignored `.bstack/verification/`.
