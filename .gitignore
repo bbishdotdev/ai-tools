@@ -21,3 +21,6 @@ Gemfile.lock
 .DS_Store
 
 __pycache__/
+
+# BStack local hook state, CLI transcripts, and verification evidence.
+.bstack/

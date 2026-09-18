@@ -1,0 +1,3 @@
+# Activate this project layer so Codex discovers sibling hooks.json.
+[features]
+hooks = true

@@ -1,0 +1,127 @@
+{
+  "date": "2026-09-18",
+  "scope": "Normal serial headless CLI turns; native after-tool reminder fallback",
+  "evidence": ".bstack/verification/20260918T203500Z-fallback-b0da01/report.json",
+  "failed_native_id_evidence": ".bstack/verification/20260918T202835Z-fallback-c9c645/report.json",
+  "tools": [
+    {
+      "tool": "cursor",
+      "version": "2026.09.15-d2fe57e",
+      "status": "pass",
+      "router_unchanged": true,
+      "turns": [
+        {
+          "turn": 1,
+          "kind": "dependent_reads",
+          "all_checks_pass": true,
+          "tool_calls": 3,
+          "router_read_observed": true,
+          "after_tool_emissions": 1,
+          "duplicate_suppressions": 2,
+          "turn_sources": [
+            "cli_session_boundary"
+          ]
+        },
+        {
+          "turn": 2,
+          "kind": "dependent_reads",
+          "all_checks_pass": true,
+          "tool_calls": 2,
+          "router_read_observed": false,
+          "after_tool_emissions": 1,
+          "duplicate_suppressions": 1,
+          "turn_sources": [
+            "cli_session_boundary"
+          ]
+        },
+        {
+          "turn": 3,
+          "kind": "no_tools",
+          "all_checks_pass": true,
+          "tool_calls": 0,
+          "router_read_observed": false,
+          "after_tool_emissions": 0,
+          "duplicate_suppressions": 0,
+          "turn_sources": []
+        },
+        {
+          "turn": 4,
+          "kind": "dependent_reads",
+          "all_checks_pass": true,
+          "tool_calls": 2,
+          "router_read_observed": false,
+          "after_tool_emissions": 1,
+          "duplicate_suppressions": 1,
+          "turn_sources": [
+            "cli_session_boundary"
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "grok",
+      "version": "grok 1.0.34 (3736acbc8658) [stable]",
+      "status": "pass",
+      "router_unchanged": true,
+      "turns": [
+        {
+          "turn": 1,
+          "kind": "dependent_reads",
+          "all_checks_pass": true,
+          "tool_calls": 3,
+          "router_read_observed": true,
+          "after_tool_emissions": 1,
+          "duplicate_suppressions": 2,
+          "turn_sources": [
+            "prompt_submission"
+          ]
+        },
+        {
+          "turn": 2,
+          "kind": "dependent_reads",
+          "all_checks_pass": true,
+          "tool_calls": 2,
+          "router_read_observed": false,
+          "after_tool_emissions": 1,
+          "duplicate_suppressions": 1,
+          "turn_sources": [
+            "prompt_submission"
+          ]
+        },
+        {
+          "turn": 3,
+          "kind": "no_tools",
+          "all_checks_pass": true,
+          "tool_calls": 0,
+          "router_read_observed": false,
+          "after_tool_emissions": 0,
+          "duplicate_suppressions": 0,
+          "turn_sources": []
+        },
+        {
+          "turn": 4,
+          "kind": "dependent_reads",
+          "all_checks_pass": true,
+          "tool_calls": 2,
+          "router_read_observed": false,
+          "after_tool_emissions": 1,
+          "duplicate_suppressions": 1,
+          "turn_sources": [
+            "prompt_submission"
+          ]
+        }
+      ]
+    }
+  ],
+  "unverified": [
+    "desktop apps",
+    "interactive CLI UI",
+    "hard-kill recovery",
+    "concurrent invocations of the same conversation"
+  ],
+  "limitations": [
+    "The first tool call and tool-free responses rely on standing instructions.",
+    "Cursor headless sessionEnd resets the effective turn; missing or racing boundaries can suppress or repeat reminders.",
+    "Grok native fallback passes despite separate Cursor configuration compatibility parser warnings."
+  ]
+}

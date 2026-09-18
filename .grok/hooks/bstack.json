@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${GROK_WORKSPACE_ROOT}/BStack/shared/router/hook.py\" --host grok",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${GROK_WORKSPACE_ROOT}/BStack/shared/router/hook.py\" --host grok",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

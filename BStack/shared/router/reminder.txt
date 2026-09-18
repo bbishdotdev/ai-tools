@@ -1,0 +1,1 @@
+Follow the BStack router at {router_path} for the current task. Reuse its full instructions if available; otherwise read it in full, including after compaction if incomplete. Continue the active workflow; load only relevant dependencies and honor the user's scope.
