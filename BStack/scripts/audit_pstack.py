@@ -7,6 +7,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
+from layers import import_errors
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,26 +85,16 @@ def owner(relative):
 
 
 def inspect_files(manifest):
-    expected = {item["path"]: item for item in manifest["files"]}
-    errors, files = [], []
+    errors, files = import_errors(ROOT, manifest), []
+    if errors:
+        raise ValueError("\n".join(errors))
     for path in sorted(ENGINEERING.rglob("*")):
         if not path.is_file():
             continue
         relative = path.relative_to(ENGINEERING).as_posix()
-        if "node_modules" in path.parts or "__pycache__" in path.parts:
-            continue
         content = path.read_bytes()
         digest = hashlib.sha256(content).hexdigest()
-        entry = expected.get(relative)
-        if entry is None:
-            errors.append("Unrecorded file: " + relative)
-        elif digest != entry["installed_sha256"]:
-            errors.append("Content differs from import: " + relative)
-        if entry and oct(path.stat().st_mode & 0o777) != entry["mode"]:
-            errors.append("Permissions differ from import: " + relative)
         files.append({"path": relative, "bytes": len(content), "sha256": digest})
-    actual = {item["path"] for item in files}
-    errors.extend("Missing file: " + path for path in sorted(expected.keys() - actual))
     return files, errors
 
 
@@ -215,7 +206,7 @@ def build_inventory():
             "files": len(files), "bytes": sum(f["bytes"] for f in files),
             "pstack_skills": len(pstack), "principles": sum(s["group"] == "principle" for s in skills),
             "companion_skills": len(registered) - len(pstack), "dormant_automation_skills": len(skills) - len(registered),
-            "manual_only_pstack_after_unslop_override": sum(s["manual_only"] for s in pstack),
+            "manual_only_pstack": sum(s["manual_only"] for s in pstack),
             "manual_only_upstream": manifest["upstream_inventory"]["manual_only_skills"],
             "agents": len(list(ENGINEERING.glob("agents/*.md"))), "playbooks": len(playbooks),
             "manifest_skill_characters": sum(s["characters"] for s in registered),
@@ -234,6 +225,7 @@ def render_catalog(inventory):
     lines = [
         "# PStack catalog", "",
         "Generated from the pinned BStack import. Start with [the architectural audit](pstack.md).", "",
+        "This catalog describes unchanged upstream files. BStack's active [router policy](../shared/skills/bstack-router/SKILL.md) and [unslop override](../shared/skills/unslop/SKILL.md) live outside the import. See [the layer manifest](../layers.json).", "",
         "Purpose text comes from each skill's description. Manual means the file declares `disable-model-invocation: true`; normal means it does not. This records metadata, not proof that any host loaded the skill. Character counts cover the complete SKILL.md, not its supporting files. Dormant Benny skills are outside the plugin manifest's discovery directory.", "",
     ]
     groups = [("workflow", "Workflow and utility skills"), ("principle", "Engineering principles"),
@@ -245,8 +237,6 @@ def render_catalog(inventory):
                 continue
             description = skill["description"].replace("|", "\\|")
             mode = "Manual" if skill["manual_only"] else "Normal"
-            if skill["name"] == "unslop":
-                mode += "; code-maverick override"
             lines.append(f"| [{skill['name']}](../engineering/{skill['path']}) | {description} | {mode} | {skill['characters']:,} |")
         lines.append("")
     lines += ["## Playbooks", "", "These are selected files within poteto-mode, not separately registered skills.", "",

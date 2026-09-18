@@ -3,18 +3,18 @@
   "upstream_commit": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "method": "Static source inventory. Edges are explicit code-span, bold-name, principle-name, playbook-path, or relative-Markdown-link references. They include optional references and examples; they are not executed calls or proof of runtime reachability. Plain unmarked prose references may be absent. Built-ins and dynamically discovered tools need separate capability checks.",
   "summary": {
-    "files": 163,
-    "bytes": 3440341,
+    "files": 162,
+    "bytes": 3438100,
     "pstack_skills": 47,
     "principles": 23,
     "companion_skills": 3,
     "dormant_automation_skills": 3,
-    "manual_only_pstack_after_unslop_override": 45,
+    "manual_only_pstack": 46,
     "manual_only_upstream": 46,
     "agents": 2,
     "playbooks": 23,
-    "manifest_skill_characters": 184202,
-    "manifest_metadata_characters": 11733,
+    "manifest_skill_characters": 182147,
+    "manifest_metadata_characters": 11569,
     "textual_reference_edges": 514,
     "relative_markdown_links": 234
   },
@@ -124,14 +124,14 @@
         "skills/unslop/SKILL.md",
         "skills/poteto-mode/playbooks/feature.md"
       ],
-      "characters": 42557
+      "characters": 40502
     },
     "writing_example": {
       "files": [
         "skills/technical-writing/SKILL.md",
         "skills/unslop/SKILL.md"
       ],
-      "characters": 19124
+      "characters": 17069
     }
   },
   "skills": [
@@ -752,11 +752,11 @@
       "name": "unslop",
       "declared_name": "unslop",
       "path": "skills/unslop/SKILL.md",
-      "description": "Cut AI tells from any writing and rewrite it in Brenden's voice. Spoken, blunt, slightly unpolished. Must always apply. Use for posts, emails, docs, replies, and turning raw notes into something he'd actually say.",
-      "manual_only": false,
+      "description": "Cut AI tells from any writing. Must always apply.",
+      "manual_only": true,
       "group": "workflow",
-      "characters": 8146,
-      "body_words": 1216,
+      "characters": 6091,
+      "body_words": 902,
       "name_matches_directory": true
     },
     {
@@ -7876,13 +7876,8 @@
     },
     {
       "path": "skills/unslop/SKILL.md",
-      "bytes": 8146,
-      "sha256": "b63cc42ada77ce471020659dd6efa7aee7057ca73e136e9295ca708c7b9baf4d"
-    },
-    {
-      "path": "skills/unslop/agents/openai.yaml",
-      "bytes": 188,
-      "sha256": "4710d3f6503cedc9cb5e755e90af881304a57b24d384ef17c33bbec89912e170"
+      "bytes": 6093,
+      "sha256": "c6d2572294d933a428211921069e9a248490e9b466ca59437cb4d9de248600ca"
     },
     {
       "path": "skills/why/SKILL.md",

@@ -142,7 +142,7 @@ def main():
               "same_session": new_session == session,
               "next_prompt_receipt": any(r in seen for r in receipts),
               "routing_after_compaction": response.get("playbook") == "perf-issue",
-              "router_fact_after_compaction": response.get("coding_delegate") == "grok-4.6-fast-xhigh",
+              "router_fact_after_compaction": response.get("coding_delegate") == "inherit-parent",
               "exit_success": code == 0}
     if args.tool == "codex":
         checks["compact_receipt_seen"] = any(r["receipt"] in seen for r in compact_records)

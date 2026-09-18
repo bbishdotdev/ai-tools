@@ -12,7 +12,7 @@ import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[3]
-ROUTER = ROOT / "BStack/engineering/skills/poteto-mode/SKILL.md"
+ROUTER = ROOT / "BStack/shared/skills/bstack-router/SKILL.md"
 TEMPLATE = Path(__file__).with_name("reminder.txt")
 INJECT_EVENTS = {
     "codex": {"SessionStart", "UserPromptSubmit", "SubagentStart"},

@@ -34,10 +34,10 @@ def configurations():
     return result
 
 
-def desired_rule():
+def desired_rule(router_path="BStack/shared/skills/bstack-router/SKILL.md"):
     reminder = Path(__file__).with_name("reminder.txt").read_text().strip()
     return ('---\ndescription: BStack engineering router reminder\nalwaysApply: true\n---\n\n'
-            + reminder.format(router_path="BStack/engineering/skills/poteto-mode/SKILL.md") + "\n")
+            + reminder.format(router_path=router_path) + "\n")
 
 
 def install(apply=False):
@@ -72,14 +72,14 @@ def install(apply=False):
     if not rule.exists() or rule.read_text() != desired_rule():
         errors.append(str(rule.relative_to(ROOT)))
         if apply:
-            if rule.exists():
+            if rule.exists() and rule.read_text() != desired_rule("BStack/engineering/skills/poteto-mode/SKILL.md"):
                 raise ValueError(f"Review changed rule before replacing: {rule}")
             rule.parent.mkdir(parents=True, exist_ok=True)
             rule.write_text(desired_rule())
-    links = {"CLAUDE.md": "AGENTS.md",
-             ".agents/skills/verify-bstack": "../../BStack/shared/skills/verify-bstack",
-             ".claude/skills/verify-bstack": "../../BStack/shared/skills/verify-bstack",
-             ".cursor/skills/verify-bstack": "../../BStack/shared/skills/verify-bstack"}
+    links = {"CLAUDE.md": "AGENTS.md"}
+    for host in (".agents", ".claude", ".cursor"):
+        for skill in ("bstack-router", "unslop", "verify-bstack"):
+            links[f"{host}/skills/{skill}"] = f"../../BStack/shared/skills/{skill}"
     for relative, target in links.items():
         path = ROOT / relative
         if path.is_symlink() and path.readlink() == Path(target):

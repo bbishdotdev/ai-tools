@@ -1,0 +1,392 @@
+{
+  "date": "2026-09-18",
+  "scope": "BStack policy layer, immutable imports, and controlled CLI verification",
+  "source_hashes": {
+    "BStack/shared/skills/bstack-router/SKILL.md": "9a882953ffdce39011998454a905187f50a7e524027e69cb094fbfc3f5971ca8",
+    "BStack/shared/skills/bstack-router/references/capabilities.md": "8358f2077efc7c0623e0eb5af0ab7c5704668b9598522ba6ac15f2e9de1b8d39",
+    "BStack/shared/skills/verify-bstack/scripts/policy.py": "d377be810554753d0d0f924c826df19c90c99bad55fec05381436f83d5de507c",
+    "BStack/shared/skills/verify-bstack/scripts/verify.py": "c6abdae7a206a443a4f054cb2b433ca4d9534fdce0eeae1edb511772aec16203",
+    "BStack/shared/skills/verify-bstack/scripts/fallback.py": "0a90fad29f5deaede45a71e0b1b29fe225fb2f30c4bc2a551588b164fc9029b4",
+    "BStack/scripts/layers.py": "e746d70420e99a230b7f2c1f7c583da80914d545afa6b9e1e0e616b32ca5620f"
+  },
+  "upstream": {
+    "files": 162,
+    "pinned_commit": "e31650eea443aaea1e84cc15d88c13f40080b275",
+    "integrity": "pass",
+    "unchanged_candidate_control": "pass",
+    "unslop_baseline_byte_comparison": "pass",
+    "unresolved_upstream_example_links": 1
+  },
+  "local_tests": {
+    "hook": 9,
+    "installer": 2,
+    "layer_update": 8,
+    "policy_evidence": 12,
+    "total": 31,
+    "status": "pass"
+  },
+  "policy": {
+    "status": "pass",
+    "cases": 40,
+    "assessment": "Saved traces assessed using the final bounded evidence checker; three Cursor cases rerun live after native read-only tool support was corrected. Earlier assessments retained unchanged.",
+    "clients": {
+      "codex": {
+        "binary": "/home/bbish/.local/share/mise/installs/codex/latest/bin/codex",
+        "installed": true,
+        "version": "codex-cli 0.153.2",
+        "version_exit": 0
+      },
+      "claude": {
+        "binary": "/home/bbish/.local/share/mise/installs/claude/latest/claude",
+        "installed": true,
+        "version": "2.1.261 (Claude Code)",
+        "version_exit": 0
+      },
+      "cursor": {
+        "binary": "/home/bbish/.local/bin/cursor-agent",
+        "installed": true,
+        "version": "2026.09.15-d2fe57e",
+        "version_exit": 0
+      },
+      "grok": {
+        "binary": "/home/bbish/.local/share/mise/installs/node/26.7.0/bin/grok",
+        "installed": true,
+        "version": "grok 1.0.34 (3736acbc8658) [stable]",
+        "version_exit": 0
+      }
+    },
+    "tools": [
+      {
+        "tool": "codex",
+        "status": "pass",
+        "fresh_cases": 10,
+        "checks_passed": 111,
+        "cases": [
+          {
+            "case": "ordinary-prose",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/ordinary-prose"
+          },
+          {
+            "case": "one-off-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/one-off-plan"
+          },
+          {
+            "case": "routine-cross-function",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/routine-cross-function"
+          },
+          {
+            "case": "shared-state-risk",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/shared-state-risk"
+          },
+          {
+            "case": "reported-defect",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/reported-defect"
+          },
+          {
+            "case": "read-only-investigation",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/read-only-investigation"
+          },
+          {
+            "case": "generic-local-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/generic-local-ticket"
+          },
+          {
+            "case": "unavailable-external-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/unavailable-external-ticket"
+          },
+          {
+            "case": "authorized-action-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/authorized-action-plan"
+          },
+          {
+            "case": "honest-audit",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/codex/honest-audit"
+          }
+        ]
+      },
+      {
+        "tool": "claude",
+        "status": "pass",
+        "fresh_cases": 10,
+        "checks_passed": 111,
+        "cases": [
+          {
+            "case": "ordinary-prose",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/ordinary-prose"
+          },
+          {
+            "case": "one-off-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/one-off-plan"
+          },
+          {
+            "case": "routine-cross-function",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/routine-cross-function"
+          },
+          {
+            "case": "shared-state-risk",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/shared-state-risk"
+          },
+          {
+            "case": "reported-defect",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/reported-defect"
+          },
+          {
+            "case": "read-only-investigation",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/read-only-investigation"
+          },
+          {
+            "case": "generic-local-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/generic-local-ticket"
+          },
+          {
+            "case": "unavailable-external-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/unavailable-external-ticket"
+          },
+          {
+            "case": "authorized-action-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/authorized-action-plan"
+          },
+          {
+            "case": "honest-audit",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/claude/honest-audit"
+          }
+        ]
+      },
+      {
+        "tool": "cursor",
+        "status": "pass",
+        "fresh_cases": 10,
+        "checks_passed": 111,
+        "cases": [
+          {
+            "case": "ordinary-prose",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T230234Z-policy-1febec/cursor/ordinary-prose"
+          },
+          {
+            "case": "one-off-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/one-off-plan"
+          },
+          {
+            "case": "routine-cross-function",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/routine-cross-function"
+          },
+          {
+            "case": "shared-state-risk",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/shared-state-risk"
+          },
+          {
+            "case": "reported-defect",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/reported-defect"
+          },
+          {
+            "case": "read-only-investigation",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T230234Z-policy-1febec/cursor/read-only-investigation"
+          },
+          {
+            "case": "generic-local-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/generic-local-ticket"
+          },
+          {
+            "case": "unavailable-external-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T230234Z-policy-1febec/cursor/unavailable-external-ticket"
+          },
+          {
+            "case": "authorized-action-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/authorized-action-plan"
+          },
+          {
+            "case": "honest-audit",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/cursor/honest-audit"
+          }
+        ]
+      },
+      {
+        "tool": "grok",
+        "status": "pass",
+        "fresh_cases": 10,
+        "checks_passed": 111,
+        "cases": [
+          {
+            "case": "ordinary-prose",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/ordinary-prose"
+          },
+          {
+            "case": "one-off-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/one-off-plan"
+          },
+          {
+            "case": "routine-cross-function",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/routine-cross-function"
+          },
+          {
+            "case": "shared-state-risk",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/shared-state-risk"
+          },
+          {
+            "case": "reported-defect",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/reported-defect"
+          },
+          {
+            "case": "read-only-investigation",
+            "checks_passed": 10,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/read-only-investigation"
+          },
+          {
+            "case": "generic-local-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/generic-local-ticket"
+          },
+          {
+            "case": "unavailable-external-ticket",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/unavailable-external-ticket"
+          },
+          {
+            "case": "authorized-action-plan",
+            "checks_passed": 11,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/authorized-action-plan"
+          },
+          {
+            "case": "honest-audit",
+            "checks_passed": 12,
+            "evidence": ".bstack/verification/20260918T225709Z-policy-d3b38c/grok/honest-audit"
+          }
+        ]
+      }
+    ],
+    "superseded_run": ".bstack/verification/20260918T225015Z-policy-f1722e",
+    "superseded_reason": "Stopped after finding underspecified identifier output and possible expected-answer guide reads; excluded from acceptance."
+  },
+  "continuity": {
+    "evidence": ".bstack/verification/20260918T225358Z-c6931f/report.json",
+    "tools": [
+      {
+        "tool": "codex",
+        "status": "pass",
+        "turns": 3,
+        "router_read_turns": [
+          1
+        ],
+        "per_prompt_delivery_supported": true,
+        "per_prompt_delivery_pass": true
+      },
+      {
+        "tool": "claude",
+        "status": "pass",
+        "turns": 3,
+        "router_read_turns": [
+          1
+        ],
+        "per_prompt_delivery_supported": true,
+        "per_prompt_delivery_pass": true
+      },
+      {
+        "tool": "cursor",
+        "status": "pass_with_limits",
+        "turns": 3,
+        "router_read_turns": [
+          1
+        ],
+        "per_prompt_delivery_supported": false,
+        "per_prompt_delivery_pass": null
+      },
+      {
+        "tool": "grok",
+        "status": "pass_with_limits",
+        "turns": 3,
+        "router_read_turns": [
+          1
+        ],
+        "per_prompt_delivery_supported": false,
+        "per_prompt_delivery_pass": null
+      }
+    ]
+  },
+  "native_compaction": [
+    {
+      "tool": "claude",
+      "status": "pass",
+      "checks": {
+        "native_compaction_observed": true,
+        "compact_reminder_emitted": true,
+        "same_session": true,
+        "next_prompt_receipt": true,
+        "routing_after_compaction": true,
+        "router_fact_after_compaction": true,
+        "exit_success": true
+      },
+      "evidence": ".bstack/verification/20260918T225358Z-c6931f/claude/native-compaction-ffd981/report.json"
+    },
+    {
+      "tool": "codex",
+      "status": "pass",
+      "checks": {
+        "native_compaction_observed": true,
+        "compact_reminder_emitted": true,
+        "same_session": true,
+        "next_prompt_receipt": true,
+        "routing_after_compaction": true,
+        "router_fact_after_compaction": true,
+        "exit_success": true,
+        "compact_receipt_seen": true
+      },
+      "evidence": ".bstack/verification/20260918T225358Z-c6931f/codex/native-compaction-73915b/report.json"
+    }
+  ],
+  "after_tool": {
+    "evidence": ".bstack/verification/20260918T225932Z-fallback-e23166/report.json",
+    "tools": [
+      {
+        "tool": "cursor",
+        "status": "pass",
+        "turns": 4
+      },
+      {
+        "tool": "grok",
+        "status": "pass",
+        "turns": 4
+      }
+    ]
+  },
+  "limits": [
+    "Classification probes do not execute fixture workflows or verify real provider adapters.",
+    "Cursor and Grok lack native per-prompt context injection in these tested versions; after-tool fallback has documented lifecycle limits.",
+    "No desktop app, full workflow audit, distributable package, or Matt Pocock import was exercised.",
+    "Instruction layering is not deterministic enforcement; update semantics still require review."
+  ]
+}

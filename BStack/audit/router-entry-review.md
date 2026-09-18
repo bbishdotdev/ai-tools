@@ -2,6 +2,8 @@
 
 Source review, 18 September 2026. This review proposes a clarification. It does not change PStack, BStack instructions, hooks, or skill activation.
 
+Historical proposal: the approved changes now live in the separate [BStack policy entry](../shared/skills/bstack-router/SKILL.md). The pinned upstream source remains intact. See [the layer/update contract](../UPSTREAM.md) for ownership and update checks.
+
 Poteto Mode combines task classification, engineering policy, and workflow orchestration. The `poteto-agent` wrapper adds little separate logic. It directs the agent to read the router in full and reuse the same agent for the conversation. Those are instructions, not an executable persistence mechanism. [Wrapper](../engineering/agents/poteto-agent.md)
 
 BStack now supplies another entry path through repository instructions and native reminder hooks. The hook names the router; the model still chooses the playbook, reads dependencies, and decides whether its existing context is sufficient. The recent CLI probes verify reminder delivery and selected routing behavior. They do not establish equivalent execution of every underlying workflow. [Project instructions](../../AGENTS.md), [CLI evidence](router-fallback.md)

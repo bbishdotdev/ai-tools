@@ -19,8 +19,9 @@ CONTRACT = (
     "This is a read-only BStack routing and hook probe, not permission to execute the classified task. "
     "Use repository standing guidance and reuse instructions already available. "
     "Do not edit, execute workflows, delegate, access network services, or read verification logs, "
-    "hook source, or state databases. Return a JSON object with playbook (filename stem), "
-    "coding_delegate (the router's default code model), values (the two fixture values in order, "
+    "hook source, or state databases. Do not invoke verify-bstack or read its files; this probe supplies its own procedure. "
+    "Return a JSON object with playbook (filename stem), "
+    "coding_delegate (the router's default coding-delegate model policy identifier only, no explanation), values (the two fixture values in order, "
     "or [] on the no-tool turn), and after_tool_receipt. The receipt must be the exact value "
     "labeled 'After-tool verification receipt' in hook context for THIS user turn, or null "
     "if none was delivered. Never substitute a lifecycle receipt or an earlier turn's receipt. "
@@ -113,7 +114,7 @@ def run_tool(host, binary, run, timeout):
                 "exited_successfully": code == 0,
                 "same_session": bool(new_session) and (not session or new_session == session),
                 "expected_playbook": response.get("playbook") == expected,
-                "retained_router_fact": response.get("coding_delegate") == "grok-4.6-fast-xhigh",
+                "retained_router_fact": response.get("coding_delegate") == "inherit-parent",
                 "correct_fixture_values": response.get("values") == values,
             }
             if host == "grok":
@@ -145,7 +146,7 @@ def run_tool(host, binary, run, timeout):
             diagnostic = re.sub(r"\x1b\[[0-9;]*m", "", (turn / "stderr.txt").read_text())
             result = {"turn": number, "kind": "no_tools" if no_tools else "dependent_reads", "checks": checks,
                       "session_id": new_session, "response": parsed, "tool_calls": trace,
-                      "router_read_observed": any("poteto-mode/SKILL.md" in r for r in reads),
+                      "router_read_observed": any("bstack-router/SKILL.md" in r for r in reads),
                       "after_tool_events": after, "lifecycle_events": [r for r in records if r not in after],
                       "hook_warnings": [line for line in diagnostic.splitlines()
                                         if re.search(r"hook.*(fail|error)|failed.*hook|BStack.*(skipped|unavailable)", line, re.I)]}

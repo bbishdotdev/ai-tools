@@ -16,7 +16,7 @@ import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[5]
-ROUTER = ROOT / "BStack/engineering/skills/poteto-mode/SKILL.md"
+ROUTER = ROOT / "BStack/shared/skills/bstack-router/SKILL.md"
 CLIENTS = {"codex": ("codex",), "claude": ("claude",),
            "cursor": ("cursor-agent", "agent"), "grok": ("grok",)}
 PROMPT_CONTEXT = {"codex": True, "claude": True, "cursor": False, "grok": False}
@@ -29,8 +29,9 @@ CONTRACT = (
     "This is a read-only routing probe, not permission to execute the classified task. "
     "Use this repository's standing guidance; read relevant instruction files as needed. "
     "Do not edit files, run workflows, delegate, call network services, or read verification logs. "
+    "Do not invoke verify-bstack or read its files; this probe supplies its own procedure. "
     "Return one JSON object with keys playbook (filename stem), principle (one applicable full skill name), "
-    "coding_delegate (the router's default code model), receipt (the latest verification receipt "
+    "coding_delegate (the router's default coding-delegate model policy identifier only, no explanation), receipt (the latest verification receipt "
     "visible in hook context, or null), and explanation (one sentence). "
     "Reuse instruction content already available instead of rereading solely for this probe. "
 )
@@ -194,14 +195,14 @@ def run_tool(tool, binary, run, timeout):
             "exited_successfully": code == 0,
             "same_session_available": bool(new_session) and (not prior_session or new_session == prior_session),
             "expected_playbook": response.get("playbook") == expected,
-            "router_specific_fact": response.get("coding_delegate") == "grok-4.6-fast-xhigh",
+            "router_specific_fact": response.get("coding_delegate") == "inherit-parent",
             "fresh_prompt_receipt": response.get("receipt") in receipts if receipts else False,
         }
         turn_result = {"turn": number, "checks": checks, "session_id": session,
                        "expected_playbook": expected, "response": parsed,
                        "read_calls": reads, "hook_records": hook_records,
                        "hook_warnings": hook_warnings,
-                       "router_read_observed": any("poteto-mode/SKILL.md" in r for r in reads)}
+                       "router_read_observed": any("bstack-router/SKILL.md" in r for r in reads)}
         turns.append(turn_result)
         save(turn / "assessment.json", turn_result)
         print(f"{tool} turn {number}: {json.dumps(checks)}", flush=True)

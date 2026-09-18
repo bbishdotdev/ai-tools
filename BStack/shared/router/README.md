@@ -1,6 +1,6 @@
 # Router reminder POC
 
-`AGENTS.md` points to the unchanged Poteto Mode skill. `CLAUDE.md` links to that same instruction file. The shared [reminder](reminder.txt) supplies a path and tells the agent to reuse available instructions or reread missing/incomplete instructions. It never contains the full router body and does not inspect conversation transcripts.
+`AGENTS.md` points to the [BStack policy entry](../skills/bstack-router/SKILL.md), which selects PStack workflows and governs their host/service assumptions. `CLAUDE.md` links to that same instruction file. The shared [reminder](reminder.txt) supplies the BStack entry's path and tells the agent to reuse available instructions or reread missing/incomplete instructions. It never contains the full router body and does not inspect conversation transcripts. The pinned Poteto Mode source remains unchanged.
 
 ## Repository adapters
 
@@ -8,7 +8,7 @@
 - Claude Code: `.claude/settings.json` subscribes to the same events. `SessionStart` also handles source `compact`.
 - Cursor: `.cursor/rules/bstack-router.mdc` always applies. `.cursor/hooks.json` injects at `sessionStart` and uses `postToolUse` for the fallback. `sessionEnd` clears headless suppression state; prompt/compaction events are observational. The prompt hook returns only `continue`; it does not pretend that Cursor accepts context there.
 - Grok: `AGENTS.md` supplies standing instructions. `.grok/hooks/bstack.json` records the turn ID at `UserPromptSubmit` and injects the reminder once per observed user turn at native `PostToolUse`. The prompt event itself adds no context.
-- The verification skill is canonical under `BStack/shared/skills/verify-bstack`, with individual links in each host's skill directory.
+- The BStack router, customized unslop, and verification skill are canonical under `BStack/shared/skills/`, with individual links in each host's skill directory. Imported leaves remain on demand.
 
 Check or install from the repository root:
 
@@ -17,7 +17,7 @@ python3 BStack/shared/router/install.py
 python3 BStack/shared/router/install.py --apply
 ```
 
-Installation preserves unrelated JSON hooks and refuses conflicting links. No global instructions, personal memories, auth settings, or upstream PStack files are changed by the installer. Commands currently target POSIX shells with `python3` and Git; Windows installation is not verified by this Linux POC.
+Installation preserves unrelated JSON hooks and refuses conflicting links. It migrates the exact former generated Cursor rule to the BStack entry, but refuses to replace a user-modified rule. No global instructions, personal memories, auth settings, or upstream PStack files are changed by the installer. Commands currently target POSIX shells with `python3` and Git; Windows installation is not verified by this Linux POC.
 
 Codex project trust and hook trust are separate. Review these three commands through `/hooks` before use, including live verification. The harness honors native hook trust and does not bypass it. The local POC's three hooks were reviewed and approved through that UI. Ignoring normal user config prevented project-hook discovery in our initial Codex probe, even though `AGENTS.md` still loaded.
 
@@ -28,7 +28,9 @@ python3 BStack/shared/router/test_hook.py
 python3 BStack/shared/skills/verify-bstack/scripts/verify.py doctor
 python3 BStack/shared/skills/verify-bstack/scripts/verify.py live
 python3 BStack/shared/skills/verify-bstack/scripts/fallback.py
+python3 BStack/shared/skills/verify-bstack/scripts/policy.py
 python3 BStack/scripts/audit_pstack.py
+python3 BStack/scripts/layers.py check
 ```
 
 The maintainer verifier discovers Codex, Claude Code, Cursor, and Grok on PATH and tests all installed clients by default. Missing clients are listed as skipped. Use `--tools codex grok` for a subset; an explicitly requested missing client is blocked. Supply `--cursor-bin /path/to/cursor-agent` when needed. `doctor` checks discovery and versions. The live command sends test prompts and read instruction content to signed-in providers and spends model usage. Codex probes use `gpt-6-astra` at medium effort; the other clients retain their default models. The probes restrict execution to reading and classification.

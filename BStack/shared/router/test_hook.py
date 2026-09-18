@@ -29,7 +29,7 @@ class HookProtocol(unittest.TestCase):
                     result = self.invoke(host, {"hook_event_name": event, "source": source}, directory)
                     self.assertEqual(result.returncode, 0, result.stderr)
                     text = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
-                    self.assertIn("poteto-mode/SKILL.md", text)
+                    self.assertIn("bstack-router/SKILL.md", text)
                     self.assertLess(len(text), 600)
                     self.assertNotIn("## Principles", text)
                     receipts.add(text.split("event: ")[-1])
@@ -46,7 +46,7 @@ class HookProtocol(unittest.TestCase):
             self.assertIsNone(records[0]["receipt"])
             self.assertFalse(records[0]["injection_supported"])
             start = self.invoke("cursor", {"hook_event_name": "sessionStart"}, directory)
-            self.assertIn("poteto-mode/SKILL.md", json.loads(start.stdout)["additional_context"])
+            self.assertIn("bstack-router/SKILL.md", json.loads(start.stdout)["additional_context"])
 
     def test_invalid_payload_is_visible_failure(self):
         with tempfile.TemporaryDirectory() as directory:

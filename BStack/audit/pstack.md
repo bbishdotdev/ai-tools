@@ -2,6 +2,8 @@
 
 Source audit, 18 September 2026. Baseline: PStack 0.15.2, `cursor/plugins@e31650eea443aaea1e84cc15d88c13f40080b275`. This report describes the imported files. Recommendations are proposals; no consolidation or routing changes have been applied.
 
+Historical snapshot: this audit predates the separate [BStack policy entry](../shared/skills/bstack-router/SKILL.md). The customized unslop has since moved to `shared/skills/unslop/`, and its upstream copy was restored. Current import counts and paths are in [the generated catalog](catalog.md); ownership and update rules are in [UPSTREAM.md](../UPSTREAM.md). The discussion below retains the original audit context.
+
 ## Read this first
 
 PStack is a workflow system with a central router. `poteto-mode` classifies the task, selects a playbook, and brings in specialist skills and engineering principles. The principles describe how to make decisions; the playbooks prescribe how to execute a particular kind of work.

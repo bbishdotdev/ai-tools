@@ -2,6 +2,8 @@
 
 Generated from the pinned BStack import. Start with [the architectural audit](pstack.md).
 
+This catalog describes unchanged upstream files. BStack's active [router policy](../shared/skills/bstack-router/SKILL.md) and [unslop override](../shared/skills/unslop/SKILL.md) live outside the import. See [the layer manifest](../layers.json).
+
 Purpose text comes from each skill's description. Manual means the file declares `disable-model-invocation: true`; normal means it does not. This records metadata, not proof that any host loaded the skill. Character counts cover the complete SKILL.md, not its supporting files. Dormant Benny skills are outside the plugin manifest's discovery directory.
 
 ## Workflow and utility skills
@@ -30,7 +32,7 @@ Purpose text comes from each skill's description. Manual means the file declares
 | [teach](../engineering/skills/teach/SKILL.md) | Explain a body of work plainly so a person actually understands it. Runs the `how` and `why` skills and weaves what they find into one clear explanation. Use for 'teach me this', 'help me really understand X', 'explain this change or subsystem to me'. | Manual | 5,623 |
 | [technical-writing](../engineering/skills/technical-writing/SKILL.md) | Layered technical-writing standard: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing or when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages. | Manual | 10,978 |
 | [typescript-best-practices](../engineering/skills/typescript-best-practices/SKILL.md) | TypeScript best practices. Use when reading or editing any .ts or .tsx file. | Manual | 2,684 |
-| [unslop](../engineering/skills/unslop/SKILL.md) | Cut AI tells from any writing and rewrite it in Brenden's voice. Spoken, blunt, slightly unpolished. Must always apply. Use for posts, emails, docs, replies, and turning raw notes into something he'd actually say. | Normal; code-maverick override | 8,146 |
+| [unslop](../engineering/skills/unslop/SKILL.md) | Cut AI tells from any writing. Must always apply. | Manual | 6,091 |
 | [why](../engineering/skills/why/SKILL.md) | Use for 'why does X work this way', 'why we picked Y', design rationale, regressions, postmortems, or data-backed thresholds. Discovers available MCPs and queries each evidence category (source control, issue tracker, long-form docs, real-time chat, infrastructure observability, error tracking, product analytics warehouse) in parallel, then returns a cited read on decisions and tradeoffs. Use how for runtime behavior. | Manual | 9,999 |
 
 ## Engineering principles
