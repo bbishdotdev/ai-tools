@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/BStack/shared/router/hook.py\" --host codex",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/bstack/shared/router/hook.py\" --host codex",
             "timeout": 5
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/BStack/shared/router/hook.py\" --host codex",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/bstack/shared/router/hook.py\" --host codex",
             "timeout": 5
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/BStack/shared/router/hook.py\" --host codex",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/bstack/shared/router/hook.py\" --host codex",
             "timeout": 5
           }
         ]

@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PROJECT_DIR}/BStack/shared/router/hook.py\" --host claude",
+            "command": "python3 \"${CLAUDE_PROJECT_DIR}/bstack/shared/router/hook.py\" --host claude",
             "timeout": 5
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PROJECT_DIR}/BStack/shared/router/hook.py\" --host claude",
+            "command": "python3 \"${CLAUDE_PROJECT_DIR}/bstack/shared/router/hook.py\" --host claude",
             "timeout": 5
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PROJECT_DIR}/BStack/shared/router/hook.py\" --host claude",
+            "command": "python3 \"${CLAUDE_PROJECT_DIR}/bstack/shared/router/hook.py\" --host claude",
             "timeout": 5
           }
         ]

@@ -22,5 +22,5 @@ Gemfile.lock
 
 __pycache__/
 
-# BStack local hook state, CLI transcripts, and verification evidence.
+# bstack local hook state, CLI transcripts, and verification evidence.
 .bstack/

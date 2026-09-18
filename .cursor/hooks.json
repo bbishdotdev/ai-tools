@@ -3,31 +3,31 @@
   "hooks": {
     "sessionStart": [
       {
-        "command": "python3 BStack/shared/router/hook.py --host cursor",
+        "command": "python3 bstack/shared/router/hook.py --host cursor",
         "timeout": 5
       }
     ],
     "beforeSubmitPrompt": [
       {
-        "command": "python3 BStack/shared/router/hook.py --host cursor",
+        "command": "python3 bstack/shared/router/hook.py --host cursor",
         "timeout": 5
       }
     ],
     "preCompact": [
       {
-        "command": "python3 BStack/shared/router/hook.py --host cursor",
+        "command": "python3 bstack/shared/router/hook.py --host cursor",
         "timeout": 5
       }
     ],
     "postToolUse": [
       {
-        "command": "python3 BStack/shared/router/hook.py --host cursor",
+        "command": "python3 bstack/shared/router/hook.py --host cursor",
         "timeout": 5
       }
     ],
     "sessionEnd": [
       {
-        "command": "python3 BStack/shared/router/hook.py --host cursor",
+        "command": "python3 bstack/shared/router/hook.py --host cursor",
         "timeout": 5
       }
     ]
