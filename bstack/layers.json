@@ -12,6 +12,10 @@
     {
       "id": "matt-pocock-handoff",
       "manifest": "matt-pocock-handoff-provenance.json"
+    },
+    {
+      "id": "matt-pocock-dependencies",
+      "manifest": "matt-pocock-dependencies-provenance.json"
     }
   ],
   "layers": [

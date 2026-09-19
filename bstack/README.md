@@ -12,7 +12,7 @@ The goal is one distributable plugin that connects engineering and SDLC workflow
 
 Today, bstack has a pinned PStack import, a separate policy layer, customized `unslop`, and a generated consumer bundle with project-local CLI adapters. [Install the complete bundle](INSTALL.md) from a local clone or transferred folder using Python, or through skills.sh. Both routes use the exact bundled revision. New installations default to manual Poteto Mode; automatic routing is an explicit opt-in. The development repository's earlier POC still uses its previously authorized automatic routing.
 
-The existing [shared-memory source](shared/memory.md) lives under `shared/`; its consumer release integration remains future work. Nine [Matt Pocock SDLC skills](sdlc/README.md) and [handoff](shared/matt-pocock/skills/handoff/SKILL.md) are imported unchanged at `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their dependency connections, portable routing, and consumer release integration remain pending, along with local work management, desktop verification, and native plugin-manager installation.
+The existing [shared-memory source](shared/memory.md) lives under `shared/`; its consumer release integration remains future work. Nine [Matt Pocock SDLC skills](sdlc/README.md), [handoff](shared/matt-pocock/skills/handoff/SKILL.md), and three [support dependencies](shared/dependencies/README.md) are imported unchanged at `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their configuration, portable routing, and consumer release integration remain pending, along with local work management, desktop verification, and native plugin-manager installation.
 
 Start with [how PStack works and the simplification options](audit/pstack.md). Use the [catalog](audit/catalog.md) to review individual skills and playbooks.
 
@@ -24,7 +24,7 @@ The source import remains unchanged. The generated `release/` assembles bstack's
 
 bstack keeps reviewed source pins and adopts upstream improvements deliberately. It does not automatically follow the latest upstream release. Maintainers can review a newer snapshot or port selected improvements into bstack-owned adaptations without replacing unrelated choices.
 
-See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records PStack and both Matt Pocock imports, with bstack-owned overlays and replacement skills separate from their pinned upstream review bases.
+See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records PStack and the three Matt Pocock imports, with bstack-owned overlays and replacement skills separate from their pinned upstream review bases.
 
 ## Verification and source records
 

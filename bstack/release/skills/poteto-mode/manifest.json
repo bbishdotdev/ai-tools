@@ -1353,7 +1353,7 @@
       "path": "content/layers.json",
       "sha256": "c59e78e0803cbe275c52683e6dc90708f78944c587cf89399c4526fcf814f813",
       "source": "bstack/layers.json",
-      "source_sha256": "e80ff660db3693d7233786a6b28e95ef22b3a4252a66e6c5cd55096ed7d21aab",
+      "source_sha256": "626bc24c8c24d8f0134654351f0f7112450ea2c38880ae32f5b3eb3f6b1646fd",
       "transforms": [
         "emit-portable-runtime-layer-summary"
       ]

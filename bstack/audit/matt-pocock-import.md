@@ -1,5 +1,7 @@
 # Selected Matt Pocock source import
 
+This report records the initial ten-skill import. The [dependency follow-up](matt-pocock-dependencies.md) records the later addition of research, prototype, and setup at the same source pin.
+
 Imported ten skills from `mattpocock/skills` at commit `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`: nine under [SDLC](../sdlc/README.md), plus [handoff](../shared/matt-pocock/skills/handoff/SKILL.md) under shared. The two import boundaries contain 27 upstream files, including reference documents, agent metadata, two copies of the MIT notice, and the upstream README. No imported bytes or file modes were changed.
 
 [SDLC provenance](../matt-pocock-sdlc-provenance.json) and [handoff provenance](../matt-pocock-handoff-provenance.json) record the original paths and hashes. Future bstack changes remain outside these boundaries. The layer checker now supports selected paths from an upstream repository root, so update reviews include selected skill additions without pulling in unrelated skills.
