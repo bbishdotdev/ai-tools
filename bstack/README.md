@@ -12,7 +12,7 @@ The goal is one distributable plugin that connects engineering and SDLC workflow
 
 Today, bstack has a pinned PStack import, a separate policy layer, customized `unslop`, and a generated consumer bundle with project-local CLI adapters. [Install the complete bundle](INSTALL.md) from a local clone or transferred folder using Python, or through skills.sh. Both routes use the exact bundled revision. New installations default to manual Poteto Mode; automatic routing is an explicit opt-in. The development repository's earlier POC still uses its previously authorized automatic routing.
 
-Matt Pocock's skills, shared memory integration, local work management, desktop verification, and native plugin-manager installation remain future work.
+The existing [shared-memory source](shared/memory.md) now lives under `shared/`; its consumer release integration remains future work. Matt Pocock's skills, local work management, desktop verification, and native plugin-manager installation are also pending.
 
 Start with [how PStack works and the simplification options](audit/pstack.md). Use the [catalog](audit/catalog.md) to review individual skills and playbooks.
 

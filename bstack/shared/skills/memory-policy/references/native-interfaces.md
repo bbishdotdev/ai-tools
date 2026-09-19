@@ -61,7 +61,7 @@ Production activation completed with all three backends ready, all nine shared l
 
 The delivered helper was separately exercised through its CLI against disposable native profiles. It generated both Codex files and Claude's native topic and index, updated the same note ID, and deleted it. Six fresh native sessions passed: both apps returned the original synthetic phrase after create, the replacement phrase after update in an unrelated working directory, and `UNKNOWN` after deletion. All six used zero tools; the value came from native context. The prompts contained neither the phrase nor a file path. Hashes of 17 real configuration, routing, and native-memory files remained unchanged.
 
-The focused local suite covers CLI behavior, exact byte preservation, idempotent retries, stale plans, invalid configuration, file collisions, index placement, cooperating locks, concurrent native/configuration edits, partial failures, and final readback. Run it from the source checkout with `python3 -B -m unittest discover -s skills/memory-policy/tests -v`. These deterministic tests complement the runtime probes; they do not substitute for native recall after a client update.
+The focused local suite covers CLI behavior, exact byte preservation, idempotent retries, stale plans, invalid configuration, file collisions, index placement, cooperating locks, concurrent native/configuration edits, partial failures, and final readback. Run it from the source checkout with `python3 -B -m unittest discover -s bstack/shared/skills/memory-policy/tests -v`. These deterministic tests complement the runtime probes; they do not substitute for native recall after a client update.
 
 ## Synchronization and approval limits
 
