@@ -50,11 +50,11 @@ The implementation has five layers:
 
 | Layer | Owns | Where it lives |
 | --- | --- | --- |
-| Entry and policy | Triggers, principles index, autonomy, delegation defaults, reply style | [poteto-mode](../engineering/skills/poteto-mode/SKILL.md) |
-| Task procedure | Ordered actions and the task's output contract | [playbooks](../engineering/skills/poteto-mode/playbooks/) |
-| Specialized work | Investigation, alternative designs, review, verification, writing | [skills](../engineering/skills/) |
-| Execution roles | A delegate that reloads the mode; a comment-review specialist | [agents](../engineering/agents/) |
-| Mechanical support | Plan validation, PR watching, orchestration records, decision logs | [mode scripts](../engineering/skills/poteto-mode/scripts/), [log helper](../engineering/skills/show-me-your-work/scripts/log.sh) |
+| Entry and policy | Triggers, principles index, autonomy, delegation defaults, reply style | [poteto-mode](../upstream/pstack/skills/poteto-mode/SKILL.md) |
+| Task procedure | Ordered actions and the task's output contract | [playbooks](../upstream/pstack/skills/poteto-mode/playbooks) |
+| Specialized work | Investigation, alternative designs, review, verification, writing | [skills](../upstream/pstack/skills) |
+| Execution roles | A delegate that reloads the mode; a comment-review specialist | [agents](../upstream/pstack/agents) |
+| Mechanical support | Plan validation, PR watching, orchestration records, decision logs | [mode scripts](../upstream/pstack/skills/poteto-mode/scripts), [log helper](../upstream/pstack/skills/show-me-your-work/scripts/log.sh) |
 
 ## A feature shows how the dependencies accumulate
 
@@ -73,13 +73,13 @@ flowchart TD
     NC -. "if a claim or shape needs investigation" .-> A
 ```
 
-[Feature](../engineering/skills/poteto-mode/playbooks/feature.md) calls `how`, then `architect`. [Architect](../engineering/skills/architect/SKILL.md) calls `how` again unless the task is genuinely greenfield, then delegates competing designs to [arena](../engineering/skills/arena/SKILL.md). Each invocation may be useful, but there is no explicit reuse contract saying that the first `how` result satisfies the second call.
+[Feature](../upstream/pstack/skills/poteto-mode/playbooks/feature.md) calls `how`, then `architect`. [Architect](../upstream/pstack/skills/architect/SKILL.md) calls `how` again unless the task is genuinely greenfield, then delegates competing designs to [arena](../upstream/pstack/skills/arena/SKILL.md). Each invocation may be useful, but there is no explicit reuse contract saying that the first `how` result satisfies the second call.
 
 Architect's default roster has four candidate models. Arena adds one cross-judge. Even `how`'s simple path uses a separate explainer; its complex path uses two to four explorers plus an explainer. The feature workflow then requires delegated implementation, with its own fallback when nested delegation is unavailable. These are source-prescribed operations, not a measured count of agents from a real run.
 
-[No-comments](../engineering/skills/no-comments/SKILL.md) is more than a prose cleanup. It invokes [Comment Sicko](../engineering/agents/comment-sicko.md), may call `how` or `why` to investigate comments, and can route accepted findings through `architect` and implementation. That is a potentially substantial workflow nested inside pre-review cleanup.
+[No-comments](../upstream/pstack/skills/no-comments/SKILL.md) is more than a prose cleanup. It invokes [Comment Sicko](../upstream/pstack/agents/comment-sicko.md), may call `how` or `why` to investigate comments, and can route accepted findings through `architect` and implementation. That is a potentially substantial workflow nested inside pre-review cleanup.
 
-The [multi-phase plan](../engineering/skills/poteto-mode/playbooks/multi-phase-plan.md) adds another scale of machinery: ten live verification lanes per PR, plus gates, performance, and evidence review. Its [validator](../engineering/skills/poteto-mode/scripts/check-plan.mjs) checks fixed wording, lane count, and a specific model string. This provides repeatable structure while coupling that structure to one execution policy.
+The [multi-phase plan](../upstream/pstack/skills/poteto-mode/playbooks/multi-phase-plan.md) adds another scale of machinery: ten live verification lanes per PR, plus gates, performance, and evidence review. Its [validator](../upstream/pstack/skills/poteto-mode/scripts/check-plan.mjs) checks fixed wording, lane count, and a specific model string. This provides repeatable structure while coupling that structure to one execution policy.
 
 ## What the dependencies buy, and what they cost
 

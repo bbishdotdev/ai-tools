@@ -57,11 +57,11 @@
     "poteto-agent.md"
   ],
   "excluded": {
-    "engineering/skills/unslop": "Replaced by shared/skills/unslop.",
-    "engineering/skills/setup-pstack": "Replaced by package-local setup guidance.",
-    "engineering/automations": "Benny automation requires independent integration.",
-    "engineering/.cursor-plugin": "bstack owns its release manifests.",
-    "engineering/docs": "Upstream guide is not the bstack setup guide.",
-    "engineering/assets": "Upstream branding is not bstack release branding."
+    "upstream/pstack/skills/unslop": "Replaced by shared/skills/unslop.",
+    "upstream/pstack/skills/setup-pstack": "Replaced by package-local setup guidance.",
+    "upstream/pstack/automations": "Benny automation requires independent integration.",
+    "upstream/pstack/.cursor-plugin": "bstack owns its release manifests.",
+    "upstream/pstack/docs": "Upstream guide is not the bstack setup guide.",
+    "upstream/pstack/assets": "Upstream branding is not bstack release branding."
   }
 }

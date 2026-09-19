@@ -1,6 +1,6 @@
 # bstack
 
-bstack is Brenden Bishop's collection of engineering workflows, agent adapters, and custom skills. It builds on [PStack by Lauren "poteto" Tan](https://github.com/cursor/plugins/tree/main/pstack), with bstack's policy and customizations tracked separately from the pinned upstream source.
+bstack is Brenden Bishop's collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
 
 The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Poteto Mode is the manual engineering entry; automatic routing is opt-in. [Selected Matt Pocock SDLC skills, handoff, and their dependencies](bstack/sdlc/README.md) are pinned in the source tree for review; their consumer release integration and local work planning remain pending.
 
@@ -19,9 +19,10 @@ See [installation and optional skills.sh distribution](bstack/INSTALL.md), [curr
 
 ## Repository layout
 
-- `bstack/engineering/` contains pinned upstream PStack sources.
-- `bstack/sdlc/` contains the selected Matt Pocock sources and their dependency review notes.
-- `bstack/shared/` contains bstack's policy, custom skills, router adapters, the existing shared-memory source, Matt's pinned handoff skill, and the SDLC dependency sources.
+- `bstack/engineering/` contains bstack-owned engineering workflows.
+- `bstack/sdlc/` contains SDLC selection and integration decisions.
+- `bstack/shared/` contains shared policy, custom skills, router adapters, and the existing memory implementation.
+- `bstack/upstream/` contains frozen third-party source snapshots used for comparison and release assembly.
 - `bstack/package/` and `bstack/scripts/` assemble and verify the consumer bundle.
 - `bstack/release/` is the complete generated installation artifact.
 - `bstack/audit/` records source reviews and verification results.
@@ -30,4 +31,4 @@ Root `AGENTS.md`, `CLAUDE.md`, and hidden host configuration support development
 
 The shared-memory source has moved under bstack; it is not yet part of the consumer release. See [shared memory setup](bstack/shared/memory.md) before changing an existing installation.
 
-See [attribution](bstack/ATTRIBUTION.md) and [upstream updates](bstack/UPSTREAM.md) for authors, source pins, and ownership of adaptations.
+Original bstack contributions use the [MIT license](LICENSE). [Attribution](ATTRIBUTION.md) centralizes acknowledgments, the source map, and applicable third-party notices. [Upstream updates](bstack/UPSTREAM.md) describes how to adopt improvements without overwriting bstack's work.

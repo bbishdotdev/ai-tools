@@ -18,7 +18,7 @@ The existing opt-in automatic router setting controls workflow activation. It is
 
 ## Grilling stays grounded in the current skill
 
-[Matt's grilling](matt-pocock/skills/grilling/SKILL.md) already stops when no unresolved decision branches remain and the user confirms shared understanding. Keep that default. There is no approved replacement stopping heuristic or fixed question limit.
+[Matt's grilling](../upstream/matt-pocock/sdlc/skills/grilling/SKILL.md) already stops when no unresolved decision branches remain and the user confirms shared understanding. Keep that default. There is no approved replacement stopping heuristic or fixed question limit.
 
 The adaptation is explicit delegation with two agents using different models. In an authorized autonomous run, an interviewer and a responding agent must work through the questions in a real exchange, using evidence and the user's constraints. Record their decisions and unresolved assumptions as agent judgments, never as a fabricated conversation with the user. Different models provide an opportunity for different perspectives; they do not prove independence or correctness.
 
@@ -26,7 +26,7 @@ Autonomous grilling needs configurable role-to-model bindings. Before an autonom
 
 The exact role names, model-difference requirement, disagreement procedure, and execution limits remain design choices. The user's model/provider examples do not select defaults. This is a requirement for the future adapter, not an implemented cross-model harness or a reason to block the current human interview.
 
-[Wayfinder](matt-pocock/skills/wayfinder/SKILL.md) currently requires human participation for grilling and prototype tickets and limits most resolution to one ticket per session. Its charting flow also stops after creating the map. Those rules need an explicit bstack override for an authorized autonomous effort to progress across tickets and phases. They remain in the pinned original for comparison.
+[Wayfinder](../upstream/matt-pocock/sdlc/skills/wayfinder/SKILL.md) currently requires human participation for grilling and prototype tickets and limits most resolution to one ticket per session. Its charting flow also stops after creating the map. Those rules need an explicit bstack override for an authorized autonomous effort to progress across tickets and phases. They remain in the pinned original for comparison.
 
 The agreed planning record types are open questions, decisions, domain terminology, and ADRs. Research evidence should be linked to the decisions it supports. Prototype choices follow the temporary lifecycle below; they do not automatically create a decision record or ADR. Storage and export behavior remain part of the local app design.
 
@@ -47,11 +47,11 @@ The local app should expose the same work operations to agents and its human UI.
 
 ## Triage handles intake and coordination
 
-[Triage](matt-pocock/skills/triage/SKILL.md) evaluates incoming requests: checks whether work already exists or was rejected, verifies claims, asks for missing information, and assigns readiness states. It creates an implementation brief for work ready to proceed.
+[Triage](../upstream/matt-pocock/sdlc/skills/triage/SKILL.md) evaluates incoming requests: checks whether work already exists or was rejected, verifies claims, asks for missing information, and assigns readiness states. It creates an implementation brief for work ready to proceed.
 
-Wayfinder does not invoke triage. They share `grilling`, `domain-modeling`, and tracker setup. Wayfinder's next-ticket selection uses open, unblocked, unclaimed child decisions. That is work scheduling, not the triage workflow. [To-spec](matt-pocock/skills/to-spec/SKILL.md) explicitly marks its result ready for an agent without additional triage.
+Wayfinder does not invoke triage. They share `grilling`, `domain-modeling`, and tracker setup. Wayfinder's next-ticket selection uses open, unblocked, unclaimed child decisions. That is work scheduling, not the triage workflow. [To-spec](../upstream/matt-pocock/sdlc/skills/to-spec/SKILL.md) explicitly marks its result ready for an agent without additional triage.
 
-PStack's [Benny triage](../engineering/automations/benny/skills/triage-issue-reports/SKILL.md) is a configured Slack-report automation. Its [Bugbot triage reference](../engineering/skills/poteto-mode/references/bugbot-triage.md) classifies review comments. Neither is a direct replacement for general local backlog intake or Wayfinder scheduling.
+PStack's [Benny triage](../upstream/pstack/automations/benny/skills/triage-issue-reports/SKILL.md) is a configured Slack-report automation. Its [Bugbot triage reference](../upstream/pstack/skills/poteto-mode/references/bugbot-triage.md) classifies review comments. Neither is a direct replacement for general local backlog intake or Wayfinder scheduling.
 
 Agreed direction: retain triage for incoming work, including findings from agents already executing another task. Reuse PStack's bounded investigation and reproduction capabilities where useful. Do not route Wayfinder into a bug-fix workflow merely to choose its next decision ticket.
 
@@ -65,7 +65,7 @@ These are adaptation requirements, not guarantees supplied by the imported triag
 
 ## Prototype comparison for the manual review
 
-The pinned sources are [PStack's Prototype playbook](../engineering/skills/poteto-mode/playbooks/prototype.md), [Matt's prototype entry](../shared/dependencies/matt-pocock/skills/prototype/SKILL.md), and its [logic](../shared/dependencies/matt-pocock/skills/prototype/LOGIC.md) and [UI](../shared/dependencies/matt-pocock/skills/prototype/UI.md) guides.
+The pinned sources are [PStack's Prototype playbook](../upstream/pstack/skills/poteto-mode/playbooks/prototype.md), [Matt's prototype entry](../upstream/matt-pocock/dependencies/skills/prototype/SKILL.md), and its [logic](../upstream/matt-pocock/dependencies/skills/prototype/LOGIC.md) and [UI](../upstream/matt-pocock/dependencies/skills/prototype/UI.md) guides.
 
 | Topic | PStack | Matt Pocock |
 | --- | --- | --- |
@@ -102,6 +102,6 @@ Do not automatically create a prototype decision document, ADR, rationale, scree
 
 The package remains `bstack`. "Super engineer" is a working description of the intended experience, not an approved rename.
 
-The prototype grilling has produced the agreed defaults above. The [combined prototype draft](../shared/drafts/prototype/WORKFLOW.md) expresses them as one shared workflow, with a [source and structure review](../shared/drafts/prototype/REVIEW.md). It is ready for instruction review before runtime activation.
+The prototype grilling has produced the agreed defaults above. The [approved prototype workflow](../engineering/prototype/WORKFLOW.md) expresses them as one shared workflow, with a [source and structure review](../engineering/prototype/REVIEW.md). The user approved the design. Runtime activation awaits the shared handoff and execution-session contract.
 
 The decision-delegation adapter, cross-model grilling harness, prototype routing and execution verification, `/implement` entry, triage coordination, local work operations, and shared handoff format remain implementation work. No consumer routing or new workflow behavior is claimed by this record.

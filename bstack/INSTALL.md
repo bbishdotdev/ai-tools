@@ -34,6 +34,42 @@ Check for an existing `poteto-mode` skill before using a third-party installer. 
 
 The skills.sh route makes manual Poteto Mode available before setup. Setup adds the customized writing binding, host instructions, `/bstack-auto`, and `/verify-bstack`. The offline route performs both steps together.
 
+## Installed project layout
+
+After an offline install with all four hosts selected, the project contains:
+
+```text
+your-project/
+  .agents/skills/
+    poteto-mode/
+      SKILL.md                     # Public entry into bstack
+      content/
+        index.json                 # Names mapped to bundled workflows
+        engineering/               # Selected PStack skills, playbooks, agents
+        shared/                    # bstack router, unslop, verification
+      scripts/bstack.py            # Setup, mode control, doctor, uninstall
+      runtime/                     # Reminder hook implementation
+      manifest.json
+      ATTRIBUTION.md
+      LICENSE
+    unslop/SKILL.md                 # Writing binding
+    bstack-auto/SKILL.md            # Explicit on/off/status control
+    verify-bstack/SKILL.md          # Installed-package verification
+  .claude/skills/                   # Links to the four .agents/skills entries
+  .cursor/skills/                   # Same shared entries
+  .grok/skills/                     # Same shared entries
+  .cursor/rules/bstack.mdc          # Pointer to project instructions
+  AGENTS.md                        # Managed bstack instruction block
+  CLAUDE.md                        # Managed bstack instruction block
+  .bstack/                         # Local configuration and instructions
+```
+
+This tree omits supporting files. Hosts discover the four public `SKILL.md` entries. Inside `poteto-mode`, engineering dependencies use `WORKFLOW.md`; the router reads the relevant instructions through the bundled index. They are not separate slash commands, and installing them does not load their full text into every conversation. Codex reads the canonical `.agents/skills` entries; the other selected hosts receive links to the same files.
+
+The development repository's `bstack/upstream/` directory is a build input. It is not copied into the consumer project. The release builder selects those pinned sources, applies bstack's recorded packaging changes, and preserves the installed `content/engineering/` paths. An installed project does not need the development checkout.
+
+Setup preserves existing project instructions and configuration. Automatic routing is off initially; opting in adds the selected hosts' hook bindings. See the next section for mode behavior and host limits.
+
 ## Manual entry and automatic routing
 
 Routing starts in manual mode. Invoke `$poteto-mode` in Codex or `/poteto-mode` in hosts that use slash skills. The entry applies bstack's policy before loading its bundled PStack workflows. The customized unslop binding remains active after setup regardless of the router setting.

@@ -29,11 +29,11 @@ class LayersTest(unittest.TestCase):
                         "skills/how/SKILL.md": "Explain the relevant code before changing it.\n"}
         entries = []
         for path, content in self.content.items():
-            write(self.root / "engineering" / path, content)
+            write(self.root / "upstream/pstack" / path, content)
             write(self.candidate / "pstack" / path, content)
             entries.append({"path": path, "upstream_sha256": hashlib.sha256(content.encode()).hexdigest(),
                             "mode": "0o644", "source": "cursor/plugins"})
-        self.manifest = {"destination": "engineering", "source_path": "pstack", "commit": "pin", "files": entries}
+        self.manifest = {"destination": "upstream/pstack", "source_path": "pstack", "commit": "pin", "files": entries}
         self.config = {"schema_version": 1, "sources": [{"id": "pstack", "manifest": "provenance.json"}],
                        "layers": [{"id": "router", "kind": "policy-overlay", "source": "pstack",
                                    "path": "shared/router", "entrypoint": "SKILL.md",
@@ -63,7 +63,7 @@ class LayersTest(unittest.TestCase):
         self.assertEqual(self.snapshot(), before)
 
     def test_local_vendor_edit_blocks_review(self):
-        write(self.root / "engineering/skills/router/SKILL.md", "Locally changed router.\n")
+        write(self.root / "upstream/pstack/skills/router/SKILL.md", "Locally changed router.\n")
         report = layers.review_update("pstack", self.candidate, self.root)
         self.assertEqual(report["status"], "invalid")
         self.assertEqual(report["errors"], ["pstack: Local vendor content differs: skills/router/SKILL.md"])
@@ -90,7 +90,7 @@ class LayersTest(unittest.TestCase):
 
     def test_new_lock_requires_layer_base_review(self):
         replacement = "Changed upstream routing.\n"
-        write(self.root / "engineering/skills/router/SKILL.md", replacement)
+        write(self.root / "upstream/pstack/skills/router/SKILL.md", replacement)
         self.manifest["files"][0]["upstream_sha256"] = hashlib.sha256(replacement.encode()).hexdigest()
         self.save_config()
         self.assertEqual(layers.check(self.root)["errors"],
@@ -106,14 +106,14 @@ class LayersTest(unittest.TestCase):
 
     def test_missing_layer_and_unrecorded_vendor_file_fail(self):
         (self.root / "shared/router/SKILL.md").unlink()
-        write(self.root / "engineering/extra.md", "Unrecorded addition.\n")
+        write(self.root / "upstream/pstack/extra.md", "Unrecorded addition.\n")
         self.assertEqual(layers.check(self.root)["errors"],
                          ["pstack: Unrecorded vendor file: extra.md", "Missing layer entrypoint: router"])
 
     def test_candidate_symlinks_and_unsafe_manifest_paths_are_rejected(self):
         target = self.candidate / "pstack/skills/router/SKILL.md"
         target.unlink()
-        target.symlink_to(self.root / "engineering/skills/router/SKILL.md")
+        target.symlink_to(self.root / "upstream/pstack/skills/router/SKILL.md")
         with self.assertRaisesRegex(ValueError, "Symlink"):
             layers.review_update("pstack", self.candidate, self.root)
         target.unlink()
@@ -134,7 +134,7 @@ class LayersTest(unittest.TestCase):
         self.manifest["companions"] = {"source_path": "team-kit", "skills": ["helper"]}
         for target, source in (("team-kit-LICENSE", "LICENSE"), ("skills/helper/SKILL.md", "skills/helper/SKILL.md")):
             content = f"Companion source: {source}\n"
-            write(self.root / "engineering" / target, content)
+            write(self.root / "upstream/pstack" / target, content)
             write(self.candidate / "team-kit" / source, content)
             self.manifest["files"].append({"path": target, "source_path": source, "source": "team-kit",
                                           "mode": "0o644", "upstream_sha256": hashlib.sha256(content.encode()).hexdigest()})
@@ -166,7 +166,7 @@ class SelectedImportTest(unittest.TestCase):
         self.manifests = {}
         self.config = {"schema_version": 1, "sources": [], "layers": []}
         for name, selection in selections.items():
-            destination = "sdlc/matt-pocock" if name == "sdlc" else "shared/matt-pocock"
+            destination = "upstream/matt-pocock/sdlc" if name == "sdlc" else "upstream/matt-pocock/handoff"
             entries = []
             for target, source in selection.items():
                 content = f"Pinned source: {source}\n"
@@ -232,7 +232,7 @@ class SelectedImportTest(unittest.TestCase):
     def test_selected_import_directory_integrity_remains_strict(self):
         write(self.root / "shared/other/SKILL.md", "Unrelated shared skill.\n")
         self.assertEqual(layers.check(self.root)["status"], "clean")
-        write(self.root / "shared/matt-pocock/unlocked.md", "Unrecorded imported file.\n")
+        write(self.root / "upstream/matt-pocock/handoff/unlocked.md", "Unrecorded imported file.\n")
         self.assertEqual(layers.check(self.root)["errors"], ["handoff: Unrecorded vendor file: unlocked.md"])
 
     def test_relocated_handoff_override_tracks_skill_additions_without_license(self):
@@ -269,7 +269,7 @@ class SelectedImportTest(unittest.TestCase):
         selected.unlink()
         directory = self.candidate / "skills/productivity/grilling"
         shutil.rmtree(directory)
-        directory.symlink_to(self.root / "sdlc/matt-pocock/skills/grilling", target_is_directory=True)
+        directory.symlink_to(self.root / "upstream/matt-pocock/sdlc/skills/grilling", target_is_directory=True)
         with self.assertRaisesRegex(ValueError, "Symlink"):
             layers.review_update("sdlc", self.candidate, self.root)
 

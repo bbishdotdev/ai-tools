@@ -3,10 +3,8 @@ name: poteto-mode
 description: Enter bstack's adapted Poteto Mode for engineering work when explicitly requested. Loads bstack policies, customized writing rules, and selected workflows on demand.
 disable-model-invocation: true
 metadata:
-  author: Brenden Bishop, integration and adaptation
+  author: Brenden Bishop
   package: bstack
-  upstream-author: Lauren "poteto" Tan
-  upstream-source: https://github.com/cursor/plugins/tree/main/pstack
   attribution: ATTRIBUTION.md
 ---
 
@@ -26,4 +24,4 @@ Setup defaults to manual routing. `/bstack-auto on`, `/bstack-auto off`, and `/b
 
 For installation checks, run `python3 <installed-poteto-mode>/scripts/bstack.py doctor --project <project-root>`. These checks do not prove a model followed the workflow. Run `uninstall` with the same project before removing this skill, so its separately installed bindings are cleaned up.
 
-See [package setup and limits](README.md) and [credits](ATTRIBUTION.md). This is bstack's integration of Poteto Mode; the upstream engineering workflows are Lauren Tan's PStack work.
+See [package setup and limits](README.md) and [attribution](ATTRIBUTION.md).

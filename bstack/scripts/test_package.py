@@ -2,10 +2,12 @@
 """Check release completeness, transformations, determinism, and stale-file detection."""
 import json
 from pathlib import Path
+import re
 import shutil
 import stat
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import package
 
@@ -35,7 +37,7 @@ class PackageTests(unittest.TestCase):
         adapted = self.assets["skills/poteto-mode/" + package.UNSLOP]
         self.assertEqual(adapted.source, "bstack/shared/skills/unslop/SKILL.md")
         self.assertIn("Then write it like Brenden would say it out loud.", adapted.data.decode())
-        self.assertNotEqual(adapted.data, (package.ROOT / "engineering/skills/unslop/SKILL.md").read_bytes())
+        self.assertNotEqual(adapted.data, (package.ROOT / "upstream/pstack/skills/unslop/SKILL.md").read_bytes())
         self.assertEqual(adapted.source_sha256, package.sha((package.ROOT / "shared/skills/unslop/SKILL.md").read_bytes()))
 
     def test_concrete_parent_paths_rewritten_and_authoring_examples_preserved(self):
@@ -75,6 +77,56 @@ class PackageTests(unittest.TestCase):
         for asset in dependencies:
             self.assertIn("bind-bstack-policy", asset.transforms)
             self.assertIn("This packaged dependency follows [bstack's policy]", asset.data.decode())
+
+    def test_attribution_comes_from_root_and_preserves_complete_notices(self):
+        asset = self.assets["skills/poteto-mode/ATTRIBUTION.md"]
+        self.assertEqual(asset.source, "ATTRIBUTION.md")
+        self.assertEqual(asset.source_sha256, package.sha((package.ROOT.parent / "ATTRIBUTION.md").read_bytes()))
+        text = asset.data.decode()
+        notices = (
+            "upstream/pstack/LICENSE",
+            "upstream/pstack/licenses/cursor-team-kit.txt",
+            "upstream/matt-pocock/sdlc/LICENSE",
+        )
+        for source in notices:
+            self.assertIn((package.ROOT / source).read_text().strip(), text)
+        self.assertFalse(any("/licenses/" in path for path in self.assets))
+
+    def test_owned_metadata_points_to_installed_attribution(self):
+        for path in ("SKILL.md", package.ROUTER, package.UNSLOP):
+            text = self.assets[package.CAPSULE + "/" + path].data.decode()
+            target = re.search(r"(?m)^  attribution: (.+)$", text).group(1)
+            resolved = package.posixpath.normpath(package.posixpath.join(package.posixpath.dirname(path), target))
+            self.assertEqual(resolved, "ATTRIBUTION.md")
+
+    def test_distribution_rejects_an_incomplete_copyright_notice(self):
+        original = package.source_asset
+
+        def without_copyright(relative, root):
+            asset = original(relative, root)
+            if relative == "ATTRIBUTION.md":
+                return package.replace(asset, data=asset.data.replace(b"Copyright (c) 2026 Cursor", b""))
+            return asset
+
+        with patch.object(package, "source_asset", side_effect=without_copyright):
+            with self.assertRaisesRegex(ValueError, "Canonical attribution is missing the complete notice"):
+                package.assemble()
+
+    def test_source_relocation_keeps_runtime_paths_and_provenance(self):
+        prefix = "skills/poteto-mode/content/engineering/skills/"
+        imported = self.assets[prefix + "how/WORKFLOW.md"]
+        self.assertEqual(imported.source, "bstack/upstream/pstack/skills/how/SKILL.md")
+        self.assertEqual(imported.source_sha256, package.sha((package.ROOT.parent / imported.source).read_bytes()))
+        router = self.assets[package.CAPSULE + "/" + package.ROUTER].data.decode()
+        self.assertIn("../../../engineering/skills/poteto-mode/WORKFLOW.md", router)
+        self.assertNotIn("upstream/pstack", router)
+
+    def test_canonical_attribution_links_resolve_without_source_checkout(self):
+        text = self.assets["skills/poteto-mode/ATTRIBUTION.md"].data.decode()
+        self.assertIn("content/shared/skills/unslop/WORKFLOW.md", text)
+        self.assertIn("https://github.com/cursor/plugins/blob/e31650eea443aaea1e84cc15d88c13f40080b275/pstack/README.md", text)
+        self.assertIn("source repository only", text)
+        self.assertEqual(package.closure_errors(self.assets), [])
 
     def test_manifest_matches_every_capsule_file_and_source(self):
         manifest = json.loads(self.assets["skills/poteto-mode/manifest.json"].data)
@@ -129,7 +181,7 @@ class PackageTests(unittest.TestCase):
             manifest = json.loads((consumer / "manifest.json").read_text())
             for entry in manifest["files"]:
                 self.assertEqual(package.sha((consumer / entry["path"]).read_bytes()), entry["sha256"])
-            for relative in ("ATTRIBUTION.md", "LICENSE", "licenses/pstack.txt", "licenses/cursor-team-kit.txt", package.ROUTER, package.UNSLOP):
+            for relative in ("ATTRIBUTION.md", "LICENSE", package.ROUTER, package.UNSLOP):
                 self.assertTrue((consumer / relative).is_file(), relative)
 
     def test_altered_missing_extra_and_symlink_files_are_rejected(self):
@@ -150,7 +202,7 @@ class PackageTests(unittest.TestCase):
 
     def test_build_refuses_source_or_unrelated_output(self):
         with self.assertRaisesRegex(ValueError, "outside the source tree"):
-            package.build(package.ROOT / "engineering")
+            package.build(package.ROOT / "upstream")
         with tempfile.TemporaryDirectory() as directory:
             destination = Path(directory) / "notes"
             destination.mkdir()

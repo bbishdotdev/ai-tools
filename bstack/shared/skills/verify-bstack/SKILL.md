@@ -3,10 +3,7 @@ name: verify-bstack
 description: Maintainer verification for bstack changes. Discover installed Codex, Claude Code, Cursor, and Grok CLIs, then test router loading, routing, reminders, and continuity with saved evidence. Use when asked to validate bstack or after changing its router adapters.
 metadata:
   author: Brenden Bishop
-  relationship: bstack implementation following PStack's create-verification-skill method
-  upstream-author: Lauren "poteto" Tan
-  upstream-source: https://github.com/cursor/plugins/tree/main/pstack/skills/create-verification-skill
-  attribution: ../../../ATTRIBUTION.md
+  attribution: ../../../../ATTRIBUTION.md
 ---
 
 # Verify bstack

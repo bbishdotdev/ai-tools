@@ -79,7 +79,9 @@ def generated_asset(data, source="bstack/scripts/package.py", root=ROOT, transfo
                  origin.source, origin.source_sha256, tuple(transforms))
 
 
-def private_path(source):
+def private_path(source, upstream):
+    if source.startswith(upstream + "/"):
+        source = "engineering/" + source[len(upstream) + 1:]
     path = PurePosixPath("content") / source
     return str(path.with_name("WORKFLOW.md") if path.name == "SKILL.md" else path)
 
@@ -91,19 +93,20 @@ def local_target(source, target, mapping):
     if base.startswith("bstack/"):
         canonical = base[len("bstack/"):]
     elif base.startswith("pstack/"):
-        canonical = "engineering/" + base[len("pstack/"):]
+        canonical = base
     else:
         canonical = posixpath.normpath(posixpath.join(posixpath.dirname(source), base))
     result = mapping.get(canonical)
-    if result is None and base.startswith(("scripts/", "references/", "playbooks/")) and source.startswith("engineering/skills/"):
-        skill_root = "/".join(source.split("/")[:3])
+    if result is None and base.startswith(("scripts/", "references/", "playbooks/")) and "/skills/" in source:
+        prefix, skill = source.split("/skills/", 1)
+        skill_root = prefix + "/skills/" + skill.split("/", 1)[0]
         result = mapping.get(skill_root + "/" + base)
     if result is None:
         prefix = canonical.rstrip("/") + "/"
         children = [path for path in mapping if path.startswith(prefix)]
         if children:
-            # A directory reference must preserve the source tree beneath it.
-            destinations = {mapping[path][:-len(path[len(prefix):])].rstrip("/") for path in children}
+            destinations = {str(PurePosixPath(mapping[path]).parents[len(PurePosixPath(path[len(prefix):]).parts) - 1])
+                            for path in children}
             if len(destinations) == 1:
                 result = destinations.pop() + "/"
     return result + (separator + anchor if separator else "") if result else None
@@ -119,7 +122,7 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
     text = asset.data.decode()
     changed = []
 
-    if source == "engineering/skills/poteto-mode/playbooks/multi-phase-plan.md":
+    if destination == "content/engineering/skills/poteto-mode/playbooks/multi-phase-plan.md":
         replacements = {
             "`git show origin/main:pstack/skills/poteto-mode/playbooks/<execution playbook>.md`": '`cat "<absolute installed execution-playbook path>"`',
             "`git show origin/main:<control skill path>`": '`cat "<absolute installed control-workflow path>"`',
@@ -140,8 +143,8 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
         )
         text = text.replace("````markdown\n", instruction + "````markdown\n", 1)
         changed.append("bind-program-template-to-installed-workflow-paths")
-    if source in ("engineering/skills/poteto-mode/playbooks/autopilot-full.md",
-                  "engineering/skills/poteto-mode/playbooks/autopilot-stack.md"):
+    if destination in ("content/engineering/skills/poteto-mode/playbooks/autopilot-full.md",
+                       "content/engineering/skills/poteto-mode/playbooks/autopilot-stack.md"):
         text = text.replace("re-read this playbook from trunk with", "re-read this bundled playbook with")
         changed.append("reread-installed-playbook")
 
@@ -191,7 +194,7 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
     if rewritten != text:
         changed.append("rewrite-skill-root-support-paths")
     text = rewritten
-    if source == "engineering/skills/typescript-best-practices/references/patterns.md":
+    if destination == "content/engineering/skills/typescript-best-practices/references/patterns.md":
         text = text.replace("in `SKILL.md`", "in `../WORKFLOW.md`")
         changed.append("rewrite-known-parent-workflow-reference")
     if source.startswith("shared/skills/"):
@@ -221,6 +224,35 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
     return replace(asset, data=text.encode(), transforms=asset.transforms + tuple(changed))
 
 
+def attribution_asset(root, mapping, sources):
+    asset = source_asset("ATTRIBUTION.md", root)
+    text = asset.data.decode()
+    origins = {}
+    for manifest in sources.values():
+        for entry in manifest["files"]:
+            source = "bstack/" + manifest["destination"] + "/" + entry["path"]
+            origins[source] = (manifest["repository"] + "/blob/" + manifest["commit"] + "/"
+                               + layers.candidate_path(manifest, entry))
+            if PurePosixPath(entry["path"]).name == "LICENSE" or entry["path"].startswith("licenses/"):
+                notice = source_asset(source, root).data.decode().strip()
+                if notice not in text:
+                    raise ValueError("Canonical attribution is missing the complete notice: " + source)
+
+    def link(match):
+        target = local_target("../ATTRIBUTION.md", match[2], mapping)
+        if target is not None:
+            return match[1] + target + match[3]
+        path, separator, anchor = match[2].partition("#")
+        if not path or ":" in path:
+            return match[0]
+        if path in origins:
+            return match[1] + origins[path] + (separator + anchor if separator else "") + match[3]
+        label = match[1][1:-2]
+        return label + " (`" + path + "`, source repository only)"
+
+    return replace(asset, data=LINK.sub(link, text).encode(), transforms=("render-canonical-attribution-links",))
+
+
 def assemble(root=ROOT):
     checked = layers.check(root)
     if checked["errors"]:
@@ -230,14 +262,16 @@ def assemble(root=ROOT):
         raise ValueError("Unsupported release selection")
     if len(selection["skills"]) != len(set(selection["skills"])):
         raise ValueError("Duplicate skill selection")
-    pinned = json.loads((root / "pstack-provenance.json").read_text())
+    _, sources = layers.load(root)
+    pinned = sources["pstack"]
+    upstream = pinned["destination"]
     selected = []
     for skill in selection["skills"]:
-        directory = layers.safe_path(root, "engineering/skills/" + skill)
+        directory = layers.safe_path(root, upstream + "/skills/" + skill)
         if not (directory / "SKILL.md").is_file():
             raise ValueError(f"Selected workflow missing: {skill}")
-        selected.extend("engineering/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory)))
-    selected.extend("engineering/agents/" + agent for agent in selection["agents"])
+        selected.extend(upstream + "/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory)))
+    selected.extend(upstream + "/agents/" + agent for agent in selection["agents"])
     for skill in ("bstack-router", "unslop"):
         directory = root / "shared/skills" / skill
         selected.extend("shared/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory))
@@ -245,30 +279,32 @@ def assemble(root=ROOT):
     verify_scripts = root / "shared/skills/verify-bstack/scripts"
     selected.extend("shared/skills/verify-bstack/scripts/" + path for path in sorted(layers.tree_files(verify_scripts))
                     if "__pycache__" not in PurePosixPath(path).parts and path.endswith(".py"))
-    mapping = {source: private_path(source) for source in selected}
+    mapping = {source: private_path(source, upstream) for source in selected}
     mapping.update({
-        "engineering/skills/unslop/SKILL.md": UNSLOP,
-        "engineering/skills/setup-pstack/SKILL.md": ENTRYPOINTS["setup"],
-        "ATTRIBUTION.md": "ATTRIBUTION.md",
+        upstream + "/skills/unslop/SKILL.md": UNSLOP,
+        upstream + "/skills/setup-pstack/SKILL.md": ENTRYPOINTS["setup"],
+        "../ATTRIBUTION.md": "ATTRIBUTION.md",
+        "../LICENSE": "LICENSE",
         "layers.json": "content/layers.json",
     })
+    mapping.update({"pstack/" + source[len(upstream) + 1:]: target for source, target in list(mapping.items())
+                    if source.startswith(upstream + "/")})
     assets = {}
     for source in selected:
         destination = mapping[source]
         asset = source_asset("bstack/" + source, root)
         if source.endswith(".md"):
-            asset = transform_markdown(asset, source, destination, mapping, policy=source.startswith("engineering/"))
+            asset = transform_markdown(asset, source, destination, mapping, policy=source.startswith(upstream + "/"))
         assets[destination] = asset
 
     for template, target in (("SKILL.md", "SKILL.md"), ("README.md", "README.md"),
-                             ("ATTRIBUTION.md", "ATTRIBUTION.md"), ("setup.md", ENTRYPOINTS["setup"]),
+                             ("setup.md", ENTRYPOINTS["setup"]),
                              ("verify.md", ENTRYPOINTS["verification"])):
         asset = source_asset("bstack/package/templates/" + template, root)
         data = asset.data.decode().replace("@VERSION@", selection["version"]).replace("@PSTACK_COMMIT@", pinned["commit"])
         assets[target] = replace(asset, data=data.encode(), transforms=("render-release-template",))
+    assets["ATTRIBUTION.md"] = attribution_asset(root, mapping, sources)
     for source, target in (("LICENSE", "LICENSE"),
-                           ("bstack/engineering/LICENSE", "licenses/pstack.txt"),
-                           ("bstack/engineering/licenses/cursor-team-kit.txt", "licenses/cursor-team-kit.txt"),
                            ("bstack/package/runtime.py", ENTRYPOINTS["controller"]),
                            ("bstack/shared/router/hook.py", ENTRYPOINTS["reminder"]),
                            ("bstack/shared/router/reminder.txt", "runtime/reminder.txt")):
@@ -278,16 +314,16 @@ def assemble(root=ROOT):
         '  short_description: "Explicit engineering workflows through bstack"\n'
         '  default_prompt: "Use $poteto-mode for this engineering task."\n'
         'policy:\n  allow_implicit_invocation: false\n', root=root, transforms=("manual-entry-metadata",))
-    skills = {skill: mapping["engineering/skills/" + skill + "/SKILL.md"] for skill in selection["skills"]}
+    skills = {skill: mapping[upstream + "/skills/" + skill + "/SKILL.md"] for skill in selection["skills"]}
     skills.update({"poteto-mode": ROUTER, "bstack-router": ROUTER, "unslop": UNSLOP,
                    "setup-pstack": ENTRYPOINTS["setup"], "setup-bstack": ENTRYPOINTS["setup"],
                    "verify-bstack": ENTRYPOINTS["verification"]})
-    agents = {Path(agent).stem: mapping["engineering/agents/" + agent] for agent in selection["agents"]}
+    agents = {Path(agent).stem: mapping[upstream + "/agents/" + agent] for agent in selection["agents"]}
     playbooks = {PurePosixPath(source).stem: target for source, target in mapping.items()
-                 if source.startswith("engineering/skills/poteto-mode/playbooks/") and source.endswith(".md")}
+                 if source.startswith(upstream + "/skills/poteto-mode/playbooks/") and source.endswith(".md")}
     index = {"schema_version": 1, "paths_relative_to": "capsule", "policy": ROUTER,
              "skills": skills, "agents": agents, "playbooks": playbooks,
-             "upstream_router": mapping["engineering/skills/poteto-mode/SKILL.md"]}
+             "upstream_router": mapping[upstream + "/skills/poteto-mode/SKILL.md"]}
     assets["content/index.json"] = generated_asset(json_bytes(index), "bstack/package/selection.json", root,
                                                    ("resolve-selected-workflows-and-overrides",))
     layer_summary = {"schema_version": 1, "package": "bstack", "policy": ROUTER,

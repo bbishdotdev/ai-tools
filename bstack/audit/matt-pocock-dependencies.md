@@ -2,7 +2,7 @@
 
 This extends the [initial SDLC and handoff import](matt-pocock-import.md) with `research`, `prototype`, and `setup-matt-pocock-skills` at the same upstream commit, `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`.
 
-The [shared dependency sources](../shared/dependencies/README.md) contain 14 files: the three complete skill directories with reference files and agent metadata, plus Matt Pocock's MIT notice. [Dependency provenance](../matt-pocock-dependencies-provenance.json) records their original paths, hashes, and modes. All 13 selected Matt Pocock skills are now present across the three import boundaries.
+The [shared dependency sources](../upstream/README.md) contain 14 files: the three complete skill directories with reference files and agent metadata, plus Matt Pocock's MIT notice. [Dependency provenance](../matt-pocock-dependencies-provenance.json) records their original paths, hashes, and modes. All 13 selected Matt Pocock skills are now present across the three import boundaries.
 
 ## Dependency review
 

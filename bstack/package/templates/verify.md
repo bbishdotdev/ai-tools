@@ -1,6 +1,6 @@
 # Verify an installed bstack package
 
-This is bstack's maintainer verification entry. It follows PStack's create-verification-skill method. It does not activate engineering mode or authorize implementation work.
+This is bstack's maintainer verification entry. It does not activate engineering mode or authorize implementation work.
 
 Run the installed [controller](../../../../scripts/bstack.py) with `doctor --project <project-root>` to check package integrity and project bindings.
 

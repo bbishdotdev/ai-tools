@@ -4,7 +4,7 @@
   "repository": "https://github.com/mattpocock/skills",
   "commit": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
   "source_path": "",
-  "destination": "sdlc/matt-pocock",
+  "destination": "upstream/matt-pocock/sdlc",
   "review_paths": [
     "LICENSE",
     "README.md",

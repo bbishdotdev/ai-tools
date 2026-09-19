@@ -4,7 +4,7 @@ Source review, 18 September 2026. This review proposes a clarification. It does 
 
 Historical proposal: the approved changes now live in the separate [bstack policy entry](../shared/skills/bstack-router/SKILL.md). The pinned upstream source remains intact. See [the layer/update contract](../UPSTREAM.md) for ownership and update checks.
 
-Poteto Mode combines task classification, engineering policy, and workflow orchestration. The `poteto-agent` wrapper adds little separate logic. It directs the agent to read the router in full and reuse the same agent for the conversation. Those are instructions, not an executable persistence mechanism. [Wrapper](../engineering/agents/poteto-agent.md)
+Poteto Mode combines task classification, engineering policy, and workflow orchestration. The `poteto-agent` wrapper adds little separate logic. It directs the agent to read the router in full and reuse the same agent for the conversation. Those are instructions, not an executable persistence mechanism. [Wrapper](../upstream/pstack/agents/poteto-agent.md)
 
 bstack now supplies another entry path through repository instructions and native reminder hooks. The hook names the router; the model still chooses the playbook, reads dependencies, and decides whether its existing context is sufficient. The recent CLI probes verify reminder delivery and selected routing behavior. They do not establish equivalent execution of every underlying workflow. [Project instructions](../../AGENTS.md), [CLI evidence](router-fallback.md)
 
@@ -26,11 +26,11 @@ The arrows after classification describe prompt instructions, not a deterministi
 
 ## Where a small task goes
 
-A simple explanation follows Investigation. It requires `how`, stays read-only, and explicitly excludes PRs and babysitting. The simple path inside `how` skips exploration agents but still requires one explainer agent. That is a deliberate cost of the current workflow. [Investigation](../engineering/skills/poteto-mode/playbooks/investigation.md), [how](../engineering/skills/how/SKILL.md)
+A simple explanation follows Investigation. It requires `how`, stays read-only, and explicitly excludes PRs and babysitting. The simple path inside `how` skips exploration agents but still requires one explainer agent. That is a deliberate cost of the current workflow. [Investigation](../upstream/pstack/skills/poteto-mode/playbooks/investigation.md), [how](../upstream/pstack/skills/how/SKILL.md)
 
-A small feature follows the same Feature playbook as a larger behavior change. It requires grounding through `how`, architecture work or a recorded skip reason, implementation delegation, review, and verification. Delegated implementation is mandatory because the playbook values separation between author and reviewer. Commits and Opening a PR are later steps, still subject to the user's scope. [Feature](../engineering/skills/poteto-mode/playbooks/feature.md)
+A small feature follows the same Feature playbook as a larger behavior change. It requires grounding through `how`, architecture work or a recorded skip reason, implementation delegation, review, and verification. Delegated implementation is mandatory because the playbook values separation between author and reviewer. Commits and Opening a PR are later steps, still subject to the user's scope. [Feature](../upstream/pstack/skills/poteto-mode/playbooks/feature.md)
 
-If `architect` runs, it asks for `how` again, then invokes `arena` for competing designs. There is no explicit contract saying that the preceding Feature grounding satisfies this request. This is a possible repeated-work path in the source. We have not measured whether an agent actually repeats it. [Architect](../engineering/skills/architect/SKILL.md)
+If `architect` runs, it asks for `how` again, then invokes `arena` for competing designs. There is no explicit contract saying that the preceding Feature grounding satisfies this request. This is a possible repeated-work path in the source. We have not measured whether an agent actually repeats it. [Architect](../upstream/pstack/skills/architect/SKILL.md)
 
 ## The first clarification worth testing
 
@@ -41,7 +41,7 @@ The selected playbook sometimes narrows a broad router rule.
 | Opening a PR runs at the end of every other playbook. | Investigation explicitly says no PR. |
 | Code crossing a function boundary requires `architect`. | Feature permits an explicit architecture skip reason. |
 
-These statements are in the [router](../engineering/skills/poteto-mode/SKILL.md), Investigation, and Feature. A model can infer that specific exceptions take precedence, but the source leaves that reconciliation implicit. The current bstack `AGENTS.md` already protects the user's scope and says to continue the active workflow. Those protections should remain authoritative.
+These statements are in the [router](../upstream/pstack/skills/poteto-mode/SKILL.md), Investigation, and Feature. A model can infer that specific exceptions take precedence, but the source leaves that reconciliation implicit. The current bstack `AGENTS.md` already protects the user's scope and says to continue the active workflow. Those protections should remain authoritative.
 
 The smallest proposed clarification is:
 
@@ -67,9 +67,9 @@ Allowing the main agent to handle simple questions or tiny edits directly would 
 
 The applied principles shaped this recommendation:
 
-- [Laziness Protocol](../engineering/skills/principle-laziness-protocol/SKILL.md) kept the proposal to one precedence clarification and left the imported files intact.
-- [Minimize Reader Load](../engineering/skills/principle-minimize-reader-load/SKILL.md) focused the review on how many places the model must reconcile to determine the next step.
-- [Guard the Context Window](../engineering/skills/principle-guard-the-context-window/SKILL.md) kept consolidation conditional on the relevant material loaded, rather than the number of files.
+- [Laziness Protocol](../upstream/pstack/skills/principle-laziness-protocol/SKILL.md) kept the proposal to one precedence clarification and left the imported files intact.
+- [Minimize Reader Load](../upstream/pstack/skills/principle-minimize-reader-load/SKILL.md) focused the review on how many places the model must reconcile to determine the next step.
+- [Guard the Context Window](../upstream/pstack/skills/principle-guard-the-context-window/SKILL.md) kept consolidation conditional on the relevant material loaded, rather than the number of files.
 
 `throughput checkpoint: n/a, read-only investigation`
 

@@ -17,7 +17,7 @@ from fallback import tool_trace
 from verify import CLIENTS, ROOT, cli_command, discover, events, extract, process, save
 
 ROUTER = ROOT / "bstack/shared/skills/bstack-router/SKILL.md"
-UPSTREAM = ROOT / "bstack/engineering/skills/poteto-mode/SKILL.md"
+UPSTREAM = ROOT / "bstack/upstream/pstack/skills/poteto-mode/SKILL.md"
 COMMON_FIELDS = {
     "playbook": "The selected playbook filename stem or workflow skill directory name. Return only that identifier, or JSON null if no engineering workflow applies; put explanations in reason.",
     "model_policy": "The configured default delegation model policy when no role override is supplied. Return only its identifier as a JSON string, without commentary or punctuation; put explanations in reason.",
@@ -87,7 +87,7 @@ CONTRACT = (
     "skill files, feature maps, driver source, or saved results, including through skill symlinks. "
     "Do not mutate files, execute the fixture workflow, delegate, contact external services, or read "
     "verification logs, bstack/audit reports, state databases, or hook source. Scope content searches "
-    "to specific instruction files or bstack/engineering, bstack/shared/skills/bstack-router, and "
+    "to specific instruction files or bstack/upstream/pstack, bstack/shared/skills/bstack-router, and "
     "bstack/shared/skills/unslop. Do not search the whole checkout or all of bstack. Use native file "
     "reads/searches, or simple cat, sed -n, head, tail, rg, ls, pwd, and wc shell commands for instructions. "
     "Host-local tool schema lookup is permitted, but invoking a discovered operation to execute "
@@ -193,7 +193,7 @@ def instruction_scope(path):
     prefix = re.split(r"[*?\[]", path, maxsplit=1)[0]
     candidate = Path(prefix)
     candidate = (candidate if candidate.is_absolute() else ROOT / candidate).resolve()
-    roots = [ROOT / "bstack/engineering", ROUTER.parent, ROOT / "bstack/shared/skills/unslop"]
+    roots = [ROOT / "bstack/upstream/pstack", ROUTER.parent, ROOT / "bstack/shared/skills/unslop"]
     files = [ROOT / "AGENTS.md", ROOT / "CLAUDE.md", ROOT / ".cursor/rules/bstack-router.mdc"]
     return any(candidate == file.resolve() for file in files) or any(
         candidate == root.resolve() or root.resolve() in candidate.parents for root in roots)
@@ -279,7 +279,7 @@ def contamination_reasons(reads, trace):
 def imported_engineering_access(reads, trace):
     values = [*reads, *(json.dumps(call.get("arguments", [])) for call in trace),
               *(call.get("command", "") for call in trace)]
-    return any("bstack/engineering" in value.replace("\\", "/") for value in values if isinstance(value, str))
+    return any("bstack/upstream/pstack" in value.replace("\\", "/") for value in values if isinstance(value, str))
 
 
 def permitted_trace(trace):

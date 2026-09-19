@@ -3,15 +3,12 @@ name: bstack-router
 description: Route engineering work through bstack's pinned PStack workflows with portable capabilities, scoped execution, and visible evidence. Use for bstack engineering tasks or when the repository's standing instructions load this router.
 metadata:
   author: Brenden Bishop
-  relationship: bstack policy overlay for PStack's Poteto Mode and workflows
-  upstream-author: Lauren "poteto" Tan
-  upstream-source: https://github.com/cursor/plugins/tree/main/pstack
-  attribution: ../../../ATTRIBUTION.md
+  attribution: ../../../../ATTRIBUTION.md
 ---
 
 # bstack router
 
-This is bstack's policy layer over [PStack's router](../../../engineering/skills/poteto-mode/SKILL.md). Keep the imported files unchanged. Apply this policy to every imported playbook, skill, agent, reference, and helper they select. User scope and host instructions take precedence; this layer resolves differences with the imported defaults.
+This is bstack's policy layer over [PStack's router](../../../upstream/pstack/skills/poteto-mode/SKILL.md). Keep the imported files unchanged. Apply this policy to every imported playbook, skill, agent, reference, and helper they select. User scope and host instructions take precedence; this layer resolves differences with the imported defaults.
 
 ## Select and continue
 

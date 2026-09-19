@@ -1,6 +1,6 @@
-# Prototype draft review
+# Prototype design
 
-This is a review-only bstack adaptation. [WORKFLOW.md](WORKFLOW.md) contains the proposed shared entry, with conditional [UI](references/ui.md) and [logic](references/logic.md) guides. The file is deliberately not named `SKILL.md`; it is not registered with a host, connected to the router, or selected for the consumer release.
+The user approved this bstack workflow after the prototype grilling and instruction review. [WORKFLOW.md](WORKFLOW.md) owns the shared lifecycle, with conditional [UI](references/ui.md) and [logic](references/logic.md) guides. Runtime activation awaits the shared handoff and execution-session contract; this file is not a discoverable `SKILL.md`.
 
 ## Structure and context
 
@@ -10,9 +10,9 @@ The normal instruction load is the shared entry and whichever guide the question
 
 PStack's principles shaped these choices:
 
-- [Foundational thinking](../../../engineering/skills/principle-foundational-thinking/SKILL.md): one owner for session state and lifecycle, with separate workspaces for concurrent experiments. No new persistent state schema is needed to draft this workflow.
-- [Redesign from first principles](../../../engineering/skills/principle-redesign-from-first-principles/SKILL.md): organize around the user's review loop. Neither upstream entry wraps or calls the other.
-- [Guard the context window](../../../engineering/skills/principle-guard-the-context-window/SKILL.md): keep rules needed on every invocation in the entry and load artifact-specific details only when relevant. No recurring reads of this rationale or the source comparison.
+- [Foundational thinking](../../upstream/pstack/skills/principle-foundational-thinking/SKILL.md): one owner for session state and lifecycle, with separate workspaces for concurrent experiments. No new persistent state schema is needed to draft this workflow.
+- [Redesign from first principles](../../upstream/pstack/skills/principle-redesign-from-first-principles/SKILL.md): organize around the user's review loop. Neither upstream entry wraps or calls the other.
+- [Guard the context window](../../upstream/pstack/skills/principle-guard-the-context-window/SKILL.md): keep rules needed on every invocation in the entry and load artifact-specific details only when relevant. No recurring reads of this rationale or the source comparison.
 
 ## Source comparison
 
@@ -27,20 +27,11 @@ PStack's principles shaped these choices:
 | Retention | Matt archives every prototype and its rationale on a branch | Retain unfinished or explicitly saved work; no mandatory archive, ticket, ADR, or rationale |
 | Implementation | PStack hands off for the real build; Matt identifies reusable logic | Carry useful pieces through normal engineering review and tests; clean up after the reference has transferred |
 
-The detailed product choices are in the [integration review](../../../sdlc/integration-review.md). This maintainer record describes the reusable skill; consumer prototyping sessions do not create a copy of it.
+The detailed product choices are in the [integration review](../../sdlc/integration-review.md). This maintainer record describes the reusable skill; consumer prototyping sessions do not create a copy of it.
 
-## Pinned lineage
+## Integration boundary
 
-This adaptation is by Brenden Bishop. The source authors are Lauren "poteto" Tan and Matt Pocock. [The notices](NOTICES.txt) preserve both upstream MIT notices and bstack's notice.
-
-| Source | Exact revision | Original files used |
-| --- | --- | --- |
-| [PStack in cursor/plugins](https://github.com/cursor/plugins/tree/e31650eea443aaea1e84cc15d88c13f40080b275/pstack) | `e31650eea443aaea1e84cc15d88c13f40080b275` | `pstack/skills/poteto-mode/playbooks/prototype.md`; `pstack/skills/principle-foundational-thinking/SKILL.md`; `pstack/skills/principle-redesign-from-first-principles/SKILL.md`; `pstack/skills/principle-guard-the-context-window/SKILL.md` |
-| [Matt Pocock skills](https://github.com/mattpocock/skills/tree/c55ee46073ed923f86ce59a5eb3b6d895095d1b7) | `c55ee46073ed923f86ce59a5eb3b6d895095d1b7` | `skills/engineering/prototype/SKILL.md`; `skills/engineering/prototype/UI.md`; `skills/engineering/prototype/LOGIC.md` |
-
-The exact imported file hashes remain in [PStack provenance](../../../pstack-provenance.json) and [Matt dependency provenance](../../../matt-pocock-dependencies-provenance.json). The adaptation makes no edits inside those vendor boundaries.
-
-Before activation, register separate source-review records for PStack and Matt in [layers.json](../../../layers.json), then connect both workflow callers to this entry. The current registry allows one source per record and has no draft activation state. This draft therefore keeps lineage here without changing the registry or generated release. Source update tooling does not yet flag changes against this unregistered draft.
+[Root attribution](../../../ATTRIBUTION.md) owns source credits, revisions, and notices. Before activation, register the reviewed source bases in [layers.json](../../layers.json) and connect both workflow callers to this entry. Source update tooling does not yet flag this unregistered workflow. The source registry supports one upstream per record, so the two source relationships need separate records.
 
 ## Review and activation checks
 

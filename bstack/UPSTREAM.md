@@ -1,12 +1,12 @@
 # Upstream sources and bstack adaptations
 
-`engineering/` contains exact files from the pinned PStack source and its selected cursor-team-kit companions. [pstack-provenance.json](pstack-provenance.json) records their repository, commit, source paths, hashes, and file modes. Keep local adaptations outside this directory.
+`upstream/pstack/` contains exact files from the pinned PStack source and its selected cursor-team-kit companions. [pstack-provenance.json](pstack-provenance.json) records their repository, commit, source paths, hashes, and file modes. Keep bstack-owned engineering workflows in `engineering/` and local adaptations outside every upstream boundary.
 
-bstack adopts upstream changes selectively. A new upstream release does not require a bstack update. Keep the current pin until a reviewed change is worth adopting. [Credits and source relationships](ATTRIBUTION.md) identifies the authors and notices to preserve for both complete updates and selected improvements.
+bstack adopts upstream changes selectively. A new upstream release does not require a bstack update. Keep the current pin until a reviewed change is worth adopting. [Credits and source relationships](../ATTRIBUTION.md) identifies the authors and notices to preserve for both complete updates and selected improvements.
 
 [layers.json](layers.json) maps each adaptation to a source manifest and the upstream file versions used as its review bases. These hashes record the dependency versions the adaptation targets. They do not certify that upstream behavior is safe or that every indirect dependency has been reviewed.
 
-The active [bstack router](shared/skills/bstack-router/SKILL.md) adds portable policy around the unchanged upstream router and playbooks. Its review bases cover that entry, the bundled playbooks, and direct workflow dependencies with their supporting files. The [shared unslop skill](shared/skills/unslop/SKILL.md) replaces the upstream unslop skill when bstack routes writing work. Its code-maverick origin is recorded in the layer manifest. The upstream unslop copy remains available for comparison. Both files from the customized skill were preserved when it moved to `shared/skills/unslop/`; attribution metadata was added afterward. The recorded origin hashes describe that initial import.
+The active [bstack router](shared/skills/bstack-router/SKILL.md) adds portable policy around the unchanged upstream router and playbooks. Its review bases cover that entry, the bundled playbooks, and direct workflow dependencies with their supporting files. The [shared unslop skill](shared/skills/unslop/SKILL.md) replaces the upstream unslop skill when bstack routes writing work. Its origin hashes describe the initial code-maverick import. Source relationships are maintained in [root attribution](../ATTRIBUTION.md); individual skills need only a pointer there.
 
 The manifest describes the relationship. The active router and host adapters put that relationship into the agent's instruction flow. A file listed as an override does not automatically replace arbitrary explicit reads of its upstream counterpart. Model compliance still needs behavioral verification.
 
@@ -50,7 +50,7 @@ Use this path to take a useful upstream change while keeping the rest of bstack'
 
 1. Review the candidate change and its dependencies. Decide which behavior to adopt and how it interacts with bstack's policy.
 2. Port the selected change into a bstack-owned overlay or whole-skill replacement. Keep the pinned vendor files and their source manifest unchanged. Register a new replacement in `layers.json` when needed and connect it to the active routing policy.
-3. Record the upstream repository, exact commit, affected source paths, selected change, and bstack adjustments in the adaptation's reference documentation. Link that record from its skill. Preserve the upstream credit and license notice. Record the same adoption in the Git commit so the code and its lineage can be reviewed together.
+3. Record the exact source bases in the layer registry and the selected change in Git. Update the central attribution map when the relationship changes. Keep design notes only when they explain a useful choice. Preserve required notices in central attribution and the original source snapshots; do not add repeated credit blocks to runtime instructions.
 4. Run the source and layer checks, then verification for the affected behavior. Unchanged vendor review bases keep their existing hashes; they still identify the source underneath the adaptation.
 
 Do not mix newer files into the vendor snapshot and label the whole snapshot with one newer commit. A selected improvement belongs in the adaptation history unless its source is imported and tracked as a separate, accurately recorded snapshot.
@@ -69,7 +69,7 @@ Lock refresh is manual for now. The review command deliberately has no apply mod
 
 ## Selected Matt Pocock imports
 
-The layer registry includes `matt-pocock-sdlc`, `matt-pocock-handoff`, and `matt-pocock-dependencies`, all pinned to `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their manifests record the nine [SDLC skills](sdlc/README.md), shared handoff, and three [support dependencies](shared/dependencies/README.md) separately. No bstack adaptation or active release binding is registered for these skills yet.
+The layer registry includes `matt-pocock-sdlc`, `matt-pocock-handoff`, and `matt-pocock-dependencies`, all pinned to `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their manifests record the nine [SDLC skills](sdlc/README.md), shared handoff, and three [support dependencies](upstream/README.md) separately. No bstack adaptation or active release binding is registered for these skills yet.
 
 Their `source_path` is the empty string, meaning the upstream repository root. Every file records its exact original `source_path`; this preserves provenance when bstack groups upstream engineering and productivity skills together. `review_paths` limits discovery of new candidate files to the selected skill directories and accompanying notices/docs. Unselected upstream skills do not become imports or update candidates implicitly. The integrity check still rejects every unrecorded file inside each local import boundary.
 
@@ -81,6 +81,6 @@ python3 bstack/scripts/layers.py review-update --source matt-pocock-handoff --ca
 python3 bstack/scripts/layers.py review-update --source matt-pocock-dependencies --candidate /path/to/matt-pocock-skills
 ```
 
-Keep `sdlc/matt-pocock/`, `shared/matt-pocock/`, and `shared/dependencies/matt-pocock/` unchanged. Put future overlays and replacements outside their respective import boundaries. Register their source bases in `layers.json` and connect them explicitly to routing and release assembly when reviewed. Copy each source's MIT notice with any distribution of its files.
+Keep `upstream/matt-pocock/sdlc/`, `upstream/matt-pocock/handoff/`, and `upstream/matt-pocock/dependencies/` unchanged. Put overlays and replacements outside those import boundaries. Register their source bases in `layers.json` and connect them explicitly to routing and release assembly when reviewed. The generated attribution file carries each source's MIT notice with a distribution that includes its material.
 
-Use non-overlapping vendor directories for separate sources. `engineering/` is currently the PStack-only import boundary. Before mixing another author's engineering files into that category, move the PStack boundary into its own child directory and update its path references in a separate relocation commit. Do not relax the integrity check to admit unrelated files into an upstream snapshot.
+Use non-overlapping directories under `upstream/` for separate source snapshots. Their manifests own the destination paths. A relocation changes that destination and its callers, not the pinned file bytes or hashes. Do not relax the integrity check to admit bstack-owned files into an upstream snapshot.

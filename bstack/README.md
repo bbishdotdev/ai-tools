@@ -1,50 +1,34 @@
 # bstack
 
-bstack is Brenden Bishop's integrated collection of engineering and SDLC workflows, agent adapters, and custom skills. It builds on open-source work, with source attribution and bstack's changes tracked separately.
+bstack combines engineering and SDLC workflows with shared agent configuration, context handling, and verification. The collection is designed for Codex, Claude Code, and Cursor, with CLI verification also covering Grok.
 
-The engineering foundation is [PStack by Lauren "poteto" Tan](https://github.com/cursor/plugins/tree/main/pstack). [Selected SDLC sources](sdlc/README.md) come from [Matt Pocock's skills](https://github.com/mattpocock/skills). bstack connects these workflows and adds Brenden's operating preferences. See [credits and source relationships](ATTRIBUTION.md) for authors, licenses, and the distinction between imported, adapted, and original work.
+## Use the current bundle
 
-bstack names the whole collection. **Poteto Mode** remains the name of its PStack-based engineering mode. The adapter command design keeps `/poteto-mode`; collection-wide automatic activation is a separate setting.
+[Install the complete bundle](INSTALL.md) from a local clone, a transferred release, or skills.sh. Installation uses the exact bundled source and customizations. It never fetches newer upstream skills.
 
-## Direction and current scope
+Poteto Mode is the manual engineering entry. Automatic routing is opt-in. The current bundle includes the router, customized writing behavior, selected engineering workflows, and project-local CLI adapters. The development repository retains its previously authorized automatic routing.
 
-The goal is one distributable plugin that connects engineering and SDLC workflows across Codex, Claude Code, and Cursor, with CLI verification also covering Grok. Planned release additions include shared memory and context handling, local-first work planning, GitHub templates and CI jobs, and the selected Matt Pocock skills. Those pieces will join the package in reviewed steps.
+## Work in the source tree
 
-Today, bstack has a pinned PStack import, a separate policy layer, customized `unslop`, and a generated consumer bundle with project-local CLI adapters. [Install the complete bundle](INSTALL.md) from a local clone or transferred folder using Python, or through skills.sh. Both routes use the exact bundled revision. New installations default to manual Poteto Mode; automatic routing is an explicit opt-in. The development repository's earlier POC still uses its previously authorized automatic routing.
+- [Engineering](engineering/README.md) holds bstack-owned workflows. The approved prototype design is ready for the next integration step.
+- [SDLC](sdlc/README.md) holds planning workflow selection and integration decisions.
+- `shared/` holds the router, adapters, maintainer verification, and [memory implementation](shared/memory.md).
+- [Upstream](upstream/README.md) holds unchanged, pinned source inputs. Use the [catalog](audit/catalog.md) and [architectural audit](audit/pstack.md) when reviewing those inputs.
+- `package/` and `scripts/` assemble and check `release/`, the complete consumer installation artifact.
 
-The existing [shared-memory source](shared/memory.md) lives under `shared/`; its consumer release integration remains future work. Nine [Matt Pocock SDLC skills](sdlc/README.md), [handoff](shared/matt-pocock/skills/handoff/SKILL.md), and three [support dependencies](shared/dependencies/README.md) are imported unchanged at `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their configuration, portable routing, and consumer release integration remain pending, along with local work management, desktop verification, and native plugin-manager installation.
+Shared memory, the selected SDLC workflows, the prototype workflow, and local work planning still need consumer runtime integration. Desktop apps and native plugin-manager installation remain separate verification work. Importing a source does not activate it or configure its services.
 
-Start with [how PStack works and the simplification options](audit/pstack.md). Use the [catalog](audit/catalog.md) to review individual skills and playbooks.
+## Maintain and verify
 
-`engineering/` contains unmodified PStack 0.15.2 from `cursor/plugins` at `e31650eea443aaea1e84cc15d88c13f40080b275`, plus its three direct Cursor Team Kit companion skills. PStack's README, guide, license, Cursor manifest, scripts, agents, and dormant Benny pack are preserved. bstack's customized `unslop` from `code-maverick` lives separately under `shared/skills/unslop/`.
+Keep customizations separate from the frozen sources. Follow [upstream updates](UPSTREAM.md) to compare a new snapshot or adopt a selected improvement. [layers.json](layers.json) records the sources and active adaptations.
 
-The source import remains unchanged. The generated `release/` assembles bstack's policy and replacements with selected dependencies, portable paths, helper source, and notices. It does not run PStack model setup or enable its automations. The upstream instructions in `engineering/` still describe PStack's original environment. The active [bstack router](shared/skills/bstack-router/SKILL.md) applies scoped routing, capability-based tool choices, risk-based architecture, and evidence reporting over that source. This is an instruction policy, not an implementation of every provider adapter.
-
-## Selective upstream updates
-
-bstack keeps reviewed source pins and adopts upstream improvements deliberately. It does not automatically follow the latest upstream release. Maintainers can review a newer snapshot or port selected improvements into bstack-owned adaptations without replacing unrelated choices.
-
-See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records PStack and the three Matt Pocock imports, with bstack-owned overlays and replacement skills separate from their pinned upstream review bases.
-
-## Verification and source records
-
-The historical [raw-source skills.sh probe](audit/skills-install.md) found missing dependencies and notices, incorrect overrides, and absent setup. The generated release addresses those packaging gaps. Use `python3 bstack/scripts/package.py build` to assemble it and `python3 bstack/scripts/package.py check` to detect stale or altered output. [The installation guide](INSTALL.md) explains the current distribution and host boundaries.
-
-The [consumer packaging report](audit/packaging.md) records matching offline/copy/symlink installs, 77 deterministic tests, and 20 live CLI routing/mode probes. Codex reminder delivery remains explicitly limited by native project trust in fresh fixtures; desktop and native plugin-manager installation are not claimed.
-
-The [policy-layer report](audit/bstack-layers.md) describes the approved behavior changes, source separation, and CLI verification scope.
-
-The historical [router POC results](audit/router-poc.md) record 12 passing routing checks against the original entry across Codex, Claude Code, Cursor, and Grok, with explicit hook-support gaps. The [router adapter](shared/router/README.md) now points its short reminder to bstack's entry. The [maintainer verification skill](shared/skills/verify-bstack/SKILL.md) discovers installed CLIs, drives resumed sessions, checks fresh hook receipts, and captures native compaction evidence. Its policy probes evaluate the new layer separately. Runtime transcripts live in gitignored `.bstack/verification/`.
-
-The [after-tool fallback results](audit/router-fallback.md) add eight passing resumed CLI turns across Cursor and Grok, including fresh delivery, duplicate suppression, and tool-free behavior. This narrows the prompt-hook gap while preserving explicit limits around first-tool coverage and Cursor's headless lifecycle boundaries.
-
-[pstack-provenance.json](pstack-provenance.json) records upstream sources, file hashes, and permissions. The approved `unslop` customization is recorded in the layer registry. [The static inventory](audit/pstack-inventory.json) records imported file sizes and textual dependencies with source locations.
-
-Verify the import and audit inventory from the repository root:
-
-```bash
-python3 bstack/scripts/audit_pstack.py
+```sh
 python3 bstack/scripts/layers.py check
+python3 bstack/scripts/audit_pstack.py
+python3 bstack/scripts/package.py build
+python3 bstack/scripts/package.py check
 ```
 
-The checker uses the Python standard library and executes no imported workflow. `--write` regenerates the inventory after reviewed provenance changes. It does not silently accept changed vendor files.
+The [verification skill](shared/skills/verify-bstack/SKILL.md) describes targeted source, package, installation, and live CLI checks. Historical [packaging results](audit/packaging.md), [router results](audit/router-poc.md), [fallback results](audit/router-fallback.md), and [policy-layer results](audit/bstack-layers.md) record what was tested and its limits. New evidence goes in gitignored `.bstack/verification/`.
+
+[Root attribution](../ATTRIBUTION.md) is the single maintained source for acknowledgments, ownership distinctions, and required notices. Generated releases carry that information with the installed bundle.

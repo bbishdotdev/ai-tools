@@ -1,6 +1,6 @@
 # bstack
 
-bstack packages Brenden Bishop's engineering workflow around Lauren "poteto" Tan's PStack. This release includes bstack's policy layer, customized unslop, selected engineering dependencies, portable setup controls, and the source and license records. Matt Pocock's selected SDLC and handoff sources are imported in the development repository for review and are not included in version 0.1.0.
+bstack combines engineering workflows, portable setup controls, and custom policies in one package. Version 0.1.0 includes the router, customized unslop, and selected engineering dependencies. The SDLC integrations and prototype workflow remain in the development repository and are not active in this release.
 
 The exported skill is `poteto-mode`. Invoke it explicitly to load the [bstack router](content/shared/skills/bstack-router/WORKFLOW.md). Internal workflows stay private and are loaded through the [index](content/index.json). The active unslop is [Brenden's customization](content/shared/skills/unslop/WORKFLOW.md).
 

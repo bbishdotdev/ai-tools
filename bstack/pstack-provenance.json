@@ -5,7 +5,7 @@
   "commit": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "source_path": "pstack",
   "plugin_version": "0.15.2",
-  "destination": "engineering",
+  "destination": "upstream/pstack",
   "scope": "Exact pinned upstream files, including selected cursor-team-kit companions. bstack adaptations live outside engineering.",
   "files": [
     {

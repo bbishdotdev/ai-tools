@@ -4,7 +4,7 @@
 
 Installation must deliver bstack's reviewed bundle, including its policy, customized unslop, selected workflows, helper source, notices, and controller. No install path fetches upstream latest. An installer exit proves file delivery; real CLI sessions provide separate discovery and routing evidence.
 
-The [initial raw-source probe](../../../../audit/skills-install.md) remains the historical failure case. Test `bstack/release/`, not the source import in `engineering/`.
+The [initial raw-source probe](../../../../audit/skills-install.md) remains the historical failure case. Test `bstack/release/`, not the source imports in `upstream/`.
 
 ## Drive
 

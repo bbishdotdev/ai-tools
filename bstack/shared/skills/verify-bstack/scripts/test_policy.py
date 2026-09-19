@@ -79,12 +79,12 @@ class PolicyEvidenceTests(unittest.TestCase):
         scoped = [{"kind": "command_execution", "command": "rg -n 'model_policy' bstack/shared/skills/bstack-router"}]
         self.assertIn("unscoped_shell_content_read", contamination_reasons([], broad))
         self.assertEqual(contamination_reasons([], scoped), [])
-        reads = ["cat bstack/shared/skills/bstack-router/SKILL.md", "cat bstack/engineering/skills/poteto-mode/SKILL.md"]
+        reads = ["cat bstack/shared/skills/bstack-router/SKILL.md", "cat bstack/upstream/pstack/skills/poteto-mode/SKILL.md"]
         checks = assess(CASES["ordinary-prose"], 0, {}, reads, [], {}, {})
         self.assertFalse(checks["no_imported_engineering_access"])
 
     def test_cursor_shell_uses_same_read_and_scope_checks(self):
-        command = "ls bstack/engineering && rg -n 'inherit-parent' bstack/shared/skills/bstack-router/SKILL.md | head -40"
+        command = "ls bstack/upstream/pstack && rg -n 'inherit-parent' bstack/shared/skills/bstack-router/SKILL.md | head -40"
         trace = trace_for([{"type": "tool_call", "subtype": "completed", "call_id": "s1", "tool_call": {
             "shellToolCall": {"args": {"command": command, "workingDirectory": ""}}}}])
         self.assertEqual(trace[0]["arguments"][0]["input"]["command"], command)

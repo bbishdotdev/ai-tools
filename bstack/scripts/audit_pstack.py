@@ -11,8 +11,8 @@ from layers import import_errors
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ENGINEERING = ROOT / "engineering"
 MANIFEST = ROOT / "pstack-provenance.json"
+SOURCE = ROOT / json.loads(MANIFEST.read_text())["destination"]
 OUTPUT = ROOT / "audit" / "pstack-inventory.json"
 CATALOG = ROOT / "audit" / "catalog.md"
 PLAYBOOK_PURPOSES = {
@@ -88,10 +88,10 @@ def inspect_files(manifest):
     errors, files = import_errors(ROOT, manifest), []
     if errors:
         raise ValueError("\n".join(errors))
-    for path in sorted(ENGINEERING.rglob("*")):
+    for path in sorted(SOURCE.rglob("*")):
         if not path.is_file():
             continue
-        relative = path.relative_to(ENGINEERING).as_posix()
+        relative = path.relative_to(SOURCE).as_posix()
         content = path.read_bytes()
         digest = hashlib.sha256(content).hexdigest()
         files.append({"path": relative, "bytes": len(content), "sha256": digest})
@@ -101,10 +101,10 @@ def inspect_files(manifest):
 def collect_skills(manifest):
     records, aliases = [], dict(EXTERNAL)
     companions = set(manifest["companions"]["skills"])
-    paths = list(ENGINEERING.glob("skills/*/SKILL.md"))
-    paths += list(ENGINEERING.glob("automations/benny/skills/*/SKILL.md"))
+    paths = list(SOURCE.glob("skills/*/SKILL.md"))
+    paths += list(SOURCE.glob("automations/benny/skills/*/SKILL.md"))
     for path in sorted(paths):
-        relative = path.relative_to(ENGINEERING)
+        relative = path.relative_to(SOURCE)
         text = path.read_text()
         meta, body, _ = frontmatter(text)
         name = path.parent.name
@@ -121,11 +121,11 @@ def collect_skills(manifest):
             "characters": len(text), "body_words": len(body.split()),
             "name_matches_directory": meta.get("name") == name,
         })
-    for path in sorted(ENGINEERING.glob("agents/*.md")):
+    for path in sorted(SOURCE.glob("agents/*.md")):
         meta, _, _ = frontmatter(path.read_text())
         aliases[path.stem] = "agent:" + path.stem
         aliases[meta["name"]] = "agent:" + path.stem
-    for path in sorted(ENGINEERING.glob("skills/poteto-mode/playbooks/*.md")):
+    for path in sorted(SOURCE.glob("skills/poteto-mode/playbooks/*.md")):
         aliases[path.stem] = "playbook:" + path.stem
         title = path.read_text().splitlines()[0].lstrip("# ")
         aliases[title] = "playbook:" + path.stem
@@ -135,8 +135,8 @@ def collect_skills(manifest):
 def scan_references(aliases):
     edges = defaultdict(list)
     links, unresolved = [], []
-    for path in sorted(ENGINEERING.rglob("*.md")):
-        relative = path.relative_to(ENGINEERING)
+    for path in sorted(SOURCE.rglob("*.md")):
+        relative = path.relative_to(SOURCE)
         source = owner(relative)
         text = path.read_text()
         if text.startswith("---\n"):
@@ -165,8 +165,8 @@ def scan_references(aliases):
                 links.append(item)
                 if not resolved.exists():
                     unresolved.append(item)
-                elif resolved.is_relative_to(ENGINEERING):
-                    targets.add(owner(resolved.relative_to(ENGINEERING)))
+                elif resolved.is_relative_to(SOURCE):
+                    targets.add(owner(resolved.relative_to(SOURCE)))
             for target in targets - {source}:
                 edges[(source, target)].append({"file": relative.as_posix(), "line": number})
     return [
@@ -191,14 +191,14 @@ def build_inventory():
         "writing_example": ["technical-writing", "unslop"],
     }
     for name, members in examples.items():
-        paths = [ENGINEERING / "skills" / member / "SKILL.md" for member in members]
+        paths = [SOURCE / "skills" / member / "SKILL.md" for member in members]
         if name == "feature_design_example":
-            paths.append(ENGINEERING / "skills/poteto-mode/playbooks/feature.md")
-        routes[name] = {"files": [p.relative_to(ENGINEERING).as_posix() for p in paths], "characters": sum(len(p.read_text()) for p in paths)}
+            paths.append(SOURCE / "skills/poteto-mode/playbooks/feature.md")
+        routes[name] = {"files": [p.relative_to(SOURCE).as_posix() for p in paths], "characters": sum(len(p.read_text()) for p in paths)}
     playbooks = []
-    for path in sorted(ENGINEERING.glob("skills/poteto-mode/playbooks/*.md")):
+    for path in sorted(SOURCE.glob("skills/poteto-mode/playbooks/*.md")):
         text = path.read_text()
-        playbooks.append({"name": path.stem, "path": path.relative_to(ENGINEERING).as_posix(), "characters": len(text)})
+        playbooks.append({"name": path.stem, "path": path.relative_to(SOURCE).as_posix(), "characters": len(text)})
     return {
         "schema_version": 1, "upstream_commit": manifest["commit"],
         "method": "Static source inventory. Edges are explicit code-span, bold-name, principle-name, playbook-path, or relative-Markdown-link references. They include optional references and examples; they are not executed calls or proof of runtime reachability. Plain unmarked prose references may be absent. Built-ins and dynamically discovered tools need separate capability checks.",
@@ -208,7 +208,7 @@ def build_inventory():
             "companion_skills": len(registered) - len(pstack), "dormant_automation_skills": len(skills) - len(registered),
             "manual_only_pstack": sum(s["manual_only"] for s in pstack),
             "manual_only_upstream": manifest["upstream_inventory"]["manual_only_skills"],
-            "agents": len(list(ENGINEERING.glob("agents/*.md"))), "playbooks": len(playbooks),
+            "agents": len(list(SOURCE.glob("agents/*.md"))), "playbooks": len(playbooks),
             "manifest_skill_characters": sum(s["characters"] for s in registered),
             "manifest_metadata_characters": sum(len(s["declared_name"] or "") + len(s["description"]) for s in registered),
             "textual_reference_edges": len(edges), "relative_markdown_links": len(links),
@@ -237,24 +237,24 @@ def render_catalog(inventory):
                 continue
             description = skill["description"].replace("|", "\\|")
             mode = "Manual" if skill["manual_only"] else "Normal"
-            lines.append(f"| [{skill['name']}](../engineering/{skill['path']}) | {description} | {mode} | {skill['characters']:,} |")
+            lines.append(f"| [{skill['name']}](../upstream/pstack/{skill['path']}) | {description} | {mode} | {skill['characters']:,} |")
         lines.append("")
     lines += ["## Playbooks", "", "These are selected files within poteto-mode, not separately registered skills.", "",
               "| Playbook | Purpose | Characters |", "| --- | --- | ---: |"]
     for item in inventory["playbooks"]:
-        lines.append(f"| [{item['name']}](../engineering/{item['path']}) | {PLAYBOOK_PURPOSES[item['name']]} | {item['characters']:,} |")
+        lines.append(f"| [{item['name']}](../upstream/pstack/{item['path']}) | {PLAYBOOK_PURPOSES[item['name']]} | {item['characters']:,} |")
     lines += ["", "## Agents", "",
               "| Agent | Purpose | Dependency |", "| --- | --- | --- |",
-              "| [poteto-agent](../engineering/agents/poteto-agent.md) | Give delegates the same operating instructions as the parent | Reads the full poteto-mode wrapper and relevant principle leaves |",
-              "| [Comment Sicko](../engineering/agents/comment-sicko.md) | Delete comments and flag code that needs a clearer structure | May investigate disputed claims through how and why; no application-code changes in this agent |", "",
+              "| [poteto-agent](../upstream/pstack/agents/poteto-agent.md) | Give delegates the same operating instructions as the parent | Reads the full poteto-mode wrapper and relevant principle leaves |",
+              "| [Comment Sicko](../upstream/pstack/agents/comment-sicko.md) | Delete comments and flag code that needs a clearer structure | May investigate disputed claims through how and why; no application-code changes in this agent |", "",
               "## Mechanical support", "", "| Entry | Purpose |", "| --- | --- |",
-              "| [check-plan.mjs](../engineering/skills/poteto-mode/scripts/check-plan.mjs) | Validate a specific multi-phase plan format, including fixed verification lane wording |",
-              "| [orch.ts](../engineering/skills/poteto-mode/scripts/orch/orch.ts) and [store.ts](../engineering/skills/poteto-mode/scripts/orch/store.ts) | CLI and file storage for orchestration units, verification ledger, inbox, gates, and frontier; do not spawn agents |",
-              "| [watch-pr](../engineering/skills/poteto-mode/scripts/watch-pr/watch-pr) | GitHub PR watcher with CLI, GitHub adapter, readiness policy, rendering, types, and bundled tests |",
-              "| [bootstrap.ts](../engineering/skills/poteto-mode/scripts/bootstrap.ts) | Install locked Bun dependencies next to the script when needed |",
-              "| [worktree-audit.sh](../engineering/skills/poteto-mode/scripts/worktree-audit.sh) | Inspect worktree size, age, Git/PR state, and Cursor transcripts for cleanup decisions |",
-              "| [log.sh](../engineering/skills/show-me-your-work/scripts/log.sh) | Append sanitized rows to the decision TSV |", "",
-              "The [guide](../engineering/docs/guide/README.md) explains upstream use. The [Benny pack](../engineering/automations/benny/README.md) includes configuration and automation templates. Images and license files are preserved. See [the inventory](pstack-inventory.json) for every file and explicit textual-reference edge with source locations.", ""]
+              "| [check-plan.mjs](../upstream/pstack/skills/poteto-mode/scripts/check-plan.mjs) | Validate a specific multi-phase plan format, including fixed verification lane wording |",
+              "| [orch.ts](../upstream/pstack/skills/poteto-mode/scripts/orch/orch.ts) and [store.ts](../upstream/pstack/skills/poteto-mode/scripts/orch/store.ts) | CLI and file storage for orchestration units, verification ledger, inbox, gates, and frontier; do not spawn agents |",
+              "| [watch-pr](../upstream/pstack/skills/poteto-mode/scripts/watch-pr/watch-pr) | GitHub PR watcher with CLI, GitHub adapter, readiness policy, rendering, types, and bundled tests |",
+              "| [bootstrap.ts](../upstream/pstack/skills/poteto-mode/scripts/bootstrap.ts) | Install locked Bun dependencies next to the script when needed |",
+              "| [worktree-audit.sh](../upstream/pstack/skills/poteto-mode/scripts/worktree-audit.sh) | Inspect worktree size, age, Git/PR state, and Cursor transcripts for cleanup decisions |",
+              "| [log.sh](../upstream/pstack/skills/show-me-your-work/scripts/log.sh) | Append sanitized rows to the decision TSV |", "",
+              "The [guide](../upstream/pstack/docs/guide/README.md) explains upstream use. The [Benny pack](../upstream/pstack/automations/benny/README.md) includes configuration and automation templates. Images and license files are preserved. See [the inventory](pstack-inventory.json) for every file and explicit textual-reference edge with source locations.", ""]
     return "\n".join(lines)
 
 
