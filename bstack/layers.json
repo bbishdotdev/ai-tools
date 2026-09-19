@@ -4,6 +4,14 @@
     {
       "id": "pstack",
       "manifest": "pstack-provenance.json"
+    },
+    {
+      "id": "matt-pocock-sdlc",
+      "manifest": "matt-pocock-sdlc-provenance.json"
+    },
+    {
+      "id": "matt-pocock-handoff",
+      "manifest": "matt-pocock-handoff-provenance.json"
     }
   ],
   "layers": [

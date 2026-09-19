@@ -13,14 +13,18 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def safe_path(root, relative):
+def relative_parts(relative):
     if not isinstance(relative, str) or not relative or "\\" in relative:
         raise ValueError(f"Unsafe relative path: {relative!r}")
     parts = relative.split("/")
     if PurePosixPath(relative).is_absolute() or any(p in ("", ".", "..") for p in parts):
         raise ValueError(f"Unsafe relative path: {relative!r}")
+    return parts
+
+
+def safe_path(root, relative):
     path = root
-    for part in parts:
+    for part in relative_parts(relative):
         path = path / part
         if path.is_symlink():
             raise ValueError(f"Symlink is not an imported file: {path}")
@@ -44,10 +48,18 @@ def tree_files(root):
 def import_errors(root, manifest):
     errors = []
     destination = safe_path(root, manifest["destination"])
+    scopes = review_scopes(manifest)
     expected = {}
+    source_paths = set()
     for entry in manifest["files"]:
         relative = entry["path"]
         path = safe_path(destination, relative)
+        source_path = candidate_path(manifest, entry)
+        if source_path in source_paths:
+            errors.append(f"Duplicate upstream path: {source_path}")
+        source_paths.add(source_path)
+        if "review_paths" in manifest and not any(source_path == scope or source_path.startswith(scope + "/") for scope in scopes):
+            errors.append(f"Upstream file outside review paths: {source_path}")
         if relative in expected:
             errors.append(f"Duplicate import entry: {relative}")
         expected[relative] = entry
@@ -117,6 +129,8 @@ def check(root=ROOT):
             safe_path(vendor, target)
             if not any(path.startswith(target + "/") for path in files):
                 errors.append(f"Override target missing from import: {name}")
+            else:
+                override_source_prefixes(manifest, target)
     return {"status": "invalid" if errors else "clean", "errors": errors,
             "sources": list(sources), "layers": sorted(names)}
 
@@ -124,7 +138,46 @@ def check(root=ROOT):
 def candidate_path(manifest, entry):
     companion = manifest.get("companions")
     prefix = companion["source_path"] if companion and entry.get("source") == companion["source_path"] else manifest["source_path"]
-    return prefix + "/" + entry.get("source_path", entry["path"])
+    if prefix != "":
+        relative_parts(prefix)
+    relative = entry.get("source_path", entry["path"])
+    relative_parts(relative)
+    return prefix + "/" + relative if prefix else relative
+
+
+def review_scopes(manifest):
+    prefix = manifest["source_path"]
+    if prefix != "":
+        relative_parts(prefix)
+    scopes = manifest.get("review_paths")
+    if scopes is None:
+        if not prefix:
+            raise ValueError("Repository-root imports require explicit review_paths")
+        scopes = [prefix]
+        companion = manifest.get("companions")
+        if companion:
+            scopes.extend(companion["source_path"] + "/skills/" + skill for skill in companion["skills"])
+    if not isinstance(scopes, list) or not scopes:
+        raise ValueError("review_paths must be a nonempty list of file or directory paths")
+    for scope in scopes:
+        relative_parts(scope)
+    return scopes
+
+
+def override_source_prefixes(manifest, target):
+    prefixes = set()
+    for entry in manifest["files"]:
+        if not entry["path"].startswith(target + "/"):
+            continue
+        relative = entry["path"][len(target) + 1:]
+        source = candidate_path(manifest, entry)
+        if source != relative and not source.endswith("/" + relative):
+            raise ValueError(f"Override mapping must preserve skill-relative paths: {entry['path']}")
+        prefix = source[:-len(relative)]
+        if not prefix:
+            raise ValueError(f"Override mapping cannot cover the upstream repository root: {entry['path']}")
+        prefixes.add(prefix)
+    return prefixes
 
 
 def review_update(source, candidate, root=ROOT):
@@ -150,19 +203,14 @@ def review_update(source, candidate, root=ROOT):
         elif digest(path) != entry["upstream_sha256"] or oct(stat.S_IMODE(path.stat().st_mode)) != entry["mode"]:
             changes.append({"path": entry["path"], "candidate_path": relative, "change": "changed",
                             "sha256": digest(path), "mode": oct(stat.S_IMODE(path.stat().st_mode))})
-    scopes = [manifest["source_path"]]
-    companion = manifest.get("companions")
-    if companion:
-        scopes.extend(companion["source_path"] + "/skills/" + skill for skill in companion["skills"])
-    additions = []
-    for scope in scopes:
-        directory = safe_path(candidate, scope)
-        if not directory.exists():
+    additions = set()
+    for scope in review_scopes(manifest):
+        path = safe_path(candidate, scope)
+        if not path.exists():
             continue
-        for relative in sorted(tree_files(directory)):
-            path = scope + "/" + relative
-            if path not in expected:
-                additions.append(path)
+        paths = [scope] if path.is_file() else [scope + "/" + relative for relative in tree_files(path)]
+        additions.update(relative for relative in paths if relative not in expected)
+    additions = sorted(additions)
     reviews = []
     changed = {item["path"] for item in changes}
     for layer in config["layers"]:
@@ -173,8 +221,8 @@ def review_update(source, candidate, root=ROOT):
         added = []
         if layer["kind"] == "whole-skill-override":
             affected = sorted(set(affected) | {p for p in changed if p.startswith(layer["replaces"] + "/")})
-            prefix = manifest["source_path"] + "/" + layer["replaces"] + "/"
-            added = [p for p in additions if p.startswith(prefix)]
+            prefixes = override_source_prefixes(manifest, layer["replaces"])
+            added = [p for p in additions if any(p.startswith(prefix) for prefix in prefixes)]
         reviews.append({"layer": layer["id"], "review_required": bool(affected or added),
                         "affected_files": affected, "added_files": added})
     return {"status": "review_required" if changes or additions else "unchanged", "source": source,

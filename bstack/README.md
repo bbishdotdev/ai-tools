@@ -2,17 +2,17 @@
 
 bstack is Brenden Bishop's integrated collection of engineering and SDLC workflows, agent adapters, and custom skills. It builds on open-source work, with source attribution and bstack's changes tracked separately.
 
-The engineering foundation is [PStack by Lauren "poteto" Tan](https://github.com/cursor/plugins/tree/main/pstack). The planned SDLC foundation is a selection from [Matt Pocock's skills](https://github.com/mattpocock/skills). bstack connects these workflows and adds Brenden's operating preferences. See [credits and source relationships](ATTRIBUTION.md) for authors, licenses, and the distinction between imported, adapted, and original work.
+The engineering foundation is [PStack by Lauren "poteto" Tan](https://github.com/cursor/plugins/tree/main/pstack). [Selected SDLC sources](sdlc/README.md) come from [Matt Pocock's skills](https://github.com/mattpocock/skills). bstack connects these workflows and adds Brenden's operating preferences. See [credits and source relationships](ATTRIBUTION.md) for authors, licenses, and the distinction between imported, adapted, and original work.
 
 bstack names the whole collection. **Poteto Mode** remains the name of its PStack-based engineering mode. The adapter command design keeps `/poteto-mode`; collection-wide automatic activation is a separate setting.
 
 ## Direction and current scope
 
-The goal is one distributable plugin that connects engineering and SDLC workflows across Codex, Claude Code, and Cursor, with CLI verification also covering Grok. Planned additions include shared memory and context handling, local-first work planning, GitHub templates and CI jobs, and selected Matt Pocock skills. Those pieces will join the package in reviewed steps.
+The goal is one distributable plugin that connects engineering and SDLC workflows across Codex, Claude Code, and Cursor, with CLI verification also covering Grok. Planned release additions include shared memory and context handling, local-first work planning, GitHub templates and CI jobs, and the selected Matt Pocock skills. Those pieces will join the package in reviewed steps.
 
 Today, bstack has a pinned PStack import, a separate policy layer, customized `unslop`, and a generated consumer bundle with project-local CLI adapters. [Install the complete bundle](INSTALL.md) from a local clone or transferred folder using Python, or through skills.sh. Both routes use the exact bundled revision. New installations default to manual Poteto Mode; automatic routing is an explicit opt-in. The development repository's earlier POC still uses its previously authorized automatic routing.
 
-The existing [shared-memory source](shared/memory.md) now lives under `shared/`; its consumer release integration remains future work. Matt Pocock's skills, local work management, desktop verification, and native plugin-manager installation are also pending.
+The existing [shared-memory source](shared/memory.md) lives under `shared/`; its consumer release integration remains future work. Nine [Matt Pocock SDLC skills](sdlc/README.md) and [handoff](shared/matt-pocock/skills/handoff/SKILL.md) are imported unchanged at `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their dependency connections, portable routing, and consumer release integration remain pending, along with local work management, desktop verification, and native plugin-manager installation.
 
 Start with [how PStack works and the simplification options](audit/pstack.md). Use the [catalog](audit/catalog.md) to review individual skills and playbooks.
 
@@ -24,7 +24,7 @@ The source import remains unchanged. The generated `release/` assembles bstack's
 
 bstack keeps reviewed source pins and adopts upstream improvements deliberately. It does not automatically follow the latest upstream release. Maintainers can review a newer snapshot or port selected improvements into bstack-owned adaptations without replacing unrelated choices.
 
-See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records bstack-owned overlays and replacement skills separately from their pinned upstream review bases. The same arrangement can support selected Matt Pocock skills later.
+See [upstream updates and layer ownership](UPSTREAM.md) before changing an imported file. [layers.json](layers.json) records PStack and both Matt Pocock imports, with bstack-owned overlays and replacement skills separate from their pinned upstream review bases.
 
 ## Verification and source records
 

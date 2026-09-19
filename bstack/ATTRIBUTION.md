@@ -1,6 +1,6 @@
 # Credits and source relationships
 
-bstack is an integration project by Brenden Bishop. Its engineering workflows build on Lauren "poteto" Tan's PStack. Selected SDLC workflows from Matt Pocock's skills are planned. bstack's packaging, adapters, policy changes, verification tools, and custom workflows have their own history alongside those upstream sources.
+bstack is an integration project by Brenden Bishop. Its engineering workflows build on Lauren "poteto" Tan's PStack. Selected SDLC workflows and handoff are imported from Matt Pocock's skills. bstack's packaging, adapters, policy changes, verification tools, and custom workflows have their own history alongside those upstream sources.
 
 ## Included upstream work
 
@@ -8,8 +8,9 @@ bstack is an integration project by Brenden Bishop. Its engineering workflows bu
 | --- | --- | --- | --- |
 | [PStack](https://github.com/cursor/plugins/tree/e31650eea443aaea1e84cc15d88c13f40080b275/pstack) 0.15.2 | Lauren "poteto" Tan | Pinned engineering skills, principles, playbooks, agents, scripts, and supporting files under `engineering/` | [MIT, copyright 2026 Lauren Tan](engineering/LICENSE) |
 | [Cursor Team Kit](https://github.com/cursor/plugins/tree/e31650eea443aaea1e84cc15d88c13f40080b275/cursor-team-kit) 1.2.0 | Eric Zakariasson, author named in the upstream manifest; Cursor, copyright holder | PStack's three companion skills: `deslop`, `control-cli`, and `control-ui` | [MIT, copyright 2026 Cursor](engineering/licenses/cursor-team-kit.txt) |
+| [Matt Pocock's skills](https://github.com/mattpocock/skills/tree/c55ee46073ed923f86ce59a5eb3b6d895095d1b7) | Matt Pocock | Nine selected SDLC skills under `sdlc/matt-pocock/` and handoff under `shared/matt-pocock/skills/handoff/`; source import only, not yet in the consumer release | [SDLC MIT notice](sdlc/matt-pocock/LICENSE), [handoff MIT notice](shared/matt-pocock/LICENSE), copyright 2026 Matt Pocock |
 
-Both imports come from `cursor/plugins` at commit `e31650eea443aaea1e84cc15d88c13f40080b275`. [pstack-provenance.json](pstack-provenance.json) records the exact source paths, hashes, and file modes. Imported files retain their original content, metadata, and notices.
+PStack and Cursor Team Kit come from `cursor/plugins` at commit `e31650eea443aaea1e84cc15d88c13f40080b275`. [pstack-provenance.json](pstack-provenance.json) records the exact source paths, hashes, and file modes. Imported files retain their original content, metadata, and notices.
 
 ## bstack adaptations and original work
 
@@ -24,11 +25,11 @@ bstack's own work is covered by the repository's [MIT license, copyright 2026 Br
 
 **bstack** names the collection. **Poteto Mode** retains the upstream identity for the engineering mode. The proposed `/poteto-mode` adapter is part of bstack's integration design; it does not rename the entire collection or imply that Lauren maintains bstack.
 
-## Planned Matt Pocock integration
+## Matt Pocock selection
 
-[Matt Pocock's skills](https://github.com/mattpocock/skills) are the intended source for selected SDLC workflows. Selection and import are still pending. No Matt Pocock skill is bundled in bstack today.
+[Matt Pocock's skills](https://github.com/mattpocock/skills/tree/c55ee46073ed923f86ce59a5eb3b6d895095d1b7) supply `grilling`, `grill-me`, `grill-with-docs`, `domain-modeling`, `wayfinder`, `to-spec`, `to-tickets`, `triage`, `to-questionnaire`, and `handoff`. These are unchanged imports, including their reference files and agent metadata. They are present in the source repository but are not yet selected for the generated consumer release or active routing.
 
-At import, record the selected revision and paths, copy that revision's license and notices, and credit Matt in the package docs and any adapted skill metadata. Keep his original files separate from bstack's changes. Review local work tracking and connections to PStack as adaptations with their own history.
+[SDLC provenance](matt-pocock-sdlc-provenance.json) and [handoff provenance](matt-pocock-handoff-provenance.json) pin commit `c55ee46073ed923f86ce59a5eb3b6d895095d1b7` and record original paths, SHA-256 hashes, and modes. [The selection notes](sdlc/README.md) identify deferred dependencies. Future local work tracking and connections to PStack belong in bstack-owned adaptations with their own history and attribution metadata; do not modify the pinned originals.
 
 ## Attribution in packaged releases
 

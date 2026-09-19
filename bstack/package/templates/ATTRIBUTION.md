@@ -20,4 +20,4 @@ bstack names the collection. Poteto Mode retains the engineering workflow's upst
 
 ## Planned work
 
-[Matt Pocock's skills](https://github.com/mattpocock/skills) are the intended source for selected SDLC workflows. No Matt Pocock skill is included in this release. Any future import must pin its revision and carry its authorship, license, and change records.
+[Matt Pocock's skills](https://github.com/mattpocock/skills) supply selected SDLC and handoff sources in the bstack development repository. No Matt Pocock skill is included in this release. Their future release integration must carry the pinned revision, authorship, license, and change records.

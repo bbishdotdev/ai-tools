@@ -67,6 +67,19 @@ Use this path when a newer baseline is worth adopting. Keep upstream changes and
 
 Lock refresh is manual for now. The review command deliberately has no apply mode. Do not fix a failed check by changing hashes without examining the corresponding source and adaptation.
 
-A future Matt Pocock import can add another source-manifest entry and its own overlay records using the same structure. No Pocock source has been imported by this change.
+## Selected Matt Pocock imports
 
-Use non-overlapping vendor directories for separate sources. `engineering/` is currently the PStack-only import boundary. Before mixing another author's engineering files into that category, move the PStack boundary into its own child directory and update its path references in a separate relocation commit. An SDLC import can use its own directory immediately. Do not relax the integrity check to admit unrelated files into an upstream snapshot.
+The layer registry includes `matt-pocock-sdlc` and `matt-pocock-handoff`, both pinned to `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their manifests record the nine [SDLC skills](sdlc/README.md) and shared handoff separately. No bstack adaptation or active release binding is registered for these skills yet.
+
+Their `source_path` is the empty string, meaning the upstream repository root. Every file records its exact original `source_path`; this preserves provenance when bstack groups upstream engineering and productivity skills together. `review_paths` limits discovery of new candidate files to the selected skill directories and accompanying notices/docs. Unselected upstream skills do not become imports or update candidates implicitly. The integrity check still rejects every unrecorded file inside each local import boundary.
+
+Compare a separate Matt Pocock checkout with both sources:
+
+```bash
+python3 bstack/scripts/layers.py review-update --source matt-pocock-sdlc --candidate /path/to/matt-pocock-skills
+python3 bstack/scripts/layers.py review-update --source matt-pocock-handoff --candidate /path/to/matt-pocock-skills
+```
+
+Keep `sdlc/matt-pocock/` and `shared/matt-pocock/` unchanged. Put future SDLC overlays outside `sdlc/matt-pocock/`, and handoff overrides outside `shared/matt-pocock/`. Register their source bases in `layers.json` and connect them explicitly to routing and release assembly when reviewed. Copy each source's MIT notice with any distribution of its files.
+
+Use non-overlapping vendor directories for separate sources. `engineering/` is currently the PStack-only import boundary. Before mixing another author's engineering files into that category, move the PStack boundary into its own child directory and update its path references in a separate relocation commit. Do not relax the integrity check to admit unrelated files into an upstream snapshot.

@@ -13,9 +13,9 @@
     {
       "mode": 420,
       "path": "ATTRIBUTION.md",
-      "sha256": "d929aebdd4e59ca427b9d630c7f7d532100b70814c2141494b607ef0bd08fc82",
+      "sha256": "115160c3b782d4d90d68a9a03ec634b20f912468e8652aaaf950d6b8cec4803f",
       "source": "bstack/package/templates/ATTRIBUTION.md",
-      "source_sha256": "076d6065ccf550ec2532f5a584b2a8386a74254b4b6cf6f8619776703d52a150",
+      "source_sha256": "4a4f3efa7120c3ab58297c61eccc38f2be158b4d3337767875870e40b174f5e5",
       "transforms": [
         "render-release-template"
       ]
@@ -31,9 +31,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "8c1a65e4a54480850bb83cb02b19946856e1f7e0f7b3ea45b818dd8bf3e875bf",
+      "sha256": "d4785c3eb242a450e9817faf053db7a8943c95d67fa70c15c6da512ee82853e8",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "909dd22f4354c7cbd9df84bb7a202d1661c2f80347d047cdbb20b286b715438f",
+      "source_sha256": "50353a539b69ecd3e43bf42dd26143414b4669970430e01caac1d1dfa148aff6",
       "transforms": [
         "render-release-template"
       ]
@@ -1353,7 +1353,7 @@
       "path": "content/layers.json",
       "sha256": "c59e78e0803cbe275c52683e6dc90708f78944c587cf89399c4526fcf814f813",
       "source": "bstack/layers.json",
-      "source_sha256": "9403fbebb4e07a85f2c06d3980f34e9927b943b325b54231b19a61bbed706ff5",
+      "source_sha256": "e80ff660db3693d7233786a6b28e95ef22b3a4252a66e6c5cd55096ed7d21aab",
       "transforms": [
         "emit-portable-runtime-layer-summary"
       ]
