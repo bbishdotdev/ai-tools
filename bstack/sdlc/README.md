@@ -4,7 +4,7 @@ Nine selected skills from [Matt Pocock's skills](https://github.com/mattpocock/s
 
 This is a source import for review. These workflows are not yet selected for `bstack/release/`, registered in the development host skill directories, or connected to the bstack router. Importing their files does not establish portable execution or complete their dependency setup.
 
-[The integration review](integration-review.md) records agreed decision ownership, autonomous-run requirements, the proposed implementation entry, triage's separate role, and the prototype comparison awaiting manual review.
+[The integration review](integration-review.md) records agreed decision ownership, autonomous-run requirements, the proposed implementation entry, triage's separate role, and the prototype decisions. The [combined prototype draft](../shared/drafts/prototype/WORKFLOW.md) and its [source comparison](../shared/drafts/prototype/REVIEW.md) are ready for review before activation.
 
 ## Selection
 
