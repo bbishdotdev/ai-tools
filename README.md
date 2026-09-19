@@ -2,20 +2,20 @@
 
 bstack is Brenden Bishop's collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
 
-The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Poteto Mode is the manual engineering entry; automatic routing is opt-in. [Selected Matt Pocock SDLC skills, handoff, and their dependencies](bstack/sdlc/README.md) are pinned in the source tree for review; their consumer release integration and local work planning remain pending.
+The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Engineering skills such as `how` and `architect` are available directly. Poteto Mode selects a complete engineering workflow; automatic routing is opt-in. [Selected Matt Pocock SDLC skills, handoff, and their dependencies](bstack/sdlc/README.md) are pinned in the source tree for review; their consumer release integration and local work planning remain pending.
 
 ## Install
 
 From a local clone, install the exact reviewed bundle into your project:
 
 ```sh
-python3 bstack/release/skills/poteto-mode/scripts/bstack.py install \
+python3 bstack/release/bstack/scripts/bstack.py install \
   --project /path/to/your/project --hosts codex claude cursor grok
 ```
 
 This path requires Python 3.11+ on POSIX and works from a transferred release directory without npm or skills.sh. Installation uses the bundled PStack revision and bstack customizations; it never fetches upstream latest.
 
-See [installation and optional skills.sh distribution](bstack/INSTALL.md), [current scope](bstack/README.md), and [verification results and limits](bstack/audit/packaging.md). Native plugin-manager installation and desktop behavior remain separate verification work.
+See [installation and optional skills.sh distribution](bstack/INSTALL.md), [current scope](bstack/README.md), and [verification results and limits](bstack/audit/package-layout.md). Native plugin-manager installation and desktop behavior remain separate verification work.
 
 ## Repository layout
 

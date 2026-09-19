@@ -6,7 +6,7 @@ bstack combines engineering and SDLC workflows with shared agent configuration, 
 
 [Install the complete bundle](INSTALL.md) from a local clone, a transferred release, or skills.sh. Installation uses the exact bundled source and customizations. It never fetches newer upstream skills.
 
-Poteto Mode is the manual engineering entry. Automatic routing is opt-in. The current bundle includes the router, customized writing behavior, selected engineering workflows, and project-local CLI adapters. The development repository retains its previously authorized automatic routing.
+Invoke engineering skills such as `how` and `architect` directly, or use Poteto Mode to select a complete workflow. Automatic routing is opt-in. The current bundle includes the router, customized writing behavior, selected engineering workflows, and project-local CLI adapters. The development repository retains its previously authorized automatic routing.
 
 ## Work in the source tree
 
@@ -29,6 +29,6 @@ python3 bstack/scripts/package.py build
 python3 bstack/scripts/package.py check
 ```
 
-The [verification skill](shared/skills/verify-bstack/SKILL.md) describes targeted source, package, installation, and live CLI checks. Historical [packaging results](audit/packaging.md), [router results](audit/router-poc.md), [fallback results](audit/router-fallback.md), and [policy-layer results](audit/bstack-layers.md) record what was tested and its limits. New evidence goes in gitignored `.bstack/verification/`.
+The [verification skill](shared/skills/verify-bstack/SKILL.md) describes targeted source, package, installation, and live CLI checks. See the [current package results](audit/package-layout.md) for direct skill discovery and installation evidence. Historical [packaging results](audit/packaging.md), [router results](audit/router-poc.md), [fallback results](audit/router-fallback.md), and [policy-layer results](audit/bstack-layers.md) record earlier checks and their limits. New evidence goes in gitignored `.bstack/verification/`.
 
 [Root attribution](../ATTRIBUTION.md) is the single maintained source for acknowledgments, ownership distinctions, and required notices. Generated releases carry that information with the installed bundle.

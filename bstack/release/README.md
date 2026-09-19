@@ -1,3 +1,7 @@
-# bstack
+# bstack release
 
-Version 0.1.0. Install the `poteto-mode` skill from this directory through skills.sh. The [complete capsule](skills/poteto-mode/README.md) contains bstack's policies, customizations, dependencies, setup controller, and notices. Installation uses only these bundled, reviewed files and never fetches upstream latest. For an offline install from a clone or transferred directory, run `python3 skills/poteto-mode/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok` from this release directory. The offline path requires Python only; skills.sh is an optional distribution route. Run the explicit setup command after skills.sh installation for project bindings and optional auto mode. Native manifests identify the same bstack package; they do not enable hooks or establish native installation support.
+Version 0.2.0. The [bstack package](bstack/README.md) contains the engineering and shared skills, internal references, controller, and notices.
+
+Install with `python3 bstack/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok`. It creates `.bstack/package/` and direct public skill entries in `.agents/skills/`.
+
+The [skills.sh installer](skills-sh/install-bstack/SKILL.md) transports the same bundle as an archive. Use `npx skills@1.7.0 add <release>/skills-sh --skill install-bstack --agent codex claude-code cursor grok`, then run its `scripts/install.py --project <project-root> --hosts codex claude cursor grok`. Both methods install the reviewed bundled files without fetching upstream. Native plugin managers and desktop apps are not validated by these CLI installers.

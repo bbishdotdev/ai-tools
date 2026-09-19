@@ -1,0 +1,11 @@
+{
+  "note": "Review source history and original hashes in manifest.json. This is the runtime layer summary.",
+  "package": "bstack",
+  "policy": "shared/router/WORKFLOW.md",
+  "replacements": {
+    "setup-pstack": "shared/setup-bstack/SKILL.md",
+    "unslop": "shared/unslop/SKILL.md"
+  },
+  "schema_version": 1,
+  "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275"
+}

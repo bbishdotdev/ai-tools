@@ -12,7 +12,9 @@ This is bstack's policy layer over [PStack's router](../../../upstream/pstack/sk
 
 ## Select and continue
 
-For engineering work, read the upstream router in full, then the selected playbook and relevant skill leaves. Preserve its principles and workflow steps except for the adjustments below. Reuse full instructions while they remain available. After compaction, reread any missing instructions; retain the active workflow, completed work, and next step instead of restarting.
+When the user explicitly invokes a named skill such as `how` or `architect`, apply this policy and follow that skill within the requested scope. Load only its needed dependencies. Do not also load the upstream router or select a playbook unless that skill calls for it or the user requests Poteto Mode.
+
+For Poteto Mode or automatic engineering routing, read the upstream router in full, then the selected playbook and relevant skill leaves. Preserve its principles and workflow steps except for the adjustments below. Reuse full instructions while they remain available. After compaction, reread any missing instructions; retain the active workflow, completed work, and next step instead of restarting.
 
 - Use a matching playbook for ordinary engineering tasks. A reported defect routes to Bug fix, measured slowness to Perf issue, and a cited read-only explanation to Investigation. New behavior routes to Feature.
 - Use **figure-it-out** for engineering work needing a bespoke execution plan, including large or cross-cutting work whose coordination exceeds a narrower playbook. A one-time migration can need it. Repetition and creation of a reusable skill are not prerequisites. A standing multi-day coordinated program can instead need Orchestrate, as defined upstream.

@@ -1,102 +1,99 @@
 # Install bstack
 
-Install the reviewed bundle in `bstack/release/`. It contains bstack's policy, customized unslop, selected PStack workflows and helpers, project adapters, maintainer verification, and attribution. Installation never downloads PStack or substitutes a newer upstream revision. The bundle's `manifest.json` records its exact source pin, file hashes, and packaging changes.
+bstack installs one package and a set of directly invocable skills. Poteto Mode is an engineering entry within that collection. The package contains the exact reviewed dependencies and customizations; installation never fetches newer upstream sources.
 
-The current controller requires Python 3.11 or newer on POSIX. Linux CLI installation is tested. Windows, desktop apps, and native plugin-manager installation are separate work.
+The controller requires Python 3.11+ on POSIX. These instructions cover project-local CLI installation. Windows, global installation, desktop apps, and native plugin managers need separate integration and verification.
 
-## From a local clone or transferred folder
+## From a clone or transferred release
 
-Copy the release directory to the destination machine, or check out a reviewed bstack commit. No npm, skills.sh, Git, or network access is needed to run this installer. From the ai-tools checkout:
+From the ai-tools checkout:
 
 ```sh
-python3 bstack/release/skills/poteto-mode/scripts/bstack.py install \
+python3 bstack/release/bstack/scripts/bstack.py install \
   --project /path/to/your/project --hosts codex claude cursor grok
 ```
 
-Select only the hosts you want to configure. Installation copies the complete bundle into the project's `.agents/skills/poteto-mode/` and configures those hosts. The original clone or transferred folder can then be removed. Existing unowned skill files or conflicting configuration cause a clear failure; they are not overwritten.
+Select the hosts you want configured. Installation copies `release/bstack/` into the project's `.bstack/package/` and creates the public skill bindings. You can transfer just that package directory to an offline machine and run its controller. No npm, skills.sh, Git, or network is needed, and the original source can be removed after installation.
 
 ## Through skills.sh or an internal distributor
 
-The public skill is named `poteto-mode`; the complete package is bstack. That one directory contains all selected instructions and their supporting files. Private workflows use `WORKFLOW.md` so the installer does not discover the raw upstream skills as independent packages.
+skills.sh copies skill folders, so the release includes a dedicated `install-bstack` transport skill containing an archive of the complete package. The installer unpacks that archive into the same canonical layout as the offline route.
 
-From the consumer project, using a reviewed local release:
+From the consumer project:
 
 ```sh
-npx skills@1.7.0 add /path/to/ai-tools/bstack/release \
-  --skill poteto-mode --agent codex claude-code cursor grok
-python3 .agents/skills/poteto-mode/scripts/bstack.py setup \
+npx skills@1.7.0 add /path/to/ai-tools/bstack/release/skills-sh \
+  --skill install-bstack --agent codex claude-code cursor grok
+python3 .agents/skills/install-bstack/scripts/install.py \
   --project "$PWD" --hosts codex claude cursor grok
 ```
 
-The skills CLI requires Node and access to its own installation if it is not already available. bstack itself still comes from the specified release. `--copy` is also supported. An internal distributor can copy the complete `skills/poteto-mode/` directory and run its setup command. Keep all nested content and executable permissions intact.
+skills.sh supports its default host links and `--copy`; both transport the same archive. The second command is required because skills.sh does not execute setup. An internal distributor can copy the complete `install-bstack/` folder and run the same command. Keep the transport intact so its distributor retains ownership of it. The installed package operates independently of that archive.
 
-Check for an existing `poteto-mode` skill before using a third-party installer. That name can also belong to PStack. The bstack controller cannot undo a third-party installer overwriting files before setup runs. The direct Python installer refuses that collision.
+Check for an existing `install-bstack` skill before using a third-party installer. The bstack controller cannot protect a file that another installer overwrites first. It refuses collisions while creating its own package and bindings.
 
-The skills.sh route makes manual Poteto Mode available before setup. Setup adds the customized writing binding, host instructions, `/bstack-auto`, and `/verify-bstack`. The offline route performs both steps together.
-
-## Installed project layout
-
-After an offline install with all four hosts selected, the project contains:
+## Installed layout
 
 ```text
 your-project/
-  .agents/skills/
-    poteto-mode/
-      SKILL.md                     # Public entry into bstack
-      content/
-        index.json                 # Names mapped to bundled workflows
-        engineering/               # Selected PStack skills, playbooks, agents
-        shared/                    # bstack router, unslop, verification
-      scripts/bstack.py            # Setup, mode control, doctor, uninstall
-      runtime/                     # Reminder hook implementation
+  .bstack/
+    package/
+      engineering/
+        how/SKILL.md
+        architect/SKILL.md
+        poteto-mode/SKILL.md
+        principles/              # Internal, loaded on demand
+        ...
+      shared/
+        router/                  # Internal bstack policy
+        unslop/SKILL.md
+        setup-bstack/SKILL.md
+        bstack-auto/SKILL.md
+        verify-bstack/SKILL.md
+      scripts/bstack.py
       manifest.json
       ATTRIBUTION.md
-      LICENSE
-    unslop/SKILL.md                 # Writing binding
-    bstack-auto/SKILL.md            # Explicit on/off/status control
-    verify-bstack/SKILL.md          # Installed-package verification
-  .claude/skills/                   # Links to the four .agents/skills entries
-  .cursor/skills/                   # Same shared entries
-  .grok/skills/                     # Same shared entries
-  .cursor/rules/bstack.mdc          # Pointer to project instructions
-  AGENTS.md                        # Managed bstack instruction block
-  CLAUDE.md                        # Managed bstack instruction block
-  .bstack/                         # Local configuration and instructions
+    config.json
+    instructions.md
+  .agents/skills/
+    how/SKILL.md                  # Points to the packaged how skill
+    architect/SKILL.md
+    poteto-mode/SKILL.md
+    ...                          # All 29 public entries
+  .claude/skills/                 # Per-skill links to .agents/skills
+  .cursor/skills/                 # Same shared entries
+  .grok/skills/                   # Same shared entries
+  AGENTS.md
+  CLAUDE.md
 ```
 
-This tree omits supporting files. Hosts discover the four public `SKILL.md` entries. Inside `poteto-mode`, engineering dependencies use `WORKFLOW.md`; the router reads the relevant instructions through the bundled index. They are not separate slash commands, and installing them does not load their full text into every conversation. Codex reads the canonical `.agents/skills` entries; the other selected hosts receive links to the same files.
+Each public entry is a small binding to its exact packaged skill. Hosts can discover the individual names without loading all their instruction bodies. The full skills and supporting files live once in the package. Principles have no public skill entry; the active skill loads relevant principles and playbooks as needed.
 
-The development repository's `bstack/upstream/` directory is a build input. It is not copied into the consumer project. The release builder selects those pinned sources, applies bstack's recorded packaging changes, and preserves the installed `content/engineering/` paths. An installed project does not need the development checkout.
+The generated release groups skills into engineering and shared buckets. SDLC and GitHub content will join as their integrations are implemented. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
 
-Setup preserves existing project instructions and configuration. Automatic routing is off initially; opting in adds the selected hosts' hook bindings. See the next section for mode behavior and host limits.
+## Direct skills and automatic routing
 
-## Manual entry and automatic routing
+Invoke `$how` in Codex or `/how` in slash-command hosts. This selects the how workflow and bstack's policy without first entering Poteto Mode. Other public skills work the same way. Invoke `poteto-mode` when you want its router to select a full engineering workflow.
 
-Routing starts in manual mode. Invoke `$poteto-mode` in Codex or `/poteto-mode` in hosts that use slash skills. The entry applies bstack's policy before loading its bundled PStack workflows. The customized unslop binding remains active after setup regardless of the router setting.
-
-Use `/bstack-auto on`, `/bstack-auto off`, or `/bstack-auto status`, or run the same controller directly:
+Engineering entrypoints are manual by default. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing, or use the controller directly:
 
 ```sh
-python3 .agents/skills/poteto-mode/scripts/bstack.py auto on --project "$PWD"
-python3 .agents/skills/poteto-mode/scripts/bstack.py auto status --project "$PWD"
-python3 .agents/skills/poteto-mode/scripts/bstack.py auto off --project "$PWD"
-python3 .agents/skills/poteto-mode/scripts/bstack.py doctor --project "$PWD"
+python3 .bstack/package/scripts/bstack.py auto on --project "$PWD"
+python3 .bstack/package/scripts/bstack.py auto status --project "$PWD"
+python3 .bstack/package/scripts/bstack.py auto off --project "$PWD"
+python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 ```
 
-The controller owns only its generated files, marked instruction blocks, and hook entries. It preserves other project configuration. Mode and ownership state live in gitignored `.bstack/`. Repeating setup preserves the chosen mode. Start a fresh agent session after changing bindings; turning off auto mode cannot erase instructions already in a conversation.
+Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Codex hook trust must be reviewed through its native `/hooks` UI. Setup does not grant trust. Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 
-Codex hook trust is separate from project trust. Review the installed commands in Codex's native `/hooks` interface. Setup does not grant that trust. Claude has prompt-hook context delivery. Cursor and Grok use the tested after-tool reminder because their prompt hooks do not provide equivalent context injection. The first tool call and tool-free turns rely on standing instructions.
+## Update, migrate, and remove
 
-## Update and remove
+Rerun the installer from a reviewed newer release. It verifies the owned package, preserves auto preference and selected hosts, and rolls back on installation errors. Modified or unowned files stop the update.
 
-Updates are explicit. Transfer a reviewed newer bstack bundle and rerun its offline `install`, or update the whole skill through your distributor and rerun `setup`. Offline updates verify the existing owned files before replacing them, preserve auto preference, and roll back if configuration fails. A changed or unowned file stops the update.
+Existing offline installs under `.agents/skills/poteto-mode/` migrate to `.bstack/package/` after their integrity and ownership checks pass. Existing third-party-distributed Poteto Mode folders are not adopted or deleted; resolve those conflicts through their distributor before installing the new package.
 
-Run the installed controller's `uninstall --project /path/to/project` before removing the capsule. It removes unchanged bstack bindings and preserves private work and verification evidence. The capsule itself remains available for manual use until you remove it through its distributor or explicitly remove `.agents/skills/poteto-mode/`. Keep any host entry installed by a third-party distributor under that distributor's ownership.
+Run `python3 .bstack/package/scripts/bstack.py uninstall --project "$PWD"` to remove the verified owned package and bindings. Private work and independently distributed installer skills remain. Remove `install-bstack` through its distributor if desired.
 
-Do not copy machine-specific generated wrappers, hooks, and ownership state between unrelated projects. Install from the portable release on each machine. Stable instruction pointers can be checked in; runtime setup is per checkout.
+Generated bindings contain local paths. Install per checkout rather than checking machine-specific bindings and ownership state into another project. Stable instruction pointer blocks can be committed. Reinstallation recreates the ignored package.
 
-## What offline installation includes
-
-The instruction corpus, bstack customizations, helper source, notices, and Python adapter are bundled. Optional PStack helper programs can still require Bun, Node, npm dependencies, or an authorized external service. Installing bstack does not provision those runtimes or accounts. The capability contract requires the agent to check availability before choosing them. Live model verification also needs authenticated CLIs and provider access.
-
-See [the verification skill](shared/skills/verify-bstack/SKILL.md) for maintainer checks and [upstream ownership](UPSTREAM.md) for selectively adopting upstream changes. Neither installation path follows upstream latest.
+Optional helper programs still require their own runtimes or authorized external services. Installation does not provision them. See [maintainer verification](shared/skills/verify-bstack/SKILL.md) and [upstream ownership](UPSTREAM.md).
