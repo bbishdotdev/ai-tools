@@ -1,0 +1,1523 @@
+{
+  "entrypoints": {
+    "controller": "scripts/bstack.py",
+    "index": "content/index.json",
+    "mode": "SKILL.md",
+    "reminder": "runtime/reminder.py",
+    "router": "content/shared/skills/bstack-router/WORKFLOW.md",
+    "setup": "content/setup/WORKFLOW.md",
+    "unslop": "content/shared/skills/unslop/WORKFLOW.md",
+    "verification": "content/shared/skills/verify-bstack/WORKFLOW.md"
+  },
+  "files": [
+    {
+      "mode": 420,
+      "path": "ATTRIBUTION.md",
+      "sha256": "d929aebdd4e59ca427b9d630c7f7d532100b70814c2141494b607ef0bd08fc82",
+      "source": "bstack/package/templates/ATTRIBUTION.md",
+      "source_sha256": "076d6065ccf550ec2532f5a584b2a8386a74254b4b6cf6f8619776703d52a150",
+      "transforms": [
+        "render-release-template"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "LICENSE",
+      "sha256": "e2bbaf8ee8704f4363a7369dd489102cb4f2ce75de2c3ef8938eeeedeb3bd0ba",
+      "source": "LICENSE",
+      "source_sha256": "e2bbaf8ee8704f4363a7369dd489102cb4f2ce75de2c3ef8938eeeedeb3bd0ba",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "README.md",
+      "sha256": "8c1a65e4a54480850bb83cb02b19946856e1f7e0f7b3ea45b818dd8bf3e875bf",
+      "source": "bstack/package/templates/README.md",
+      "source_sha256": "909dd22f4354c7cbd9df84bb7a202d1661c2f80347d047cdbb20b286b715438f",
+      "transforms": [
+        "render-release-template"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "SKILL.md",
+      "sha256": "5ecaf3fb6bfeddf3459c5058dab0351c24f3981e1ddde78909477a40f51bdffd",
+      "source": "bstack/package/templates/SKILL.md",
+      "source_sha256": "5ecaf3fb6bfeddf3459c5058dab0351c24f3981e1ddde78909477a40f51bdffd",
+      "transforms": [
+        "render-release-template"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "agents/openai.yaml",
+      "sha256": "effc8b7997ae32a8bbc36b70683ebcdedeaf9a6de40b97ff9e2d5a077643f9de",
+      "source": "bstack/scripts/package.py",
+      "source_sha256": "ef539a81748f7a5225471172b898d5e7dbe88a613394e46fcef836723c47896f",
+      "transforms": [
+        "manual-entry-metadata"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/agents/comment-sicko.md",
+      "sha256": "851207363900d3c017c3ccc13f9a57dd99d6994d398c8c313614e57c41a04437",
+      "source": "bstack/engineering/agents/comment-sicko.md",
+      "source_sha256": "c0fd0383008da45fc78cfac17b9007d62c42f87ad1c8d5c2fb658b1fd01f7c82",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/agents/poteto-agent.md",
+      "sha256": "24d70e9e009a451e5d1d1ba37df7933a4a821fe6280385ddfdcafd36175c1371",
+      "source": "bstack/engineering/agents/poteto-agent.md",
+      "source_sha256": "c3850be1b97bc97cec0568ed8b26d04e7693c4e07868137c58fe546d37f288e9",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/architect/WORKFLOW.md",
+      "sha256": "b4d0642ce056d1bad390cd4875bb58eb591cc30c0e33d6ca5395ff2a7d7f8311",
+      "source": "bstack/engineering/skills/architect/SKILL.md",
+      "source_sha256": "897a59beaa3cab107d98c256206e062cc4a5e9421a45b9d462fbded19291fea5",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/architect/references/design-red-flags.md",
+      "sha256": "7dfef5f9c5ba64839370f728f0479fbbbac1cd08c8531d75f685db3fb007dc34",
+      "source": "bstack/engineering/skills/architect/references/design-red-flags.md",
+      "source_sha256": "905066f9bbac81c573c2b325be47751d2c0f9325e0a0772bd4384e82dafe9336",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/architect/references/rationale-template.md",
+      "sha256": "ed7ee1ef74c05b1b3e9f36cb5a1234c46f2bcc287bcb40335017dec18f150b01",
+      "source": "bstack/engineering/skills/architect/references/rationale-template.md",
+      "source_sha256": "0cedfccdc7b47fc881febd5a8293eecbc542c20f8df825639904a8102d2eb5d3",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/architect/references/runner-prompt.md",
+      "sha256": "0fa19ede3c33324145cb803f71f0e1e97be37316a548587e45be06d5c25db65b",
+      "source": "bstack/engineering/skills/architect/references/runner-prompt.md",
+      "source_sha256": "983bf2820cc14ed8ecab6e448e1033e5cfe6031967d0a9287b48c7fa9c33d925",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/arena/WORKFLOW.md",
+      "sha256": "ddcea81abab86dc283e16ed04f639d236db95a3bff4ecf8d69aa0859c2472fea",
+      "source": "bstack/engineering/skills/arena/SKILL.md",
+      "source_sha256": "8d431f7b1aa19daf6300366fc876c4d1aadac06417ec5502407345ffaf4e90d9",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/automate-me/WORKFLOW.md",
+      "sha256": "ea4b824aaa3ef4497366c11d6fe37d9a05763e1ce1107df405e4699013dff212",
+      "source": "bstack/engineering/skills/automate-me/SKILL.md",
+      "source_sha256": "1510979b0b71b54284427a19c09918f8b1fdfc168f9b7f9e30098793a5ec88ef",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/blast-radius/WORKFLOW.md",
+      "sha256": "b9fe9af24dfb3bc8ef5b8f178e82b709150d417a101ec63014ec6ec3f5b41fc2",
+      "source": "bstack/engineering/skills/blast-radius/SKILL.md",
+      "source_sha256": "20cb2945f5fe62055166f745107274af5f19428ca033e53a9b8bc69650d3ded1",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/bro/WORKFLOW.md",
+      "sha256": "6612645fa1b3b998ed483b2d54edd82cdf1bb39d09d217efee4add9f878608fb",
+      "source": "bstack/engineering/skills/bro/SKILL.md",
+      "source_sha256": "aa329d0ceeeecb6822a7174ad76bb07a7826a3c52ceb6a588dec4138815084bb",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/control-cli/WORKFLOW.md",
+      "sha256": "d4006ade46caf81497e66e4965afd7f58f8b049bc0040e4b687cc1d1ca40f37d",
+      "source": "bstack/engineering/skills/control-cli/SKILL.md",
+      "source_sha256": "13ac93e595bbda2000849bdb815d5f2ca03f7c2ca63788c8335f9212b9b422a2",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/control-ui/WORKFLOW.md",
+      "sha256": "ab9401cf689a6aa3dc7c6685657d30e20bec3257051fa0db1512c315e3870701",
+      "source": "bstack/engineering/skills/control-ui/SKILL.md",
+      "source_sha256": "410cae25bdb1e5d2323b126abc5047b0213be7fdb0195710213fa8de8a751871",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/create-verification-skill/WORKFLOW.md",
+      "sha256": "8a90d34b4873a001321e8aa15714a7bb1d8f5fa1a06f040909eca48ecdd3d501",
+      "source": "bstack/engineering/skills/create-verification-skill/SKILL.md",
+      "source_sha256": "644f2551403c1bca01a2855b34611b6e7be0ce0dc5b204514c376c0f6a6e6ac4",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/create-verification-skill/references/feature-map-example/README.md",
+      "sha256": "cd99fc6f80a9728fe3fbfad98f84a4d7c52f963a7f2f0225fe4cfd0d0dbac441",
+      "source": "bstack/engineering/skills/create-verification-skill/references/feature-map-example/README.md",
+      "source_sha256": "cb7bd782cf89968a4ba3d58a5151db837430db92d19a6f52a906973b77b516ba",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/create-verification-skill/references/feature-map-example/create-note.md",
+      "sha256": "76357756acac3fa5dc8ca4237e097c0b42bc349da6ce9d16cddc1ed74fae82bb",
+      "source": "bstack/engineering/skills/create-verification-skill/references/feature-map-example/create-note.md",
+      "source_sha256": "644a44c74f35d38c2feb7cd05a0121fdebbb623e8dc376c185b565a581d1ccf7",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/create-verification-skill/references/feature-map-example/search.md",
+      "sha256": "25305c9b72ea504c8ac0ce949bfcd77c8eb45a3c43d6ad9ff5f1df77c2f88aea",
+      "source": "bstack/engineering/skills/create-verification-skill/references/feature-map-example/search.md",
+      "source_sha256": "6e87b9e7f2791a7776ba1bb83f371cd285c306c67f19d245cc4dd6ca3015c823",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/deslop/WORKFLOW.md",
+      "sha256": "ec852a1fc1182359140f650c31dc9266a476912e199a7ec71f1fbeef70b01f41",
+      "source": "bstack/engineering/skills/deslop/SKILL.md",
+      "source_sha256": "2f7b7def74af7ed11f5b44b4d32f0f91fca8c5d1f92bf2171e8d12fd33a0f810",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/figure-it-out/WORKFLOW.md",
+      "sha256": "2c56348d1dbea21b3bf217942c0259d4da964b5167b659fe9ec97bed1c3dcfb2",
+      "source": "bstack/engineering/skills/figure-it-out/SKILL.md",
+      "source_sha256": "e041c64a39f1084a20e60ee99762c4dbd3ec8be56ed33fd68ea867b8bd8bd3e4",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/how/WORKFLOW.md",
+      "sha256": "f38ec0d3707a6893f5f26c24b905bf91339dab357a642f6488f13fbfaa73d2b1",
+      "source": "bstack/engineering/skills/how/SKILL.md",
+      "source_sha256": "06b714dbd830bc829bfb89e33a1c39daf6d72ea412e488ea9d65f5f33b885a0c",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/how/references/explainer-prompt.md",
+      "sha256": "332c33ebce329adbb89e5adfa1f83dffff7b4696ab04f76db93eb1faab241944",
+      "source": "bstack/engineering/skills/how/references/explainer-prompt.md",
+      "source_sha256": "ddb89cebefc24e2b54517a331aedfe045b6971e101f45c71b8cef4cccff45bff",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/how/references/explorer-prompt.md",
+      "sha256": "761ac39ce2285786fc7f34713f96bcac0c0f6abafcad3aa2e4a717addd4c7e6b",
+      "source": "bstack/engineering/skills/how/references/explorer-prompt.md",
+      "source_sha256": "3a6965276d23be7d8da6c305bfd5d7bf29d2aef09e5dae4119463ac72022a02d",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/interrogate/WORKFLOW.md",
+      "sha256": "5afec6806032f748d8b56cf5977a879196a8b38d9be67c198f5a63cd5cc992c3",
+      "source": "bstack/engineering/skills/interrogate/SKILL.md",
+      "source_sha256": "2867910309e81411123ae4edca68ffca5795e66521d3f3bc0876f6213b542fb9",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/interrogate/references/code-quality-review.md",
+      "sha256": "74ea07b25c64916e97c0640fa0d71e45d9951ecc32eebfd60449a8e212fe3779",
+      "source": "bstack/engineering/skills/interrogate/references/code-quality-review.md",
+      "source_sha256": "623d3d8122d075c303b562783b471a732992e84166b318f85ab6d6c118b13304",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/interrogate/references/lead-judgment.md",
+      "sha256": "7f83702d7547fac38f54c5cb612d76c4abd3e93f27d321044df8cb2726f3f8be",
+      "source": "bstack/engineering/skills/interrogate/references/lead-judgment.md",
+      "source_sha256": "6e5bdf5670eb34017692e9b6c546f36ac7552e6bb9f3f2f3429164fcc46a9361",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/interrogate/references/reviewer-prompt.md",
+      "sha256": "bdf1573abd9f6f313b606f8e2f82170c1b7e76eac2cd93be6bb3d2db924bf945",
+      "source": "bstack/engineering/skills/interrogate/references/reviewer-prompt.md",
+      "source_sha256": "a397cc61102add709803d917fb23d726920525bf23e7c06dc4ed0b5cbeb00e54",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/interrogate/references/rubric.md",
+      "sha256": "1273d3a2262aa6e10f449072e3a5f717b6da173abafe31b6f67025cfac245b7d",
+      "source": "bstack/engineering/skills/interrogate/references/rubric.md",
+      "source_sha256": "59e9b7cc4556e735e1b859a7dd1f7637b013a2426a84825ac1c51979942c158a",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/maintain-verification-skill/WORKFLOW.md",
+      "sha256": "fec77f40e028c0a5d2a18de2e26f0b1dc776fc667707c5d15d5257b0e4fd8cab",
+      "source": "bstack/engineering/skills/maintain-verification-skill/SKILL.md",
+      "source_sha256": "515c0eaa054b3f6be1b1fb06f2c2f173c80fddb58bbcac57576f89c479bc68e8",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/make-bot-ui/WORKFLOW.md",
+      "sha256": "af8bce5d5bcd09e8838ca17bacd6ff0de9f814b8fc09774eb89b10757e46b0f6",
+      "source": "bstack/engineering/skills/make-bot-ui/SKILL.md",
+      "source_sha256": "3624c8ef16cf2e48deb2a4049e72c6962a9431c8d6c6af90e7bd7ea0375224ec",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/no-comments/WORKFLOW.md",
+      "sha256": "8268045ba3231e8737282b7d5b02d26d0d570a0cbd72c320f8e8e26f2d8a1e3e",
+      "source": "bstack/engineering/skills/no-comments/SKILL.md",
+      "source_sha256": "5c5b0882297d704c3a9720c52b7a793c68b013eaf717989f0945624efdfe2b05",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/WORKFLOW.md",
+      "sha256": "18c3bf7c82aafbbb23ea5a502a3577437dabae1b2071a270b4730f32edab2cf0",
+      "source": "bstack/engineering/skills/poteto-mode/SKILL.md",
+      "source_sha256": "b3c505602b82fb3641a3983e9c46fb974881faa12ece1af804fae27afb7be532",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/authoring-a-skill.md",
+      "sha256": "290e07733056e2a547dd958386b795f2606e03eea14fb409fba75ef7309615cb",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/authoring-a-skill.md",
+      "source_sha256": "f6a13a445c360b48d6cd72780ac01955f45b82826476efe0e67c7559329407aa",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/autonomous-run.md",
+      "sha256": "353cc6c06c16d6dd78ae80d41b17719daf5ee529f73b01960a30e336d96c1e6f",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/autonomous-run.md",
+      "source_sha256": "15e54ad3ac92565613980772d8708de6e19cc4690bfd4bb3fb8836522407377b",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/autopilot-full.md",
+      "sha256": "6e3ef8c38c21ee2a3eda314ce7d968b921cb08136930b2e27af43c10c1f38e77",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/autopilot-full.md",
+      "source_sha256": "2042a89a0399b5fe700110bc03746899536c10f0df186e9fb15bbd4a2f6dfce5",
+      "transforms": [
+        "reread-installed-playbook",
+        "rewrite-concrete-code-paths",
+        "replace-upstream-git-read-with-installed-file-read",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/autopilot-stack.md",
+      "sha256": "bb83ed74f42edca655d1a016f40bad77b898fee377c0f5c9a2d138b0911b0798",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/autopilot-stack.md",
+      "source_sha256": "60e0d997f7b369004a02089c71b9091d3f8e9bc0b4a3c1142598380faa7722fd",
+      "transforms": [
+        "reread-installed-playbook",
+        "rewrite-concrete-code-paths",
+        "replace-upstream-git-read-with-installed-file-read",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/babysit.md",
+      "sha256": "1eb53d521281b0a2e82c77002dadc0c67b7559c529cf8a17eece7699be55676d",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/babysit.md",
+      "source_sha256": "51be21872152f97612d37258273269b88212b6696432d25d678cac30f02f4157",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/bug-fix.md",
+      "sha256": "c8c605cfc66098705e2ad925c63bb5850680c0b0c1f756cb0050ca817166241d",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/bug-fix.md",
+      "source_sha256": "e2ca6e217c8414409d3b51c64bb2743afa2256d98f643e104f8c4b52a1951883",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/eval.md",
+      "sha256": "bc9c683277f2b6033b7fbe8fe50406afce6d9c74953853bcbcaf011b0c95072b",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/eval.md",
+      "source_sha256": "b862bfa2fae2399abf047a8e80d3e3dddb64003af96fb1cebb625216131e36bb",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/feature.md",
+      "sha256": "b63b6550ef4d0a94f725ffa876b58eb74ffceb121d43cf66225b67edb58d2047",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/feature.md",
+      "source_sha256": "430dae0fd736554ff7dffc3ef0644c9f0c845e25742f69e598c35b9b89660301",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/hillclimb.md",
+      "sha256": "6539841bc5f8f6aa4f05b742a271ae4f638f10596569219263c4d1693d64ae7e",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/hillclimb.md",
+      "source_sha256": "4637fb1537288f6c26c69425045f01b725bb6fa8a7b444bf98b6eaa9a1e9fb5f",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/investigation.md",
+      "sha256": "2f62b12444e7d413d90ca36b95757f7c465a2e45402645ba34f39f0cbdd479d2",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/investigation.md",
+      "source_sha256": "dc66bcf6af3a074fc7f67aa5e12b93ef571a4fb4d8e17f2f1af5ae5359f42e46",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/multi-phase-plan.md",
+      "sha256": "90b55e37b885970248a1e1a4204fcf0f11b53d42c8a71484fa8cae478c20a0b8",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/multi-phase-plan.md",
+      "source_sha256": "b823e05b64bbef84ae5169717c5fab1d9ab5079625996271e3aa7abcdce7b8ad",
+      "transforms": [
+        "bind-program-template-to-installed-workflow-paths",
+        "rewrite-concrete-code-paths",
+        "replace-upstream-git-read-with-installed-file-read",
+        "rewrite-concrete-upstream-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/opening-a-pr.md",
+      "sha256": "c01ddc469832bd37da53887aa45ef91f580fadd0f8ee8ffbe549aec5d78e0659",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/opening-a-pr.md",
+      "source_sha256": "b173ff9638ff62f91f6813c1a0ed3417cdf9f6545a659be0c1fb1f42130e0e66",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/orchestrate.md",
+      "sha256": "cf9f668ca2ac8d347b3a9d1faef0b5da63e7fbefbbb959f9a2ec4e87f59ab94a",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/orchestrate.md",
+      "source_sha256": "d42b4375f1bd4ce23da0b575a198571a2117df7eea10c3c9fc6d92ae1053f7be",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "rewrite-skill-root-support-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/pause-safely.md",
+      "sha256": "1a8353ebec26eec5a51e970425ba76a67b658e1c44fb77f9068fc983971c15d4",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/pause-safely.md",
+      "source_sha256": "7d5fc10e144265f1b35f8157926541e738c1de64b6a85b3e61b51cf268c3dffd",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/perf-issue.md",
+      "sha256": "97c05902db581f31c99ca1b695e003ccd1f93391019e84bbb790bfb8de2189b2",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/perf-issue.md",
+      "source_sha256": "dd81d608d6ab19b3d9c900004fd71e9b2e46b3f1b3c2c88f80ef256268717524",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/prototype.md",
+      "sha256": "768dca8b30ecc3e39c9de65f341c83c7cac303c39d68f94942cd08a989c4631c",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/prototype.md",
+      "source_sha256": "7aa1f52c691c3d46d5afc527b23f90977fce869ce33573c73c81a4c7f0cde962",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/refactoring.md",
+      "sha256": "aefb2823417906cf22feeb40f3a5da1bd6b18eb00bec83028990e6d72594d3da",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/refactoring.md",
+      "source_sha256": "53bac1f1fe886600dd1991b5511b7975e6a206168038f9d282d88e45408e93cf",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/runtime-forensics.md",
+      "sha256": "2898ebe26d5e1c6c87f6a9fd153ece3ef4dd5a5dd07f91c4bb77436063ae96a1",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/runtime-forensics.md",
+      "source_sha256": "594f02c40c243a346e1f57b688ecf2ed5e882f21b3d24ed2204d1ac6f1c24a8a",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/session-pickup.md",
+      "sha256": "6aa575b477723d07db444d7c766f100f9faf05215df11e93ebbf096edf31cac1",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/session-pickup.md",
+      "source_sha256": "1604fb463f7c7410d43fa024ca76c1c1824c166a01fd69d61f073d06fdca2a47",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/shipping.md",
+      "sha256": "04e5e7cfbff932203df64729ea528c561183b3efec375d59ff325a6c439f6c37",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/shipping.md",
+      "source_sha256": "c301902136e0a9a0a55403c35374f6f5738e501aee66c27458dc197b87557550",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "rewrite-skill-root-support-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/trace-forensics.md",
+      "sha256": "4a5b3b7f6237da9df6200f84a5edbe7cc3cba2a9a9132e6b359b70da3130a559",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/trace-forensics.md",
+      "source_sha256": "137ce3984fb96e45971fdff4d3c79fa4ccc647c5b30ae4945783b9fb23f8cec7",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/visual-parity.md",
+      "sha256": "52578044cb3ba134fb65558e5c24c740b796bda352417102b4e5e60de7f597b9",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/visual-parity.md",
+      "source_sha256": "950ca51999a6454c98eee6bcbc3d1bbe501a4e3a5d5439b6f6ddc378991b256c",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/playbooks/worktree-cleanup.md",
+      "sha256": "733870e2f5a1b98dead7de02619b5e13f53c8c6be4a30bc9a1b0d9a829066677",
+      "source": "bstack/engineering/skills/poteto-mode/playbooks/worktree-cleanup.md",
+      "source_sha256": "fc464dc4121926df1704f483c5feca83717c0a40b4651d3e11bd3aedd89441b6",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/references/bugbot-triage.md",
+      "sha256": "ed77bbc71aa2d32bbd4a14de7a817874a233a4410edfe45d79adad8519ef8211",
+      "source": "bstack/engineering/skills/poteto-mode/references/bugbot-triage.md",
+      "source_sha256": "b2d146c770d8d3593e1ef3d77b668039b8e1f78093ea1a86f1d45d7f99614309",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/bootstrap.ts",
+      "sha256": "ccd2ed08fd9da9d0d942e5f2491cfc74bb92d8a08fa51755e0da1ac8de287361",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/bootstrap.ts",
+      "source_sha256": "ccd2ed08fd9da9d0d942e5f2491cfc74bb92d8a08fa51755e0da1ac8de287361",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/bun.lock",
+      "sha256": "667d9cf7222e9aae3fa42a4be383e657784216e9df115da02227fbc5ac7bbe46",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/bun.lock",
+      "source_sha256": "667d9cf7222e9aae3fa42a4be383e657784216e9df115da02227fbc5ac7bbe46",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "content/engineering/skills/poteto-mode/scripts/check-plan.mjs",
+      "sha256": "4f5118edf719b481983dc87dfadd5b4b5473d05aad04a7ba65191ff9c73faf1b",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/check-plan.mjs",
+      "source_sha256": "4f5118edf719b481983dc87dfadd5b4b5473d05aad04a7ba65191ff9c73faf1b",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/orch/orch.test.ts",
+      "sha256": "174b86d21ff51ccd28d1a8c938cb2e0c6fa287b209d4ca6c03932fcb1b53372e",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/orch/orch.test.ts",
+      "source_sha256": "174b86d21ff51ccd28d1a8c938cb2e0c6fa287b209d4ca6c03932fcb1b53372e",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "content/engineering/skills/poteto-mode/scripts/orch/orch.ts",
+      "sha256": "f091687df627a0b75fabd54af58945a9cd6c7039ef0622012ac9ed60cd8ec434",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/orch/orch.ts",
+      "source_sha256": "f091687df627a0b75fabd54af58945a9cd6c7039ef0622012ac9ed60cd8ec434",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/orch/store.ts",
+      "sha256": "0eae7cf69282e827b1227166f2e32cee3560f2f3e65b3f1f2faf6fb83d3b4c5b",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/orch/store.ts",
+      "source_sha256": "0eae7cf69282e827b1227166f2e32cee3560f2f3e65b3f1f2faf6fb83d3b4c5b",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/package.json",
+      "sha256": "d1f815091209d49763775cc188e8e06ff32d5fec648bffd2272bc25a165e87c3",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/package.json",
+      "source_sha256": "d1f815091209d49763775cc188e8e06ff32d5fec648bffd2272bc25a165e87c3",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/cli.test.ts",
+      "sha256": "a35592b4c6da96caf8d47987e9cd503fab6c7774ab87d11a43f24b4b5df2a9d1",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/cli.test.ts",
+      "source_sha256": "a35592b4c6da96caf8d47987e9cd503fab6c7774ab87d11a43f24b4b5df2a9d1",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/cli.ts",
+      "sha256": "89c08863089181a232be782c4b2ed90a1552f44aeecb0dcb7aac2c623620e680",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/cli.ts",
+      "source_sha256": "89c08863089181a232be782c4b2ed90a1552f44aeecb0dcb7aac2c623620e680",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/fakes.test-helper.ts",
+      "sha256": "e53e31b7f03068063f53a99a3591b052aaed66e4e2b196b3a364980f60324ab1",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/fakes.test-helper.ts",
+      "source_sha256": "e53e31b7f03068063f53a99a3591b052aaed66e4e2b196b3a364980f60324ab1",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/github.test.ts",
+      "sha256": "0cbce011050522938523e36bb42a260e92b812dcd2076930fa681672ad316b24",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/github.test.ts",
+      "source_sha256": "0cbce011050522938523e36bb42a260e92b812dcd2076930fa681672ad316b24",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/github.ts",
+      "sha256": "d1bbbafbe8e2c703c84da2029de7f2c4011412512f8cf65a42100f46bcb92c8a",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/github.ts",
+      "source_sha256": "d1bbbafbe8e2c703c84da2029de7f2c4011412512f8cf65a42100f46bcb92c8a",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/policy.test.ts",
+      "sha256": "a9fedb25feefd1f57ef6a662f80c99018690170a3a8070773a08eaf694d1d3d9",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/policy.test.ts",
+      "source_sha256": "a9fedb25feefd1f57ef6a662f80c99018690170a3a8070773a08eaf694d1d3d9",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/policy.ts",
+      "sha256": "68d240505852cf23c9b2dea463342e9e61243f486b3cc86c735d140f9ee7be49",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/policy.ts",
+      "source_sha256": "68d240505852cf23c9b2dea463342e9e61243f486b3cc86c735d140f9ee7be49",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/render.ts",
+      "sha256": "2b709e86628d5b8fdb61f860e60ababc342b0626c67576305442cf548283a604",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/render.ts",
+      "source_sha256": "2b709e86628d5b8fdb61f860e60ababc342b0626c67576305442cf548283a604",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/tsconfig.json",
+      "sha256": "1ecccc72320b086c63ce3f73c959896fd747363e63553b3b1136296ea4069e45",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/tsconfig.json",
+      "source_sha256": "1ecccc72320b086c63ce3f73c959896fd747363e63553b3b1136296ea4069e45",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/types.compile.ts",
+      "sha256": "621af4c9a664fbf699a9737efccdc248abb416df8819c9dc5f824beae2b9b1d6",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/types.compile.ts",
+      "source_sha256": "621af4c9a664fbf699a9737efccdc248abb416df8819c9dc5f824beae2b9b1d6",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/types.ts",
+      "sha256": "64ba6221e3bfe61bbb292337d199cdec6309455477280efb060203dba34e0e91",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/types.ts",
+      "source_sha256": "64ba6221e3bfe61bbb292337d199cdec6309455477280efb060203dba34e0e91",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "content/engineering/skills/poteto-mode/scripts/watch-pr/watch-pr",
+      "sha256": "d955603be6cc0e8b8ffcec722f635192b2261410b1f2929abea94480e47eb5d4",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/watch-pr/watch-pr",
+      "source_sha256": "d955603be6cc0e8b8ffcec722f635192b2261410b1f2929abea94480e47eb5d4",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "content/engineering/skills/poteto-mode/scripts/worktree-audit.sh",
+      "sha256": "95b8530f3c0ccada8cabc4b0727c052fbc85c141531375aaace65c427af8aecc",
+      "source": "bstack/engineering/skills/poteto-mode/scripts/worktree-audit.sh",
+      "source_sha256": "95b8530f3c0ccada8cabc4b0727c052fbc85c141531375aaace65c427af8aecc",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-attack-the-premise/WORKFLOW.md",
+      "sha256": "339bc7133be59a1602ec17cabdd8026244ba9e5be4671b66d7c52e9dcbea53f2",
+      "source": "bstack/engineering/skills/principle-attack-the-premise/SKILL.md",
+      "source_sha256": "c87bd7536f772f8a403ad8155535ee17a1bbec9a353156693eb3bb1520c87ae3",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-boundary-discipline/WORKFLOW.md",
+      "sha256": "428a7b1a88efcbe8c592b0321a161a4c4d451774e15604ffb99c2fdc3c5c8c9a",
+      "source": "bstack/engineering/skills/principle-boundary-discipline/SKILL.md",
+      "source_sha256": "62ac2862c2caa22dd14531f51c9c6bb445ceb198ca98a687e25b4d47c1f10a28",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-build-the-lever/WORKFLOW.md",
+      "sha256": "66bf4eebd1b030eec3cd247234b461a3d876aaac9905732c1aa09c63cc1e1516",
+      "source": "bstack/engineering/skills/principle-build-the-lever/SKILL.md",
+      "source_sha256": "458b269eab8e95a1573276955312f7d2a13ae8599879a9efc748248f6bc34b56",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-encode-lessons-in-structure/WORKFLOW.md",
+      "sha256": "eced1f43c63456e9f2b5267795780ee4cc8e0f668bd2cd99bf07da04115e75e1",
+      "source": "bstack/engineering/skills/principle-encode-lessons-in-structure/SKILL.md",
+      "source_sha256": "77044c83a9ac6df78fc643887ea5f1f11f082adaf14b717c060cdaed03cce863",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-exhaust-the-design-space/WORKFLOW.md",
+      "sha256": "db10be1c15a8bad1401b6322385059d9a4fd0413de6fff0f22f32a53bd67a680",
+      "source": "bstack/engineering/skills/principle-exhaust-the-design-space/SKILL.md",
+      "source_sha256": "8583310d7297b7823d75494faa57b003564d436807febecdecbd8321abe5cf6e",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-experience-first/WORKFLOW.md",
+      "sha256": "4e92a1e8666d4d77cfa55a313cbd92f593b2309fce7934f5b465e56f2eeffa55",
+      "source": "bstack/engineering/skills/principle-experience-first/SKILL.md",
+      "source_sha256": "58903529d733b1c1a7c9ccf127d45ef3c7d0d9f0b81164a4dc6b80efe6f2912b",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-fix-root-causes/WORKFLOW.md",
+      "sha256": "1251d888e057adc602ea9d75137869e0143a955e33bd6685dc90a251a29d45a0",
+      "source": "bstack/engineering/skills/principle-fix-root-causes/SKILL.md",
+      "source_sha256": "ba4cd38da1dcc8fe5432feb64457cba95594736a9b21b2ebf8f8c52aee068707",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-foundational-thinking/WORKFLOW.md",
+      "sha256": "a2fe41b71d910297ebc0cd3589d0151d6626ee8fa156645466769db7bf1e18b7",
+      "source": "bstack/engineering/skills/principle-foundational-thinking/SKILL.md",
+      "source_sha256": "864b827e8199d946ce58beca0f89c4ed4099ed6e426fb698a3aaa45de2a9eea2",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-guard-the-context-window/WORKFLOW.md",
+      "sha256": "5afd29e90b35730f4ea344d564452e6371a13da4d46428c8029d39f8b97d41a3",
+      "source": "bstack/engineering/skills/principle-guard-the-context-window/SKILL.md",
+      "source_sha256": "9f60e2c79b35f865cb103462f9128c6760b70f603475d1e535e5930f61840f66",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-laziness-protocol/WORKFLOW.md",
+      "sha256": "49b25d28db3838a2a7849959d37bc92febc52dcbad715529070950fe93c4e1a8",
+      "source": "bstack/engineering/skills/principle-laziness-protocol/SKILL.md",
+      "source_sha256": "9006579e9e3f33955d17569733db688ae65f22577dc3b21803d219a5a8445aff",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-make-operations-idempotent/WORKFLOW.md",
+      "sha256": "b3d3a21816839f4389a603928be0009abc0f9fb38afbf9466a6af5af69fdcfba",
+      "source": "bstack/engineering/skills/principle-make-operations-idempotent/SKILL.md",
+      "source_sha256": "540738217c3da7bf513b9886924ad6a2bc77e58be867f5bd2e1831c74bf2ce70",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-migrate-callers-then-delete-legacy-apis/WORKFLOW.md",
+      "sha256": "c9de9fad44ac06ab87ec920b4eedcc9e7d79068f505be663d663ba2654fbc5ef",
+      "source": "bstack/engineering/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md",
+      "source_sha256": "09978915a4a11990cf0a9a02d9c08cc59e0b7a04c5c24b83aa560fbe4146f75b",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-minimize-reader-load/WORKFLOW.md",
+      "sha256": "24f4d8ca97ac3a5909d2c48e872ead15d0d6e93f5cab6191a24e0896b2ef1c6b",
+      "source": "bstack/engineering/skills/principle-minimize-reader-load/SKILL.md",
+      "source_sha256": "42551c5dc74cd578163c148da552db3ff67d29b78600ef216bfd311fb828fe69",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-model-the-domain/WORKFLOW.md",
+      "sha256": "e8386048bcc8b46744ba844e700f0df1a9c1a26b285117346d2a97b7ae3a6ad5",
+      "source": "bstack/engineering/skills/principle-model-the-domain/SKILL.md",
+      "source_sha256": "bbadbb9a723fac3f76e782ae45665eb94058ec10993e4bae36d4dc6b0e4eac07",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-never-block-on-the-human/WORKFLOW.md",
+      "sha256": "1a5128d471b25d8743c0c3ca1d87aa30be2a203c01992edfa085854a35a73b89",
+      "source": "bstack/engineering/skills/principle-never-block-on-the-human/SKILL.md",
+      "source_sha256": "d82bce9ab9193249d1ec0d514202d89602f0fd3d312174d622c2dd222bae5a2e",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-outcome-oriented-execution/WORKFLOW.md",
+      "sha256": "8bcc4e8d529810ebf8c9414d666f55a5416384efa631cce9d8eae36df0aca34e",
+      "source": "bstack/engineering/skills/principle-outcome-oriented-execution/SKILL.md",
+      "source_sha256": "beedcaed75572a6a1662d47f16da203c2bd2c9dbffbbd678d4ba187d67b7e670",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-prove-it-works/WORKFLOW.md",
+      "sha256": "79eab8f0bd1f036bcd7421288d1f7a769878dbec46310c9002d6bf52331cf5b8",
+      "source": "bstack/engineering/skills/principle-prove-it-works/SKILL.md",
+      "source_sha256": "ae13d287984a5864312b6286899d4ee2b60f8272b5e5e8fcc586a7c3ea51020b",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-redesign-from-first-principles/WORKFLOW.md",
+      "sha256": "eb8a8ac64a2925b3e8ccfbe8035b8a8133cd8196f6ea01eb95219742e3230ed7",
+      "source": "bstack/engineering/skills/principle-redesign-from-first-principles/SKILL.md",
+      "source_sha256": "a1c7fd0a96b40e12a74bceb0e6bb20a9666dd844dcabfb624acb27da23b929fe",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-separate-before-serializing-shared-state/WORKFLOW.md",
+      "sha256": "f6ad53b99f345d1859ffa2d7031c02bc6451c381a30209bcaf8e579093502948",
+      "source": "bstack/engineering/skills/principle-separate-before-serializing-shared-state/SKILL.md",
+      "source_sha256": "05294b40448e927c5da1c7b6f5c6b9fed3744637e3833d2d948b9154a9dd00bb",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-sequence-verifiable-units/WORKFLOW.md",
+      "sha256": "b5f8ce01116c72f672ca39385cdb336f6013762adb1a08f1aa8f53bd75a56bcd",
+      "source": "bstack/engineering/skills/principle-sequence-verifiable-units/SKILL.md",
+      "source_sha256": "761390804ee36c32f5338d8db47ec54463d40ff96dbb296dfafabcd5f2593eec",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-subtract-before-you-add/WORKFLOW.md",
+      "sha256": "f931edd05e9a3c17b19505cd86eecd883ae49d46b87e3c0c62275a9d561195d6",
+      "source": "bstack/engineering/skills/principle-subtract-before-you-add/SKILL.md",
+      "source_sha256": "a983a50e732c1ed315eba7aaf47a61329e31c4794eb1ab9d25d9945265b31e03",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-test-behavior-not-implementation/WORKFLOW.md",
+      "sha256": "d20e19abeeb3e01bea7e4deb6fbe91bd2e137b2f330d7143d6fce51532310409",
+      "source": "bstack/engineering/skills/principle-test-behavior-not-implementation/SKILL.md",
+      "source_sha256": "87e40efe4e486f7ea639d2ed1fc0abe6c93b8fd0e89a81218086909d2470a52e",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/principle-type-system-discipline/WORKFLOW.md",
+      "sha256": "af87870094d52b738c92fabacef3839b30c521978f15ad1be33cd62ada391127",
+      "source": "bstack/engineering/skills/principle-type-system-discipline/SKILL.md",
+      "source_sha256": "c83da8031ffb4c86410030d3e261f659598fca2b7d8158fd9dc269d70a3a025e",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/recall/WORKFLOW.md",
+      "sha256": "bc54e15bf8d79cc3ef350244a044576a473e1cbe05038054024ad47b3abd53aa",
+      "source": "bstack/engineering/skills/recall/SKILL.md",
+      "source_sha256": "d265b0e5b6dc5b89c0407f3387d24462c988e1990a37d5359735137908128c5a",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/reflect/WORKFLOW.md",
+      "sha256": "7fb82f48874701e633fa8916192adc12497f543a36d8378009184cb5fd7c3436",
+      "source": "bstack/engineering/skills/reflect/SKILL.md",
+      "source_sha256": "6a4d4ccaace9ce88c3e268fcbedf3cfd40e527162a5e5aad6de8edbaf5e2b83f",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/reflect/references/divergent-reviewer.md",
+      "sha256": "005fe0823eb057465f1aa0b30f155e1f135c30702d40cb83f96681ed9e209860",
+      "source": "bstack/engineering/skills/reflect/references/divergent-reviewer.md",
+      "source_sha256": "7da0334ce282e6d8d7349c0cff14ffbd10a91a756c0b5c3ccc97291f57b8bed6",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/reflect/references/judgment-reviewer.md",
+      "sha256": "f1e5077aa3d8aa6e4072794b1f52fc04a5ae65900f7db4d2afedae741de4e6c5",
+      "source": "bstack/engineering/skills/reflect/references/judgment-reviewer.md",
+      "source_sha256": "917bb2ad21240a42b440aeb2a17766092e09f70d0982417b2f4caa6d74f27164",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/reflect/references/synthesizer.md",
+      "sha256": "cf77dd26eb8f930aa13b0f95a092f626abfeff1f26441d9980a27bebe7cbfc80",
+      "source": "bstack/engineering/skills/reflect/references/synthesizer.md",
+      "source_sha256": "2f76c847eb45b182dc6fbcbf7d96c8ee7e2986ecfd9e0d640fec44e3cc5a617c",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/reflect/references/tooling-reviewer.md",
+      "sha256": "32cd17b8bc3446dc77da9a9b6173287c9ffeb87676142050280b24c377572398",
+      "source": "bstack/engineering/skills/reflect/references/tooling-reviewer.md",
+      "source_sha256": "8c74ebf7811801d634db7ab609b097d77ea00ab77bb4b258d69bd96e671cfa39",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/show-me-your-work/WORKFLOW.md",
+      "sha256": "eeb7ed0f9b49f8c0d542c093d60f578ae3c1d8b8e8b0c4f35110a2fb1cdcde02",
+      "source": "bstack/engineering/skills/show-me-your-work/SKILL.md",
+      "source_sha256": "831e85ba3f84f38bf338cd03e6af050fea357752e25a825e334c99f59d7f2077",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/show-me-your-work/references/decision-log-template.tsv",
+      "sha256": "6779378006a2f5225e8c06deb84f1d913fb532041ebbb6e50d94600bfe3f4b76",
+      "source": "bstack/engineering/skills/show-me-your-work/references/decision-log-template.tsv",
+      "source_sha256": "6779378006a2f5225e8c06deb84f1d913fb532041ebbb6e50d94600bfe3f4b76",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "content/engineering/skills/show-me-your-work/scripts/log.sh",
+      "sha256": "1601bc18f9aba0af3f5d6375e4f2d5dc6102334d1bca935026c0e3547cdadbbf",
+      "source": "bstack/engineering/skills/show-me-your-work/scripts/log.sh",
+      "source_sha256": "1601bc18f9aba0af3f5d6375e4f2d5dc6102334d1bca935026c0e3547cdadbbf",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/swarm/WORKFLOW.md",
+      "sha256": "341a6ba850d2a5dc700552e0479752d9cd8fda1a433f040aece672e0ebaa9805",
+      "source": "bstack/engineering/skills/swarm/SKILL.md",
+      "source_sha256": "d578d877c3b8b9de7163f52579c4683337a940acc0fbe4496a498f5d3b27df30",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/tdd/WORKFLOW.md",
+      "sha256": "31a1a9a05205d65a0535be968eb24dcc334b0c940a2f70c57dd565a91757d9b9",
+      "source": "bstack/engineering/skills/tdd/SKILL.md",
+      "source_sha256": "011cab0ecc04a3632121efb493ae4d60aa282a9b72c66de74dd8ad7e4313e05a",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/teach/WORKFLOW.md",
+      "sha256": "dba82187f7d7c0d51b4f95af3fbf51ab2eabc18df427fae95dd975a2a8877222",
+      "source": "bstack/engineering/skills/teach/SKILL.md",
+      "source_sha256": "bd286e5a6290673be2cd28aef7af2ec7f1fb138e6bce156ea657368c7e7fc8a4",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/technical-writing/WORKFLOW.md",
+      "sha256": "30b5db9a040059a3453a2daa097dee7fb29b2e7d00742c8dfdd5d531777c390b",
+      "source": "bstack/engineering/skills/technical-writing/SKILL.md",
+      "source_sha256": "6d6d9e625ae412ee8f36df8deb6fd9203d7c6acca776d5ee3cabbb9126f8b84c",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/typescript-best-practices/WORKFLOW.md",
+      "sha256": "5044f0ba79e1404cbfa0fd0fc5d50a994bc36eff5433e178842bbc5a801e7455",
+      "source": "bstack/engineering/skills/typescript-best-practices/SKILL.md",
+      "source_sha256": "28f9e61710e205f6f3c5476f333483cff0e988f6a5b639e2faad536344b40c5e",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/typescript-best-practices/references/patterns.md",
+      "sha256": "064a99b86a7d622604f6dcc3508a7bdc3f60b3893a84e6de5390da93cabcb677",
+      "source": "bstack/engineering/skills/typescript-best-practices/references/patterns.md",
+      "source_sha256": "62e9cd32d2fa066a35d0d1349aac22dce31a48ad7d5eaf142570770cfe707384",
+      "transforms": [
+        "rewrite-known-parent-workflow-reference",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/WORKFLOW.md",
+      "sha256": "06f909571cdaecb4613465e8557d904eff334cb1ecd129b9642b714d499822ef",
+      "source": "bstack/engineering/skills/why/SKILL.md",
+      "source_sha256": "222b93789754ba6ee901835137184acdca667f7e47c523bcc85aca86675fb249",
+      "transforms": [
+        "bind-bstack-policy",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/epistemics.md",
+      "sha256": "5e3a38bd79cb1eeaaf4a8cb394e1687885d4b825dccead53e9f6271aeb63b346",
+      "source": "bstack/engineering/skills/why/references/epistemics.md",
+      "source_sha256": "fcc0f559c072832c869a5ada72434b4849320a637ae63c09e8ee14f7ad787059",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/investigator-prompt.md",
+      "sha256": "3c17ff5bea6fb9f056f7a3ec56b8ca8f1c6a0544a60e6eeff1147d74252bee11",
+      "source": "bstack/engineering/skills/why/references/investigator-prompt.md",
+      "source_sha256": "6892956a7ab0b5ee6c4babaf4f793703abe89b350ea7cb9463b4a56eea1c8266",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/source-playbook.md",
+      "sha256": "427103b0b12d00226ec7f7d023bcf36766650fce2d69fe9e7e932a670f5ad5fd",
+      "source": "bstack/engineering/skills/why/references/source-playbook.md",
+      "source_sha256": "9ae9dcb9d09111c9facc68510331c5aba4aed9b1b057314ff1fc0e166ad3993a",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/code-archaeology.md",
+      "sha256": "5fee004e23fcf35e73167a70583c5c42da3992fcebe0ba56ebcfaff94cf38139",
+      "source": "bstack/engineering/skills/why/references/sources/code-archaeology.md",
+      "source_sha256": "8c14aa382f0de40829b2668d43e3f54814480bb93a486c9282ada4003f6b9dbd",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/databricks.md",
+      "sha256": "7d6bb19aff4c298b52d46b1cee02278bcfaa97ef2dec43ebde1a16281ee733bc",
+      "source": "bstack/engineering/skills/why/references/sources/databricks.md",
+      "source_sha256": "236ede7aab6454662a992db088a5393537a5233a4c26719c93188f9e174488f6",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/datadog.md",
+      "sha256": "7a5fdbbfdd4c4fdc22e3f8e479dea7d7e6e9d4b691467789a59a3d89d779292f",
+      "source": "bstack/engineering/skills/why/references/sources/datadog.md",
+      "source_sha256": "ebe9c07bac28e47757ee7f16fb93b0c01d427a08c501957d047f395a2f37b7e7",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/incident-postmortem.md",
+      "sha256": "40f74cae897cee30520afb48705af8cbd8b113e1725edc74bfff3a23df9c2436",
+      "source": "bstack/engineering/skills/why/references/sources/incident-postmortem.md",
+      "source_sha256": "a899470f05f86029630a13a2696491cc708ca7b56a6e822a69ff6e954d6ff8cf",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/linear.md",
+      "sha256": "2cfc2344400a326edcdd722d8e98ca2f03976b0a9a5fbf0d9f3e31979df1c913",
+      "source": "bstack/engineering/skills/why/references/sources/linear.md",
+      "source_sha256": "01304e7f1badfcfb78babbb0edcadeb3cc8dd3f713793420cdff24ba190f907c",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/notion.md",
+      "sha256": "8f9e3569d3fe975208c74e75d8b4be91878144d44c5dba55d1d484f97c5709f2",
+      "source": "bstack/engineering/skills/why/references/sources/notion.md",
+      "source_sha256": "3bcfa695c49dfad4ac036d5d7181c12585f55ac04f1936198d16ab75a2788997",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/sentry.md",
+      "sha256": "16af0b971ede1db84eb3db8c3a09e5ea298c74a4ce14065aa45126db5cdf3bb3",
+      "source": "bstack/engineering/skills/why/references/sources/sentry.md",
+      "source_sha256": "6f292bc4fb1548e956f95e1900b9481abf5134254419f1cd9edec95428c82d73",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/sources/slack.md",
+      "sha256": "558833819ceee77a3716a242d1d56e5e732315db6de0092ec5aeb5c47a5d676a",
+      "source": "bstack/engineering/skills/why/references/sources/slack.md",
+      "source_sha256": "58fee61d024b3700b407e7acbed367944720ff05adfddb6954d36c88368f3ba7",
+      "transforms": [
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/engineering/skills/why/references/synthesizer-prompt.md",
+      "sha256": "afe689f8018714ad43eb47ca99bbc9b65ea821bbdedf3b0896bccdd8281a2499",
+      "source": "bstack/engineering/skills/why/references/synthesizer-prompt.md",
+      "source_sha256": "733a3e9cf897b1aca56aaddeae01a3832e4bfed024c2f602db2d1bf807d7a73b",
+      "transforms": [
+        "rewrite-concrete-code-paths",
+        "bind-bstack-policy"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/index.json",
+      "sha256": "1e44e6b629c5eee279c68eccdb5b0d1fdfd56343c89bb1696a061ec38e61f8c6",
+      "source": "bstack/package/selection.json",
+      "source_sha256": "380ae1d4b1ab029d1075348777c7330bde35e4042bb3a1542c428a2400805cf1",
+      "transforms": [
+        "resolve-selected-workflows-and-overrides"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/layers.json",
+      "sha256": "c59e78e0803cbe275c52683e6dc90708f78944c587cf89399c4526fcf814f813",
+      "source": "bstack/layers.json",
+      "source_sha256": "9403fbebb4e07a85f2c06d3980f34e9927b943b325b54231b19a61bbed706ff5",
+      "transforms": [
+        "emit-portable-runtime-layer-summary"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/setup/WORKFLOW.md",
+      "sha256": "cc19ee7992129350a9871e75d44484cbe2cd1e0e440b17c695e99cdf9be32b66",
+      "source": "bstack/package/templates/setup.md",
+      "source_sha256": "cc19ee7992129350a9871e75d44484cbe2cd1e0e440b17c695e99cdf9be32b66",
+      "transforms": [
+        "render-release-template"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/bstack-router/WORKFLOW.md",
+      "sha256": "5ad10272da7197f342f7222c1c735acd55d832e16300c6271f02bcb490613606",
+      "source": "bstack/shared/skills/bstack-router/SKILL.md",
+      "source_sha256": "d87236de4eed6142ffd8c5230889236de0dc71c627538312a6f790ef946a17bb",
+      "transforms": [
+        "rewrite-local-markdown-links",
+        "rewrite-attribution-metadata",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/bstack-router/references/capabilities.md",
+      "sha256": "b06dd8049e12e4670f111983ebb9b934c838e6300a4c55dc845856ab727d463b",
+      "source": "bstack/shared/skills/bstack-router/references/capabilities.md",
+      "source_sha256": "b06dd8049e12e4670f111983ebb9b934c838e6300a4c55dc845856ab727d463b",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/unslop/WORKFLOW.md",
+      "sha256": "34c04304c55e7564900b87ed54aaba71f9de1527f3c37fb1d23ecfc7b7b84daf",
+      "source": "bstack/shared/skills/unslop/SKILL.md",
+      "source_sha256": "a268a61dd3eaacd71596ed62ad687abe1cf54879793a50f940c8543d3e9b8390",
+      "transforms": [
+        "rewrite-attribution-metadata",
+        "private-workflow-filename"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/WORKFLOW.md",
+      "sha256": "1e6310cc65d586699be17d45f605e239787f266d4b487b6bc49d0c95ca4db8c0",
+      "source": "bstack/package/templates/verify.md",
+      "source_sha256": "1e6310cc65d586699be17d45f605e239787f266d4b487b6bc49d0c95ca4db8c0",
+      "transforms": [
+        "render-release-template"
+      ]
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/scripts/codex_hooks.py",
+      "sha256": "d750ffeaf2185171fa9ebda6217295c2680b864e300b62ea9104996c3336e8ed",
+      "source": "bstack/shared/skills/verify-bstack/scripts/codex_hooks.py",
+      "source_sha256": "d750ffeaf2185171fa9ebda6217295c2680b864e300b62ea9104996c3336e8ed",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/scripts/compact.py",
+      "sha256": "517cb6283408298758fea52abfaf95f5c35b2f5833887e16553b4f19835d10a6",
+      "source": "bstack/shared/skills/verify-bstack/scripts/compact.py",
+      "source_sha256": "517cb6283408298758fea52abfaf95f5c35b2f5833887e16553b4f19835d10a6",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/scripts/fallback.py",
+      "sha256": "c2d5a6926470908f5dfb6f4aa89eac88ebe8f08678667d736846472a5736e9d3",
+      "source": "bstack/shared/skills/verify-bstack/scripts/fallback.py",
+      "source_sha256": "c2d5a6926470908f5dfb6f4aa89eac88ebe8f08678667d736846472a5736e9d3",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/scripts/installation.py",
+      "sha256": "4792c41c3ef0a0a58a41a5ad005ffde91d5887c4d811c94c2607514e549f06bb",
+      "source": "bstack/shared/skills/verify-bstack/scripts/installation.py",
+      "source_sha256": "4792c41c3ef0a0a58a41a5ad005ffde91d5887c4d811c94c2607514e549f06bb",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/scripts/policy.py",
+      "sha256": "277c203311da4ecdb21408feb089a53d1b3ec562944b4cdb07c8938c4123e98b",
+      "source": "bstack/shared/skills/verify-bstack/scripts/policy.py",
+      "source_sha256": "277c203311da4ecdb21408feb089a53d1b3ec562944b4cdb07c8938c4123e98b",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "content/shared/skills/verify-bstack/scripts/test_policy.py",
+      "sha256": "c93e70e3c0e69312ed985b6481fce538b259458d3206835aec4801af4bdb78f5",
+      "source": "bstack/shared/skills/verify-bstack/scripts/test_policy.py",
+      "source_sha256": "c93e70e3c0e69312ed985b6481fce538b259458d3206835aec4801af4bdb78f5",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "content/shared/skills/verify-bstack/scripts/verify.py",
+      "sha256": "c16e6566c70da07b0824174813c496f7890604394b891d26db5189b5b6cdba08",
+      "source": "bstack/shared/skills/verify-bstack/scripts/verify.py",
+      "source_sha256": "c16e6566c70da07b0824174813c496f7890604394b891d26db5189b5b6cdba08",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "licenses/cursor-team-kit.txt",
+      "sha256": "702f5f331b56aff0e33d8c7826df5202559f894145eb70355c6477b55b5bb8a0",
+      "source": "bstack/engineering/licenses/cursor-team-kit.txt",
+      "source_sha256": "702f5f331b56aff0e33d8c7826df5202559f894145eb70355c6477b55b5bb8a0",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "licenses/pstack.txt",
+      "sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e",
+      "source": "bstack/engineering/LICENSE",
+      "source_sha256": "bc957ca6bee02792566a1a028d105e02e247c6e77cf057061674273da77b200e",
+      "transforms": []
+    },
+    {
+      "mode": 493,
+      "path": "runtime/reminder.py",
+      "sha256": "34a5b7d72c135b78d70c74295113ed4484dd1424dc3433749cbf2a5e8ee13e84",
+      "source": "bstack/shared/router/hook.py",
+      "source_sha256": "34a5b7d72c135b78d70c74295113ed4484dd1424dc3433749cbf2a5e8ee13e84",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "runtime/reminder.txt",
+      "sha256": "8657e30e3bc10630e50858ef3d347ad8813ec3ff3f0871b02a3fff21ad606cf0",
+      "source": "bstack/shared/router/reminder.txt",
+      "source_sha256": "8657e30e3bc10630e50858ef3d347ad8813ec3ff3f0871b02a3fff21ad606cf0",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "scripts/bstack.py",
+      "sha256": "856b790c8d975323cb6c341c2e27a5cc1ddfffb6e67e982df72a666d75052b5e",
+      "source": "bstack/package/runtime.py",
+      "source_sha256": "856b790c8d975323cb6c341c2e27a5cc1ddfffb6e67e982df72a666d75052b5e",
+      "transforms": []
+    }
+  ],
+  "installation_source": "bundled-files-only",
+  "name": "bstack",
+  "native_plugin_deferred": {
+    "codex": "The native validator rejects the shared manual-entry flag. CLI installation is separate."
+  },
+  "native_plugin_manifests": [
+    "claude",
+    "cursor"
+  ],
+  "schema_version": 1,
+  "source_repository": "https://github.com/cursor/plugins",
+  "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
+  "upstream_updates": "reviewed-build-only",
+  "version": "0.1.0"
+}

@@ -31,6 +31,10 @@ For bstack policy changes, run `python3 bstack/shared/skills/verify-bstack/scrip
 
 For imported source or layer changes, run `python3 bstack/scripts/layers.py check` and `python3 bstack/scripts/audit_pstack.py`. Review a candidate upstream checkout according to [the update procedure](../../../UPSTREAM.md) before changing a pin. Preserve bstack-owned skill replacements and review changed policy dependencies; passing hash checks alone cannot establish semantic compatibility.
 
+For packaging changes, build with `python3 bstack/scripts/package.py build`, check with `python3 bstack/scripts/package.py check`, and run `python3 bstack/shared/skills/verify-bstack/scripts/installation.py`. The installation verifier defaults to the bundled Python installer and requires no skills.sh download. Add `--methods offline symlink copy` to compare all three paths; `--skills-cli /path/to/skills/bin/cli.mjs` uses an already available skills@1.7.0 CLI. Otherwise the explicitly selected skills.sh methods invoke pinned `npx skills@1.7.0`.
+
+Add `--live` for authorized provider-backed checks. The verifier installs into isolated projects, compares exact manifests, deletes its staged source, and drives manual entry, fresh default-off, automatic routing across resumed turns, and fresh opt-out. `--live-method` selects which installed project to drive. Native plugin registration, desktop behavior, and native compaction of this installed bundle are not covered by this test. Read [the consumer installation contract](features/installation.md).
+
 ## Evidence
 
 Each run writes `.bstack/verification/<run-id>/`: prompts, command arguments, stdout/stderr, exit status, hook receipts, final responses, and `report.json`. A hook execution is not delivery. A fresh receipt echoed by the model establishes delivery; the response's routing choices and actual file reads establish separate behavioral evidence. A retained earlier receipt is not proof of the current prompt hook. An answer asserting that it read a file is not a read trace.

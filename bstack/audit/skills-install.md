@@ -1,5 +1,7 @@
 # skills.sh installation probe
 
+Historical raw-source probe before the generated consumer release. See [the packaged installation report](packaging.md) and [current install instructions](../INSTALL.md) for the replacement distribution path.
+
 The current source tree is not ready to ship as an integrated bstack installation through `skills.sh`. Skill file installation succeeds for all four CLI targets, but the installed router has missing dependencies. This probe establishes the packaging work needed before agent behavior tests can pass in a fresh consumer project.
 
 ## What ran

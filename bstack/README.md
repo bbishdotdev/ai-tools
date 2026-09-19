@@ -10,13 +10,15 @@ bstack names the whole collection. **Poteto Mode** remains the name of its PStac
 
 The goal is one distributable plugin that connects engineering and SDLC workflows across Codex, Claude Code, and Cursor, with CLI verification also covering Grok. Planned additions include shared memory and context handling, local-first work planning, GitHub templates and CI jobs, and selected Matt Pocock skills. Those pieces will join the package in reviewed steps.
 
-Today, bstack has a pinned PStack import, a separate bstack policy layer, customized `unslop`, and repository-local CLI adapters and verification. Matt Pocock's skills have not been imported. Shared memory integration, local work management, desktop verification, and distributable plugin packaging remain future work. The [opt-in auto-mode design](audit/auto-mode-design.md) is also pending implementation; the current repository POC still enables automatic routing.
+Today, bstack has a pinned PStack import, a separate policy layer, customized `unslop`, and a generated consumer bundle with project-local CLI adapters. [Install the complete bundle](INSTALL.md) from a local clone or transferred folder using Python, or through skills.sh. Both routes use the exact bundled revision. New installations default to manual Poteto Mode; automatic routing is an explicit opt-in. The development repository's earlier POC still uses its previously authorized automatic routing.
+
+Matt Pocock's skills, shared memory integration, local work management, desktop verification, and native plugin-manager installation remain future work.
 
 Start with [how PStack works and the simplification options](audit/pstack.md). Use the [catalog](audit/catalog.md) to review individual skills and playbooks.
 
 `engineering/` contains unmodified PStack 0.15.2 from `cursor/plugins` at `e31650eea443aaea1e84cc15d88c13f40080b275`, plus its three direct Cursor Team Kit companion skills. PStack's README, guide, license, Cursor manifest, scripts, agents, and dormant Benny pack are preserved. bstack's customized `unslop` from `code-maverick` lives separately under `shared/skills/unslop/`.
 
-The import remains a source installation, not a distributable bstack plugin. The router POC adds repository-local instructions and adapters for Codex, Claude Code, Cursor, and Grok. It does not run PStack model setup or enable its automations. The upstream instructions in `engineering/` still describe PStack's original environment. The active [bstack router](shared/skills/bstack-router/SKILL.md) applies scoped routing, capability-based tool choices, risk-based architecture, and evidence reporting over that source. This is an instruction policy, not an implementation of every provider adapter.
+The source import remains unchanged. The generated `release/` assembles bstack's policy and replacements with selected dependencies, portable paths, helper source, and notices. It does not run PStack model setup or enable its automations. The upstream instructions in `engineering/` still describe PStack's original environment. The active [bstack router](shared/skills/bstack-router/SKILL.md) applies scoped routing, capability-based tool choices, risk-based architecture, and evidence reporting over that source. This is an instruction policy, not an implementation of every provider adapter.
 
 ## Selective upstream updates
 
@@ -26,7 +28,9 @@ See [upstream updates and layer ownership](UPSTREAM.md) before changing an impor
 
 ## Verification and source records
 
-The [skills.sh installation probe](audit/skills-install.md) successfully copied skills for all four CLI targets but found missing package dependencies and notices, incorrect override selection, and absent host setup. The source tree needs a release layout before it can provide the integrated consumer installation described above.
+The historical [raw-source skills.sh probe](audit/skills-install.md) found missing dependencies and notices, incorrect overrides, and absent setup. The generated release addresses those packaging gaps. Use `python3 bstack/scripts/package.py build` to assemble it and `python3 bstack/scripts/package.py check` to detect stale or altered output. [The installation guide](INSTALL.md) explains the current distribution and host boundaries.
+
+The [consumer packaging report](audit/packaging.md) records matching offline/copy/symlink installs, 77 deterministic tests, and 20 live CLI routing/mode probes. Codex reminder delivery remains explicitly limited by native project trust in fresh fixtures; desktop and native plugin-manager installation are not claimed.
 
 The [policy-layer report](audit/bstack-layers.md) describes the approved behavior changes, source separation, and CLI verification scope.
 

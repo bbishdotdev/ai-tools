@@ -1,0 +1,684 @@
+{
+  "status": "pass_with_hook_limits",
+  "package": "bstack",
+  "version": "0.1.0",
+  "upstream_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
+  "release_manifest_sha256": "8154639accaddaf2a52d9d68842a0651ab4de5eee8cde6c7069308ef5f4582bd",
+  "live_manifest_sha256": "7eaefbcc65f9c397086b3a5fccdcefbf4fe900bd1d70d853ee7155b21ea57f7f",
+  "post_live_change": "Only generated verify-bstack wrapper help text changed to say the default verifier uses offline installation. Final static installs and runtime tests were repeated; routing and hook behavior did not change.",
+  "static_installs": {
+    "scope": "Project installation, setup, and optional installed CLI probes",
+    "clients": {
+      "codex": {
+        "binary": "/home/bbish/.local/share/mise/installs/codex/latest/bin/codex",
+        "installed": true,
+        "version": "codex-cli 0.153.2",
+        "version_exit": 0
+      },
+      "claude": {
+        "binary": "/home/bbish/.local/share/mise/installs/claude/latest/claude",
+        "installed": true,
+        "version": "2.1.261 (Claude Code)",
+        "version_exit": 0
+      },
+      "cursor": {
+        "binary": "/home/bbish/.local/bin/cursor-agent",
+        "installed": true,
+        "version": "2026.09.18-9a7762b",
+        "version_exit": 0
+      },
+      "grok": {
+        "binary": "/home/bbish/.local/share/mise/installs/node/26.7.0/bin/grok",
+        "installed": true,
+        "version": "grok 1.0.34 (3736acbc8658) [stable]",
+        "version_exit": 0
+      }
+    },
+    "selected": [
+      "codex",
+      "claude",
+      "cursor",
+      "grok"
+    ],
+    "live": false,
+    "live_method": "offline",
+    "installs": [
+      {
+        "method": "offline",
+        "project": "/tmp/bstack-consumer-zim4vu_f/offline project",
+        "integrity": {
+          "name": "bstack",
+          "version": "0.1.0",
+          "manifest_sha256": "8154639accaddaf2a52d9d68842a0651ab4de5eee8cde6c7069308ef5f4582bd",
+          "file_count": 149,
+          "hash_failures": [],
+          "discoverable_skills": [
+            "SKILL.md"
+          ],
+          "entrypoints": {
+            "controller": "scripts/bstack.py",
+            "index": "content/index.json",
+            "mode": "SKILL.md",
+            "reminder": "runtime/reminder.py",
+            "router": "content/shared/skills/bstack-router/WORKFLOW.md",
+            "setup": "content/setup/WORKFLOW.md",
+            "unslop": "content/shared/skills/unslop/WORKFLOW.md",
+            "verification": "content/shared/skills/verify-bstack/WORKFLOW.md"
+          }
+        },
+        "installer_results": {
+          "installed": true,
+          "auto": false,
+          "hosts": [
+            "codex",
+            "claude",
+            "cursor",
+            "grok"
+          ],
+          "changes": [
+            ".agents/skills/bstack-auto/SKILL.md",
+            ".agents/skills/bstack-auto/agents/openai.yaml",
+            ".agents/skills/unslop/SKILL.md",
+            ".agents/skills/unslop/agents/openai.yaml",
+            ".agents/skills/verify-bstack/SKILL.md",
+            ".agents/skills/verify-bstack/agents/openai.yaml",
+            ".bstack/instructions.md",
+            ".claude/skills/bstack-auto",
+            ".claude/skills/poteto-mode",
+            ".claude/skills/unslop",
+            ".claude/skills/verify-bstack",
+            ".cursor/rules/bstack.mdc",
+            ".cursor/skills/bstack-auto",
+            ".cursor/skills/poteto-mode",
+            ".cursor/skills/unslop",
+            ".cursor/skills/verify-bstack",
+            ".gitignore",
+            ".grok/skills/bstack-auto",
+            ".grok/skills/poteto-mode",
+            ".grok/skills/unslop",
+            ".grok/skills/verify-bstack",
+            "AGENTS.md",
+            "CLAUDE.md",
+            ".bstack/config.json"
+          ],
+          "notice": "Start a fresh agent session after changing bindings. Existing conversation context is not erased. Codex hook trust must be reviewed in the native /hooks UI; setup does not grant trust.",
+          "installation": "offline",
+          "capsule": "/tmp/bstack-consumer-zim4vu_f/offline project/.agents/skills/poteto-mode",
+          "source": "bundled-files-only"
+        },
+        "doctor": {
+          "installed": true,
+          "auto": false,
+          "project": "/tmp/bstack-consumer-zim4vu_f/offline project",
+          "hosts": [
+            "codex",
+            "claude",
+            "cursor",
+            "grok"
+          ],
+          "capsule": "/tmp/bstack-consumer-zim4vu_f/offline project/.agents/skills/poteto-mode",
+          "notice": "Start a fresh agent session after changing bindings. Existing conversation context is not erased. Codex hook trust must be reviewed in the native /hooks UI; setup does not grant trust.",
+          "native_hook_trust": "not_checked",
+          "package_integrity": "passed",
+          "bindings": "passed"
+        }
+      },
+      {
+        "method": "symlink",
+        "project": "/tmp/bstack-consumer-zim4vu_f/symlink project",
+        "integrity": {
+          "name": "bstack",
+          "version": "0.1.0",
+          "manifest_sha256": "8154639accaddaf2a52d9d68842a0651ab4de5eee8cde6c7069308ef5f4582bd",
+          "file_count": 149,
+          "hash_failures": [],
+          "discoverable_skills": [
+            "SKILL.md"
+          ],
+          "entrypoints": {
+            "controller": "scripts/bstack.py",
+            "index": "content/index.json",
+            "mode": "SKILL.md",
+            "reminder": "runtime/reminder.py",
+            "router": "content/shared/skills/bstack-router/WORKFLOW.md",
+            "setup": "content/setup/WORKFLOW.md",
+            "unslop": "content/shared/skills/unslop/WORKFLOW.md",
+            "verification": "content/shared/skills/verify-bstack/WORKFLOW.md"
+          }
+        },
+        "installer_results": [
+          {
+            "name": "poteto-mode",
+            "status": "installed",
+            "source": "/tmp/bstack-consumer-zim4vu_f/release",
+            "ref": null,
+            "hash": "d806fefdcc7fa96775f2ca46f744d6518e477c330a2404acca6b8c2320725954",
+            "path": "/tmp/bstack-consumer-zim4vu_f/symlink project/.agents/skills/poteto-mode",
+            "scope": "project",
+            "agents": [
+              "Codex",
+              "Claude Code",
+              "Cursor",
+              "Grok Build"
+            ],
+            "mode": "symlink",
+            "security": null
+          }
+        ],
+        "doctor": {
+          "installed": true,
+          "auto": false,
+          "project": "/tmp/bstack-consumer-zim4vu_f/symlink project",
+          "hosts": [
+            "codex",
+            "claude",
+            "cursor",
+            "grok"
+          ],
+          "capsule": "/tmp/bstack-consumer-zim4vu_f/symlink project/.agents/skills/poteto-mode",
+          "notice": "Start a fresh agent session after changing bindings. Existing conversation context is not erased. Codex hook trust must be reviewed in the native /hooks UI; setup does not grant trust.",
+          "native_hook_trust": "not_checked",
+          "package_integrity": "passed",
+          "bindings": "passed"
+        }
+      },
+      {
+        "method": "copy",
+        "project": "/tmp/bstack-consumer-zim4vu_f/copy project",
+        "integrity": {
+          "name": "bstack",
+          "version": "0.1.0",
+          "manifest_sha256": "8154639accaddaf2a52d9d68842a0651ab4de5eee8cde6c7069308ef5f4582bd",
+          "file_count": 149,
+          "hash_failures": [],
+          "discoverable_skills": [
+            "SKILL.md"
+          ],
+          "entrypoints": {
+            "controller": "scripts/bstack.py",
+            "index": "content/index.json",
+            "mode": "SKILL.md",
+            "reminder": "runtime/reminder.py",
+            "router": "content/shared/skills/bstack-router/WORKFLOW.md",
+            "setup": "content/setup/WORKFLOW.md",
+            "unslop": "content/shared/skills/unslop/WORKFLOW.md",
+            "verification": "content/shared/skills/verify-bstack/WORKFLOW.md"
+          }
+        },
+        "installer_results": [
+          {
+            "name": "poteto-mode",
+            "status": "installed",
+            "source": "/tmp/bstack-consumer-zim4vu_f/release",
+            "ref": null,
+            "hash": "d806fefdcc7fa96775f2ca46f744d6518e477c330a2404acca6b8c2320725954",
+            "path": "/tmp/bstack-consumer-zim4vu_f/copy project/.agents/skills/poteto-mode",
+            "scope": "project",
+            "agents": [
+              "Codex",
+              "Claude Code",
+              "Cursor",
+              "Grok Build"
+            ],
+            "mode": "copy",
+            "security": null
+          }
+        ],
+        "doctor": {
+          "installed": true,
+          "auto": false,
+          "project": "/tmp/bstack-consumer-zim4vu_f/copy project",
+          "hosts": [
+            "codex",
+            "claude",
+            "cursor",
+            "grok"
+          ],
+          "capsule": "/tmp/bstack-consumer-zim4vu_f/copy project/.agents/skills/poteto-mode",
+          "notice": "Start a fresh agent session after changing bindings. Existing conversation context is not erased. Codex hook trust must be reviewed in the native /hooks UI; setup does not grant trust.",
+          "native_hook_trust": "not_checked",
+          "package_integrity": "passed",
+          "bindings": "passed"
+        }
+      }
+    ],
+    "probes": [],
+    "source_manifest_sha256": "8154639accaddaf2a52d9d68842a0651ab4de5eee8cde6c7069308ef5f4582bd",
+    "staged_source_removed_before_execution": true,
+    "status": "pass",
+    "temporary_projects_removed": true
+  },
+  "python_only": {
+    "status": "pass",
+    "installer_PATH_executables": [
+      "python3"
+    ],
+    "source_removed": true,
+    "manifest_identical": true,
+    "packaged_verifier_exit": 0,
+    "package_unchanged_after_verifier": true,
+    "python": "3.14.7",
+    "note": "Installer subprocess has only Python on PATH and an empty inherited environment. Packaged static verifier separately runs with normal environment and defaults to offline installation. No network isolation is claimed."
+  },
+  "clients": {
+    "codex": {
+      "binary": "/home/bbish/.local/share/mise/installs/codex/latest/bin/codex",
+      "installed": true,
+      "version": "codex-cli 0.153.2",
+      "version_exit": 0
+    },
+    "claude": {
+      "binary": "/home/bbish/.local/share/mise/installs/claude/latest/claude",
+      "installed": true,
+      "version": "2.1.261 (Claude Code)",
+      "version_exit": 0
+    },
+    "cursor": {
+      "binary": "/home/bbish/.local/bin/cursor-agent",
+      "installed": true,
+      "version": "2026.09.18-9a7762b",
+      "version_exit": 0
+    },
+    "grok": {
+      "binary": "/home/bbish/.local/share/mise/installs/node/26.7.0/bin/grok",
+      "installed": true,
+      "version": "grok 1.0.34 (3736acbc8658) [stable]",
+      "version_exit": 0
+    }
+  },
+  "phases": [
+    {
+      "host": "codex",
+      "phase": "manual",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "claude",
+      "phase": "manual",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "cursor",
+      "phase": "manual",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "grok",
+      "phase": "manual",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "codex",
+      "phase": "default-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "claude",
+      "phase": "default-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "cursor",
+      "phase": "default-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "grok",
+      "phase": "default-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "codex",
+      "phase": "auto-1",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": false,
+      "hook_limit": "Codex project configuration is blocked by native project trust: To load project-local config, hooks, and exec policies, add /tmp/bstack-consumer-c8hd8zm7/offline project as a trusted project in /home/bbish/.codex/config.toml."
+    },
+    {
+      "host": "claude",
+      "phase": "auto-1",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true,
+        "current_turn_hook_delivery": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": true,
+      "hook_limit": null
+    },
+    {
+      "host": "cursor",
+      "phase": "auto-1",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true,
+        "current_turn_hook_delivery": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": true,
+      "hook_limit": null
+    },
+    {
+      "host": "grok",
+      "phase": "auto-1",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "installed_router_read": true,
+        "current_turn_hook_delivery": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": true,
+      "hook_limit": null
+    },
+    {
+      "host": "codex",
+      "phase": "auto-2",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "same_session": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": false,
+      "hook_limit": "Codex project configuration is blocked by native project trust: To load project-local config, hooks, and exec policies, add /tmp/bstack-consumer-c8hd8zm7/offline project as a trusted project in /home/bbish/.codex/config.toml."
+    },
+    {
+      "host": "claude",
+      "phase": "auto-2",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "same_session": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "current_turn_hook_delivery": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": true,
+      "hook_limit": null
+    },
+    {
+      "host": "cursor",
+      "phase": "auto-2",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "same_session": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "current_turn_hook_delivery": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": true,
+      "hook_limit": null
+    },
+    {
+      "host": "grok",
+      "phase": "auto-2",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "same_session": true,
+        "playbook": true,
+        "custom_model_policy": true,
+        "fixture": true,
+        "fresh_fixture_read": true,
+        "current_turn_hook_delivery": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": true,
+      "hook_limit": null
+    },
+    {
+      "host": "codex",
+      "phase": "after-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "claude",
+      "phase": "after-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "cursor",
+      "phase": "after-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    },
+    {
+      "host": "grok",
+      "phase": "after-off",
+      "checks": {
+        "exit_zero": true,
+        "structured_response": true,
+        "no_development_checkout_read": true,
+        "no_receipt_source_read": true,
+        "no_router_read": true,
+        "no_hook_receipts": true,
+        "persisted_auto_off": true,
+        "no_router_binding": true,
+        "no_reported_receipt": true
+      },
+      "passed": true,
+      "fresh_hook_receipt_delivered": null,
+      "hook_limit": null
+    }
+  ],
+  "tests": {
+    "runtime": 29,
+    "builder": 11,
+    "installation_evidence": 6,
+    "reminder_protocol": 9,
+    "repository_adapter": 2,
+    "source_layers": 8,
+    "policy_parser": 12,
+    "total": 77
+  },
+  "source_integrity": {
+    "files": 162,
+    "hashes_and_modes": "unchanged"
+  },
+  "native_plugin_installation": "not_verified",
+  "desktop_apps": "not_verified",
+  "windows": "not_supported_by_current_controller",
+  "evidence_directories": [
+    ".bstack/verification/packaging-final-live",
+    ".bstack/verification/packaging-release-static",
+    ".bstack/verification/packaging-python-only"
+  ],
+  "earlier_runs_preserved": [
+    ".bstack/verification/packaging-live-first",
+    ".bstack/verification/packaging-live-offline"
+  ],
+  "independent_review": "Same-model-family delegated source review; no remaining high-impact findings. Not a cross-model execution audit."
+}

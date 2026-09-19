@@ -12,6 +12,12 @@ The manifest describes the relationship. The active router and host adapters put
 
 This split preserves the upstream diff and our edits. It does not eliminate maintenance. A policy overlay adds instructions and can conflict with a changed upstream workflow. A whole-skill replacement keeps our version intact, but new upstream improvements must be reviewed and ported deliberately. The current layer makes no claim of lower context cost or deterministic routing.
 
+## Release assembly and installation
+
+`package/selection.json` selects the reviewed workflows and helpers. `scripts/package.py` builds `release/` entirely from local pinned sources and bstack-owned files. It replaces concrete dependency paths, applies the bstack policy binding, selects customized unslop and setup, and records each file's source hash and transformations in the installed manifest. The generated files are Git-tracked, so a release diff shows exactly what consumers receive. Do not edit them directly.
+
+Run `python3 bstack/scripts/package.py build` after changing owned sources or selecting an upstream update. Then run `python3 bstack/scripts/package.py check` and the installation verification. Build and install do not fetch upstream. Installing from a clone, transferred release, skills.sh, or an internal distributor uses the same reviewed bundle; selecting newer upstream content is a separate maintainer action.
+
 ## Check the current tree
 
 From the repository root:

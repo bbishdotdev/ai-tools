@@ -1,14 +1,14 @@
 # Manual entry and opt-in auto mode
 
-Decision for the next implementation step, 18 September 2026. This document is a design record; the current repository POC still has its previously authorized automatic routing enabled. No toggle command has been installed by the policy-layer change.
+Decision recorded 18 September 2026 and implemented in the consumer release's project controller. See [installation](../INSTALL.md). This development repository's earlier POC still has its previously authorized automatic routing enabled.
 
 New installations should default to manual invocation. Automatic routing should require an explicit opt-in and persist as a local preference for that repository. Keep unslop's existing always-applied behavior independent of the engineering router switch.
 
 Manual and automatic entry should load the same bstack policy. Only activation changes; supporting PStack skills stay on demand. This does not require enabling implicit invocation for the entire imported library.
 
-Proposed user-facing commands:
+Consumer commands:
 
-| Intent | Proposed name | Behavior |
+| Intent | Name | Behavior |
 | --- | --- | --- |
 | Enter the engineering mode manually | `poteto-mode` | Load bstack's adaptation of PStack's Poteto Mode for the current work. |
 | Enable auto mode | `bstack-auto on` | Enable the reminder hooks and automatic standing-instruction bindings. |
@@ -19,7 +19,7 @@ Use explicit on/off operations rather than a blind toggle so retries are idempot
 
 bstack names the complete collection. Keep Poteto Mode as the engineering workflow's user-facing name and retain attribution to Lauren Tan's PStack. Describe the adapted entry as bstack's adaptation of PStack's Poteto Mode. The bstack auto switch controls collection-wide automatic routing as additional workflows are selected later.
 
-Off must cover the entire automatic path. Merely suppressing hooks leaves unconditional AGENTS/CLAUDE instructions, Cursor always-applied rules, or implicit skill selection active. Manage only bstack-owned bindings and preserve unrelated hooks and instructions. Store developer-local mode outside Git-tracked upstream or skill content. The exact configuration path and host update strategy remain implementation choices.
+Off covers the automatic path. The controller removes owned router hooks and replaces standing instructions with manual-only guidance while keeping unslop. It stores mode and exact ownership records in gitignored `.bstack/config.json`. Other project instructions point to `.bstack/instructions.md`, keeping one generated instruction source. Updates preflight conflicts and preserve unrelated configuration.
 
 Turning off future injection cannot remove text already present in an active conversation. State that limitation, stop applying bstack automatically to later work, and expose any host reload/new-session requirement. Verify new sessions separately from transitions in an existing session.
 

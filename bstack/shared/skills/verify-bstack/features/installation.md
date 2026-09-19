@@ -1,45 +1,53 @@
 # Consumer installation
 
-## Sub-features
+## Contract
 
-Verify package discovery, selected skill versions, complete dependencies and notices, and host configuration. A successful installer exit is only a file-install result. Native skill discovery and workflow execution require separate agent sessions in the installed project.
+Installation must deliver bstack's reviewed bundle, including its policy, customized unslop, selected workflows, helper source, notices, and controller. No install path fetches upstream latest. An installer exit proves file delivery; real CLI sessions provide separate discovery and routing evidence.
 
-The [initial skills.sh probe](../../../../audit/skills-install.md) found that the raw source layout does not produce a complete installation. Keep that result visible until a release layout passes this procedure.
+The [initial raw-source probe](../../../../audit/skills-install.md) remains the historical failure case. Test `bstack/release/`, not the source import in `engineering/`.
 
-## How to get to it (user POV)
+## Drive
 
-The intended user installs bstack into a project and invokes Poteto Mode manually. Automatic routing is an optional next step. The current repository adapter POC is not that consumer installer.
+From the ai-tools checkout:
 
-## Driving it with the skills CLI
-
-Run the candidate install in an empty temporary project. From the ai-tools repository root, the current source probe is:
-
-```bash
-bstack_source="$PWD/bstack"
-bstack_probe="$(mktemp -d)"
-cd "$bstack_probe"
-DISABLE_TELEMETRY=1 npx --yes skills@1.7.0 add "$bstack_source" \
-  --skill '*' --agent codex claude-code cursor grok --yes --json \
-  > install-result.json 2> install-stderr.txt
+```sh
+python3 bstack/scripts/package.py build
+python3 bstack/scripts/package.py check
+python3 bstack/shared/skills/verify-bstack/scripts/installation.py
 ```
 
-Repeat in a separate empty project with `bstack/shared/skills` as the source to compare only bstack-owned skills. When a release artifact exists, test that artifact instead of treating this source probe as the distribution command. Record the exact source revision, CLI version, command, exit code, and output.
+The default method runs the bundled Python installer. It requires no skills.sh or network access. To compare distributor behavior:
 
-For each target, run `npx --yes skills@1.7.0 list --agent <agent> --json` and inspect the installed files. Confirm all of these conditions before reporting a complete package install:
+```sh
+python3 bstack/shared/skills/verify-bstack/scripts/installation.py \
+  --methods offline symlink copy --skills-cli /path/to/skills/bin/cli.mjs
+```
 
-- The selected skills match the release list. Dormant source examples and automations are not installed accidentally.
-- `unslop` matches bstack's customized skill. Duplicate upstream names do not silently select the wrong version.
-- Router, playbook, helper, and attribution references resolve inside the installed package. Nothing depends on an absolute path to the development checkout.
-- The distribution includes applicable license notices and source records.
-- Manual invocation is available without enabling automatic routing. Enabling automatic routing installs supported host configuration, and disabling it stops future reminders.
+The supplied CLI must be skills@1.7.0. Without `--skills-cli`, explicitly selected skills.sh methods use `npx --yes skills@1.7.0`. Record installer output to regular files, not a pipe that can truncate JSON. The harness uses project scope and project paths containing spaces.
 
-After file checks pass, run fresh native CLI sessions in the consumer project, then resumed turns. Adapt the existing driver to that project's paths explicitly; its current repository-root assumptions cannot validate an arbitrary installed package. Keep the development checkout unavailable to the probes so fallback reads cannot hide missing dependencies.
+Each method must deliver the same capsule manifest and hashed files, one discoverable `SKILL.md`, the bstack replacement skills, complete local references, and notices. Delete the temporary source before setup, doctor, or model execution. This proves independence from that staged source. Separately reject model reads from the development checkout.
 
-Retain command output and file-check evidence in `.bstack/verification/` in the maintainer checkout. Preserve failures and untested targets in the report.
+The packaged installation driver also runs from a transferred capsule. Suppress Python bytecode writes before importing its helpers so verification does not mutate the integrity-checked package.
 
-## Gotchas
+## Live CLI behavior
 
-- `skills.sh` installing skill directories does not prove native plugin registration, hook setup, or agent execution.
-- The tested CLI exposes Codex and Cursor through `.agents/skills/`; Claude Code and Grok have links to that canonical copy. Do not infer discovery from directory names alone.
-- Capture JSON output to a regular file. The initial whole-tree probe observed truncated output through a pipe. `--list --json` is rejected by version 1.7.0.
-- This procedure uses project scope. Global installs, remote Git installation, copy mode, upgrades, uninstall, and desktop applications need separate tests before claiming support.
+Add `--live` only when model usage is authorized. The verifier discovers installed Codex, Claude Code, Cursor, and Grok CLIs. An explicit missing client is an error; otherwise unavailable clients are not selected. `--live-method offline` uses the offline-installed project; choose `symlink` or `copy` to drive another selected method.
+
+The probes are read-only. They classify example tasks, read per-turn fixture values, and report a router-specific policy. They do not implement the examples or execute full engineering workflows.
+
+1. Invoke manual Poteto Mode and observe a successful installed-router read. A skills.sh project has not run setup yet; an offline project is already configured with automatic routing off.
+2. Run setup and doctor for every installed project. Check a fresh engineering prompt with manual-only guidance: no router read, no hook receipt, and persisted auto off.
+3. Enable automatic mode twice. Run a fresh turn and a resumed turn with different routing cases and unique file values. Require session continuity, successful current fixture reads, the correct bstack policy, and a current native hook receipt when supported and trusted.
+4. Disable twice and run another fresh engineering prompt. Check that automatic bindings and receipts are absent while normal advice remains available.
+
+Correlate successful tool results with file reads. Attempted paths or a model assertion are insufficient. Match hook receipts to the actual host, event, session, and turn. Cursor/Grok delivery must be the once-per-turn after-tool fallback, not a stale receipt or another host's hook. Reading state, hook implementation, or receipt logs invalidates the probe.
+
+Codex native hook trust is inspected separately without changing it. Untrusted or modified hooks are a visible verification limit, not a delivery pass. Missing receipts from trusted hooks are failures. Fixture workspace trust is supplied explicitly to headless CLIs; these probes do not verify interactive trust onboarding.
+
+## Lifecycle and limits
+
+Runtime tests cover collisions, preservation of unrelated configuration, exact safe block adoption after cloning, opt-in persistence, package upgrades, rollback, symlink boundaries, private-work retention, and removal of owned bindings. Builder tests cover deterministic files/modes, dependency rewrites, custom overrides, complete source records, and stale or altered release detection.
+
+The current installer requires Python 3.11+ and POSIX. Global installation, remote Git distribution, Windows, native plugin managers, and desktop applications require their own evidence. A directory transfer does not provision external service accounts or optional helper runtimes. Current CLI tests do not establish context compaction behavior for the installed release.
+
+Keep prompts, commands, native output, hook records, and reports under gitignored `.bstack/verification/`. Preserve failures alongside successful reruns and summarize exact evidence and limitations in the tracked audit report.
