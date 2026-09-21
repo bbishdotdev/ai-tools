@@ -49,7 +49,9 @@ The local app should expose the same work operations to agents and its human UI.
 
 The app has no AI chat. It focuses on organizing, finding, navigating, and editing work. Wayfinder needs a readable visualization of items and their connections, alongside search, labels, dependencies, blockers, related items, and parent/child organization. A basic Kanban board remains part of the later ticket-management phase.
 
-The selected default is a simple black, white, and gray shadcn/Tailwind style. Bring-your-own-theme support and an explicitly invoked skill to inspect a repository's existing theme are options to explore. They are not implemented or required for the first slice.
+The selected default is black, white, and gray. Prototype with React, Tailwind, and a small shared component set, then measure the dependencies and compiled size before selecting the production stack. shadcn is optional. Ship compiled assets so consumers do not need a frontend build or package registry. Ticket editing uses Markdown with a formatting toolbar and preview, with Markdown as the stored source.
+
+Bring-your-own-theme support and an explicitly invoked skill to inspect a repository's existing theme are options to explore. They are not implemented or required for the first slice.
 
 The [Wayfinder draft](wayfinder-design.md) proposes the relationship meanings, shared list/map navigation, and theming approach. Those details remain open to review before a disposable UI prototype and app implementation.
 

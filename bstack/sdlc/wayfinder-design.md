@@ -1,6 +1,6 @@
 # Wayfinder in a local workspace
 
-Status: draft for review. The user has selected a work-focused app with no AI chat and a monochrome shadcn/Tailwind theme. This describes the first local-app flow; it does not activate a skill, create a database, or implement the app.
+Status: draft for review. The user has selected a work-focused app with no AI chat, a monochrome theme, and Markdown editing with a toolbar and preview. React and Tailwind are the prototype stack; shadcn is not a required dependency. This describes the first local-app flow. It does not activate a skill or implement the production app.
 
 The [integration review](integration-review.md) records the agreed requirements. [Pinned Wayfinder](../upstream/matt-pocock/sdlc/skills/wayfinder/SKILL.md) supplies the starting workflow. Product behavior proposed below remains open to review.
 
@@ -29,7 +29,8 @@ The recommended first UI is a local browser app. Discussion stays in the user's 
 
 - Work is local first and gitignored. An external tracker, Git host, or cloud account is not required to manage it.
 - Search, labels, dependencies, blockers, related items, and parent/child organization are part of the work-management experience. Wayfinder needs a readable visualization of those connections.
-- The default visual style is simple shadcn/Tailwind in black, white, and grays. Custom themes and repo-derived themes are possible extensions, described below.
+- The default visual style uses black, white, and grays. Keep dependencies small and ship compiled UI assets with the local app. Opening an installed release must not require a package registry or frontend build.
+- Ticket descriptions use Markdown with formatting buttons and a preview. Keep Markdown as the stored source for human and agent edits.
 - Product and ADR decisions belong to the user unless explicitly delegated. Automatic router activation does not delegate decision authority.
 - An authorized autonomous grilling session uses two agents on different configured models. Required roles are checked before the run starts. Ordinary human-guided work does not require them.
 - Prototype work follows the [approved prototype lifecycle](../engineering/prototype/WORKFLOW.md). Refinement remains prototyping until the user settles the direction. A design choice does not automatically create an ADR.
@@ -118,9 +119,9 @@ These are navigation requirements, not a settled layout. The next prototype shou
 
 ## A small theming option
 
-Start with the selected monochrome shadcn/Tailwind style. Use semantic theme values for backgrounds, text, borders, focus, typography, and corners so a custom theme can change appearance consistently. Status and relationship meaning must remain readable through text and shape without relying on color.
+Start with the selected monochrome style. Use React and Tailwind for the prototype, with a small set of shared components. Evaluate the dependency tree and compiled size before choosing the production stack. Status and relationship meaning must remain readable through text and shape without relying on color.
 
-shadcn supports [CSS-variable theming](https://ui.shadcn.com/docs/theming). The proposed extension is a local theme override using those values, with a preview and a reset to the default. That is enough for a bring-your-own-theme path; the app does not need its own theme designer.
+Use semantic CSS variables for backgrounds, text, borders, focus, typography, and corners. A future local theme override can change those values, with a preview and a reset to the default. This approach does not require shadcn or a theme designer.
 
 A future, explicitly invoked skill could inspect an existing repository's theme variables, Tailwind configuration, fonts, and component settings, then propose the same override. It should show what it found, preserve default values where the source has no equivalent, and let the user preview the result. Copy theme values rather than importing the source application's components or runtime. A repo without a theme keeps the monochrome default, and unavailable fonts have a local fallback.
 
