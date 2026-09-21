@@ -6,6 +6,8 @@ This is a source import for review. These workflows are not yet selected for `bs
 
 [The integration review](integration-review.md) records agreed decision ownership, autonomous-run requirements, the proposed implementation entry, triage's separate role, and the prototype decisions. The [approved prototype workflow](../engineering/prototype/WORKFLOW.md) has [design notes](../engineering/prototype/REVIEW.md) and awaits the shared handoff contract before activation.
 
+[The Wayfinder local-app draft](wayfinder-design.md) proposes the first map-to-decision-to-resume flow, the shared local records, and the agent operations. It is a design for review; no app or active skill integration is implemented by that document.
+
 ## Selection
 
 | Skill | Purpose | Upstream category |
