@@ -1,6 +1,6 @@
 # SDLC integration review
 
-This records the user's direction from September 19, 2026, and the remaining integration choices. It is a design record, not an active router policy or a new skill implementation. The imported files and consumer release remain unchanged.
+This records the user's direction and remaining integration choices. The initial review was September 19, 2026; local-app direction was updated September 21. It is a design record, not an active router policy or a new skill implementation. The imported files and consumer release remain unchanged.
 
 ## Verified upstream baseline
 
@@ -44,6 +44,14 @@ The agreed planning record types are open questions, decisions, domain terminolo
 The intended experience is one agent carrying the work forward. Organizing, research, planning, prototyping, specs, tickets, and implementation can form a continuous flow, with entry at whichever stage the task needs. Users should not need to switch source packages or re-explain the work. Commands can be explicit entry points without becoming mandatory steps between phases.
 
 The local app should expose the same work operations to agents and its human UI. Its integration must support both interactive decisions and fully delegated runs. The next review should define how an agent finds current work, resolves blockers, records evidence, and resumes without duplicating completed phases. This document does not select a CLI or MCP implementation yet.
+
+## Local app direction
+
+The app has no AI chat. It focuses on organizing, finding, navigating, and editing work. Wayfinder needs a readable visualization of items and their connections, alongside search, labels, dependencies, blockers, related items, and parent/child organization. A basic Kanban board remains part of the later ticket-management phase.
+
+The selected default is a simple black, white, and gray shadcn/Tailwind style. Bring-your-own-theme support and an explicitly invoked skill to inspect a repository's existing theme are options to explore. They are not implemented or required for the first slice.
+
+The [Wayfinder draft](wayfinder-design.md) proposes the relationship meanings, shared list/map navigation, and theming approach. Those details remain open to review before a disposable UI prototype and app implementation.
 
 ## Triage handles intake and coordination
 

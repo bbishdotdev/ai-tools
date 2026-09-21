@@ -1,6 +1,6 @@
 # Wayfinder in a local workspace
 
-Status: draft for review. This describes the first local-app flow. It does not activate a skill, create a database, or select an application framework.
+Status: draft for review. The user has selected a work-focused app with no AI chat and a monochrome shadcn/Tailwind theme. This describes the first local-app flow; it does not activate a skill, create a database, or implement the app.
 
 The [integration review](integration-review.md) records the agreed requirements. [Pinned Wayfinder](../upstream/matt-pocock/sdlc/skills/wayfinder/SKILL.md) supplies the starting workflow. Product behavior proposed below remains open to review.
 
@@ -23,11 +23,13 @@ flowchart LR
     H --> C
 ```
 
-The recommended first UI is a local browser app. Discussion stays in the user's existing agent chat; the app shows the map and supports direct edits. An agent can perform the same work with the browser closed. This chat boundary is a product recommendation awaiting the user's answer.
+The recommended first UI is a local browser app. Discussion stays in the user's existing agent chat. The app helps find, organize, navigate, and edit work, with a visual map of how items connect. An agent can perform the same work with the browser closed. There is no AI chat inside the app.
 
 ## Agreed constraints
 
 - Work is local first and gitignored. An external tracker, Git host, or cloud account is not required to manage it.
+- Search, labels, dependencies, blockers, related items, and parent/child organization are part of the work-management experience. Wayfinder needs a readable visualization of those connections.
+- The default visual style is simple shadcn/Tailwind in black, white, and grays. Custom themes and repo-derived themes are possible extensions, described below.
 - Product and ADR decisions belong to the user unless explicitly delegated. Automatic router activation does not delegate decision authority.
 - An authorized autonomous grilling session uses two agents on different configured models. Required roles are checked before the run starts. Ordinary human-guided work does not require them.
 - Prototype work follows the [approved prototype lifecycle](../engineering/prototype/WORKFLOW.md). Refinement remains prototyping until the user settles the direction. A design choice does not automatically create an ADR.
@@ -42,6 +44,16 @@ A question has one of Wayfinder's four methods: grilling, research, prototype, o
 
 The map is a dependency graph. One question can depend on several answers, and one answer can unblock several questions. Topic groups and a tree-like view can make that graph readable without changing those relationships. Candidate answers can stay inside a question; the first version does not need a separate branching scenario engine.
 
+Keep the relationship meanings distinct:
+
+| Relationship | Meaning |
+| --- | --- |
+| Blocks / blocked by | Two views of one directed dependency. If A blocks B, B depends on A. An unresolved prerequisite prevents B from becoming ready. |
+| Parent / child | Organizes work into a hierarchy. Grouping alone does not block work or resolve a parent when its children finish. |
+| Related to | A symmetric connection for context. It does not affect readiness. |
+
+Reject cycles in blocking dependencies and in the parent/child hierarchy. Related links can form loops. Labels categorize items without changing readiness. The UI and agent operations use these same meanings; do not maintain separate lists of blockers and dependencies that can disagree.
+
 The map summary includes its destination, current scope, unresolved areas that cannot yet be phrased as questions, and brief references to accepted answers. It also shows what was ruled out of scope. Full research findings and conversations load only when opened.
 
 An available question is open, has all required answers, has no unresolved user or external wait, and has no active owner. In the UI, call this **Ready next**. This corresponds to the upstream "frontier." A user's explicit resumption can supply the awaited answer; an expired claim cannot clear that wait.
@@ -55,7 +67,9 @@ The records need these responsibilities before a schema is chosen:
 | Record | What it owns |
 | --- | --- |
 | Map | Stable identity, title, destination, scope, unresolved areas, progress, and links to its questions. |
-| Question | The question, method, dependency links, priority, lifecycle, current progress, and relevant artifact references. |
+| Question | Stable identity, title, question body, method, priority, lifecycle, current progress, labels, and relevant artifact references. |
+| Relationship | Typed links between items, using the meanings above. Later tickets use the same relationship operations. |
+| Label | A reusable workspace category that can be assigned to questions and, later, tickets. |
 | Resolution | Accepted answer or finding, who decided, whether authority was delegated, supporting references, and the revision it answers. |
 | Claim | Which agent session is working on a question, its workspace, and whether that ownership is still active. A human user can have several sessions. |
 | Handoff | The next session's goal, current item and phase, progress, decision authority, references, and next action. |
@@ -81,14 +95,36 @@ Changing an accepted answer preserves the earlier revision. Dependent work that 
 Use one set of operations for the UI and agents. A local CLI with structured responses is the recommended first agent adapter. An MCP adapter can call the same operations later. These are conceptual operations, not commands that exist today.
 
 1. **Start or resume a map.** Find an existing effort by identity or title before creating another. Return its small summary, Ready next questions, active claims, and waits. Creating a map needs a destination and scope; a small task with no unresolved planning can continue without one.
-2. **Map what is knowable now.** Add precise questions and their dependencies. Leave vague future areas in the map's unresolved section. Reject dependency cycles. Adding a question from a retried request must return the existing result.
+2. **Map what is knowable now.** Add precise questions, labels, and typed relationships. Leave vague future areas in the map's unresolved section. Reject dependency and hierarchy cycles. Adding a question from a retried request must return the existing result.
 3. **Choose and claim a question.** Respect an explicitly selected question if its prerequisites permit work. Otherwise use a stable priority order. Return the claimed question, relevant accepted answers, and artifact references. If nothing is ready, explain whether the cause is a user wait, active ownership, unresolved scope, or dependencies.
 4. **Work on that question.** Dispatch to the needed skill. Grilling uses the agreed decision authority; research returns evidence; prototype follows its review loop. Human-guided grilling stays open until every decision branch is settled and the user confirms shared understanding. An autonomous session resolves branches under its delegated authority and never invents user confirmation. Save enough progress to avoid repeating settled questions after a restart.
 5. **Accept the result.** Record an answer from the user, or a delegated agent judgment within its authority. A draft recommendation remains open. For a prototype, keep only the selected target and usable reference needed to continue through handoff. This is progress on the existing question, not a new permanent decision document, ADR, rationale, or artifact archive.
 6. **Advance the map.** Recompute Ready next, add newly precise questions, and update the unresolved areas. Do not assume that no ready questions means planning is complete. All in-scope questions and unresolved areas must be settled or explicitly removed from scope.
 7. **Continue or hand off.** Preserve the active phase when pausing. Start a fresh execution session when moving from an accepted prototype into implementation. An autonomous run can continue across questions when authorized; model bindings and execution scope still apply.
 
-The first user view should show the destination, Ready next, questions grouped by topic, and a focused detail panel. Each question shows its blockers, owner or wait, method, and answer when resolved. Selecting a resolved question reveals supporting evidence on demand. Layout alternatives belong in the next prototype session.
+Search, label changes, and creating, editing, or removing relationships must also be available through the agent adapter. Agents should query the relevant slice of work rather than load the whole workspace to find an item.
+
+## Finding and navigating work
+
+Use the same items across a searchable list, the Wayfinder map, and the later Kanban board. Switching views preserves the selected item and filters. Each item has a stable link and a detail panel for its content, relationships, owner or wait, and supporting evidence. Questions retain their planning lifecycle; implementation tickets retain their execution lifecycle.
+
+Search by ID, title, body, or label, across the workspace or within a map. Combine the query with filters for item type, status, labels, owner, and readiness. Show why an item is blocked and let the user follow that dependency directly. Search results should open the item and locate it in the map without losing the query or navigation history.
+
+The Wayfinder view should emphasize the destination, Ready next, and the selected item's connections. Offer a whole-map overview, collapsible topic groups, and a focused view of prerequisites and work an answer will unlock. Relationship labels, arrow direction, and line styles must distinguish the connections in monochrome. The list and detail panel provide the same information without requiring graph navigation.
+
+Filtering must not disguise a blocker. If a prerequisite falls outside the current filter, keep a visible indication and a way to inspect it. Readiness is calculated from the stored work, never from the currently visible nodes.
+
+These are navigation requirements, not a settled layout. The next prototype should compare ways to browse, search, follow connections, and edit the same example work. Keep the theme and sample data consistent across variants so the comparison is about usability.
+
+## A small theming option
+
+Start with the selected monochrome shadcn/Tailwind style. Use semantic theme values for backgrounds, text, borders, focus, typography, and corners so a custom theme can change appearance consistently. Status and relationship meaning must remain readable through text and shape without relying on color.
+
+shadcn supports [CSS-variable theming](https://ui.shadcn.com/docs/theming). The proposed extension is a local theme override using those values, with a preview and a reset to the default. That is enough for a bring-your-own-theme path; the app does not need its own theme designer.
+
+A future, explicitly invoked skill could inspect an existing repository's theme variables, Tailwind configuration, fonts, and component settings, then propose the same override. It should show what it found, preserve default values where the source has no equivalent, and let the user preview the result. Copy theme values rather than importing the source application's components or runtime. A repo without a theme keeps the monochrome default, and unavailable fonts have a local fallback.
+
+Use semantic default values in the first slice. If custom theming is selected, add the override file with preview and reset before considering the inspection skill. The override feature, repo inspection, and a theme editor are outside the first Wayfinder slice.
 
 ## Skill ownership and handoff
 
@@ -120,6 +156,10 @@ The future implementation is ready for review when these behaviors can be observ
 
 - Create a map, stop the app and agent, and resume with the same destination, open questions, and saved progress.
 - Resolve one question that gates two others. Both become ready without copying the answer into each one. A question with two prerequisites waits for both.
+- Find an item by ID, text, or label; combine filters and follow its stable link. Moving between the list and map preserves selection and query. The agent adapter finds the same matching items.
+- Add and remove labels and each relationship type through both interfaces. Of these relationship types, only blocking dependencies affect readiness. Dependency and hierarchy cycles are rejected; related-item loops remain valid.
+- Filter a blocker out of the visible map. Its dependent still shows that it is blocked and offers a route to the hidden prerequisite.
+- Navigate the map, follow its connections, and inspect equivalent details from the list using the keyboard. Text, focus, and relationship types remain distinguishable in the monochrome theme.
 - Attempt to claim one question from two sessions. Only one can proceed. A stale owner cannot overwrite the current owner's work.
 - Pause while waiting for a user answer, then resume with the unanswered question and prior answers intact. Claim expiry does not offer that question to another agent as Ready next.
 - Answer one question in a grilling round. The parent question stays open until the remaining branches and the human confirmation are complete, unless decision authority was explicitly delegated.
