@@ -1,6 +1,6 @@
 # bstack
 
-bstack is Brenden Bishop's collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
+bstack is my collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
 
 The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Engineering skills such as `how` and `architect` are available directly. Poteto Mode selects a complete engineering workflow; automatic routing is opt-in. [Owned SDLC adaptations](bstack/sdlc/README.md) connect Matt Pocock's planning approach to bstack's engineering workflows while preserving the pinned sources for selective updates.
 
