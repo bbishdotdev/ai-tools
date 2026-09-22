@@ -4,7 +4,25 @@ bstack installs one package and a set of directly invocable skills. Poteto Mode 
 
 The controller requires Python 3.11+ on POSIX. These instructions cover project-local CLI installation. Windows, global installation, desktop apps, and native plugin managers need separate integration and verification.
 
-## From a clone or transferred release
+## Quick start
+
+From the project where you want to use bstack, run:
+
+```sh
+npx skills add bbishdotdev/ai-tools --skill install-bstack
+```
+
+Choose your agent and project scope if prompted. Open your agent in that project, or start a fresh session if it was already running, and ask:
+
+> Use install-bstack to set up this project for my installed tools.
+
+Your agent runs the bundled installer, connects the selected tools, and checks the installation with `doctor`. It handles the script paths and host flags. Automatic routing stays off until you opt in.
+
+There are two steps: skills.sh downloads `install-bstack`; asking your agent to use it installs the full bstack package. skills.sh does not run setup automatically.
+
+`bbishdotdev/ai-tools` is the source repository, and `install-bstack` is the skill selected from it. `npx skills add install-bstack` alone does not identify this repository. Keep `--skill install-bstack` so you don't have to choose from the development repository's individual skills. A broad install from `bbishdotdev/ai-tools/bstack` can list upstream and internal skills too; don't select all of those.
+
+## Offline or manual install
 
 From the ai-tools checkout:
 
@@ -15,11 +33,11 @@ python3 bstack/release/bstack/scripts/bstack.py install \
 
 Select the hosts you want configured. Installation copies `release/bstack/` into the project's `.bstack/package/` and creates the public skill bindings. You can transfer just that package directory to an offline machine and run its controller. No npm, skills.sh, Git, or network is needed, and the original source can be removed after installation.
 
-## Through skills.sh or an internal distributor
+## Local skills.sh sources and internal distributors
 
 skills.sh copies skill folders, so the release includes a dedicated `install-bstack` transport skill containing an archive of the complete package. The installer unpacks that archive into the same canonical layout as the offline route.
 
-From the consumer project:
+For a local checkout, the following explicit commands use the skills.sh version tested by the verification harness. Run them from the consumer project and select the hosts you need:
 
 ```sh
 npx skills@1.7.0 add /path/to/ai-tools/bstack/release/skills-sh \
@@ -79,13 +97,13 @@ your-project/
 
 Each public entry is a small binding to its exact packaged skill. Hosts can discover the individual names without loading all their instruction bodies. The full skills and supporting files live once in the package. Principles have no public skill entry; the active skill loads relevant principles and playbooks as needed.
 
-The generated release groups skills into engineering, SDLC and shared buckets. GitHub assets and shared memory still need runtime integration. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
+The generated release groups skills into engineering, SDLC and shared buckets and includes the GitHub PR template and publishing helper. Shared memory still needs consumer runtime integration. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
 
 ## Direct skills and automatic routing
 
 Invoke `$how` in Codex or `/how` in slash-command hosts. This selects the how workflow and bstack's policy without first entering Poteto Mode. Other public skills work the same way. Invoke `poteto-mode` when you want its router to select a full engineering workflow.
 
-Engineering and SDLC entrypoints are manual by default. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing, or use the controller directly:
+Engineering and SDLC entrypoints are manual by default. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing. Invoking `bstack-auto` without an argument shows those choices without running a command. You can also use the controller directly:
 
 ```sh
 python3 .bstack/package/scripts/bstack.py auto on --project "$PWD"
@@ -94,7 +112,11 @@ python3 .bstack/package/scripts/bstack.py auto off --project "$PWD"
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 ```
 
-Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Codex hook trust must be reviewed through its native `/hooks` UI. Setup does not grant trust. Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
+Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Checking status or repeating an unchanged mode does not require a fresh session.
+
+When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack has no automatic routing hooks to review. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
+
+Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 
 ## Update, migrate, and remove
 
