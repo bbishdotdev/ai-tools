@@ -10,15 +10,15 @@ Confirm the selected remote, host, base, and head. The helper handles a pushed h
 
 Use the final diff against the intended base, including the parent branch for a stacked PR. Check local and required CI results relevant to this revision. Resolve required review findings or keep the PR draft with the remaining work visible. Preserve the consumer's required template fields.
 
-Create `body.md` using the [template](../../../github/pull_request_template.md). Use a body file so shell substitutions cannot alter prose or expose data. For an image managed by the helper, put `<!-- bstack-visual:flow -->` where it belongs and add a media manifest:
+Create `body.md` using the [template](../../../github/pull_request_template.md). Keep the state comparison in Before and after and the implementation visual in For visual nerds. Use a body file so shell substitutions cannot alter prose or expose data. For an image managed by the helper, put `<!-- bstack-visual:flow -->` in the visual section and add a media manifest:
 
 ```json
 [
   {
     "id": "flow",
     "file": "flow.svg",
-    "alt": "Illustration of a ticket claim before and after owner checks",
-    "fallback": "Before: a second worker can replace the owner. After: the claim is rejected until the current owner releases it."
+    "alt": "Illustration of a ticket update passing through an ownership check",
+    "fallback": "Update request → check the active claim → save when the token matches; otherwise reject the update."
   }
 ]
 ```

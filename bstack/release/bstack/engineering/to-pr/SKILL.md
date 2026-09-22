@@ -27,17 +27,21 @@ Keep commits coherent and ordered when commit preparation is in scope. Never dis
 
 Honor the consumer repository's required PR-template sections. Use the [bstack template](../../github/pull_request_template.md) where compatible. Do not replace the consumer's `.github` template automatically. Remove empty optional sections and drafting instructions.
 
-- Open with what changes and the problem it solves. Give a concrete trigger and result.
-- Show meaningful before/after behavior. Prefer actual screenshots for visible UI changes, measured results for performance, and a short diagram or table for a process or contract change.
-- Explain how it works and why this approach fits in a few plain sentences. Write so a ten-year-old could follow the idea without talking down to the reviewer. Keep the real technical terms that carry meaning and explain unfamiliar ones. Do not invent an analogy or simplify away a constraint.
-- Link an accepted ADR or mention a rejected alternative only when it explains a material choice. Preserve the distinction between documented reasons and your inference.
-- Report actual verification and its limits. Link detailed logs instead of pasting them. Add Reviewer attention only for an unresolved risk, decision, missing required check, or concrete reviewer action.
+Use these five sections in order. Give each a distinct purpose without repeating the same explanation or visual:
+
+1. **What changes and why.** State the change and the problem it solves. Give a concrete trigger and result.
+2. **Before and after.** Compare the previous and resulting states using whatever makes that change clearest: short prose, a table, example input/output, measurements, or screenshots. An image is not required. Use comparable conditions for measured results.
+3. **For visual nerds.** Show what was implemented or how it works. Choose the representation that fits: a UI screenshot, data flow, user flow, architecture SVG, sequence diagram, ERD, or another useful visual. Keep it focused on the important relationships.
+4. **How it works and why.** Explain the mechanism and why this solution was chosen so a ten-year-old could follow the idea, without talking down to the reviewer. Link the key files or symbols and explain their roles. Use forge links at the reviewed revision for published PRs, not local filesystem paths. Include relevant ADRs, tradeoffs, and alternatives actually explored when they explain the choice. Distinguish documented reasoning from inference; do not invent alternatives or rationale.
+5. **Verification.** Name the tests, checks, and observations that actually verified the change, their outcomes, and material limits. Link detailed evidence instead of pasting logs.
+
+Keep technical terms that carry meaning and explain unfamiliar ones. Do not force an analogy or simplify away a constraint. Add Reviewer attention after these sections only for an unresolved risk, decision, missing required check, or concrete reviewer action.
 
 Draw explanations with authored SVGs or the available image-generation tool when that helps. Match every label, arrow, and state to the code. Label generated visuals as illustrations. Inspect the rendered result. Keep screenshots separate as evidence of an observed run, with its state and relevant viewport or environment. Never generate a screenshot to imply a test passed.
 
-Keep the visual small enough to understand at a glance. If image generation, rendering, or upload is unavailable, use Mermaid, a compact table, or a text flow. A trivial change can be clear in a sentence. No cloud image service is required. Use short captions and alt text. A local file path is not a usable image link in a published PR.
+Keep the visual small enough to understand at a glance. If image generation, rendering, or upload is unavailable, use Mermaid, a compact table, or a text flow under For visual nerds. A trivial change needs only a small representation. No cloud image service is required. Use short captions and alt text. A local file path is not a usable image link in a published PR.
 
-Use the repository's title convention. Otherwise use `type(scope): short imperative subject`, with a real changed area as the scope. Keep the briefing focused on the final change, not the conversation or abandoned attempts. Apply the sentence-level guidance from [technical-writing](../technical-writing/SKILL.md), then unslop. Its shorter PR-body target does not override this workflow's three-minute limit.
+Use the repository's title convention. Otherwise use `type(scope): short imperative subject`, with a real changed area as the scope. Keep the briefing focused on the final change; include explored alternatives only to explain the chosen solution. Apply the sentence-level guidance from [technical-writing](../technical-writing/SKILL.md), then unslop. Its shorter PR-body target does not override this workflow's three-minute limit.
 
 ## Check overlap and deliver
 

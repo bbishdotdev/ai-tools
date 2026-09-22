@@ -1482,9 +1482,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "3888a456c35b64b8ce090690277de20c8e8ed80ef726905d217f59cfae0ef13d",
+      "sha256": "f1bf570b44bf27ba314deefef5640ae4c05b0b387b06f93d0389f9c3e58d84e8",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "ff0ff4a53968d6c1dec212add6d108ba28f659796b098c36f50532d6516544d3",
+      "source_sha256": "33f2eec6c05403016fd5cf57534a48207049c2dc96ffaafbe6686a38a4757547",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -1504,9 +1504,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "428f2b591b48d32c05376d7c92a0fb22c66852b95bcd9608346496588fb5ffd3",
+      "sha256": "90cd884e506b8d7cebe6840346232ae199a5890869a17fd7c4f1b63399581785",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "428f2b591b48d32c05376d7c92a0fb22c66852b95bcd9608346496588fb5ffd3",
+      "source_sha256": "90cd884e506b8d7cebe6840346232ae199a5890869a17fd7c4f1b63399581785",
       "transforms": []
     },
     {
@@ -1695,9 +1695,9 @@
     {
       "mode": 420,
       "path": "github/pull_request_template.md",
-      "sha256": "e1012b244d4c05e15c5eacf4996aa51defff3bfb642ef0614a4aebf83b20045e",
+      "sha256": "ec7d99ef8b86dd5e29f77d3662b9f7a081f763799f54d0a2681017ddf20b6dbe",
       "source": "bstack/github/pull_request_template.md",
-      "source_sha256": "e1012b244d4c05e15c5eacf4996aa51defff3bfb642ef0614a4aebf83b20045e",
+      "source_sha256": "ec7d99ef8b86dd5e29f77d3662b9f7a081f763799f54d0a2681017ddf20b6dbe",
       "transforms": []
     },
     {
