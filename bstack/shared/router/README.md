@@ -19,7 +19,7 @@ python3 bstack/shared/router/install.py --apply
 
 Installation preserves unrelated JSON hooks and refuses conflicting links. It migrates the exact former generated Cursor rule to the bstack entry, but refuses to replace a user-modified rule. No global instructions, personal memories, auth settings, or upstream PStack files are changed by the installer. Commands currently target POSIX shells with `python3` and Git; Windows installation is not verified by this Linux POC.
 
-Codex project trust and hook trust are separate. Review these three commands through `/hooks` before use, including live verification. The harness honors native hook trust and does not bypass it. The local POC's three hooks were reviewed and approved through that UI. Ignoring normal user config prevented project-hook discovery in our initial Codex probe, even though `AGENTS.md` still loaded.
+Codex project trust and hook trust are separate. Open `codex` in a terminal in this repository and enter `/hooks` inside that CLI to review these three commands before use, including live verification. `/hooks` is not a desktop chat command. The harness honors native hook trust and does not bypass it. The local POC's three hooks were reviewed and approved through that CLI UI. Ignoring normal user config prevented project-hook discovery in our initial Codex probe, even though `AGENTS.md` still loaded.
 
 ## Verification
 

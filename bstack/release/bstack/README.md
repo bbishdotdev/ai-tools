@@ -6,13 +6,27 @@ The local workspace app supports Wayfinder maps, accepted decisions, specs and K
 
 ## Install
 
-From a reviewed clone or transferred package, run:
+From the project where you want to use bstack, run:
+
+```sh
+npx skills add bbishdotdev/ai-tools --skill install-bstack
+```
+
+Choose your agent and project scope if prompted. Then open your agent in that project and ask:
+
+> Use install-bstack to set up this project for my installed tools.
+
+skills.sh downloads the installer skill; your agent runs it to install the full bundled package and check the result. Keep both the repository name and `--skill install-bstack` in the command. You don't need to select individual engineering or SDLC skills. Automatic routing stays opt-in. Python 3.11+ on POSIX is required.
+
+### Offline or manual install
+
+To install this exact package from a reviewed clone or transferred release, run:
 
 ```sh
 python3 <package-path>/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok
 ```
 
-This creates `.bstack/package/` and direct public entries in `.agents/skills/`, with links for the selected hosts. Python 3.11+ on POSIX is required. No network, skills.sh, Git, or upstream access is needed for installation. The original source can be removed afterward.
+Select the hosts you need. This creates `.bstack/package/` and direct public entries in `.agents/skills/`, with links for the selected hosts. No network, skills.sh, Git, or upstream access is needed for this route. The original source can be removed afterward.
 
 A skills.sh distributor uses the separate `install-bstack` transport skill, whose archive contains this same package. Run that skill's installer after distribution. skills.sh does not run setup automatically.
 
@@ -20,14 +34,16 @@ A skills.sh distributor uses the separate `install-bstack` transport skill, whos
 
 Invoke `how`, `architect`, `tdd`, or another public skill by its native host command prefix. Codex uses `$how`; slash-command hosts use `/how`. Use `poteto-mode` when you want the router to select a complete engineering workflow. The [index](index.json) resolves internal dependencies; the [manifest](manifest.json) lists public skills and exact installed files.
 
-Engineering and SDLC skills are explicit-only by default. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `/bstack-auto on`, `off`, and `status` control optional automatic routing. The same commands are available from the controller:
+Engineering and SDLC skills are explicit-only by default. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control optional automatic routing with the host's skill prefix. A bare invocation shows these choices without running a command. The same commands are available from the controller:
 
 ```sh
 python3 <project-root>/.bstack/package/scripts/bstack.py auto on --project <project-root>
 python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <project-root>
 ```
 
-Start a fresh session after bindings change. Turning auto off cannot erase existing conversation context. Native hook trust is separate from installation; setup does not grant it. Cursor and Grok's after-tool reminders do not guarantee first-tool or tool-free delivery. CLI packaging does not establish desktop or native plugin-manager support.
+Start a fresh session after bindings change. Checking status or repeating an unchanged mode does not require a new session. Turning auto off cannot erase existing conversation context.
+
+With automatic routing enabled for Codex, open `codex` in a terminal in the project directory and enter `/hooks` there to review hook trust. `/hooks` is not a desktop chat command. Setup does not grant or inspect trust, and `auto status` confirms configuration only. With auto off, no bstack routing hook review is needed. Cursor and Grok's after-tool reminders do not guarantee first-tool or tool-free delivery. CLI packaging does not establish desktop or native plugin-manager support.
 
 ## Local planning and tickets
 

@@ -12,7 +12,7 @@ This skill is for bstack maintainers and contributors validating changes. Ordina
 
 ## Launch
 
-From the ai-tools repository root, run `python3 bstack/shared/router/install.py` to check the adapters. `--apply` installs the repository-local configuration and links; it preserves other hooks and refuses conflicting links. Codex requires project and hook trust; review the commands through `/hooks` for normal interactive use.
+From the ai-tools repository root, run `python3 bstack/shared/router/install.py` to check the adapters. `--apply` installs the repository-local configuration and links; it preserves other hooks and refuses conflicting links. Codex requires project and hook trust. Open `codex` in a terminal in the project directory and enter `/hooks` inside that CLI to review the commands. This is not a desktop chat command.
 
 ## Doctor
 
@@ -20,7 +20,7 @@ Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py doctor`. This 
 
 ## Drive
 
-Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py live`. It selects every installed supported CLI and starts independent read-only sessions, resuming each session for two follow-up prompts. This sends test prompts and the instruction files the agent reads to each signed-in provider and spends model usage. The caller must have authorized live verification. Use `--tools claude` or another subset for focused retesting. Codex honors native hook trust; review the three hooks through `/hooks` before testing. Keep normal Codex config discovery. Grok uses its read-only sandbox and only read/search tools, with subagents and web search disabled. Cursor and Grok receive their documented project-trust option for this repository.
+Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py live`. It selects every installed supported CLI and starts independent read-only sessions, resuming each session for two follow-up prompts. This sends test prompts and the instruction files the agent reads to each signed-in provider and spends model usage. The caller must have authorized live verification. Use `--tools claude` or another subset for focused retesting. Codex honors native hook trust; review the three hooks through `/hooks` inside the Codex terminal CLI before testing. Keep normal Codex config discovery. Grok uses its read-only sandbox and only read/search tools, with subagents and web search disabled. Cursor and Grok receive their documented project-trust option for this repository.
 
 For changes to the Cursor/Grok after-tool fallback, run `python3 bstack/shared/skills/verify-bstack/scripts/fallback.py`. It discovers those two clients and tests dependent reads, once-per-turn emission, resumed turns, and a tool-free response. Use `--tools cursor` or `--tools grok` for a focused retest. Read [the after-tool feature contract](features/after-tool-reminder.md) before interpreting its results.
 

@@ -8,16 +8,21 @@ The bundled [local workspace app](bstack/workspace/README.md) provides Wayfinder
 
 ## Install
 
-From a local clone, install the exact reviewed bundle into your project:
+From the project where you want to use bstack, run:
 
 ```sh
-python3 bstack/release/bstack/scripts/bstack.py install \
-  --project /path/to/your/project --hosts codex claude cursor grok
+npx skills add bbishdotdev/ai-tools --skill install-bstack
 ```
 
-This path requires Python 3.11+ on POSIX and works from a transferred release directory without npm or skills.sh. Installation uses the bundled PStack revision and bstack customizations; it never fetches upstream latest.
+Choose your agent and project scope if prompted. Then open your agent in that project and ask:
 
-See [installation and optional skills.sh distribution](bstack/INSTALL.md), [current scope](bstack/README.md), and [verification results and limits](bstack/audit/package-layout.md). Native plugin-manager installation and desktop behavior remain separate verification work.
+> Use install-bstack to set up this project for my installed tools.
+
+The command downloads the installer skill. Your agent then runs it to install the full bstack package, including its bundled dependencies and customizations. Automatic routing stays opt-in. Python 3.11+ on POSIX is required.
+
+`bbishdotdev/ai-tools` identifies this repository; `--skill install-bstack` selects its installer. Keep both parts. You don't need to select all the skills in the development repository.
+
+See [installation and offline setup](bstack/INSTALL.md), [current scope](bstack/README.md), and [verification results and limits](bstack/audit/package-layout.md). A clone or transferred release works without npm or skills.sh. Neither install route fetches upstream latest. Native plugin-manager installation and desktop behavior remain separate verification work.
 
 ## Repository layout
 

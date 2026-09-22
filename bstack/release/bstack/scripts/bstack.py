@@ -23,11 +23,23 @@ STATE = ".bstack/config.json"
 PACKAGE = ".bstack/package"
 BEGIN = "<!-- bstack:begin -->"
 END = "<!-- bstack:end -->"
-RELOAD = "Start a fresh agent session after changing bindings. Existing conversation context is not erased. Codex hook trust must be reviewed in the native /hooks UI; setup does not grant trust."
+RELOAD = "Start a fresh agent session after these bstack binding or package changes. Existing conversation context is not erased."
 
 
 class Conflict(ValueError):
     pass
+
+
+def session_guidance(auto, hosts, changed=False):
+    codex_hooks = auto and "codex" in hosts
+    notices = [RELOAD] if changed else []
+    if codex_hooks:
+        notices.append("Codex hook trust was not checked. To review it, open `codex` in a terminal in this project, "
+                       "then run `/hooks` inside the Codex terminal CLI. `/hooks` in desktop chat is not the same command. "
+                       "Setup does not grant trust, and configuration does not prove live hook delivery.")
+    return {"fresh_session_required": changed,
+            "native_hook_trust": "not_checked" if codex_hooks else "not_applicable",
+            "notice": " ".join(notices)}
 
 
 def capsule_root():
@@ -444,7 +456,8 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
         current = state_read(project)
         if action != "setup" and not current:
             if action == "uninstall":
-                return {"installed": False, "changes": []}
+                return {"installed": False, "auto": False, "hosts": [], "changes": [],
+                        **session_guidance(False, [])}
             raise Conflict("bstack is not configured in this project; run setup first")
         if action == "auto" and current["capsule"] != str(capsule):
             raise Conflict("Run auto from the configured installed package")
@@ -460,6 +473,7 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
             desired = build_records(project, capsule, chosen_hosts, enabled, old, manifest=manifest)
             state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled, "managed": desired, "installation": install_kind}
         changes = reconcile(project, old, desired)
+        bindings_changed = any(relative != ".gitignore" for relative in changes)
         if action == "uninstall":
             retained = [p for p in (project / ".bstack").rglob("*")
                         if (p.is_file() or p.is_symlink()) and p not in
@@ -480,7 +494,8 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
             changes[STATE] = (before, after)
         apply(project, changes)
         return {"installed": state is not None, "auto": state["auto"] if state else False,
-                "hosts": state["hosts"] if state else [], "changes": list(changes), "notice": RELOAD}
+                "hosts": state["hosts"] if state else [], "changes": list(changes),
+                **session_guidance(state["auto"] if state else False, state["hosts"] if state else [], bindings_changed)}
 
 
 def install_offline(project, capsule, hosts=None):
@@ -488,12 +503,14 @@ def install_offline(project, capsule, hosts=None):
     target = safe_path(project, PACKAGE)
     with project_lock(project):
         current = state_read(project)
+        installed_manifest = None
         if target.is_symlink():
             raise Conflict(f"Install will not replace a package symlink: {target}")
         if target.exists():
             if not current or current.get("installation") != "offline" or current["capsule"] != str(target):
                 raise Conflict(f"Install will not replace an unowned package: {target}")
-            package_check(target)
+            installed_manifest = package_check(target)
+        package_changed = installed_manifest != manifest
         legacy = safe_path(project, ".agents/skills/poteto-mode")
         if current and current.get("installation") == "offline" and current["capsule"] == str(legacy):
             if legacy.is_symlink():
@@ -555,6 +572,7 @@ def install_offline(project, capsule, hosts=None):
         result["installation"] = "offline"
         result["package"] = str(target)
         result["source"] = "bundled-files-only"
+        result.update(session_guidance(result["auto"], result["hosts"], result["fresh_session_required"] or package_changed))
         return result
 
 
@@ -581,6 +599,7 @@ def uninstall_package(project, capsule):
                 os.replace(backup, owned)
                 raise
         result["package_removed"] = True
+        result.update(session_guidance(False, [], True))
         return result
 
 
@@ -588,8 +607,8 @@ def status(project, capsule, check=False):
     current = state_read(project)
     result = {"installed": current is not None, "auto": current["auto"] if current else False,
               "project": str(project), "hosts": current["hosts"] if current else [],
-              "package": current["capsule"] if current else str(capsule), "notice": RELOAD,
-              "native_hook_trust": "not_checked"}
+              "package": current["capsule"] if current else str(capsule),
+              **session_guidance(current["auto"] if current else False, current["hosts"] if current else [])}
     if check:
         manifest = package_check(capsule)
         if current:
