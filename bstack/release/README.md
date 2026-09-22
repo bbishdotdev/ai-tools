@@ -1,6 +1,6 @@
 # bstack release
 
-Version 0.2.0. The [bstack package](bstack/README.md) contains the engineering and shared skills, internal references, controller, and notices.
+Version 0.3.0. The [bstack package](bstack/README.md) contains the engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.
 
 Install with `python3 bstack/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok`. It creates `.bstack/package/` and direct public skill entries in `.agents/skills/`.
 

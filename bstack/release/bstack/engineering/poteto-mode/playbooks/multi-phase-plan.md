@@ -5,7 +5,7 @@
 **You own the plan, not the code. The plan is a checklist an owner runs box by box and the operator audits from the evidence.** The plan is the deliverable. Do not implement.
 
 1. When the change is one or two files with an obvious approach, skip the plan. Say so and stop.
-2. Settle open questions by prototype before you write. Run `prototype.md` for each. Keep the branch, the SHA, and the screenshots for Appendix A. Ask the operator only about a product or preference call that no run can settle. Give options (the **never-block-on-the-human** principle skill).
+2. Settle open questions by prototype before you write. Run `../../prototype/WORKFLOW.md` for each. Keep the branch, the SHA, and the screenshots for Appendix A. Ask the operator only about a product or preference call that no run can settle. Give options (the **never-block-on-the-human** principle skill).
 3. Explore in subagents with `subagent_type: "poteto-agent"` and an explicit model per the Subagents section (the **guard-the-context-window** principle skill). Each returns file pointers, conventions, test commands, and entry points. No inlined dumps.
 4. Copy the skeleton below into the plan file and fill every placeholder. Unless the operator names a path, write the file under the agent store's `docs/`. Keep every heading and every sub-block in the order shown. One section per PR. One PR is one change with its own evidence (the **sequence-verifiable-units** principle skill). Name the execution playbook in **How to read this**. Pick between `autopilot-full.md` and `autopilot-stack.md` per the rule at the end of `autopilot-stack.md`. A standing program takes `orchestrate.md`.
 5. Write under `/technical-writing` in full, then `/unslop`. The body is one Diátaxis mode, how-to. Appendices hold explanation and reference. Each heading states the task or the finding. No long dashes. No mid-sentence colons.
@@ -41,7 +41,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
   - [ ] `cat "<absolute installed execution-playbook path>"`
   - [ ] `cat ../../swarm/SKILL.md`
   - [ ] `cat "<absolute installed control-workflow path>"`
-  - [ ] `cat opening-a-pr.md`
+  - [ ] `cat ../../to-pr/SKILL.md`
   - [ ] `cat "<absolute installed leaf-workflow path>"` for each selected leaf
 - [ ] Arm the 30-minute audit tick. In a local session, a real terminal `/loop`. In a cloud root, a cloud-sleeper wake chain. Never leave the cadence to memory.
 - [ ] Use this tick prompt, verbatim. "Re-read the installed execution playbook at its resolved package path and the armed /goal. Audit the operation against both and fix drift in this tick. Probe every active lane and judge progress by side effects only. Stand down a stuck lane and dispatch its replacement now. Then post a status message to the operator in chat, whether or not anything changed, with the queue table of PR, owner, state, and head SHA, the verdicts since the last tick, what merged, open operator gates, and blockers."

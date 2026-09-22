@@ -2,7 +2,9 @@
 
 bstack is Brenden Bishop's collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
 
-The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Engineering skills such as `how` and `architect` are available directly. Poteto Mode selects a complete engineering workflow; automatic routing is opt-in. [Selected Matt Pocock SDLC skills, handoff, and their dependencies](bstack/sdlc/README.md) are pinned in the source tree for review; their consumer release integration and local work planning remain pending.
+The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Engineering skills such as `how` and `architect` are available directly. Poteto Mode selects a complete engineering workflow; automatic routing is opt-in. [Owned SDLC adaptations](bstack/sdlc/README.md) connect Matt Pocock's planning approach to bstack's engineering workflows while preserving the pinned sources for selective updates.
+
+The bundled [local workspace app](bstack/workspace/README.md) provides Wayfinder maps, approved specs, and a Kanban ticket board. Browser and agent CLI use the same SQLite store. Planning and tickets have separate adapter choices; local is currently implemented, with external providers left for later integration.
 
 ## Install
 
@@ -20,7 +22,8 @@ See [installation and optional skills.sh distribution](bstack/INSTALL.md), [curr
 ## Repository layout
 
 - `bstack/engineering/` contains bstack-owned engineering workflows.
-- `bstack/sdlc/` contains SDLC selection and integration decisions.
+- `bstack/sdlc/` contains owned planning skills and their design history.
+- `bstack/workspace/` contains the local planning app, SQLite operations, and agent CLI.
 - `bstack/shared/` contains shared policy, custom skills, router adapters, and the existing memory implementation.
 - `bstack/upstream/` contains frozen third-party source snapshots used for comparison and release assembly.
 - `bstack/package/` and `bstack/scripts/` assemble and verify the consumer bundle.

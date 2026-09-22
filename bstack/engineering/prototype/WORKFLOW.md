@@ -3,7 +3,7 @@ name: prototype
 description: Build and iterate on disposable prototypes to explore UI alternatives, experience behavior, or answer a technical question before production implementation.
 metadata:
   author: Brenden Bishop
-  status: approved-pending-integration
+  status: active
   attribution: ../../../ATTRIBUTION.md
 ---
 

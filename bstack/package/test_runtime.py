@@ -23,6 +23,12 @@ PUBLIC_SKILLS = {
     "setup-bstack": "shared/setup-bstack/SKILL.md",
     "verify-bstack": "shared/verify-bstack/SKILL.md",
 }
+PUBLIC_SKILLS.update({name: "sdlc/" + name + "/SKILL.md" for name in (
+    "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
+    "to-tickets", "triage", "to-questionnaire")})
+PUBLIC_SKILLS.update({name: "engineering/" + name + "/SKILL.md" for name in ("research", "prototype", "implement")})
+PUBLIC_SKILLS["handoff"] = "shared/handoff/SKILL.md"
+
 
 
 class RuntimeTests(unittest.TestCase):
@@ -156,6 +162,25 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.run_cli("setup")["changes"], [])
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
         self.assertEqual(self.run_cli("auto", "status")["native_hook_trust"], "not_checked")
+
+    def test_sdlc_bindings_and_workspace_survive_upgrade_and_uninstall(self):
+        self.run_cli("setup")
+        records = {
+            ".bstack/workspace/wayfinder.sqlite3": "private database fixture",
+            ".bstack/workspace/metadata.json": '{"workspaceId":"private"}',
+            ".bstack/workspace/roles.json": '{"version":1}',
+            ".bstack/workspace/adapters.json": '{"version":1}',
+            ".bstack/workspace/artifacts/handoffs/session.md": "Continue current work",
+        }
+        for path, value in records.items():
+            self.write(path, value)
+        self.run_cli("setup")
+        for host in (".agents", ".claude", ".cursor", ".grok"):
+            for name in ("wayfinder", "to-spec", "to-tickets", "handoff", "prototype", "implement"):
+                self.assertTrue((self.project / host / "skills" / name / "SKILL.md").is_file())
+        self.run_cli("uninstall")
+        for path, value in records.items():
+            self.assertEqual((self.project / path).read_text(), value)
 
     def test_on_off_are_idempotent_and_unslop_survives(self):
         self.run_cli("setup")

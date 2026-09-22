@@ -32,7 +32,11 @@ For packaging changes, build with `python3 bstack/scripts/package.py build`, che
 
 Add `--live` for authorized provider-backed checks. The verifier installs into isolated projects, compares exact manifests, deletes its staged source, and drives direct skills, manual Poteto Mode, fresh default-off, automatic routing across resumed turns, and fresh opt-out. `--phases` limits a retest; `--live-method` selects which installed project to drive. Native discovery metadata is reported when a CLI emits it. Native plugin registration, desktop behavior, and native compaction of this installed bundle are not covered by this test. Read [the consumer installation contract](features/installation.md).
 
+For PR workflow changes, follow [pull requests](features/pull-requests.md). Run the helper fault tests and package checks. Use a fresh agent for semantic overlap cases. A fake forge proves state handling, not a real GitHub upload or publication; live checks need existing publication authorization.
+
 ## Evidence
+
+For workspace or SDLC changes, follow [local workspace and SDLC](features/workspace-sdlc.md). Run the core, browser-recovery and preflight suites, then drive the affected UI in a disposable workspace and forward-test the installed skills with fresh agents. Check actual saved planning, spec and ticket records. Preserve source review, claims, authority and independent provider selection. A successful configuration check does not prove cross-model execution or native session launch.
 
 Each run writes `.bstack/verification/<run-id>/`: prompts, command arguments, stdout/stderr, exit status, hook receipts, final responses, and `report.json`. A hook execution is not delivery. A fresh receipt echoed by the model establishes delivery; the response's routing choices and actual file reads establish separate behavioral evidence. A retained earlier receipt is not proof of the current prompt hook. An answer asserting that it read a file is not a read trace.
 

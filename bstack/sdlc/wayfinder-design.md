@@ -1,6 +1,8 @@
 # Wayfinder in a local workspace
 
-Status: draft for review. The user has selected a work-focused app with no AI chat, a monochrome theme, and Markdown editing with a toolbar and preview. React and Tailwind are the prototype stack; shadcn is not a required dependency. This describes the first local-app flow. It does not activate a skill or implement the production app.
+Historical design record. The Kanban and skill integration now live in the [owned SDLC entries](README.md), [workspace operations](../workspace/OPERATIONS.md), and [shared adapter contract](../shared/references/work-adapters.md). Statements below about pending implementation describe the earlier design stage; the linked runtime contracts are current. External providers and cross-model execution remain separate work.
+
+Status: Focus is the selected UI direction, with Atlas as a view within each map. The user has reviewed multiple maps, a searchable map list, map switching, resizable panels, expanded question details, and Markdown editing with a toolbar and preview. The app has no AI chat and uses a monochrome theme. The [first development build](../workspace/README.md) uses React and Tailwind with a Python SQLite core shared by the browser and JSON CLI. Shadcn is not required. Consumer release integration and SDLC skill activation remain pending. Technical proposals below are not approved ADRs.
 
 The [integration review](integration-review.md) records the agreed requirements. [Pinned Wayfinder](../upstream/matt-pocock/sdlc/skills/wayfinder/SKILL.md) supplies the starting workflow. Product behavior proposed below remains open to review.
 
@@ -39,7 +41,7 @@ The recommended first UI is a local browser app. Discussion stays in the user's 
 
 ## The map describes decisions and dependencies
 
-Use **map** for one planning effort and **question** for an item that advances it. Reserve **implementation ticket** for the later build work. These are proposed UI terms to avoid two meanings of "ticket."
+Use **map** for one planning effort and **question** for an item that advances it. Reserve **implementation ticket** for the later build work. A workspace can contain several maps. Wayfinder opens the map list; selecting a map opens its Focus view or Atlas view. Questions, progress, selected items, and filters retain their map identity.
 
 A question has one of Wayfinder's four methods: grilling, research, prototype, or prerequisite task. A prerequisite task earns its place by enabling a decision, such as obtaining access to inspect an API. It does not authorize building the final product.
 
@@ -115,7 +117,9 @@ The Wayfinder view should emphasize the destination, Ready next, and the selecte
 
 Filtering must not disguise a blocker. If a prerequisite falls outside the current filter, keep a visible indication and a way to inspect it. Readiness is calculated from the stored work, never from the currently visible nodes.
 
-These are navigation requirements, not a settled layout. The next prototype should compare ways to browse, search, follow connections, and edit the same example work. Keep the theme and sample data consistent across variants so the comparison is about usability.
+The selected Focus layout has a linear question queue on the left, question details in the center, and decision context on the right. Atlas is a whole-map view within that same map. Navigation, queue, decision context, and Atlas details can be resized or hidden. A question can expand to fill the workspace. Switching maps preserves the selected question, filters, view, and unsaved draft during the session.
+
+The map list supports search and shows progress, ready work, waits, and blockers for each effort. Ready next is a filter within the current scope. It shows available questions inside a map and maps with available questions in the map list. Cross-map relationships and persistent draft recovery were not evaluated by the selected prototype.
 
 ## A small theming option
 
@@ -143,7 +147,7 @@ Retain its destination-first planning, small map summary, questions on demand, r
 
 The one-question-per-session rule becomes a context-management policy: work can continue within authorized scope, while phase changes and context needs trigger bounded handoffs. Grilling and prototype decisions retain human ownership by default. Explicit autonomous authority enables the agreed multi-agent path. Charting can continue into resolution when that work is already authorized.
 
-Keep the pinned skill unchanged. The eventual bstack adaptation belongs under `sdlc/` and must be registered in the layer registry before release activation. The current task produces this design only.
+Keep the pinned skill unchanged. The eventual bstack adaptation belongs under `sdlc/` and must be registered in the layer registry before release activation. This document records requirements and proposals; it does not activate that adaptation.
 
 ## Later Kanban integration
 
@@ -153,7 +157,7 @@ These columns and ticket behavior are later product choices. The first Wayfinder
 
 ## Acceptance scenarios for the first implementation
 
-The future implementation is ready for review when these behaviors can be observed:
+The full planned workflow is ready for review when these behaviors can be observed:
 
 - Create a map, stop the app and agent, and resume with the same destination, open questions, and saved progress.
 - Resolve one question that gates two others. Both become ready without copying the answer into each one. A question with two prerequisites waits for both.
@@ -171,4 +175,4 @@ The future implementation is ready for review when these behaviors can be observ
 - Edit through the UI and read through the agent adapter, then reverse the direction. Both observe the same revisions and conflicts.
 - Reach an empty Ready next list while work is blocked or unspecified. The app explains why and does not mark the map complete.
 
-These are acceptance criteria, not executed tests. Next comes product review of this flow, then a disposable UI prototype, then one end-to-end implementation slice.
+The first development build connects the selected UI and JSON CLI to the same persisted maps, questions, and accepted answers. Its automated suite covers persistence, revisions, graph rules, request replay, claims, worktree discovery, and the HTTP boundary. Browser checks cover edits, restart, conflicts, map switching, answer history, and dependency review. These checks do not establish every scenario above. Autonomous grilling, prototype dispatch, supported-agent workflow activation, and release integration remain separate work.

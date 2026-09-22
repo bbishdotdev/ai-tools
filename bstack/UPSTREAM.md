@@ -18,6 +18,8 @@ This split preserves the upstream diff and our edits. It does not eliminate main
 
 Run `python3 bstack/scripts/package.py build` after changing owned sources or selecting an upstream update. Then run `python3 bstack/scripts/package.py check` and the installation verification. Build and install do not fetch upstream. Installing from a clone, transferred release, skills.sh, or an internal distributor uses the same reviewed bundle; selecting newer upstream content is a separate maintainer action.
 
+The owned [PR workflow](engineering/to-pr/SKILL.md) also replaces the imported Opening a PR playbook during assembly. Its PStack review bases are recorded separately. Matt Pocock's experimental PR skill informed the visual/evidence approach but is not imported as another pinned source.
+
 ## Check the current tree
 
 From the repository root:
@@ -69,7 +71,7 @@ Lock refresh is manual for now. The review command deliberately has no apply mod
 
 ## Selected Matt Pocock imports
 
-The layer registry includes `matt-pocock-sdlc`, `matt-pocock-handoff`, and `matt-pocock-dependencies`, all pinned to `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their manifests record the nine [SDLC skills](sdlc/README.md), shared handoff, and three [support dependencies](upstream/README.md) separately. No bstack adaptation or active release binding is registered for these skills yet.
+The layer registry includes `matt-pocock-sdlc`, `matt-pocock-handoff`, and `matt-pocock-dependencies`, all pinned to `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`. Their manifests record the nine [SDLC skills](sdlc/README.md), shared handoff, and three [support dependencies](upstream/README.md) separately. Owned adaptations under `sdlc/skills/`, shared `handoff`, and engineering `research` and `prototype` are active release bindings. Matt's setup dependency resolves to `setup-bstack`. Each adaptation is registered against its reviewed source files; prototype has both Matt and PStack review bases. The original `implement` entry connects accepted work to bstack's engineering process and does not import Matt's implementation skill.
 
 Their `source_path` is the empty string, meaning the upstream repository root. Every file records its exact original `source_path`; this preserves provenance when bstack groups upstream engineering and productivity skills together. `review_paths` limits discovery of new candidate files to the selected skill directories and accompanying notices/docs. Unselected upstream skills do not become imports or update candidates implicitly. The integrity check still rejects every unrecorded file inside each local import boundary.
 

@@ -44,22 +44,32 @@ your-project/
         poteto-mode/SKILL.md
         principles/              # Internal, loaded on demand
         ...
+      sdlc/
+        wayfinder/SKILL.md
+        to-spec/SKILL.md
+        to-tickets/SKILL.md
+        ...
       shared/
         router/                  # Internal bstack policy
         unslop/SKILL.md
         setup-bstack/SKILL.md
         bstack-auto/SKILL.md
         verify-bstack/SKILL.md
+        handoff/SKILL.md
+        workflow.py
+        references/
+      workspace/                 # CLI, Python core and compiled app
       scripts/bstack.py
       manifest.json
       ATTRIBUTION.md
     config.json
     instructions.md
+    workspace/                   # Private work, separate from package
   .agents/skills/
     how/SKILL.md                  # Points to the packaged how skill
     architect/SKILL.md
     poteto-mode/SKILL.md
-    ...                          # All 29 public entries
+    ...                          # All 43 public entries
   .claude/skills/                 # Per-skill links to .agents/skills
   .cursor/skills/                 # Same shared entries
   .grok/skills/                   # Same shared entries
@@ -69,13 +79,13 @@ your-project/
 
 Each public entry is a small binding to its exact packaged skill. Hosts can discover the individual names without loading all their instruction bodies. The full skills and supporting files live once in the package. Principles have no public skill entry; the active skill loads relevant principles and playbooks as needed.
 
-The generated release groups skills into engineering and shared buckets. SDLC and GitHub content will join as their integrations are implemented. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
+The generated release groups skills into engineering, SDLC and shared buckets. GitHub assets and shared memory still need runtime integration. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
 
 ## Direct skills and automatic routing
 
 Invoke `$how` in Codex or `/how` in slash-command hosts. This selects the how workflow and bstack's policy without first entering Poteto Mode. Other public skills work the same way. Invoke `poteto-mode` when you want its router to select a full engineering workflow.
 
-Engineering entrypoints are manual by default. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing, or use the controller directly:
+Engineering and SDLC entrypoints are manual by default. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing, or use the controller directly:
 
 ```sh
 python3 .bstack/package/scripts/bstack.py auto on --project "$PWD"
@@ -87,6 +97,10 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Codex hook trust must be reviewed through its native `/hooks` UI. Setup does not grant trust. Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 
 ## Update, migrate, and remove
+
+The [workspace app](workspace/README.md) runs from `.bstack/package/workspace/cli.py`. Initialize it once with `--project <project-root> init`, then use `serve` for the browser or `call` for agent operations. Private work survives package updates and removal. Stop old workspace servers and writers before upgrading the runtime; the new core backs up and migrates existing stores on discovery.
+
+Planning and tickets each default to local and have [independent provider settings](shared/references/work-adapters.md). External providers are not yet implemented. Manual work needs no role configuration; autonomous grilling follows the [decision-authority preflight](shared/references/decision-authority.md).
 
 Rerun the installer from a reviewed newer release. It verifies the owned package, preserves auto preference and selected hosts, and rolls back on installation errors. Modified or unowned files stop the update.
 

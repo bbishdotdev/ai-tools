@@ -311,5 +311,27 @@ class SelectedImportTest(unittest.TestCase):
                     layers.check(self.root)
 
 
+class ActiveAdaptationsTests(unittest.TestCase):
+    def test_active_owned_workflows_keep_exact_review_bases(self):
+        report = layers.check()
+        self.assertEqual(report["errors"], [])
+        config, sources = layers.load(layers.ROOT)
+        entries = {entry["id"]: entry for entry in config["layers"]}
+        selected = {"grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder",
+                    "to-spec", "to-tickets", "triage", "to-questionnaire", "handoff", "research", "setup-matt"}
+        self.assertTrue(selected <= entries.keys())
+        for name in selected:
+            layer = entries[name]
+            self.assertEqual(layer["kind"], "whole-skill-override")
+            manifest = sources[layer["source"]]
+            expected = {entry["path"]: entry["upstream_sha256"] for entry in manifest["files"]
+                        if entry["path"].startswith(layer["replaces"] + "/")}
+            self.assertEqual({entry["path"]: entry["sha256"] for entry in layer["upstream_files"]}, expected)
+        self.assertEqual(entries["prototype-matt"]["path"], entries["prototype-pstack"]["path"])
+        self.assertEqual(entries["prototype-matt"]["source"], "matt-pocock-dependencies")
+        self.assertEqual(entries["prototype-pstack"]["source"], "pstack")
+        self.assertNotIn("implement", entries)
+
+
 if __name__ == "__main__":
     unittest.main()

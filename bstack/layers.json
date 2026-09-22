@@ -210,6 +210,345 @@
         ]
       },
       "reason": "Preserve the code-maverick voice and behavior customization outside the upstream import."
+    },
+    {
+      "id": "grilling",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/grilling",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/grilling/SKILL.md",
+          "sha256": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2"
+        },
+        {
+          "path": "skills/grilling/agents/openai.yaml",
+          "sha256": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/grilling"
+    },
+    {
+      "id": "grill-me",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/grill-me",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/grill-me/SKILL.md",
+          "sha256": "caaf8b8de1684f96e26b28f3c29189db5c89cce4b73e1c93d86164f66ef88637"
+        },
+        {
+          "path": "skills/grill-me/agents/openai.yaml",
+          "sha256": "c061e39c3e0f9d865fb1b97556d485704af2a8a58f4b8221a8917a5c2074a32b"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/grill-me"
+    },
+    {
+      "id": "grill-with-docs",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/grill-with-docs",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/grill-with-docs/SKILL.md",
+          "sha256": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe"
+        },
+        {
+          "path": "skills/grill-with-docs/agents/openai.yaml",
+          "sha256": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/grill-with-docs"
+    },
+    {
+      "id": "domain-modeling",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/domain-modeling",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/domain-modeling/ADR-FORMAT.md",
+          "sha256": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0"
+        },
+        {
+          "path": "skills/domain-modeling/CONTEXT-FORMAT.md",
+          "sha256": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13"
+        },
+        {
+          "path": "skills/domain-modeling/SKILL.md",
+          "sha256": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e"
+        },
+        {
+          "path": "skills/domain-modeling/agents/openai.yaml",
+          "sha256": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/domain-modeling"
+    },
+    {
+      "id": "wayfinder",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/wayfinder",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/wayfinder/SKILL.md",
+          "sha256": "fee6e1d0c50f0e736b4ef8a599060c959afae904c9a97d82c97f049fcc3aa0f1"
+        },
+        {
+          "path": "skills/wayfinder/agents/openai.yaml",
+          "sha256": "88bc81a11a6d52ac67aeaa76b8b619e387020d47c5133a4dd4927fd15c4ad073"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/wayfinder"
+    },
+    {
+      "id": "to-spec",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/to-spec",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/to-spec/SKILL.md",
+          "sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088"
+        },
+        {
+          "path": "skills/to-spec/agents/openai.yaml",
+          "sha256": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/to-spec"
+    },
+    {
+      "id": "to-tickets",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/to-tickets",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/to-tickets/SKILL.md",
+          "sha256": "5c9fba69845c2519b9b35b9af42ae5142c21f8ca15ac2123dc2722002c8058ae"
+        },
+        {
+          "path": "skills/to-tickets/agents/openai.yaml",
+          "sha256": "21bc6215fffcd7614e9f772bb1760e87cc5fc7dcc707e7d282bc9414267a6090"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/to-tickets"
+    },
+    {
+      "id": "triage",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/triage",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/triage/AGENT-BRIEF.md",
+          "sha256": "7f5f87fed3033df1b06e083c480f3e847b1fbb0647746b8a4c6a50f9f26ef44f"
+        },
+        {
+          "path": "skills/triage/OUT-OF-SCOPE.md",
+          "sha256": "1fbf9b432130c6380aa65813b55553cfda150309b27c595e183f8e335b8a190d"
+        },
+        {
+          "path": "skills/triage/SKILL.md",
+          "sha256": "623a2ed692bdc77d2090e2a3dea3b627dd722ad3bbaca0be83aada75292c8fc4"
+        },
+        {
+          "path": "skills/triage/agents/openai.yaml",
+          "sha256": "2e683717720cf456d165d0bb1a68bb600d0b6a8ccb61841c172e50d26f95351c"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/triage"
+    },
+    {
+      "id": "to-questionnaire",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-sdlc",
+      "path": "sdlc/skills/to-questionnaire",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/to-questionnaire/SKILL.md",
+          "sha256": "b5eb929842ee0e93d867c5e906d183d350f2f2d149eaeaa86967d94d8eda1d3b"
+        },
+        {
+          "path": "skills/to-questionnaire/agents/openai.yaml",
+          "sha256": "9e8a06c38c8842eea8d4922cb9d1ead8e3ace647bab259b943c994a1b4742bc2"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/to-questionnaire"
+    },
+    {
+      "id": "handoff",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-handoff",
+      "path": "shared/skills/handoff",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/handoff/SKILL.md",
+          "sha256": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25"
+        },
+        {
+          "path": "skills/handoff/agents/openai.yaml",
+          "sha256": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/handoff"
+    },
+    {
+      "id": "research",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-dependencies",
+      "path": "engineering/research",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/research/SKILL.md",
+          "sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4"
+        },
+        {
+          "path": "skills/research/agents/openai.yaml",
+          "sha256": "9b4c470d63221c1f68f22df70b83e2f12401b317babe0d1b7b5f24a974474d0d"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/research"
+    },
+    {
+      "id": "prototype-matt",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-dependencies",
+      "path": "engineering/prototype",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/prototype/LOGIC.md",
+          "sha256": "f61c7d249e786a79ef289018901c348271e1798dd0b0bc5607b5c6f4d4a01ab9"
+        },
+        {
+          "path": "skills/prototype/SKILL.md",
+          "sha256": "714de632d116bb73f65cdb5a882db15b9369a6713b9a47c0fad827848f0bfbe3"
+        },
+        {
+          "path": "skills/prototype/UI.md",
+          "sha256": "723211e878acbc7b6ff09755263f3295cde724ba902ff0064da41eed51d45ad3"
+        },
+        {
+          "path": "skills/prototype/agents/openai.yaml",
+          "sha256": "5af65e43ab41a350436697b81e27b7f848d36782043b73c322bb2c9fa9cc55dc"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/prototype"
+    },
+    {
+      "id": "prototype-pstack",
+      "kind": "policy-overlay",
+      "source": "pstack",
+      "path": "engineering/prototype",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/poteto-mode/playbooks/prototype.md",
+          "sha256": "7aa1f52c691c3d46d5afc527b23f90977fce869ce33573c73c81a4c7f0cde962"
+        },
+        {
+          "path": "skills/principle-foundational-thinking/SKILL.md",
+          "sha256": "864b827e8199d946ce58beca0f89c4ed4099ed6e426fb698a3aaa45de2a9eea2"
+        },
+        {
+          "path": "skills/principle-guard-the-context-window/SKILL.md",
+          "sha256": "9f60e2c79b35f865cb103462f9128c6760b70f603475d1e535e5930f61840f66"
+        },
+        {
+          "path": "skills/principle-redesign-from-first-principles/SKILL.md",
+          "sha256": "a1c7fd0a96b40e12a74bceb0e6bb20a9666dd844dcabfb624acb27da23b929fe"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs."
+    },
+    {
+      "id": "setup-matt",
+      "kind": "whole-skill-override",
+      "source": "matt-pocock-dependencies",
+      "path": "package/templates",
+      "entrypoint": "setup.md",
+      "upstream_files": [
+        {
+          "path": "skills/setup-matt-pocock-skills/SKILL.md",
+          "sha256": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec"
+        },
+        {
+          "path": "skills/setup-matt-pocock-skills/agents/openai.yaml",
+          "sha256": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939"
+        },
+        {
+          "path": "skills/setup-matt-pocock-skills/domain.md",
+          "sha256": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca"
+        },
+        {
+          "path": "skills/setup-matt-pocock-skills/issue-tracker-github.md",
+          "sha256": "afd6852a80185217bd28aa5cbe456bef1e85be25be7bd1fba382d5b8ee428325"
+        },
+        {
+          "path": "skills/setup-matt-pocock-skills/issue-tracker-gitlab.md",
+          "sha256": "ea175f73d193b3f55819c0ed9bbccf6ee0e70ad8f928e3d7607596c53380acd6"
+        },
+        {
+          "path": "skills/setup-matt-pocock-skills/issue-tracker-local.md",
+          "sha256": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e"
+        },
+        {
+          "path": "skills/setup-matt-pocock-skills/triage-labels.md",
+          "sha256": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d"
+        }
+      ],
+      "reason": "Owned bstack workflow with local workspace operations, portable capabilities, scoped authority and explicit handoffs.",
+      "replaces": "skills/setup-matt-pocock-skills"
+    },
+    {
+      "id": "to-pr-pstack",
+      "kind": "policy-overlay",
+      "source": "pstack",
+      "path": "engineering/to-pr",
+      "entrypoint": "SKILL.md",
+      "upstream_files": [
+        {
+          "path": "skills/poteto-mode/playbooks/opening-a-pr.md",
+          "sha256": "b173ff9638ff62f91f6813c1a0ed3417cdf9f6545a659be0c1fb1f42130e0e66"
+        },
+        {
+          "path": "skills/technical-writing/SKILL.md",
+          "sha256": "6d6d9e625ae412ee8f36df8deb6fd9203d7c6acca776d5ee3cabbb9126f8b84c"
+        },
+        {
+          "path": "skills/teach/SKILL.md",
+          "sha256": "bd286e5a6290673be2cd28aef7af2ec7f1fb138e6bce156ea657368c7e7fc8a4"
+        }
+      ],
+      "reason": "Owned visual PR briefing and final semantic overlap review, with portable policy and a retry-safe GitHub publishing helper."
     }
   ]
 }

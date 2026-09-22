@@ -9,5 +9,8 @@ The POC verifies real CLI sessions against bstack's policy entry and its pinned 
 - [Context recovery](context-recovery.md): resume and actual compaction recovery.
 - [CLI discovery](cli-discovery.md): installed clients, versions, selection, missing tools, and capability gaps.
 - [Consumer installation](installation.md): skills.sh file installation, selected overrides, dependencies, notices, and the boundary before native agent execution.
+- [Local workspace and SDLC](workspace-sdlc.md): persistent planning/spec/ticket operations, Kanban interactions, independent adapters, owned skill execution and fresh-context handoffs.
+
+- [Pull requests](pull-requests.md): visual briefings, complete overlap review, draft decisions, publication retries and media fallback.
 
 Run doctor first. Capture commands, exit codes, model responses, and hook output receipts in `.bstack/verification/`. A missing client, missing authentication, unsupported hook, or unexercised surface must remain visible in the report. Test receipts exist only during verification; they do not turn the production reminder into a transcript analyzer.

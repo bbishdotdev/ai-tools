@@ -1,6 +1,6 @@
 # Prototype design
 
-The user approved this bstack workflow after the prototype grilling and instruction review. [WORKFLOW.md](WORKFLOW.md) owns the shared lifecycle, with conditional [UI](references/ui.md) and [logic](references/logic.md) guides. Runtime activation awaits the shared handoff and execution-session contract; this file is not a discoverable `SKILL.md`.
+The user approved this bstack workflow after the prototype grilling and instruction review. [WORKFLOW.md](WORKFLOW.md) owns the shared lifecycle, with conditional [UI](references/ui.md) and [logic](references/logic.md) guides. The active [skill entry](SKILL.md) now connects it to shared authority and handoff rules. This file preserves the earlier design review and is not a runtime prerequisite.
 
 ## Structure and context
 
@@ -31,7 +31,7 @@ The detailed product choices are in the [integration review](../../sdlc/integrat
 
 ## Integration boundary
 
-[Root attribution](../../../ATTRIBUTION.md) owns source credits, revisions, and notices. Before activation, register the reviewed source bases in [layers.json](../../layers.json) and connect both workflow callers to this entry. Source update tooling does not yet flag this unregistered workflow. The source registry supports one upstream per record, so the two source relationships need separate records.
+[Root attribution](../../../ATTRIBUTION.md) owns source credits, revisions, and notices. [layers.json](../../layers.json) now registers both reviewed source relationships as separate records. SDLC and engineering callers resolve to the same owned entry.
 
 ## Review and activation checks
 

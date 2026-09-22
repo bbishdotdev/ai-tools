@@ -5,7 +5,6 @@ from dataclasses import dataclass, replace
 import hashlib
 import io
 import json
-import os
 from pathlib import Path, PurePosixPath
 import posixpath
 import re
@@ -36,6 +35,9 @@ ENTRYPOINTS = {
     "controller": "scripts/bstack.py",
     "reminder": "runtime/reminder.py",
     "verification": "shared/verify-bstack/SKILL.md",
+    "workspace": "workspace/cli.py",
+    "workflow": "shared/workflow.py",
+    "pull_requests": "github/pr.py",
 }
 
 
@@ -92,7 +94,7 @@ def package_path(source, upstream):
         return str(path)
     if source.startswith(upstream + "/agents/"):
         return "engineering/agents/" + source[len(upstream + "/agents/"):]
-    path = PurePosixPath(source.replace("shared/skills/", "shared/", 1).replace("shared/bstack-router/", "shared/router/", 1))
+    path = PurePosixPath(source.replace("sdlc/skills/", "sdlc/", 1).replace("shared/skills/", "shared/", 1).replace("shared/bstack-router/", "shared/router/", 1))
     if str(path) == "shared/router/SKILL.md":
         path = path.with_name("WORKFLOW.md")
     return str(path)
@@ -209,7 +211,7 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
     if destination == "engineering/typescript-best-practices/references/patterns.md":
         text = text.replace("in `SKILL.md`", "in `../SKILL.md`")
         changed.append("rewrite-known-parent-workflow-reference")
-    if source.startswith("shared/skills/"):
+    if not source.startswith("upstream/"):
         rewritten = re.sub(r"(?m)^(  attribution:) .+$", r"\1 " + relative_target(destination, "ATTRIBUTION.md"), text)
         if rewritten != text:
             changed.append("rewrite-attribution-metadata")
@@ -319,6 +321,21 @@ def assemble(root=ROOT):
             raise ValueError(f"Selected workflow missing: {skill}")
         selected.extend(upstream + "/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory)))
     selected.extend(upstream + "/agents/" + agent for agent in selection["agents"])
+    prototype_source = upstream + "/skills/poteto-mode/playbooks/prototype.md"
+    selected.remove(prototype_source)
+    pr_source = upstream + "/skills/poteto-mode/playbooks/opening-a-pr.md"
+    selected.remove(pr_source)
+    for name, source in selection["owned_skills"].items():
+        directory = layers.safe_path(root, source)
+        if not (directory / "SKILL.md").is_file():
+            raise ValueError("Selected owned skill missing: " + name)
+        selected.extend(source + "/" + path for path in sorted(layers.tree_files(directory))
+                        if not path.startswith("agents/") and path != "REVIEW.md")
+    selected.extend(selection["owned_resources"])
+    for directory in ("workspace/wayfinder", "workspace/assets"):
+        selected.extend(directory + "/" + path for path in sorted(layers.tree_files(root / directory))
+                        if "__pycache__" not in PurePosixPath(path).parts
+                        and (directory.endswith("assets") or path.endswith(".py")))
     for skill in ("bstack-router", "unslop"):
         directory = root / "shared/skills" / skill
         selected.extend("shared/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory))
@@ -333,7 +350,25 @@ def assemble(root=ROOT):
         "../ATTRIBUTION.md": "ATTRIBUTION.md",
         "../LICENSE": "LICENSE",
         "layers.json": "layers.json",
+        prototype_source: "engineering/prototype/WORKFLOW.md",
+        pr_source: "engineering/to-pr/SKILL.md",
     })
+    for manifest in (sources["matt-pocock-sdlc"], sources["matt-pocock-handoff"], sources["matt-pocock-dependencies"]):
+        for entry in manifest["files"]:
+            parts = PurePosixPath(entry["path"]).parts
+            if len(parts) < 3 or parts[0] != "skills":
+                continue
+            name = parts[1]
+            if name == "setup-matt-pocock-skills":
+                target = ENTRYPOINTS["setup"] if parts[-1] == "SKILL.md" else None
+            else:
+                owned = selection["owned_skills"].get(name)
+                tail = "/".join(parts[2:])
+                if name == "prototype":
+                    tail = {"UI.md": "references/ui.md", "LOGIC.md": "references/logic.md"}.get(tail, tail)
+                target = mapping.get(owned + "/" + tail) if owned else None
+            if target:
+                mapping[manifest["destination"] + "/" + entry["path"]] = target
     mapping.update({"pstack/" + source[len(upstream) + 1:]: target for source, target in list(mapping.items())
                     if source.startswith(upstream + "/")})
     assets = {}
@@ -358,13 +393,15 @@ def assemble(root=ROOT):
                            ("bstack/shared/router/reminder.txt", "runtime/reminder.txt")):
         assets[target] = source_asset(source, root)
     skills = {skill: mapping[upstream + "/skills/" + skill + "/SKILL.md"] for skill in selection["skills"]}
+    skills.update({name: mapping[source + "/SKILL.md"] for name, source in selection["owned_skills"].items()})
     skills.update({"poteto-mode": ENTRYPOINTS["mode"], "bstack-router": ROUTER, "unslop": UNSLOP,
                    "setup-pstack": ENTRYPOINTS["setup"], "setup-bstack": ENTRYPOINTS["setup"],
+                   "setup-matt-pocock-skills": ENTRYPOINTS["setup"],
                    "bstack-auto": "shared/bstack-auto/SKILL.md",
                    "verify-bstack": ENTRYPOINTS["verification"]})
     public = {}
     public_names = [name for name in selection["skills"] if not name.startswith("principle-")]
-    for name in public_names + ["unslop", "setup-bstack", "bstack-auto", "verify-bstack"]:
+    for name in public_names + list(selection["owned_skills"]) + ["unslop", "setup-bstack", "bstack-auto", "verify-bstack"]:
         path = skills[name]
         implicit = name == "unslop"
         assets[path], description = public_skill(assets[path], name, implicit)
@@ -378,12 +415,20 @@ def assemble(root=ROOT):
                  if source.startswith(upstream + "/skills/poteto-mode/playbooks/") and source.endswith(".md")}
     index = {"schema_version": 2, "paths_relative_to": "package", "policy": ROUTER,
              "skills": skills, "agents": agents, "playbooks": playbooks,
+             "workspace": {"cli": ENTRYPOINTS["workspace"], "operations": "workspace/OPERATIONS.md"},
+             "workflow": ENTRYPOINTS["workflow"],
+             "pull_requests": {"cli": ENTRYPOINTS["pull_requests"], "template": "github/pull_request_template.md"},
              "upstream_router": mapping[upstream + "/skills/poteto-mode/SKILL.md"]}
     assets["index.json"] = generated_asset(json_bytes(index), "bstack/package/selection.json", root,
                                                    ("resolve-selected-workflows-and-overrides",))
     layer_summary = {"schema_version": 1, "package": "bstack", "policy": ROUTER,
                      "source_revision": pinned["commit"],
-                     "replacements": {"unslop": UNSLOP, "setup-pstack": ENTRYPOINTS["setup"]},
+                     "replacements": {"unslop": UNSLOP, "setup-pstack": ENTRYPOINTS["setup"],
+                                      "setup-matt-pocock-skills": ENTRYPOINTS["setup"],
+                                      **{name: skills[name] for name in selection["owned_skills"]}},
+                     "reviewed_layers": [{key: layer[key] for key in ("id", "kind", "source", "upstream_files")}
+                                         for layer in layers.load(root)[0]["layers"]],
+                     "source_revisions": {name: source["commit"] for name, source in sources.items()},
                      "note": "Review source history and original hashes in manifest.json. This is the runtime layer summary."}
     assets["layers.json"] = generated_asset(json_bytes(layer_summary), "bstack/layers.json", root,
                                                     ("emit-portable-runtime-layer-summary",))
@@ -404,7 +449,7 @@ def assemble(root=ROOT):
         "policy:\n  allow_implicit_invocation: false\n", root=root, transforms=("manual-installer-metadata",))
     release["README.md"] = generated_asset(
         "# bstack release\n\nVersion " + selection["version"] + ". The [bstack package](bstack/README.md) contains the "
-        "engineering and shared skills, internal references, controller, and notices.\n\n"
+        "engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.\n\n"
         "Install with `python3 bstack/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok`. "
         "It creates `.bstack/package/` and direct public skill entries in `.agents/skills/`.\n\n"
         "The [skills.sh installer](skills-sh/install-bstack/SKILL.md) transports the same bundle as an archive. "

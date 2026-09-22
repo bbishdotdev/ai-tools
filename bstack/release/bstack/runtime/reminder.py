@@ -69,7 +69,6 @@ def resolve_turn(host, payload):
             if isinstance(native, str) and native:
                 connection.execute("INSERT OR REPLACE INTO boundaries VALUES (?, ?, ?)", (key, native, time.time()))
             else:
-                # Never retain a previous prompt's identity when a new start lacks it.
                 connection.execute("DELETE FROM boundaries WHERE key = ?", (key,))
         if cursor_boundary:
             connection.execute("INSERT OR IGNORE INTO boundaries VALUES (?, ?, ?)", (key, uuid.uuid4().hex, time.time()))
@@ -153,7 +152,6 @@ def main():
                 "context_chars": len(context or ""),
                 "router_sha256": hashlib.sha256(ROUTER.read_bytes()).hexdigest(),
             }
-            # One file per event avoids interleaving from concurrent host hooks.
             (destination / f"hook-{receipt}.json").write_text(json.dumps(record, indent=2) + "\n")
         print(json.dumps(output))
     except (ValueError, OSError, sqlite3.Error) as error:

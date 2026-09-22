@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "skills": [
     "architect",
     "arena",
@@ -62,6 +62,37 @@
     "upstream/pstack/automations": "Benny automation requires independent integration.",
     "upstream/pstack/.cursor-plugin": "bstack owns its release manifests.",
     "upstream/pstack/docs": "Upstream guide is not the bstack setup guide.",
-    "upstream/pstack/assets": "Upstream branding is not bstack release branding."
-  }
+    "upstream/pstack/assets": "Upstream branding is not bstack release branding.",
+    "upstream/pstack/skills/poteto-mode/playbooks/prototype.md": "Replaced by engineering/prototype/WORKFLOW.md.",
+    "upstream/matt-pocock": "Owned SDLC and engineering adapters replace the pinned source snapshots.",
+    "upstream/pstack/skills/poteto-mode/playbooks/opening-a-pr.md": "Replaced by engineering/to-pr/SKILL.md."
+  },
+  "owned_skills": {
+    "grilling": "sdlc/skills/grilling",
+    "grill-me": "sdlc/skills/grill-me",
+    "grill-with-docs": "sdlc/skills/grill-with-docs",
+    "domain-modeling": "sdlc/skills/domain-modeling",
+    "wayfinder": "sdlc/skills/wayfinder",
+    "to-spec": "sdlc/skills/to-spec",
+    "to-tickets": "sdlc/skills/to-tickets",
+    "triage": "sdlc/skills/triage",
+    "to-questionnaire": "sdlc/skills/to-questionnaire",
+    "handoff": "shared/skills/handoff",
+    "research": "engineering/research",
+    "prototype": "engineering/prototype",
+    "implement": "engineering/implement",
+    "to-pr": "engineering/to-pr"
+  },
+  "owned_resources": [
+    "shared/references/workspace.md",
+    "shared/references/workspace-requests.md",
+    "shared/references/decision-authority.md",
+    "shared/references/work-adapters.md",
+    "shared/workflow.py",
+    "workspace/cli.py",
+    "workspace/README.md",
+    "workspace/OPERATIONS.md",
+    "github/pr.py",
+    "github/pull_request_template.md"
+  ]
 }

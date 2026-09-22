@@ -1,5 +1,7 @@
 # SDLC integration review
 
+Historical design record. The Kanban and skill integration now live in the [owned SDLC entries](README.md), [workspace operations](../workspace/OPERATIONS.md), and [shared adapter contract](../shared/references/work-adapters.md). Statements below about pending implementation describe the earlier design stage; the linked runtime contracts are current. External providers and cross-model execution remain separate work.
+
 This records the user's direction and remaining integration choices. The initial review was September 19, 2026; local-app direction was updated September 21. It is a design record, not an active router policy or a new skill implementation. The imported files and consumer release remain unchanged.
 
 ## Verified upstream baseline
@@ -43,7 +45,7 @@ The agreed planning record types are open questions, decisions, domain terminolo
 
 The intended experience is one agent carrying the work forward. Organizing, research, planning, prototyping, specs, tickets, and implementation can form a continuous flow, with entry at whichever stage the task needs. Users should not need to switch source packages or re-explain the work. Commands can be explicit entry points without becoming mandatory steps between phases.
 
-The local app should expose the same work operations to agents and its human UI. Its integration must support both interactive decisions and fully delegated runs. The next review should define how an agent finds current work, resolves blockers, records evidence, and resumes without duplicating completed phases. This document does not select a CLI or MCP implementation yet.
+The local app should expose the same work operations to agents and its human UI. Its integration must support both interactive decisions and fully delegated runs. The next review should define how an agent finds current work, resolves blockers, records evidence, and resumes without duplicating completed phases. The first development build now exposes a shared JSON CLI and loopback browser adapter; see [the workspace app](../workspace/README.md). Skill dispatch and MCP integration remain separate work.
 
 ## Local app direction
 
@@ -53,7 +55,7 @@ The selected default is black, white, and gray. Prototype with React, Tailwind, 
 
 Bring-your-own-theme support and an explicitly invoked skill to inspect a repository's existing theme are options to explore. They are not implemented or required for the first slice.
 
-The [Wayfinder draft](wayfinder-design.md) proposes the relationship meanings, shared list/map navigation, and theming approach. Those details remain open to review before a disposable UI prototype and app implementation.
+The user selected Focus after reviewing the prototype, with a linear question queue, central details, and decision context. Atlas is a view inside each map. The reviewed revision adds a searchable list of maps, a map switcher, per-map selection and filters, resizable panels, and expanded question details. [Wayfinder design](wayfinder-design.md) records that target and the remaining storage, agent-operation, and release requirements. Prototype state is still in memory; production implementation is the next phase.
 
 ## Triage handles intake and coordination
 
@@ -114,4 +116,4 @@ The package remains `bstack`. "Super engineer" is a working description of the i
 
 The prototype grilling has produced the agreed defaults above. The [approved prototype workflow](../engineering/prototype/WORKFLOW.md) expresses them as one shared workflow, with a [source and structure review](../engineering/prototype/REVIEW.md). The user approved the design. Runtime activation awaits the shared handoff and execution-session contract.
 
-The decision-delegation adapter, cross-model grilling harness, prototype routing and execution verification, `/implement` entry, triage coordination, local work operations, and shared handoff format remain implementation work. No consumer routing or new workflow behavior is claimed by this record.
+The decision-delegation adapter, cross-model grilling harness, prototype routing and execution verification, `/implement` entry, triage coordination, and shared handoff format remain implementation work. The [local workspace development build](../workspace/README.md) now implements shared map and question operations through SQLite; it does not activate these SDLC workflows. No consumer routing or new workflow behavior is claimed by this record.

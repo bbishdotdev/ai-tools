@@ -22,6 +22,28 @@ For Poteto Mode or automatic engineering routing, read the upstream router in fu
 - Respect explicit skill requests and the requested deliverable. Planning, discussing, classifying, or verifying a route does not authorize executing the described work. A plan-only figure-it-out request stops at the plan.
 - Within that scope, honor the selected playbook's explicit exceptions and skip conditions before generic defaults. Investigation stays read-only; it does not inherit a mandatory PR or prototype step.
 
+## Planning and phase changes
+
+Use bstack's owned entries for selected SDLC workflows, including references from imported instructions. Read only the selected entry and the dependencies it needs:
+
+| Task | Entry |
+| --- | --- |
+| Explore a plan through questions | [grilling](../../sdlc/grilling/SKILL.md), [grill-me](../../sdlc/grill-me/SKILL.md), or [grill-with-docs](../../sdlc/grill-with-docs/SKILL.md) |
+| Establish terminology or an ADR | [domain-modeling](../../sdlc/domain-modeling/SKILL.md) |
+| Organize unresolved decisions across sessions | [wayfinder](../../sdlc/wayfinder/SKILL.md) |
+| Synthesize accepted scope or slice implementation work | [to-spec](../../sdlc/to-spec/SKILL.md), then [to-tickets](../../sdlc/to-tickets/SKILL.md) when needed |
+| Assess incoming work and overlap | [triage](../../sdlc/triage/SKILL.md) |
+| Draft questions for another person | [to-questionnaire](../../sdlc/to-questionnaire/SKILL.md) |
+| Research, prototype, or implement | [research](../../engineering/research/SKILL.md), [prototype](../../engineering/prototype/SKILL.md), [implement](../../engineering/implement/SKILL.md) |
+| Prepare or publish an authorized PR | [to-pr](../../engineering/to-pr/SKILL.md) |
+| Transfer work to a fresh context | [handoff](../handoff/SKILL.md) |
+
+Named invocation selects that entry. Within opted-in automatic routing, propose or select the matching phase from the user's task. A sufficient spec or small known task can skip Wayfinder. Planning completion does not authorize implementation. Triage is intake coordination, not a mandatory step between planning and tickets.
+
+Read [decision authority](../references/decision-authority.md) when deciding who can settle product choices, ADRs, or autonomous grilling. Human decisions remain the default; automatic routing and autonomous decision authority are separate. Use [workspace access](../references/workspace.md) for saved work and [independent work adapters](../references/work-adapters.md) for planning and ticket destinations. Local operation requires no external tracker or model-role setup.
+
+Resolve imported Opening a PR instructions to the owned [to-pr entry](../../engineering/to-pr/SKILL.md), including transitive calls from other playbooks. Use its final overlap check and draft policy instead of upstream's unconditional ready-PR instruction. Resolve imported prototype instructions to the owned prototype entry, Matt's selected SDLC/research/handoff names to the entries above, and Matt's setup dependency to bstack setup. Preserve the approved prototype review loop. At the prototype-to-implementation boundary, write the shared handoff and start a fresh context through a supported host capability. Carry accepted decisions and evidence forward instead of repeating the interview or grounding automatically.
+
 ## Grounding and design
 
 Retain **how** for nontrivial changes, architecture decisions, and uncertainty about how the system works. Reuse adequate grounding already established for the same code and question. Refresh when evidence, scope, or assumptions change. Architect should consume that grounding rather than automatically running the same exploration twice.

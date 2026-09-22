@@ -1,0 +1,726 @@
+{
+  "generatedBy": "Frozen pre-change wayfinder core schema 1, 2026-09-21",
+  "metadata": {
+    "id": "w_d8a001f70f2b4b99aeeede760ca7c72e",
+    "root": "__ROOT__",
+    "schemaVersion": 1
+  },
+  "tables": {
+    "workspace": [
+      [
+        "w_d8a001f70f2b4b99aeeede760ca7c72e",
+        "__ROOT__",
+        9
+      ]
+    ],
+    "maps": [
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":9,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7688644}"
+      ]
+    ],
+    "questions": [
+      [
+        "q_56acdb099b924b3abed89bb847cee22c",
+        "m_498e6b50392048aa9c184729d405f351",
+        "{\"answer\":{\"acceptedAt\":1790021993.7670681,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_f2650098ff89448699a3b0df8604e735\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[],\"questionRev\":2,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"body\":\"\",\"createdAt\":1790021993.7655272,\"fence\":1,\"id\":\"q_56acdb099b924b3abed89bb847cee22c\",\"labels\":[],\"lease\":null,\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"research\",\"priority\":2,\"progress\":\"\",\"rev\":2,\"state\":\"resolved\",\"title\":\"First accepted decision\",\"updatedAt\":1790021993.7670681,\"wait\":\"\"}"
+      ],
+      [
+        "q_d83f6888f5d84f599dc9dd590dc20c20",
+        "m_498e6b50392048aa9c184729d405f351",
+        "{\"answer\":{\"acceptedAt\":1790021993.7677088,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_7c46030bd6104636a315ee6f30e3e912\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[{\"answerId\":\"a_f2650098ff89448699a3b0df8604e735\",\"questionId\":\"q_56acdb099b924b3abed89bb847cee22c\",\"revision\":1}],\"questionRev\":4,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"body\":\"\",\"createdAt\":1790021993.7658992,\"fence\":3,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"lease\":null,\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"rev\":4,\"state\":\"resolved\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7677088,\"wait\":\"\"}"
+      ],
+      [
+        "q_87b84546e9854830b159c8905ce25533",
+        "m_498e6b50392048aa9c184729d405f351",
+        "{\"answer\":null,\"body\":\"\",\"createdAt\":1790021993.7681475,\"fence\":1,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"lease\":{\"expiresAt\":1790022893.7688644,\"fence\":1,\"owner\":\"fixture-owner\",\"tokenHash\":\"5f4651b5b102d7abd48458895e5bac38e324d06061e9a28378a383689cda78a0\"},\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"rev\":3,\"state\":\"open\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7688644,\"wait\":\"Waiting for old owner\"}"
+      ]
+    ],
+    "relationships": [
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        "blocks",
+        "q_56acdb099b924b3abed89bb847cee22c",
+        "q_d83f6888f5d84f599dc9dd590dc20c20"
+      ]
+    ],
+    "answers": [
+      [
+        "a_f2650098ff89448699a3b0df8604e735",
+        "q_56acdb099b924b3abed89bb847cee22c",
+        1,
+        "{\"acceptedAt\":1790021993.7670681,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_f2650098ff89448699a3b0df8604e735\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[],\"questionRev\":2,\"references\":[\"docs/old-adr.md\"],\"revision\":1}"
+      ],
+      [
+        "a_7c46030bd6104636a315ee6f30e3e912",
+        "q_d83f6888f5d84f599dc9dd590dc20c20",
+        1,
+        "{\"acceptedAt\":1790021993.7677088,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_7c46030bd6104636a315ee6f30e3e912\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[{\"answerId\":\"a_f2650098ff89448699a3b0df8604e735\",\"questionId\":\"q_56acdb099b924b3abed89bb847cee22c\",\"revision\":1}],\"questionRev\":4,\"references\":[\"docs/old-adr.md\"],\"revision\":1}"
+      ]
+    ],
+    "history": [
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        1,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":1,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.765183}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        2,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":2,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7655272}"
+      ],
+      [
+        "q_56acdb099b924b3abed89bb847cee22c",
+        1,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7655272,\"id\":\"q_56acdb099b924b3abed89bb847cee22c\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"research\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":1,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"First accepted decision\",\"updatedAt\":1790021993.7655272,\"wait\":\"\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        3,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":3,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7658992}"
+      ],
+      [
+        "q_d83f6888f5d84f599dc9dd590dc20c20",
+        1,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7658992,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":1,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7658992,\"wait\":\"\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        4,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":4,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7664812}"
+      ],
+      [
+        "q_d83f6888f5d84f599dc9dd590dc20c20",
+        2,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[\"q_56acdb099b924b3abed89bb847cee22c\"],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7658992,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":2,\"state\":\"open\",\"status\":\"Blocked\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7664812,\"wait\":\"\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        5,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":5,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7670681}"
+      ],
+      [
+        "q_d83f6888f5d84f599dc9dd590dc20c20",
+        3,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7658992,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":3,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7670681,\"wait\":\"\"}"
+      ],
+      [
+        "q_56acdb099b924b3abed89bb847cee22c",
+        2,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":{\"acceptedAt\":1790021993.7670681,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_f2650098ff89448699a3b0df8604e735\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[],\"questionRev\":2,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7655272,\"id\":\"q_56acdb099b924b3abed89bb847cee22c\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"research\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":2,\"state\":\"resolved\",\"status\":\"Resolved\",\"title\":\"First accepted decision\",\"updatedAt\":1790021993.7670681,\"wait\":\"\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        6,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":6,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7677088}"
+      ],
+      [
+        "q_d83f6888f5d84f599dc9dd590dc20c20",
+        4,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":{\"acceptedAt\":1790021993.7677088,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_7c46030bd6104636a315ee6f30e3e912\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[{\"answerId\":\"a_f2650098ff89448699a3b0df8604e735\",\"questionId\":\"q_56acdb099b924b3abed89bb847cee22c\",\"revision\":1}],\"questionRev\":4,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7658992,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":4,\"state\":\"resolved\",\"status\":\"Resolved\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7677088,\"wait\":\"\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        7,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":7,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7681475}"
+      ],
+      [
+        "q_87b84546e9854830b159c8905ce25533",
+        1,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7681475,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":1,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7681475,\"wait\":\"\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        8,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":8,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7685251}"
+      ],
+      [
+        "q_87b84546e9854830b159c8905ce25533",
+        2,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7681475,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":2,\"state\":\"open\",\"status\":\"Waiting\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7685251,\"wait\":\"Waiting for old owner\"}"
+      ],
+      [
+        "m_498e6b50392048aa9c184729d405f351",
+        9,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":9,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7688644}"
+      ],
+      [
+        "q_87b84546e9854830b159c8905ce25533",
+        3,
+        "{\"id\":\"fixture-owner\",\"kind\":\"human\"}",
+        "{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":{\"expiresAt\":1790022893.7688644,\"fence\":1,\"owner\":\"fixture-owner\"},\"createdAt\":1790021993.7681475,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":3,\"state\":\"open\",\"status\":\"Waiting\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7688644,\"wait\":\"Waiting for old owner\"}"
+      ]
+    ],
+    "requests": [
+      [
+        "frozen-0",
+        "5eb299280c30f6b090526ee57add368dfb91beadeab47c53f67e5479382d22d4",
+        "{\"changeSeq\":1,\"ok\":true,\"value\":{\"map\":{\"complete\":false,\"counts\":{\"blocked\":0,\"ready\":0,\"resolved\":0,\"reviewing\":0,\"total\":0,\"waiting\":0},\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":1,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.765183}}}"
+      ],
+      [
+        "frozen-1",
+        "d8eb06bbd7d43977e8fbb4d79b7af9fe7df569372232792e01673b5365c83892",
+        "{\"changeSeq\":2,\"ok\":true,\"value\":{\"question\":{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7655272,\"id\":\"q_56acdb099b924b3abed89bb847cee22c\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"research\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":1,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"First accepted decision\",\"updatedAt\":1790021993.7655272,\"wait\":\"\"}}}"
+      ],
+      [
+        "frozen-2",
+        "43e84b200cf070b18628a4fd6f228cb856a9c76caac56b5fb4ec6f61d59d70dc",
+        "{\"changeSeq\":3,\"ok\":true,\"value\":{\"question\":{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7658992,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":1,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7658992,\"wait\":\"\"}}}"
+      ],
+      [
+        "frozen-3",
+        "b20d8704ec88ae2da89db991c250ac9c6d73fe4aaa133b9b8d68bc1c52c505b6",
+        "{\"changeSeq\":4,\"ok\":true,\"value\":{\"map\":{\"complete\":false,\"counts\":{\"blocked\":1,\"ready\":1,\"resolved\":0,\"reviewing\":0,\"total\":2,\"waiting\":0},\"createdAt\":1790021993.765183,\"destination\":\"Preserve the old board\",\"id\":\"m_498e6b50392048aa9c184729d405f351\",\"progress\":\"\",\"rev\":4,\"scope\":\"Migration fixture\",\"title\":\"Frozen v1 map\",\"unresolved\":\"\",\"updatedAt\":1790021993.7664812},\"relationships\":[{\"from\":\"q_56acdb099b924b3abed89bb847cee22c\",\"kind\":\"blocks\",\"to\":\"q_d83f6888f5d84f599dc9dd590dc20c20\"}]}}"
+      ],
+      [
+        "frozen-4",
+        "97efe792298b06eb25e8f1c5f53927f64965883512633ca7467accb49df7637c",
+        "{\"changeSeq\":5,\"ok\":true,\"value\":{\"question\":{\"answer\":{\"acceptedAt\":1790021993.7670681,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_f2650098ff89448699a3b0df8604e735\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[],\"questionRev\":2,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7655272,\"id\":\"q_56acdb099b924b3abed89bb847cee22c\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"research\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":2,\"state\":\"resolved\",\"status\":\"Resolved\",\"title\":\"First accepted decision\",\"updatedAt\":1790021993.7670681,\"wait\":\"\"}}}"
+      ],
+      [
+        "frozen-5",
+        "89954c544a9bf2c82b41b47021821f4f578fe72e4e253672a3b2d107d83927c8",
+        "{\"changeSeq\":6,\"ok\":true,\"value\":{\"question\":{\"answer\":{\"acceptedAt\":1790021993.7677088,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_7c46030bd6104636a315ee6f30e3e912\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[{\"answerId\":\"a_f2650098ff89448699a3b0df8604e735\",\"questionId\":\"q_56acdb099b924b3abed89bb847cee22c\",\"revision\":1}],\"questionRev\":4,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7658992,\"id\":\"q_d83f6888f5d84f599dc9dd590dc20c20\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"grilling\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":4,\"state\":\"resolved\",\"status\":\"Resolved\",\"title\":\"Dependent accepted decision\",\"updatedAt\":1790021993.7677088,\"wait\":\"\"}}}"
+      ],
+      [
+        "frozen-6",
+        "ee1979d925d82dbffc2de366a1b2e0c2ca35b2a2630809060dc533ca2b0410dc",
+        "{\"changeSeq\":7,\"ok\":true,\"value\":{\"question\":{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7681475,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"ready\":true,\"rev\":1,\"state\":\"open\",\"status\":\"Ready\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7681475,\"wait\":\"\"}}}"
+      ],
+      [
+        "frozen-7",
+        "b13d054f50508e6456e5a8990a76f5e69e7408eb251c568e50374e1571bc6f86",
+        "{\"changeSeq\":8,\"ok\":true,\"value\":{\"question\":{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7681475,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":2,\"state\":\"open\",\"status\":\"Waiting\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7685251,\"wait\":\"Waiting for old owner\"}}}"
+      ],
+      [
+        "frozen-8",
+        "d2bdde4cb8b65dad5a5a1e07e9193b69898a461ed627b631eceb8403bd032dd6",
+        "{\"changeSeq\":9,\"ok\":true,\"value\":{\"claimToken\":\"GhO6BYpZPvWmPqIwUPqARJT4og3RI_faM_Iu861bum8\",\"expiresAt\":1790022893.7688644,\"fence\":1,\"question\":{\"answer\":null,\"blockedBy\":[],\"body\":\"\",\"claim\":{\"expiresAt\":1790022893.7688644,\"fence\":1,\"owner\":\"fixture-owner\"},\"createdAt\":1790021993.7681475,\"id\":\"q_87b84546e9854830b159c8905ce25533\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"prototype\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":3,\"state\":\"open\",\"status\":\"Waiting\",\"title\":\"Waiting claimed work\",\"updatedAt\":1790021993.7688644,\"wait\":\"Waiting for old owner\"}}}"
+      ],
+      [
+        "frozen-9",
+        "bc097615d5383a07e4ee609d05e2138925f35b72f8d49e817260174e179502e1",
+        "{\"error\":{\"code\":\"conflict\",\"current\":{\"answer\":{\"acceptedAt\":1790021993.7670681,\"authority\":{\"confirmation\":\"Approved\",\"decider\":\"Fixture owner\",\"kind\":\"human\"},\"id\":\"a_f2650098ff89448699a3b0df8604e735\",\"markdown\":\"Accepted v1 answer\",\"prerequisites\":[],\"questionRev\":2,\"references\":[\"docs/old-adr.md\"],\"revision\":1},\"blockedBy\":[],\"body\":\"\",\"claim\":null,\"createdAt\":1790021993.7655272,\"id\":\"q_56acdb099b924b3abed89bb847cee22c\",\"labels\":[],\"mapId\":\"m_498e6b50392048aa9c184729d405f351\",\"method\":\"research\",\"priority\":2,\"progress\":\"\",\"ready\":false,\"rev\":2,\"state\":\"resolved\",\"status\":\"Resolved\",\"title\":\"First accepted decision\",\"updatedAt\":1790021993.7670681,\"wait\":\"\"},\"currentRev\":2,\"message\":\"Question changed\"},\"ok\":false}"
+      ]
+    ]
+  },
+  "replays": [
+    {
+      "envelope": {
+        "op": "map.create",
+        "input": {
+          "title": "Frozen v1 map",
+          "destination": "Preserve the old board",
+          "scope": "Migration fixture"
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-0"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 1,
+        "value": {
+          "map": {
+            "id": "m_498e6b50392048aa9c184729d405f351",
+            "rev": 1,
+            "title": "Frozen v1 map",
+            "destination": "Preserve the old board",
+            "scope": "Migration fixture",
+            "unresolved": "",
+            "progress": "",
+            "createdAt": 1790021993.765183,
+            "updatedAt": 1790021993.765183,
+            "counts": {
+              "total": 0,
+              "resolved": 0,
+              "ready": 0,
+              "blocked": 0,
+              "waiting": 0,
+              "reviewing": 0
+            },
+            "complete": false
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "question.create",
+        "input": {
+          "mapId": "m_498e6b50392048aa9c184729d405f351",
+          "title": "First accepted decision",
+          "method": "research"
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-1"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 2,
+        "value": {
+          "question": {
+            "id": "q_56acdb099b924b3abed89bb847cee22c",
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "rev": 1,
+            "title": "First accepted decision",
+            "body": "",
+            "method": "research",
+            "priority": 2,
+            "labels": [],
+            "state": "open",
+            "progress": "",
+            "wait": "",
+            "answer": null,
+            "createdAt": 1790021993.7655272,
+            "updatedAt": 1790021993.7655272,
+            "claim": null,
+            "blockedBy": [],
+            "status": "Ready",
+            "ready": true
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "question.create",
+        "input": {
+          "mapId": "m_498e6b50392048aa9c184729d405f351",
+          "title": "Dependent accepted decision",
+          "method": "grilling"
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-2"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 3,
+        "value": {
+          "question": {
+            "id": "q_d83f6888f5d84f599dc9dd590dc20c20",
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "rev": 1,
+            "title": "Dependent accepted decision",
+            "body": "",
+            "method": "grilling",
+            "priority": 2,
+            "labels": [],
+            "state": "open",
+            "progress": "",
+            "wait": "",
+            "answer": null,
+            "createdAt": 1790021993.7658992,
+            "updatedAt": 1790021993.7658992,
+            "claim": null,
+            "blockedBy": [],
+            "status": "Ready",
+            "ready": true
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "relationship.add",
+        "input": {
+          "mapId": "m_498e6b50392048aa9c184729d405f351",
+          "expectedMapRev": 3,
+          "kind": "blocks",
+          "from": "q_56acdb099b924b3abed89bb847cee22c",
+          "to": "q_d83f6888f5d84f599dc9dd590dc20c20"
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-3"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 4,
+        "value": {
+          "map": {
+            "createdAt": 1790021993.765183,
+            "destination": "Preserve the old board",
+            "id": "m_498e6b50392048aa9c184729d405f351",
+            "progress": "",
+            "rev": 4,
+            "scope": "Migration fixture",
+            "title": "Frozen v1 map",
+            "unresolved": "",
+            "updatedAt": 1790021993.7664812,
+            "counts": {
+              "total": 2,
+              "resolved": 0,
+              "ready": 1,
+              "blocked": 1,
+              "waiting": 0,
+              "reviewing": 0
+            },
+            "complete": false
+          },
+          "relationships": [
+            {
+              "kind": "blocks",
+              "from": "q_56acdb099b924b3abed89bb847cee22c",
+              "to": "q_d83f6888f5d84f599dc9dd590dc20c20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "question.resolve",
+        "input": {
+          "questionId": "q_56acdb099b924b3abed89bb847cee22c",
+          "expectedRev": 1,
+          "answer": {
+            "markdown": "Accepted v1 answer",
+            "authority": {
+              "kind": "human",
+              "decider": "Fixture owner",
+              "confirmation": "Approved"
+            },
+            "references": [
+              "docs/old-adr.md"
+            ]
+          }
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-4"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 5,
+        "value": {
+          "question": {
+            "answer": {
+              "id": "a_f2650098ff89448699a3b0df8604e735",
+              "revision": 1,
+              "questionRev": 2,
+              "markdown": "Accepted v1 answer",
+              "authority": {
+                "kind": "human",
+                "decider": "Fixture owner",
+                "confirmation": "Approved"
+              },
+              "references": [
+                "docs/old-adr.md"
+              ],
+              "acceptedAt": 1790021993.7670681,
+              "prerequisites": []
+            },
+            "body": "",
+            "createdAt": 1790021993.7655272,
+            "id": "q_56acdb099b924b3abed89bb847cee22c",
+            "labels": [],
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "method": "research",
+            "priority": 2,
+            "progress": "",
+            "rev": 2,
+            "state": "resolved",
+            "title": "First accepted decision",
+            "updatedAt": 1790021993.7670681,
+            "wait": "",
+            "claim": null,
+            "blockedBy": [],
+            "status": "Resolved",
+            "ready": false
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "question.resolve",
+        "input": {
+          "questionId": "q_d83f6888f5d84f599dc9dd590dc20c20",
+          "expectedRev": 3,
+          "answer": {
+            "markdown": "Accepted v1 answer",
+            "authority": {
+              "kind": "human",
+              "decider": "Fixture owner",
+              "confirmation": "Approved"
+            },
+            "references": [
+              "docs/old-adr.md"
+            ]
+          }
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-5"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 6,
+        "value": {
+          "question": {
+            "answer": {
+              "id": "a_7c46030bd6104636a315ee6f30e3e912",
+              "revision": 1,
+              "questionRev": 4,
+              "markdown": "Accepted v1 answer",
+              "authority": {
+                "kind": "human",
+                "decider": "Fixture owner",
+                "confirmation": "Approved"
+              },
+              "references": [
+                "docs/old-adr.md"
+              ],
+              "acceptedAt": 1790021993.7677088,
+              "prerequisites": [
+                {
+                  "questionId": "q_56acdb099b924b3abed89bb847cee22c",
+                  "answerId": "a_f2650098ff89448699a3b0df8604e735",
+                  "revision": 1
+                }
+              ]
+            },
+            "body": "",
+            "createdAt": 1790021993.7658992,
+            "id": "q_d83f6888f5d84f599dc9dd590dc20c20",
+            "labels": [],
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "method": "grilling",
+            "priority": 2,
+            "progress": "",
+            "rev": 4,
+            "state": "resolved",
+            "title": "Dependent accepted decision",
+            "updatedAt": 1790021993.7677088,
+            "wait": "",
+            "claim": null,
+            "blockedBy": [],
+            "status": "Resolved",
+            "ready": false
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "question.create",
+        "input": {
+          "mapId": "m_498e6b50392048aa9c184729d405f351",
+          "title": "Waiting claimed work",
+          "method": "prototype"
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-6"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 7,
+        "value": {
+          "question": {
+            "id": "q_87b84546e9854830b159c8905ce25533",
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "rev": 1,
+            "title": "Waiting claimed work",
+            "body": "",
+            "method": "prototype",
+            "priority": 2,
+            "labels": [],
+            "state": "open",
+            "progress": "",
+            "wait": "",
+            "answer": null,
+            "createdAt": 1790021993.7681475,
+            "updatedAt": 1790021993.7681475,
+            "claim": null,
+            "blockedBy": [],
+            "status": "Ready",
+            "ready": true
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "wait.set",
+        "input": {
+          "questionId": "q_87b84546e9854830b159c8905ce25533",
+          "expectedRev": 1,
+          "reason": "Waiting for old owner"
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-7"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 8,
+        "value": {
+          "question": {
+            "answer": null,
+            "body": "",
+            "createdAt": 1790021993.7681475,
+            "id": "q_87b84546e9854830b159c8905ce25533",
+            "labels": [],
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "method": "prototype",
+            "priority": 2,
+            "progress": "",
+            "rev": 2,
+            "state": "open",
+            "title": "Waiting claimed work",
+            "updatedAt": 1790021993.7685251,
+            "wait": "Waiting for old owner",
+            "claim": null,
+            "blockedBy": [],
+            "status": "Waiting",
+            "ready": false
+          }
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "claim.acquire",
+        "input": {
+          "questionId": "q_87b84546e9854830b159c8905ce25533",
+          "expectedRev": 2
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-8"
+      },
+      "result": {
+        "ok": true,
+        "changeSeq": 9,
+        "value": {
+          "question": {
+            "answer": null,
+            "body": "",
+            "createdAt": 1790021993.7681475,
+            "id": "q_87b84546e9854830b159c8905ce25533",
+            "labels": [],
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "method": "prototype",
+            "priority": 2,
+            "progress": "",
+            "rev": 3,
+            "state": "open",
+            "title": "Waiting claimed work",
+            "updatedAt": 1790021993.7688644,
+            "wait": "Waiting for old owner",
+            "claim": {
+              "owner": "fixture-owner",
+              "expiresAt": 1790022893.7688644,
+              "fence": 1
+            },
+            "blockedBy": [],
+            "status": "Waiting",
+            "ready": false
+          },
+          "claimToken": "GhO6BYpZPvWmPqIwUPqARJT4og3RI_faM_Iu861bum8",
+          "fence": 1,
+          "expiresAt": 1790022893.7688644
+        }
+      }
+    },
+    {
+      "envelope": {
+        "op": "question.update",
+        "input": {
+          "questionId": "q_56acdb099b924b3abed89bb847cee22c",
+          "expectedRev": 1,
+          "patch": {
+            "title": "Stale frozen draft"
+          }
+        },
+        "actor": {
+          "id": "fixture-owner",
+          "kind": "human"
+        },
+        "requestId": "frozen-9"
+      },
+      "result": {
+        "ok": false,
+        "error": {
+          "code": "conflict",
+          "message": "Question changed",
+          "currentRev": 2,
+          "current": {
+            "answer": {
+              "acceptedAt": 1790021993.7670681,
+              "authority": {
+                "confirmation": "Approved",
+                "decider": "Fixture owner",
+                "kind": "human"
+              },
+              "id": "a_f2650098ff89448699a3b0df8604e735",
+              "markdown": "Accepted v1 answer",
+              "prerequisites": [],
+              "questionRev": 2,
+              "references": [
+                "docs/old-adr.md"
+              ],
+              "revision": 1
+            },
+            "body": "",
+            "createdAt": 1790021993.7655272,
+            "id": "q_56acdb099b924b3abed89bb847cee22c",
+            "labels": [],
+            "mapId": "m_498e6b50392048aa9c184729d405f351",
+            "method": "research",
+            "priority": 2,
+            "progress": "",
+            "rev": 2,
+            "state": "resolved",
+            "title": "First accepted decision",
+            "updatedAt": 1790021993.7670681,
+            "wait": "",
+            "claim": null,
+            "blockedBy": [],
+            "status": "Resolved",
+            "ready": false
+          }
+        }
+      }
+    }
+  ]
+}

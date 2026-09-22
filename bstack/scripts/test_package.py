@@ -6,6 +6,8 @@ from pathlib import Path
 import re
 import shutil
 import stat
+import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -25,7 +27,9 @@ class PackageTests(unittest.TestCase):
                     "create-verification-skill", "deslop", "figure-it-out", "how", "interrogate",
                     "maintain-verification-skill", "make-bot-ui", "no-comments", "poteto-mode", "recall",
                     "reflect", "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
-                    "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack"}
+                    "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
+                    "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
+                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr"}
         self.assertEqual(set(manifest["public_skills"]), expected)
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}
@@ -82,6 +86,75 @@ class PackageTests(unittest.TestCase):
         del broken["bstack/engineering/how/SKILL.md"]
         errors = package.closure_errors(broken)
         self.assertTrue(any("Unresolved workflow index target" in error for error in errors), errors)
+
+    def test_sdlc_owned_sources_and_workspace_are_portable(self):
+        index = json.loads(self.assets["bstack/index.json"].data)
+        self.assertEqual(index["skills"]["wayfinder"], "sdlc/wayfinder/SKILL.md")
+        self.assertEqual(index["skills"]["setup-matt-pocock-skills"], package.ENTRYPOINTS["setup"])
+        self.assertEqual(index["playbooks"]["prototype"], "engineering/prototype/WORKFLOW.md")
+        self.assertEqual(index["workspace"]["cli"], "workspace/cli.py")
+        self.assertEqual(index["workflow"], "shared/workflow.py")
+        for name in ("wayfinder", "to-spec", "to-tickets", "triage"):
+            asset = self.assets["bstack/" + index["skills"][name]]
+            self.assertEqual(asset.source, "bstack/sdlc/skills/" + name + "/SKILL.md")
+            self.assertNotIn("sdlc/skills/", asset.data.decode())
+        self.assertFalse(any(asset.source.startswith("bstack/upstream/matt-pocock/") for asset in self.assets.values()))
+        for file in ("cli.py", "wayfinder/core.py", "wayfinder/kanban.py", "wayfinder/migration.py",
+                     "wayfinder/server.py", "wayfinder/requests.py", "OPERATIONS.md", "assets/index.html"):
+            self.assertIn("bstack/workspace/" + file, self.assets)
+        self.assertFalse(any("node_modules" in path or "workspace/tests/" in path or "workspace/web/" in path
+                             or "__pycache__" in path for path in self.assets))
+
+    def test_installed_workspace_runs_after_source_distribution_is_removed(self):
+        with tempfile.TemporaryDirectory(prefix="bstack offline ") as directory:
+            root = Path(directory)
+            release, consumer = root / "release", root / "consumer"
+            package.build(release)
+            consumer.mkdir()
+            subprocess.run(["git", "init", "-q", str(consumer)], check=True)
+            def run(script, *args, payload=None):
+                result = subprocess.run([sys.executable, str(script), *args], input=payload,
+                                        text=True, capture_output=True, cwd=root)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                return json.loads(result.stdout)
+            run(release / "bstack/scripts/bstack.py", "install", "--project", str(consumer),
+                "--hosts", "codex", "claude", "cursor", "grok")
+            shutil.rmtree(release)
+            installed = consumer / ".bstack/package"
+            helper = subprocess.run([sys.executable, str(installed / "github/pr.py"), "--help"],
+                                    text=True, capture_output=True, cwd=root)
+            self.assertEqual(helper.returncode, 0, helper.stdout + helper.stderr)
+            self.assertIn("publish", helper.stdout)
+            initial = run(installed / "workspace/cli.py", "--project", str(consumer), "init")
+            self.assertTrue(initial["ok"])
+            current = run(installed / "workspace/cli.py", "--project", str(consumer), "call",
+                          payload='{"op":"workspace.read","input":{}}')
+            self.assertEqual(initial["value"], current["value"])
+            payload = root / "map-input.json"
+            payload.write_text(json.dumps({"title": "Offline helper", "destination": "Packaged CLI", "scope": "Test"}))
+            receipt = consumer / ".bstack/workspace/map-created.json"
+            created = run(installed / "workspace/cli.py", "--project", str(consumer), "request", "map.create",
+                          "--input-file", str(payload), "--actor", "package-test", "--receipt", str(receipt))
+            repeated = run(installed / "workspace/cli.py", "--project", str(consumer), "replay", "--receipt", str(receipt))
+            self.assertEqual(created, repeated)
+            run(installed / "shared/workflow.py", "--project", str(consumer), "preflight", "--mode", "manual")
+            self.assertEqual(run(installed / "scripts/bstack.py", "doctor", "--project", str(consumer))["bindings"], "passed")
+            self.assertFalse(list(installed.rglob("__pycache__")))
+
+    def test_owned_pr_replaces_opening_playbook_and_ships_helper(self):
+        index = json.loads(self.assets["bstack/index.json"].data)
+        self.assertEqual(index["skills"]["to-pr"], "engineering/to-pr/SKILL.md")
+        self.assertEqual(index["playbooks"]["opening-a-pr"], index["skills"]["to-pr"])
+        self.assertEqual(index["pull_requests"]["cli"], "github/pr.py")
+        self.assertIn("bstack/" + index["pull_requests"]["template"], self.assets)
+        self.assertNotIn("bstack/engineering/poteto-mode/playbooks/opening-a-pr.md", self.assets)
+        self.assertEqual(self.assets["bstack/github/pr.py"].data,
+                         (package.ROOT / "github/pr.py").read_bytes())
+        router = self.assets["bstack/shared/router/WORKFLOW.md"].data.decode()
+        self.assertIn("../../engineering/to-pr/SKILL.md", router)
+        for path, asset in self.assets.items():
+            if path.endswith(".md"):
+                self.assertNotIn("playbooks/opening-a-pr.md", asset.data.decode(), path)
 
     def test_all_imported_markdown_is_bound_to_bstack(self):
         dependencies = [asset for path, asset in self.assets.items()
@@ -143,7 +216,7 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_matches_every_capsule_file_and_source(self):
         manifest = json.loads(self.assets["bstack/manifest.json"].data)
-        self.assertEqual((manifest["schema_version"], manifest["name"], manifest["version"]), (2, "bstack", "0.2.0"))
+        self.assertEqual((manifest["schema_version"], manifest["name"], manifest["version"]), (2, "bstack", "0.3.0"))
         self.assertEqual(manifest["installation_source"], "bundled-files-only")
         self.assertEqual(manifest["upstream_updates"], "reviewed-build-only")
         actual = {path.removeprefix("bstack/") for path in self.assets

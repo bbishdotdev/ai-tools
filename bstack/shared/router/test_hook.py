@@ -123,7 +123,6 @@ class HookProtocol(unittest.TestCase):
                 tool = self.payload("grok", turn=None)
                 self.assertTrue(self.context("grok", self.invoke("grok", tool, directory)))
                 self.assertIsNone(self.context("grok", self.invoke("grok", tool, directory)))
-            # An unidentified next prompt cannot inherit the previous prompt's claim.
             self.invoke("grok", dict(start, promptId=None), directory)
             self.assertIsNone(self.context("grok", self.invoke("grok", tool, directory)))
 
