@@ -1,0 +1,123 @@
+{
+  "date": "2026-09-18",
+  "scope": "BStack maintainer CLI routing POC",
+  "run": ".bstack/verification/20260918T183759Z-ee842e",
+  "clients": {
+    "codex": {
+      "binary": "/home/bbish/.local/share/mise/installs/codex/latest/bin/codex",
+      "installed": true,
+      "version": "codex-cli 0.153.2",
+      "version_exit": 0
+    },
+    "claude": {
+      "binary": "/home/bbish/.local/share/mise/installs/claude/latest/claude",
+      "installed": true,
+      "version": "2.1.261 (Claude Code)",
+      "version_exit": 0
+    },
+    "cursor": {
+      "binary": "/home/bbish/.local/bin/cursor-agent",
+      "installed": true,
+      "version": "2026.09.15-d2fe57e",
+      "version_exit": 0
+    },
+    "grok": {
+      "binary": "/home/bbish/.local/share/mise/installs/node/26.7.0/bin/grok",
+      "installed": true,
+      "version": "grok 1.0.34 (3736acbc8658) [stable]",
+      "version_exit": 0
+    }
+  },
+  "results": [
+    {
+      "tool": "codex",
+      "status": "pass",
+      "routing_pass": true,
+      "turns": 3,
+      "per_prompt_delivery_supported": true,
+      "per_prompt_delivery_pass": true,
+      "session_receipt_seen": false,
+      "router_read_turns": [
+        1
+      ],
+      "evidence": ".bstack/verification/20260918T183759Z-ee842e/codex/report.json"
+    },
+    {
+      "tool": "claude",
+      "status": "pass",
+      "routing_pass": true,
+      "turns": 3,
+      "per_prompt_delivery_supported": true,
+      "per_prompt_delivery_pass": true,
+      "session_receipt_seen": false,
+      "router_read_turns": [
+        1
+      ],
+      "evidence": ".bstack/verification/20260918T183759Z-ee842e/claude/report.json"
+    },
+    {
+      "tool": "cursor",
+      "status": "pass_with_limits",
+      "routing_pass": true,
+      "turns": 3,
+      "per_prompt_delivery_supported": false,
+      "per_prompt_delivery_pass": null,
+      "session_receipt_seen": true,
+      "router_read_turns": [
+        1
+      ],
+      "evidence": ".bstack/verification/20260918T183759Z-ee842e/cursor/report.json"
+    },
+    {
+      "tool": "grok",
+      "status": "pass_with_limits",
+      "routing_pass": true,
+      "turns": 3,
+      "per_prompt_delivery_supported": false,
+      "per_prompt_delivery_pass": null,
+      "session_receipt_seen": false,
+      "router_read_turns": [
+        1
+      ],
+      "evidence": ".bstack/verification/20260918T183759Z-ee842e/grok/report.json"
+    }
+  ],
+  "native_compaction": {
+    "codex": {
+      "status": "pass",
+      "checks": {
+        "native_compaction_observed": true,
+        "compact_reminder_emitted": true,
+        "same_session": true,
+        "next_prompt_receipt": true,
+        "routing_after_compaction": true,
+        "router_fact_after_compaction": true,
+        "exit_success": true,
+        "compact_receipt_seen": true
+      },
+      "evidence": ".bstack/verification/20260918T181758Z-85ccaa/codex/native-compaction-d0341d/report.json"
+    },
+    "claude": {
+      "status": "pass",
+      "checks": {
+        "native_compaction_observed": true,
+        "compact_reminder_emitted": true,
+        "same_session": true,
+        "next_prompt_receipt": true,
+        "routing_after_compaction": true,
+        "router_fact_after_compaction": true,
+        "exit_success": true
+      },
+      "evidence": ".bstack/verification/20260918T181432Z-2152ec/claude/native-compaction/report.json"
+    }
+  },
+  "desktop": "deferred by user",
+  "source_integrity": "163 imported files match pinned provenance; router unchanged",
+  "grok_compatibility_followup": {
+    "status": "pass",
+    "same_session": true,
+    "bstack_hook_error": false,
+    "cursor_compat_parser_warning": true,
+    "evidence": ".bstack/verification/20260918T183759Z-ee842e/grok/compat-followup-v3/report.json"
+  }
+}

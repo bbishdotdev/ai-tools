@@ -1,96 +1,37 @@
-# ai-tools
+# bstack
 
-My personal AI toolbox.
+bstack is Brenden Bishop's collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
 
-This repo is where I keep the agent prompts, skills, rules, GitHub workflows, and small bits of process that make AI coding tools behave more like useful teammates and less like autocomplete with confidence issues.
+The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Engineering skills such as `how` and `architect` are available directly. Poteto Mode selects a complete engineering workflow; automatic routing is opt-in. [Owned SDLC adaptations](bstack/sdlc/README.md) connect Matt Pocock's planning approach to bstack's engineering workflows while preserving the pinned sources for selective updates.
 
-The goal is simple:
+The bundled [local workspace app](bstack/workspace/README.md) provides Wayfinder maps, approved specs, and a Kanban ticket board. Browser and agent CLI use the same SQLite store. Planning and tickets have separate adapter choices; local is currently implemented, with external providers left for later integration.
 
-Make the default behavior better.
+## Install
 
-## What is in here
+From a local clone, install the exact reviewed bundle into your project:
 
-- `agents/`: full agent prompts or modes, like a development coach that teaches instead of silently doing the work.
-- `skills/`: reusable skill folders with `SKILL.md`, references, and optional UI metadata.
-- `rules/`: shared behavior and writing rules that can be copied into agents, skills, or project instructions.
-- `github/`: GitHub issue templates, automation, and review agents.
-
-## Current skills
-
-- `refine`: stress-test a plan by asking hard questions until the decision tree is clear.
-- `milestone`: turn a product idea into a PRD-like milestone.
-- `github-issue`: turn vague work into clear GitHub issues with acceptance criteria, tests, and sequencing.
-- `issue-orchestrator`: pull a batch of issues into a real execution plan, then drive implementation and verification.
-- `development-coach`: help the user learn by building instead of doing the work for them.
-- `write-like-me`: turn raw thoughts into clear, direct writing that sounds like me.
-- `conventional-commit`: shape changes into a conventional commit message.
-
-## Why this exists
-
-AI tools are powerful, but the defaults are often weird.
-
-They over-polish writing.
-They rush into code.
-They skip the boring product thinking.
-They act like every task is isolated.
-They say "done" without enough evidence.
-
-I do not want that.
-
-I want agents that challenge weak ideas, preserve context, write issues that can be executed, review work against the real goal, and help me get better while I build.
-
-Some of this is prompts.
-Some of it is workflow.
-Some of it is refusing to let the tool turn every problem into a code generation slot machine.
-
-## Using this repo
-
-Copy the pieces you need into the tool you are using.
-
-Use `skills/` anywhere Vercel-style skills are supported. Each skill follows the frontmatter plus `# Title`, `## When to Use`, and `## Steps` format.
-
-Install a whole skills repo:
-
-```bash
-npx skills add bbishdotdev/ai-tools
+```sh
+python3 bstack/release/bstack/scripts/bstack.py install \
+  --project /path/to/your/project --hosts codex claude cursor grok
 ```
 
-Install the writing skill:
+This path requires Python 3.11+ on POSIX and works from a transferred release directory without npm or skills.sh. Installation uses the bundled PStack revision and bstack customizations; it never fetches upstream latest.
 
-```bash
-npx skills add bbishdotdev/ai-tools --skill write-like-me
-```
+See [installation and optional skills.sh distribution](bstack/INSTALL.md), [current scope](bstack/README.md), and [verification results and limits](bstack/audit/package-layout.md). Native plugin-manager installation and desktop behavior remain separate verification work.
 
-Install the development coach skill:
+## Repository layout
 
-```bash
-npx skills add bbishdotdev/ai-tools --skill development-coach
-```
+- `bstack/engineering/` contains bstack-owned engineering workflows.
+- `bstack/sdlc/` contains owned planning skills and their design history.
+- `bstack/workspace/` contains the local planning app, SQLite operations, and agent CLI.
+- `bstack/shared/` contains shared policy, custom skills, router adapters, and the existing memory implementation.
+- `bstack/upstream/` contains frozen third-party source snapshots used for comparison and release assembly.
+- `bstack/package/` and `bstack/scripts/` assemble and verify the consumer bundle.
+- `bstack/release/` is the complete generated installation artifact.
+- `bstack/audit/` records source reviews and verification results.
 
-Install from a local checkout:
+Root `AGENTS.md`, `CLAUDE.md`, and hidden host configuration support development of bstack. Private work and runtime evidence stay in gitignored `.bstack/`.
 
-```bash
-npx skills add ./skills
-```
+The shared-memory source has moved under bstack; it is not yet part of the consumer release. See [shared memory setup](bstack/shared/memory.md) before changing an existing installation.
 
-Use `agents/` for custom agent modes. Copy them into `.claude/`, `.github/`, or wherever your tool supports custom agents.
-
-Use `github/` as the source for your repo's `.github/` folder. Copy the issue templates, workflows, scripts, and GitHub-specific agents from there.
-
-For project-wide behavior, start with `rules/AGENTS.md`.
-
-For writing voice, use `rules/writing.md` or the bundled reference inside `skills/write-like-me/`.
-
-## Design notes
-
-These files are intentionally plain.
-
-Markdown over magic.
-Small folders over frameworks.
-Explicit instructions over vibes.
-
-If a skill needs to ship with reference material, it should keep that material in `references/` so the skill can move on its own.
-
-If an agent is really a mode, it should live in `agents/`. A thin skill can point at it for tools that only support skills.
-
-That is the pattern.
+Original bstack contributions use the [MIT license](LICENSE). [Attribution](ATTRIBUTION.md) centralizes acknowledgments, the source map, and applicable third-party notices. [Upstream updates](bstack/UPSTREAM.md) describes how to adopt improvements without overwriting bstack's work.

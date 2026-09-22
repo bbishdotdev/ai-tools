@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unslop"
+  short_description: "Cut AI tells, write like Brenden"
+  default_prompt: "Use $unslop to rewrite this so it doesn't sound like AI and sounds like me."

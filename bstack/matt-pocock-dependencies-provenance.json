@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "imported_at": "2026-09-19T01:53:21.049513+00:00",
+  "repository": "https://github.com/mattpocock/skills",
+  "commit": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
+  "source_path": "",
+  "destination": "upstream/matt-pocock/dependencies",
+  "review_paths": [
+    "LICENSE",
+    "skills/engineering/prototype",
+    "skills/engineering/research",
+    "skills/engineering/setup-matt-pocock-skills"
+  ],
+  "scope": "Exact upstream dependency sources for the selected SDLC workflows. Not selected for the consumer release or active engineering routing. bstack adaptations remain outside this import boundary.",
+  "skills": [
+    "prototype",
+    "research",
+    "setup-matt-pocock-skills"
+  ],
+  "files": [
+    {
+      "path": "LICENSE",
+      "source_path": "LICENSE",
+      "upstream_sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/prototype/LOGIC.md",
+      "source_path": "skills/engineering/prototype/LOGIC.md",
+      "upstream_sha256": "f61c7d249e786a79ef289018901c348271e1798dd0b0bc5607b5c6f4d4a01ab9",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/prototype/SKILL.md",
+      "source_path": "skills/engineering/prototype/SKILL.md",
+      "upstream_sha256": "714de632d116bb73f65cdb5a882db15b9369a6713b9a47c0fad827848f0bfbe3",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/prototype/UI.md",
+      "source_path": "skills/engineering/prototype/UI.md",
+      "upstream_sha256": "723211e878acbc7b6ff09755263f3295cde724ba902ff0064da41eed51d45ad3",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/prototype/agents/openai.yaml",
+      "source_path": "skills/engineering/prototype/agents/openai.yaml",
+      "upstream_sha256": "5af65e43ab41a350436697b81e27b7f848d36782043b73c322bb2c9fa9cc55dc",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/research/SKILL.md",
+      "source_path": "skills/engineering/research/SKILL.md",
+      "upstream_sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/research/agents/openai.yaml",
+      "source_path": "skills/engineering/research/agents/openai.yaml",
+      "upstream_sha256": "9b4c470d63221c1f68f22df70b83e2f12401b317babe0d1b7b5f24a974474d0d",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/SKILL.md",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+      "upstream_sha256": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/agents/openai.yaml",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/agents/openai.yaml",
+      "upstream_sha256": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/domain.md",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/domain.md",
+      "upstream_sha256": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/issue-tracker-github.md",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md",
+      "upstream_sha256": "afd6852a80185217bd28aa5cbe456bef1e85be25be7bd1fba382d5b8ee428325",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/issue-tracker-gitlab.md",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md",
+      "upstream_sha256": "ea175f73d193b3f55819c0ed9bbccf6ee0e70ad8f928e3d7607596c53380acd6",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/issue-tracker-local.md",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md",
+      "upstream_sha256": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/setup-matt-pocock-skills/triage-labels.md",
+      "source_path": "skills/engineering/setup-matt-pocock-skills/triage-labels.md",
+      "upstream_sha256": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "skills_cli_version": "1.7.0",
+  "source_commit": "e299ba16e16f5e4d454f084139f7a2163a932092",
+  "probe_directory": "/tmp/bstack-install-probe-mI6wFQ",
+  "scope": "project-local install and file integrity; no agent model sessions",
+  "installs": {
+    "package": {
+      "command": [
+        "node",
+        "/tmp/bstack-skills-npm-cache/_npx/43103b98cff1ffa9/node_modules/skills/bin/cli.mjs",
+        "add",
+        "/tmp/bstack-install-probe-mI6wFQ/source/bstack",
+        "--skill",
+        "*",
+        "--agent",
+        "codex",
+        "claude-code",
+        "cursor",
+        "grok",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "/tmp/bstack-install-probe-mI6wFQ/package",
+      "exit_code": 0,
+      "skills_installed": 55,
+      "targets": {
+        "codex": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/package/.agents/skills",
+          "skill_files_readable": 55,
+          "list_exit_code": 0,
+          "list_entries": 55
+        },
+        "claude-code": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/package/.claude/skills",
+          "skill_files_readable": 55,
+          "list_exit_code": 0,
+          "list_entries": 55
+        },
+        "cursor": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/package/.agents/skills",
+          "skill_files_readable": 55,
+          "list_exit_code": 0,
+          "list_entries": 55
+        },
+        "grok": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/package/.grok/skills",
+          "skill_files_readable": 55,
+          "list_exit_code": 0,
+          "list_entries": 55
+        }
+      },
+      "checks": {
+        "router_body_copied": true,
+        "router_upstream_reference_exists": false,
+        "router_capability_reference_exists": true,
+        "attribution_reference_exists": false,
+        "customized_unslop_selected": false,
+        "upstream_unslop_selected": true,
+        "dormant_benny_skills_installed": [
+          "reproduce-and-fix-issues",
+          "setup-benny",
+          "triage-issue-reports"
+        ],
+        "package_root_present": false,
+        "standing_instructions_present": {
+          "AGENTS.md": false,
+          "CLAUDE.md": false,
+          ".cursor/rules/bstack-router.mdc": false
+        },
+        "host_hook_configs_present": {
+          ".codex/hooks.json": false,
+          ".claude/settings.json": false,
+          ".cursor/hooks.json": false,
+          ".grok/hooks/bstack.json": false
+        },
+        "license_files": []
+      },
+      "status": "incomplete_package"
+    },
+    "owned": {
+      "command": [
+        "node",
+        "/tmp/bstack-skills-npm-cache/_npx/43103b98cff1ffa9/node_modules/skills/bin/cli.mjs",
+        "add",
+        "/tmp/bstack-install-probe-mI6wFQ/source/bstack/shared/skills",
+        "--skill",
+        "*",
+        "--agent",
+        "codex",
+        "claude-code",
+        "cursor",
+        "grok",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "/tmp/bstack-install-probe-mI6wFQ/owned",
+      "exit_code": 0,
+      "skills_installed": 3,
+      "targets": {
+        "codex": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/owned/.agents/skills",
+          "skill_files_readable": 3,
+          "list_exit_code": 0,
+          "list_entries": 3
+        },
+        "claude-code": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/owned/.claude/skills",
+          "skill_files_readable": 3,
+          "list_exit_code": 0,
+          "list_entries": 3
+        },
+        "cursor": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/owned/.agents/skills",
+          "skill_files_readable": 3,
+          "list_exit_code": 0,
+          "list_entries": 3
+        },
+        "grok": {
+          "skills_directory": "/tmp/bstack-install-probe-mI6wFQ/owned/.grok/skills",
+          "skill_files_readable": 3,
+          "list_exit_code": 0,
+          "list_entries": 3
+        }
+      },
+      "checks": {
+        "router_body_copied": true,
+        "router_upstream_reference_exists": false,
+        "router_capability_reference_exists": true,
+        "attribution_reference_exists": false,
+        "customized_unslop_selected": true,
+        "upstream_unslop_selected": false,
+        "dormant_benny_skills_installed": [],
+        "package_root_present": false,
+        "standing_instructions_present": {
+          "AGENTS.md": false,
+          "CLAUDE.md": false,
+          ".cursor/rules/bstack-router.mdc": false
+        },
+        "host_hook_configs_present": {
+          ".codex/hooks.json": false,
+          ".claude/settings.json": false,
+          ".cursor/hooks.json": false,
+          ".grok/hooks/bstack.json": false
+        },
+        "license_files": []
+      },
+      "status": "incomplete_package"
+    }
+  }
+}

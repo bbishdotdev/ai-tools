@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "imported_at": "2026-09-19T01:45:06.422139+00:00",
+  "repository": "https://github.com/mattpocock/skills",
+  "commit": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
+  "source_path": "",
+  "destination": "upstream/matt-pocock/handoff",
+  "review_paths": [
+    "LICENSE",
+    "skills/productivity/handoff"
+  ],
+  "scope": "Exact selected upstream source files for review. Not selected for the consumer release; bstack adaptations must live outside this import boundary.",
+  "skills": [
+    "handoff"
+  ],
+  "files": [
+    {
+      "path": "LICENSE",
+      "source_path": "LICENSE",
+      "upstream_sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/handoff/SKILL.md",
+      "source_path": "skills/productivity/handoff/SKILL.md",
+      "upstream_sha256": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    },
+    {
+      "path": "skills/handoff/agents/openai.yaml",
+      "source_path": "skills/productivity/handoff/agents/openai.yaml",
+      "upstream_sha256": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
+      "mode": "0o644",
+      "source": "mattpocock/skills"
+    }
+  ]
+}
