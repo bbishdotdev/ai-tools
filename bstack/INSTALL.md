@@ -2,7 +2,7 @@
 
 bstack installs one package and a set of directly invocable skills. Poteto Mode is an engineering entry within that collection. The package contains the exact reviewed dependencies and customizations; installation never fetches newer upstream sources.
 
-The controller requires Python 3.11+ on POSIX. These instructions cover project-local CLI installation. Windows, global installation, desktop apps, and native plugin managers need separate integration and verification.
+The controller requires Python 3.11+ on POSIX. These instructions cover project-local CLI installation and optional user-wide memory setup. Windows, global installation of the full skill collection, desktop apps, and native plugin managers need separate integration and verification.
 
 ## Quick start
 
@@ -74,6 +74,7 @@ your-project/
         bstack-auto/SKILL.md
         verify-bstack/SKILL.md
         handoff/SKILL.md
+        memory/                  # Optional user-runtime payload, not a project skill
         workflow.py
         references/
       workspace/                 # CLI, Python core and compiled app
@@ -97,7 +98,19 @@ your-project/
 
 Each public entry is a small binding to its exact packaged skill. Hosts can discover the individual names without loading all their instruction bodies. The full skills and supporting files live once in the package. Principles have no public skill entry; the active skill loads relevant principles and playbooks as needed.
 
-The generated release groups skills into engineering, SDLC and shared buckets and includes the GitHub PR template and publishing helper. Shared memory still needs consumer runtime integration. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
+The generated release groups skills into engineering, SDLC and shared buckets and includes the GitHub PR template and publishing helper. Its private memory payload installs separately when requested. Frozen `upstream/` snapshots remain development inputs and are not installed as a second collection.
+
+## Optional shared memory
+
+After installing bstack, ask:
+
+> Use setup-bstack to enable shared personal memory on this machine.
+
+The agent previews user-wide configuration, then applies the unchanged plan within your setup authorization. To inspect the plan yourself, run `python3 .bstack/package/scripts/bstack.py memory setup`. Apply it with `memory setup --apply-plan <digest>` and check `memory status`.
+
+The runtime is copied to `~/.local/share/bstack/memory/runtime/`. It survives removing the source, installer, or project. Codex and Claude use native files; Cursor uses a labeled file bridge. Grok has no memory adapter. Existing notes and unrelated settings are preserved, and setup adds no personal notes.
+
+Memory setup is independent of auto routing. It can enable native memory use and select a shared Claude directory, so review those changes. Existing source-linked `~/Work` installs are detected and left unchanged; migration is not automatic. See [memory setup and limits](shared/memory.md).
 
 ## Direct skills and automatic routing
 

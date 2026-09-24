@@ -19,3 +19,5 @@ python3 <installed-install-bstack>/scripts/install.py --project <project-root> -
 The installer validates and copies the package to `.bstack/package/`, creates direct skill entries under `.agents/skills/`, and connects the selected hosts. All engineering entrypoints remain manual initially; automatic routing requires an explicit opt-in. Existing configuration and ownership conflicts must be respected.
 
 After installation, run `python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <project-root>`. Report its results and any reload or native hook trust requirements. The installed package is independent of this transport skill and the development checkout. Keep this skill intact so its distributor can update or remove it normally.
+
+Shared memory is bundled but inactive. If the user also requests it, use the installed `setup-bstack` skill's optional memory setup. Do not change user-wide memory settings as part of ordinary project installation.

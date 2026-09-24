@@ -3,6 +3,10 @@
     "comment-sicko": "engineering/agents/comment-sicko.md",
     "poteto-agent": "engineering/agents/poteto-agent.md"
   },
+  "memory": {
+    "cli": "shared/memory/scripts/portable.py",
+    "policy": "shared/memory/WORKFLOW.md"
+  },
   "paths_relative_to": "package",
   "playbooks": {
     "authoring-a-skill": "engineering/poteto-mode/playbooks/authoring-a-skill.md",

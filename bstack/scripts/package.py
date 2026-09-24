@@ -38,6 +38,7 @@ ENTRYPOINTS = {
     "workspace": "workspace/cli.py",
     "workflow": "shared/workflow.py",
     "pull_requests": "github/pr.py",
+    "memory": "shared/memory/scripts/portable.py",
 }
 
 
@@ -85,6 +86,11 @@ def generated_asset(data, source="bstack/scripts/package.py", root=ROOT, transfo
 
 
 def package_path(source, upstream):
+    if source.startswith("shared/skills/memory-policy/"):
+        tail = source.removeprefix("shared/skills/memory-policy/")
+        return "shared/memory/" + ("WORKFLOW.md" if tail == "SKILL.md" else tail)
+    if source == "shared/rules/memory-policy.md":
+        return "shared/memory/policy.md"
     if source.startswith(upstream + "/skills/"):
         tail = source[len(upstream + "/skills/"):]
         name = tail.split("/", 1)[0]
@@ -332,6 +338,13 @@ def assemble(root=ROOT):
         selected.extend(source + "/" + path for path in sorted(layers.tree_files(directory))
                         if not path.startswith("agents/") and path != "REVIEW.md")
     selected.extend(selection["owned_resources"])
+    memory = "shared/skills/memory-policy"
+    selected.extend(memory + "/" + path for path in sorted(layers.tree_files(root / memory))
+                    if path == "SKILL.md" or path.startswith("references/")
+                    or path.startswith("scripts/") and path.endswith(".py")
+                    and "__pycache__" not in PurePosixPath(path).parts
+                    and path not in ("scripts/install.py", "scripts/status.py"))
+    selected.append("shared/rules/memory-policy.md")
     for directory in ("workspace/wayfinder", "workspace/assets"):
         selected.extend(directory + "/" + path for path in sorted(layers.tree_files(root / directory))
                         if "__pycache__" not in PurePosixPath(path).parts
@@ -418,6 +431,7 @@ def assemble(root=ROOT):
              "workspace": {"cli": ENTRYPOINTS["workspace"], "operations": "workspace/OPERATIONS.md"},
              "workflow": ENTRYPOINTS["workflow"],
              "pull_requests": {"cli": ENTRYPOINTS["pull_requests"], "template": "github/pull_request_template.md"},
+             "memory": {"cli": ENTRYPOINTS["memory"], "policy": "shared/memory/WORKFLOW.md"},
              "upstream_router": mapping[upstream + "/skills/poteto-mode/SKILL.md"]}
     assets["index.json"] = generated_asset(json_bytes(index), "bstack/package/selection.json", root,
                                                    ("resolve-selected-workflows-and-overrides",))

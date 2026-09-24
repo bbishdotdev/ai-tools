@@ -1,8 +1,8 @@
 # bstack
 
-Version 0.3.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
+Version 0.4.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
 
-The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Shared memory awaits runtime integration.
+The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
 ## Install
 
@@ -64,11 +64,29 @@ Use [to-pr](engineering/to-pr/SKILL.md) for authorized PR delivery. It reuses th
 
 The [template](github/pull_request_template.md) and [Python helper](github/pr.py) ship here. The helper uses authenticated `gh` for pushed branches within the same GitHub repository. It prepares locally, checks freshness, and writes only with explicit `publish --write`. Media upload falls back to the authored Mermaid, table, or text explanation. Other forges need a supported adapter; GitHub PR publishing does not implement the planning or ticket tracker adapters.
 
+## Optional shared memory
+
+Ask your agent: "Use setup-bstack to enable shared personal memory on this machine."
+
+The [memory setup guide](shared/memory/references/installation.md) covers preview, activation, and existing installations. The commands are:
+
+```sh
+python3 <package-path>/scripts/bstack.py memory setup
+python3 <package-path>/scripts/bstack.py memory setup --apply-plan <digest>
+python3 <package-path>/scripts/bstack.py memory status
+```
+
+The first command only previews. Setup copies the reviewed runtime to `~/.local/share/bstack/memory/runtime/` and connects Codex, Claude, and Cursor's file bridge. The user-wide skill at `~/.agents/skills/memory-policy` owns later approved note operations. This private payload is not another project-level skill. Grok has no memory adapter.
+
+Project setup and auto mode do not activate memory. Existing notes and unrelated configuration survive setup. Legacy source-linked memory installs are reported and left untouched. Setup status checks files and configuration; fresh-session recall needs a separate live check.
+
 ## Update and remove
 
 Rerun the installer from a reviewed release to update. It preserves the chosen mode, verifies owned files, and refuses unowned or changed content. Existing offline Poteto Mode bundles migrate to the package layout. Old third-party distributor entries must be resolved through their owner if they collide.
 
 Run the canonical controller with `uninstall --project <project-root>` to remove its verified package and owned bindings. Private work, workspace databases, role and adapter configuration, artifacts, and separately distributed installer skills are preserved. Install separately per checkout; generated absolute bindings are machine-specific.
+
+User memory has a separate lifetime. Project updates and removal leave its runtime and notes intact. Explicitly rerun memory setup from a reviewed newer bundle to update that runtime.
 
 ## Dependencies and source
 

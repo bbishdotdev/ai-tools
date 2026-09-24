@@ -141,6 +141,21 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(run(installed / "scripts/bstack.py", "doctor", "--project", str(consumer))["bindings"], "passed")
             self.assertFalse(list(installed.rglob("__pycache__")))
 
+    def test_memory_payload_is_private_and_bundled_offline(self):
+        manifest = json.loads(self.assets["bstack/manifest.json"].data)
+        index = json.loads(self.assets["bstack/index.json"].data)
+        self.assertEqual(manifest["entrypoints"]["memory"], "shared/memory/scripts/portable.py")
+        self.assertEqual(index["memory"]["policy"], "shared/memory/WORKFLOW.md")
+        self.assertNotIn("memory-policy", manifest["public_skills"])
+        for name in ("WORKFLOW.md", "policy.md", "scripts/portable.py", "scripts/sync.py",
+                     "scripts/layout.py", "references/installation.md", "references/native-interfaces.md"):
+            self.assertIn("bstack/shared/memory/" + name, self.assets)
+        self.assertFalse(any("shared/memory/tests/" in path or path.endswith("shared/memory/SKILL.md")
+                             for path in self.assets))
+        self.assertNotIn("bstack/shared/memory/scripts/install.py", self.assets)
+        self.assertNotIn("bstack/shared/memory/scripts/status.py", self.assets)
+        self.assertIn("memory setup", self.assets["bstack/shared/setup-bstack/SKILL.md"].data.decode())
+
     def test_owned_pr_replaces_opening_playbook_and_ships_helper(self):
         index = json.loads(self.assets["bstack/index.json"].data)
         self.assertEqual(index["skills"]["to-pr"], "engineering/to-pr/SKILL.md")
@@ -216,7 +231,7 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_matches_every_capsule_file_and_source(self):
         manifest = json.loads(self.assets["bstack/manifest.json"].data)
-        self.assertEqual((manifest["schema_version"], manifest["name"], manifest["version"]), (2, "bstack", "0.3.0"))
+        self.assertEqual((manifest["schema_version"], manifest["name"], manifest["version"]), (2, "bstack", "0.4.0"))
         self.assertEqual(manifest["installation_source"], "bundled-files-only")
         self.assertEqual(manifest["upstream_updates"], "reviewed-build-only")
         actual = {path.removeprefix("bstack/") for path in self.assets

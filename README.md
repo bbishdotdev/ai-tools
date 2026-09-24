@@ -37,6 +37,6 @@ See [installation and offline setup](bstack/INSTALL.md), [current scope](bstack/
 
 Root `AGENTS.md`, `CLAUDE.md`, and hidden host configuration support development of bstack. Private work and runtime evidence stay in gitignored `.bstack/`.
 
-The shared-memory source has moved under bstack; it is not yet part of the consumer release. See [shared memory setup](bstack/shared/memory.md) before changing an existing installation.
+Optional [shared memory setup](bstack/shared/memory.md) copies a user-wide runtime from the bundle for Codex, Claude, and Cursor's file bridge. Project installation leaves it inactive. Existing source-linked installations remain unchanged.
 
 Original bstack contributions use the [MIT license](LICENSE). [Attribution](ATTRIBUTION.md) centralizes acknowledgments, the source map, and applicable third-party notices. [Upstream updates](bstack/UPSTREAM.md) describes how to adopt improvements without overwriting bstack's work.

@@ -14,6 +14,7 @@ import shlex
 import shutil
 import stat
 import sys
+import subprocess
 import tempfile
 import tomllib
 
@@ -661,6 +662,10 @@ def main():
         setup.add_argument("--hosts", nargs="+", choices=HOSTS)
     auto = commands.add_parser("auto")
     auto.add_argument("mode", choices=("on", "off", "status"))
+    memory = commands.add_parser("memory", help="Set up or inspect optional user-wide memory")
+    memory.add_argument("mode", choices=("setup", "status"))
+    memory.add_argument("--home", type=Path, help="Disposable test home; ignores native app directory overrides")
+    memory.add_argument("--apply-plan", help="Apply the unchanged reviewed memory setup plan")
     for name in ("doctor", "uninstall"):
         commands.add_parser(name)
     hook = commands.add_parser("hook")
@@ -669,10 +674,23 @@ def main():
         command.add_argument("--project", type=Path, default=Path.cwd())
     args = parser.parse_args()
     try:
+        capsule = capsule_root()
+        if args.command == "memory":
+            manifest = package_check(capsule)
+            helper = manifest.get("entrypoints", {}).get("memory")
+            if not helper or helper not in {entry["path"] for entry in manifest["files"]}:
+                raise Conflict("This package does not include portable memory setup")
+            if args.mode == "status" and args.apply_plan:
+                raise Conflict("--apply-plan is only valid for memory setup")
+            command = [sys.executable, "-B", str(capsule / helper), args.mode]
+            if args.home is not None:
+                command.extend(["--home", str(args.home)])
+            if args.apply_plan:
+                command.extend(["--apply-plan", args.apply_plan])
+            return subprocess.run(command, check=False).returncode
         project = args.project.expanduser().resolve()
         if not project.is_dir():
             raise Conflict(f"Project directory does not exist: {project}")
-        capsule = capsule_root()
         if args.command == "hook":
             return run_hook(project, capsule, args.host)
         if args.command in ("install", "setup"):

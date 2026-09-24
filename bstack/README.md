@@ -18,7 +18,7 @@ Invoke engineering skills such as `how` and `architect` directly, or use Poteto 
 - [Upstream](upstream/README.md) holds unchanged, pinned source inputs. Use the [catalog](audit/catalog.md) and [architectural audit](audit/pstack.md) when reviewing those inputs.
 - `package/` and `scripts/` assemble and check `release/`, the complete consumer installation artifact.
 
-Shared memory still needs consumer runtime integration. External planning/ticket providers, autonomous cross-model execution, desktop apps and native plugin-manager installation remain separate implementation or verification work. Configuring a provider does not implement its operations or provision its services.
+Optional [shared memory setup](shared/memory.md) installs a separate user runtime from the bundle. It preserves existing notes and leaves legacy source-linked installations unchanged. External planning/ticket providers, autonomous cross-model execution, desktop apps and native plugin-manager installation remain separate implementation or verification work. Configuring a provider does not implement its operations or provision its services.
 
 ## Maintain and verify
 
@@ -34,5 +34,7 @@ python3 bstack/scripts/package.py check
 The [verification skill](shared/skills/verify-bstack/SKILL.md) describes targeted source, package, installation, and live CLI checks. See the [current package results](audit/package-layout.md) for direct skill discovery and installation evidence. Historical [packaging results](audit/packaging.md), [router results](audit/router-poc.md), [fallback results](audit/router-fallback.md), and [policy-layer results](audit/bstack-layers.md) record earlier checks and their limits. New evidence goes in gitignored `.bstack/verification/`.
 
 [Kanban and SDLC verification](audit/kanban-sdlc.md) records the local app, 42-entry release, independent reviews, installed planning-to-tickets flow and fresh handoff checks, with their current limits.
+
+[Portable memory verification](audit/portable-memory.md) records optional user installation, offline runtime independence, preservation and recovery tests, and the remaining live-recall and review limits.
 
 [Root attribution](../ATTRIBUTION.md) is the single maintained source for acknowledgments, ownership distinctions, and required notices. Generated releases carry that information with the installed bundle.
