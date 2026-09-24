@@ -153,23 +153,31 @@ md-bold { font-weight: 700; } md-italic { font-style: italic; }
 .editor-actions { display: flex; justify-content: flex-end; gap: 7px; margin-top: 10px; }
 .title-edit { width: 100%; font-size: 18px; padding: 5px; border: 1px solid #d8d8d8; margin-bottom: 12px; border-radius: 4px; }
 .graph-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #fcfcfc; }
-.graph-heading { display: flex; align-items: center; justify-content: space-between; padding: 20px 23px 15px; }
+.graph-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 23px 15px; flex-shrink: 0; }
 .graph-heading p { font-size: 12px; color: #757575; margin-top: 4px; }
-.graph-scroll { overflow: auto; flex: 1; min-height: 0; background-image: radial-gradient(#d8d8d8 .75px,transparent .75px); background-size: 18px 18px; }
-.graph-surface { position: relative; min-width: 100%; }
+.graph-count { display: block; margin-top: 7px; font-size: 11px; color: #696969; }
+.graph-scroll { overflow: auto; flex: 1; min-height: 0; background-image: radial-gradient(#dedede .75px,transparent .75px); background-size: 18px 18px; }
+.graph-surface { position: relative; margin-inline: auto; overflow: hidden; }
 .graph-plane { position: relative; transform-origin: top left; }
-.graph-lines { position: absolute; inset: 0; }
-.map-node { position: absolute; background: #fff; border: 1px solid #dddddd; border-radius: 6px; padding: 12px 13px; text-align: left; display: flex; flex-direction: column; box-shadow: 0 2px 5px #00000004; }
-.map-node.selected { border: 1.5px solid #343434; box-shadow: 0 0 0 3px #d7d7d755; background: #fdfdfd; }
-.map-node.context-node { opacity: .38; }
-.map-node.context-node:hover { opacity: 1; }
-.node-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
-.node-top .mono { font-size: 10px; }
-.node-title { font-size: 13px; color: #555555; line-height: 1.45; }
-.node-meta { font-size: 10px; color: #757575; margin-top: auto; }
-.graph-footer { display: flex; align-items: center; gap: 15px; padding: 12px 20px; border-top: 1px solid var(--line); color: #757575; font-size: 11px; }
-.graph-footer > span, .graph-footer button { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
-.graph-footer button { border-radius: 3px; padding: 3px; }
+.graph-lines { position: absolute; inset: 0; pointer-events: none; }
+.map-node { position: absolute; background: #fff; border: 1px solid #d7d7d7; border-radius: 7px; padding: 13px 14px; text-align: left; display: grid; grid-template-rows: auto minmax(0,1fr) auto; gap: 9px; overflow: hidden; box-shadow: 0 2px 5px #00000004; }
+.map-node.selected { border-color: #343434; box-shadow: 0 0 0 3px #d7d7d755; background: #fdfdfd; }
+.map-node.context-node { background: #f7f7f7; border-style: dashed; }
+.node-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.node-top .status { color: #606060; font-size: 10px; flex-shrink: 0; }
+.node-method { font-size: 10px; color: #757575; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.node-title { font-size: 13px; font-weight: 500; color: #333; line-height: 1.45; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+.node-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; color: #6b6b6b; font-size: 9px; white-space: nowrap; }
+.node-meta .mono { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.graph-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 18px; padding: 10px 18px; border-top: 1px solid var(--line); color: #666; font-size: 11px; flex-shrink: 0; }
+.graph-legend, .graph-navigation, .graph-zoom { display: flex; align-items: center; gap: 9px; }
+.graph-legend { flex-wrap: wrap; }
+.graph-navigation { margin-left: auto; flex-wrap: wrap; }
+.graph-legend > span, .graph-footer button { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.graph-footer button { border-radius: 4px; padding: 5px; }
+.graph-footer button[aria-pressed="true"] { background: #ececec; color: #333; }
+.graph-zoom { gap: 1px; border-left: 1px solid var(--line); padding-left: 6px; }
+.graph-zoom button { min-width: 25px; }
 .legend-line { display: inline-block; width: 15px; border-top: 1px solid #8c8c8c; }
 .legend-line.dashed { border-top-style: dashed; }
 .legend-line.dotted { border-top-style: dotted; }

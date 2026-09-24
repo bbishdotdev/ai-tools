@@ -231,7 +231,8 @@ class PackageTests(unittest.TestCase):
 
     def test_manifest_matches_every_capsule_file_and_source(self):
         manifest = json.loads(self.assets["bstack/manifest.json"].data)
-        self.assertEqual((manifest["schema_version"], manifest["name"], manifest["version"]), (2, "bstack", "0.4.0"))
+        selection = json.loads((package.ROOT / "package/selection.json").read_text())
+        self.assertEqual((manifest["schema_version"], manifest["name"], manifest["version"]), (2, "bstack", selection["version"]))
         self.assertEqual(manifest["installation_source"], "bundled-files-only")
         self.assertEqual(manifest["upstream_updates"], "reviewed-build-only")
         actual = {path.removeprefix("bstack/") for path in self.assets

@@ -4,6 +4,10 @@ Use Wayfinder to work through planning questions in Focus or inspect their conne
 
 The app has no AI chat or required external tracker. Agents use its local operations; the browser provides another way to inspect and edit the same work.
 
+In Atlas, blocking connections appear first. Turn on **Related** or **Parent / child** when you need those relationships. **Focus selection** shows the selected question and its direct connections; **Show whole map** restores the overview. Questions outside the current search or filter remain marked as context so you can still inspect prerequisites.
+
+Use **Fit map** for the overview and **Center selection** to return to the current question. Select a card to read its full title and details. Atlas limits the title shown on each card to keep long questions inside their boundaries.
+
 ## Run the app
 
 From an installed consumer project:
@@ -84,6 +88,7 @@ From the repository root:
 ```sh
 python3 -m unittest discover -s bstack/workspace/tests -v
 node bstack/workspace/web/test/recovery.test.mjs
+node --test bstack/workspace/web/test/graph-layout.test.mjs
 ```
 
 The suite uses temporary workspaces. HTTP checks bind a local test port. Tests cover persistence, graph rules, revision conflicts, request replay, claims, and the HTTP boundary. Browser interaction checks are recorded separately in ignored `.bstack/work/wayfinder-implementation/` evidence during development.

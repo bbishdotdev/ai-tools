@@ -35,7 +35,7 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "2a4f606b397167b84f5821dfecbe4dc06361620e625120406953c11bf8a63d32",
+      "sha256": "5ce76d9b847ace61ac6ffe0a6a5aaadda55b9f9ab7603cc0606cd99bf38e106c",
       "source": "bstack/package/templates/README.md",
       "source_sha256": "342455937dedf0730dba93c364cdf3b083c230a36375371c99a763ce4f9da67f",
       "transforms": [
@@ -1706,7 +1706,7 @@
       "path": "index.json",
       "sha256": "393f92d7c42cedbe6caf190ca35d32402105b039264f323f490497d91bfce8fe",
       "source": "bstack/package/selection.json",
-      "source_sha256": "81070bdc0c5293e1f77d00a7866a73e248cd6cea256374d844f2a27ff732ee23",
+      "source_sha256": "8a30d190704044ae89956229e320cabbd6b623e12b07392c21b3fda6fa0fa03d",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -2316,9 +2316,9 @@
     {
       "mode": 420,
       "path": "workspace/README.md",
-      "sha256": "2fd69ddeb62430364cb5bc7405042cddcf77ea2a996b66fc5260af514404d24e",
+      "sha256": "8aebac753eb78d9ab4ce7e2d80727a95d62251a8d33fe8235c560ff2203ef9ab",
       "source": "bstack/workspace/README.md",
-      "source_sha256": "2fd69ddeb62430364cb5bc7405042cddcf77ea2a996b66fc5260af514404d24e",
+      "source_sha256": "8aebac753eb78d9ab4ce7e2d80727a95d62251a8d33fe8235c560ff2203ef9ab",
       "transforms": []
     },
     {
@@ -2332,9 +2332,9 @@
     {
       "mode": 420,
       "path": "workspace/assets/app.js",
-      "sha256": "f21d6981de5ecc158e1ff8d4c1f291793db6e1a1b68f9233e5347154481487ed",
+      "sha256": "be99bcbceeb3a5774999da4fc86332e5b2377dc544b35758dad8976f6928a1be",
       "source": "bstack/workspace/assets/app.js",
-      "source_sha256": "f21d6981de5ecc158e1ff8d4c1f291793db6e1a1b68f9233e5347154481487ed",
+      "source_sha256": "be99bcbceeb3a5774999da4fc86332e5b2377dc544b35758dad8976f6928a1be",
       "transforms": []
     },
     {
@@ -2356,9 +2356,9 @@
     {
       "mode": 420,
       "path": "workspace/assets/style.css",
-      "sha256": "d1a962373378261792da77841a75f3e397255dd8fe7f5a81301ffdffab43a176",
+      "sha256": "94379ecefb0cfa8780d60b7ab4fba006ce0c2750fbc3a48b17ad78fa2044755e",
       "source": "bstack/workspace/assets/style.css",
-      "source_sha256": "d1a962373378261792da77841a75f3e397255dd8fe7f5a81301ffdffab43a176",
+      "source_sha256": "94379ecefb0cfa8780d60b7ab4fba006ce0c2750fbc3a48b17ad78fa2044755e",
       "transforms": []
     },
     {
@@ -2646,5 +2646,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "0.4.0"
+  "version": "0.4.1"
 }
