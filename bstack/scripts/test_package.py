@@ -46,6 +46,46 @@ class PackageTests(unittest.TestCase):
         self.assertFalse(any("principles/" in path for path in public_files))
         self.assertEqual(manifest["entrypoints"]["mode"], "engineering/poteto-mode/SKILL.md")
 
+    def test_installer_allows_agent_selection(self):
+        skill = self.assets[package.TRANSPORT + "/SKILL.md"].data.decode()
+        header = skill.split("---", 2)[1]
+        self.assertNotIn("disable-model-invocation: true", header)
+        self.assertNotIn("user-invocable: false", header)
+        policy = self.assets[package.TRANSPORT + "/agents/openai.yaml"].data.decode()
+        self.assertIn("allow_implicit_invocation: true", policy)
+
+    def test_transport_reinstall_preserves_hosts_and_routing(self):
+        with tempfile.TemporaryDirectory(prefix="bstack transport upgrade ") as directory:
+            root = Path(directory)
+            release, consumer = root / "release", root / "consumer"
+            package.build(release)
+            consumer.mkdir()
+            installer = release / package.TRANSPORT / "scripts/install.py"
+            controller = consumer / ".bstack/package/scripts/bstack.py"
+
+            def run(script, *args):
+                result = subprocess.run([sys.executable, "-B", str(script), *args],
+                                        text=True, capture_output=True, cwd=consumer)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                return json.loads(result.stdout)
+
+            first = run(installer, "--hosts", "claude")
+            self.assertEqual(first["hosts"], ["claude"])
+            self.assertFalse(first["auto"])
+            self.assertTrue((consumer / ".claude/skills/wayfinder/SKILL.md").is_file())
+            for enabled in (False, True):
+                with self.subTest(auto=enabled):
+                    if enabled:
+                        run(controller, "auto", "on", "--project", str(consumer))
+                    upgraded = run(installer)
+                    self.assertEqual(upgraded["hosts"], ["claude"])
+                    self.assertEqual(upgraded["auto"], enabled)
+                    health = run(controller, "doctor", "--project", str(consumer))
+                    self.assertEqual(health["bindings"], "passed")
+                    self.assertEqual(health["package_integrity"], "passed")
+                    self.assertFalse((consumer / ".cursor/skills").exists())
+                    self.assertFalse((consumer / ".grok/skills").exists())
+
     def test_custom_unslop_and_local_setup_are_indexed(self):
         index = json.loads(self.assets["bstack/index.json"].data)
         self.assertEqual(index["skills"]["poteto-mode"], package.ENTRYPOINTS["mode"])

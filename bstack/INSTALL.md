@@ -14,13 +14,35 @@ npx skills add bbishdotdev/ai-tools --skill install-bstack
 
 Choose your agent and project scope if prompted. Open your agent in that project, or start a fresh session if it was already running, and ask:
 
-> Use install-bstack to set up this project for my installed tools.
+> Install bstack in this project.
 
-Your agent runs the bundled installer, connects the selected tools, and checks the installation with `doctor`. It handles the script paths and host flags. Automatic routing stays off until you opt in.
+Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor. The installer supports agent selection when you ask to install or upgrade bstack; you don't need to name a script or provide its flags.
+
+Your agent runs the bundled installer, connects the selected tools, and checks the installation with `doctor`. After a successful check, it offers automatic routing if it is off. It only enables routing when you opt in, including when you already requested it alongside installation. Upgrades preserve your existing mode and selected tools.
 
 There are two steps: skills.sh downloads `install-bstack`; asking your agent to use it installs the full bstack package. skills.sh does not run setup automatically.
 
 `bbishdotdev/ai-tools` is the source repository, and `install-bstack` is the skill selected from it. `npx skills add install-bstack` alone does not identify this repository. Keep `--skill install-bstack` so you don't have to choose from the development repository's individual skills. A broad install from `bbishdotdev/ai-tools/bstack` can list upstream and internal skills too; don't select all of those.
+
+### Install the installer once
+
+To reuse `install-bstack` across projects, install just that skill at user scope:
+
+```sh
+npx skills add bbishdotdev/ai-tools --skill install-bstack -g
+```
+
+Select your agent tools when prompted. Then open an agent in any target repo and invoke `install-bstack` or ask it to install bstack. Start a fresh agent session if the newly installed skill isn't visible. The full bstack package still installs per repo. Global availability of the installer does not enable routing or install the full collection in every project.
+
+### Claude desktop discovery
+
+After installation or an upgrade that changes skill bindings, start a **new Code chat** in Claude desktop. An existing chat can retain its earlier skill list. Then type `/` to find the installed skills.
+
+Claude also documents [`/reload-skills`](https://code.claude.com/docs/en/skills#edit-a-skill-during-a-session) to rescan skills in a running session. Use it inside the affected chat if that command is available; availability in the desktop build must be checked there. It refreshes the skill catalog, not bstack's routing instructions or hooks. Setup still reports when a fresh session is needed and does not reset the current chat automatically. Running another `claude` process cannot refresh the desktop chat you already have open.
+
+Claude's [Code tab supports project skills and slash invocation](https://code.claude.com/docs/en/desktop#use-skills). If skills are still missing, check that the session runs in the same checkout where bstack was installed, with `claude` included in its configured hosts. The installer creates `.claude/skills/<name>` links to the project's shared skill entries. `doctor` validates those files; it does not verify the desktop command menu.
+
+A separate worktree, cloud session, or SSH host can have a different filesystem. Install bstack in that session's checkout. Copying `.bstack/config.json` from another checkout is not a substitute: ownership records and generated bindings contain paths to their original project. Regular Chat and Cowork are separate environments and are not covered by this project installer.
 
 ## Offline or manual install
 

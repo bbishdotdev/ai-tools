@@ -16,9 +16,13 @@ npx skills add bbishdotdev/ai-tools --skill install-bstack
 
 Choose your agent and project scope if prompted. Then open your agent in that project and ask:
 
-> Use install-bstack to set up this project for my installed tools.
+> Install bstack in this project.
 
-The command downloads the installer skill. Your agent then runs it to install the full bstack package, including its bundled dependencies and customizations. Automatic routing stays opt-in. Python 3.11+ on POSIX is required.
+Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor. If the skill does not appear, start a fresh session in the same project.
+
+The command downloads the installer skill. Your agent then runs it to install the full bstack package, including its bundled dependencies and customizations, and checks it with `doctor`. After a successful check, it offers automatic routing if it is off. Enabling it requires your opt-in; upgrades preserve your existing preference. Python 3.11+ on POSIX is required.
+
+To make the installer available across projects, add `-g` to the command above. Then invoke it from any target repo. Only the installer is global; each repo gets its own bstack package.
 
 `bbishdotdev/ai-tools` identifies this repository; `--skill install-bstack` selects its installer. Keep both parts. You don't need to select all the skills in the development repository.
 

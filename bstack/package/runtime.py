@@ -34,6 +34,9 @@ class Conflict(ValueError):
 def session_guidance(auto, hosts, changed=False):
     codex_hooks = auto and "codex" in hosts
     notices = [RELOAD] if changed else []
+    if changed and "claude" in hosts:
+        notices.append("In Claude desktop, start a new Code chat in this project so the installed skills appear in `/`. "
+                       "An existing chat may keep its earlier skill list.")
     if codex_hooks:
         notices.append("Codex hook trust was not checked. To review it, open `codex` in a terminal in this project, "
                        "then run `/hooks` inside the Codex terminal CLI. `/hooks` in desktop chat is not the same command. "

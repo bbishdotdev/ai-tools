@@ -460,7 +460,7 @@ def assemble(root=ROOT):
     release[TRANSPORT + "/scripts/install.py"] = source_asset("bstack/package/transport.py", root)
     release[TRANSPORT + "/SKILL.md"] = source_asset("bstack/package/templates/install.md", root)
     release[TRANSPORT + "/agents/openai.yaml"] = generated_asset(
-        "policy:\n  allow_implicit_invocation: false\n", root=root, transforms=("manual-installer-metadata",))
+        "policy:\n  allow_implicit_invocation: true\n", root=root, transforms=("discoverable-installer-metadata",))
     release["README.md"] = generated_asset(
         "# bstack release\n\nVersion " + selection["version"] + ". The [bstack package](bstack/README.md) contains the "
         "engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.\n\n"
@@ -468,10 +468,15 @@ def assemble(root=ROOT):
         "From your project, run:\n\n"
         "```sh\nnpx skills add bbishdotdev/ai-tools --skill install-bstack\n```\n\n"
         "Choose your agent and project scope if prompted. Then open your agent in that project and ask:\n\n"
-        "> Use install-bstack to set up this project for my installed tools.\n\n"
+        "> Install bstack in this project.\n\n"
+        "Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor. "
+        "If the skill does not appear, start a fresh session in the same project.\n\n"
         "skills.sh downloads the [installer skill](skills-sh/install-bstack/SKILL.md); your agent runs it to install "
         "the full bundled package. Keep both the repository name and `--skill install-bstack` in the command. "
-        "Automatic routing stays opt-in. Python 3.11+ on POSIX is required.\n\n"
+        "After installation and `doctor` succeed, the agent offers automatic routing if it is off. "
+        "Enabling it requires your opt-in; upgrades preserve your existing preference. Python 3.11+ on POSIX is required.\n\n"
+        "For reuse across projects, add `-g` to install only the installer skill at user scope. "
+        "Invoke it from each target project; the full bstack package remains project-local.\n\n"
         "## Install this release offline\n\n"
         "Run `python3 bstack/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok`. "
         "Select the hosts you need. It creates `.bstack/package/` and direct public skill entries in `.agents/skills/`. "

@@ -82,7 +82,7 @@ def checked_bundle(archive):
     return manifest, contents, modes
 
 
-def install(archive, project, hosts):
+def install(archive, project, hosts=None):
     manifest, contents, modes = checked_bundle(archive)
     with tempfile.TemporaryDirectory(prefix="bstack-transport-") as scratch:
         staged = Path(scratch)
@@ -92,18 +92,22 @@ def install(archive, project, hosts):
             target.write_bytes(data)
             target.chmod(modes[name])
         command = [sys.executable, str(staged / manifest["entrypoints"]["controller"]),
-                   "install", "--project", str(project.resolve()), "--hosts", *hosts]
+                   "install", "--project", str(project.resolve())]
+        if hosts is not None:
+            command.extend(["--hosts", *hosts])
         return subprocess.run(command, check=False).returncode
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, default=Path.cwd())
-    parser.add_argument("--hosts", nargs="+", choices=HOSTS, default=list(HOSTS))
+    parser.add_argument("--hosts", nargs="+", choices=HOSTS,
+                        help="Configure these hosts; otherwise preserve existing hosts or use all on first install")
     args = parser.parse_args(argv)
     archive = Path(__file__).resolve().parents[1] / "assets/bstack.zip"
     try:
-        return install(archive, args.project, list(dict.fromkeys(args.hosts)))
+        hosts = list(dict.fromkeys(args.hosts)) if args.hosts is not None else None
+        return install(archive, args.project, hosts)
     except (InvalidBundle, OSError, zipfile.BadZipFile, RuntimeError) as error:
         print(f"bstack installation failed: {error}", file=sys.stderr)
         return 1

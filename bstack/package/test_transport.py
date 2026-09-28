@@ -52,6 +52,17 @@ class TransportTests(unittest.TestCase):
                         transport.install(self.archive, self.root, ["codex"])
                     execute.assert_not_called()
 
+    def test_omitted_hosts_defer_to_existing_project_configuration(self):
+        self.write_archive()
+        with patch.object(transport, "__file__", str(self.root / "scripts/install.py")), \
+                patch.object(transport, "install", wraps=transport.install) as install:
+            (self.root / "assets").mkdir()
+            self.archive.rename(self.root / "assets/bstack.zip")
+            self.assertEqual(transport.main(["--project", str(self.root)]), 0)
+        self.assertIsNone(install.call_args.args[2])
+        self.assertEqual(json.loads((self.root / "installed.json").read_text()),
+                         ["install", "--project", str(self.root)])
+
     def test_links_and_special_entries_rejected(self):
         for mode in (stat.S_IFLNK | 0o777, stat.S_IFDIR | 0o755, stat.S_IFIFO | 0o644, stat.S_IFREG | 0o4755):
             with self.subTest(mode=mode):
