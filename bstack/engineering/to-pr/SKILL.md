@@ -4,7 +4,7 @@ description: Prepare a short visual PR briefing, check open work for overlap, an
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../ATTRIBUTION.md
+  attribution: ../../ATTRIBUTION.md
 ---
 
 # PR

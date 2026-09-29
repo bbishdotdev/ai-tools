@@ -4,7 +4,7 @@ description: Synthesize accepted conversation and planning decisions into a vers
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # To spec

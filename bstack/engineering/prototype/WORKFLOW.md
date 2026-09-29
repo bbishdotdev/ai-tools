@@ -4,7 +4,7 @@ description: Build and iterate on disposable prototypes to explore UI alternativ
 metadata:
   author: Brenden Bishop
   status: active
-  attribution: ../../../ATTRIBUTION.md
+  attribution: ../../ATTRIBUTION.md
 ---
 
 # Prototype

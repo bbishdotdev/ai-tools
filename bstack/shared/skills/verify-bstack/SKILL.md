@@ -3,7 +3,7 @@ name: verify-bstack
 description: Maintainer verification for bstack changes. Discover installed Codex, Claude Code, Cursor, and Grok CLIs, then test router loading, routing, reminders, and continuity with saved evidence. Use when asked to validate bstack or after changing its router adapters.
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Verify bstack

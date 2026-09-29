@@ -4,7 +4,7 @@ description: Grill a design while capturing settled domain language and conseque
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Grill with docs

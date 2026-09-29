@@ -3,7 +3,7 @@ name: bstack-router
 description: Route engineering work through bstack's pinned PStack workflows with portable capabilities, scoped execution, and visible evidence. Use for bstack engineering tasks or when the repository's standing instructions load this router.
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # bstack router

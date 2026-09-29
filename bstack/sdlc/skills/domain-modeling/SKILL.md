@@ -4,7 +4,7 @@ description: Sharpen domain terms and boundaries, maintain the glossary, and rec
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Domain modeling

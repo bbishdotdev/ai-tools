@@ -4,7 +4,7 @@ description: Execute authorized work from a sufficient ticket or specification t
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../ATTRIBUTION.md
+  attribution: ../../ATTRIBUTION.md
 ---
 
 # Implement

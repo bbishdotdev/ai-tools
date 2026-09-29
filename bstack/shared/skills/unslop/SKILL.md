@@ -3,7 +3,7 @@ name: unslop
 description: Cut AI tells from any writing and rewrite it in Brenden's voice. Spoken, blunt, slightly unpolished. Must always apply. Use for posts, emails, docs, replies, and turning raw notes into something he'd actually say.
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Unslop

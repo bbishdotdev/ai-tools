@@ -4,7 +4,7 @@ description: Turn approved scope into verifiable vertical implementation slices 
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # To tickets

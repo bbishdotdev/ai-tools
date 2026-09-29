@@ -4,7 +4,7 @@ description: Draft an asynchronous questionnaire for someone who holds facts or 
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # To questionnaire

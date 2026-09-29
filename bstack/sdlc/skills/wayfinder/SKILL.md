@@ -4,7 +4,7 @@ description: Chart and resolve a map of dependent planning questions across sess
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Wayfinder

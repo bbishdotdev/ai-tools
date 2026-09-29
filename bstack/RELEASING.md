@@ -20,7 +20,7 @@ Describe changes to saved data, settings, skill names, or supported tools promin
 
 ## Keep the changelog
 
-Add short, user-visible entries to [CHANGELOG.md](../CHANGELOG.md) under **Unreleased** with the change. Group related entries and link a PR when it adds useful context. Include installation or usage documentation changes when they affect the reader; skip housekeeping and commit-by-commit logs.
+Add short, user-visible entries to [CHANGELOG.md](CHANGELOG.md) under **Unreleased** with the change. Group related entries and link a PR when it adds useful context. Include installation or usage documentation changes when they affect the reader; skip housekeeping and commit-by-commit logs.
 
 At release preparation, turn those entries into `release-notes/<version>.md` using [TEMPLATE.md](release-notes/TEMPLATE.md). Lead with the benefit, remove empty sections and placeholders, and include upgrade actions and actual verification. That versioned file is the single source for the GitHub Release description. The changelog links to it instead of duplicating the full notes.
 

@@ -4,7 +4,7 @@ description: Investigate a bounded question against primary sources and return a
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../ATTRIBUTION.md
+  attribution: ../../ATTRIBUTION.md
 ---
 
 # Research

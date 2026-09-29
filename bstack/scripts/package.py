@@ -245,30 +245,31 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
 
 
 def attribution_asset(root, mapping, sources):
-    asset = source_asset("ATTRIBUTION.md", root)
+    asset = source_asset("bstack/ATTRIBUTION.md", root)
     text = asset.data.decode()
     origins = {}
     for manifest in sources.values():
         for entry in manifest["files"]:
-            source = "bstack/" + manifest["destination"] + "/" + entry["path"]
+            source = manifest["destination"] + "/" + entry["path"]
             origins[source] = (manifest["repository"] + "/blob/" + manifest["commit"] + "/"
                                + layers.candidate_path(manifest, entry))
             if PurePosixPath(entry["path"]).name == "LICENSE" or entry["path"].startswith("licenses/"):
-                notice = source_asset(source, root).data.decode().strip()
+                notice = source_asset("bstack/" + source, root).data.decode().strip()
                 if notice not in text:
                     raise ValueError("Canonical attribution is missing the complete notice: " + source)
 
     def link(match):
-        target = local_target("../ATTRIBUTION.md", match[2], mapping)
+        target = local_target("ATTRIBUTION.md", match[2], mapping)
         if target is not None:
             return match[1] + target + match[3]
         path, separator, anchor = match[2].partition("#")
         if not path or ":" in path:
             return match[0]
+        path = posixpath.normpath(path)
         if path in origins:
             return match[1] + origins[path] + (separator + anchor if separator else "") + match[3]
         label = match[1][1:-2]
-        return label + " (`" + path + "`, source repository only)"
+        return label + " (`" + posixpath.normpath("bstack/" + path) + "`, source repository only)"
 
     return replace(asset, data=LINK.sub(link, text).encode(), transforms=("render-canonical-attribution-links",))
 
@@ -360,7 +361,7 @@ def assemble(root=ROOT):
     mapping.update({
         upstream + "/skills/unslop/SKILL.md": UNSLOP,
         upstream + "/skills/setup-pstack/SKILL.md": ENTRYPOINTS["setup"],
-        "../ATTRIBUTION.md": "ATTRIBUTION.md",
+        "ATTRIBUTION.md": "ATTRIBUTION.md",
         "../LICENSE": "LICENSE",
         "layers.json": "layers.json",
         prototype_source: "engineering/prototype/WORKFLOW.md",

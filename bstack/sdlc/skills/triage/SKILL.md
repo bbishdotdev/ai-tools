@@ -4,7 +4,7 @@ description: Evaluate incoming bugs, enhancements, or proposed changes for dupli
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Triage

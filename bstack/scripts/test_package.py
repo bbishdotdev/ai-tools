@@ -259,10 +259,10 @@ class PackageTests(unittest.TestCase):
             self.assertIn("bind-bstack-policy", asset.transforms)
             self.assertIn("This packaged dependency follows [bstack's policy]", asset.data.decode())
 
-    def test_attribution_comes_from_root_and_preserves_complete_notices(self):
+    def test_attribution_comes_from_module_and_preserves_complete_notices(self):
         asset = self.assets["bstack/ATTRIBUTION.md"]
-        self.assertEqual(asset.source, "ATTRIBUTION.md")
-        self.assertEqual(asset.source_sha256, package.sha((package.ROOT.parent / "ATTRIBUTION.md").read_bytes()))
+        self.assertEqual(asset.source, "bstack/ATTRIBUTION.md")
+        self.assertEqual(asset.source_sha256, package.sha((package.ROOT / "ATTRIBUTION.md").read_bytes()))
         text = asset.data.decode()
         notices = (
             "upstream/pstack/LICENSE",
@@ -274,18 +274,24 @@ class PackageTests(unittest.TestCase):
         self.assertFalse(any("/licenses/" in path for path in self.assets))
 
     def test_owned_metadata_points_to_installed_attribution(self):
+        checked = []
+        for path, asset in self.assets.items():
+            if not path.startswith(package.BUNDLE + "/") or not path.endswith(".md"):
+                continue
+            match = re.search(r"(?m)^  attribution: (.+)$", asset.data.decode())
+            if match:
+                resolved = package.posixpath.normpath(package.posixpath.join(package.posixpath.dirname(path), match[1]))
+                self.assertEqual(resolved, package.BUNDLE + "/ATTRIBUTION.md", path)
+                checked.append(path.removeprefix(package.BUNDLE + "/"))
         for path in (package.ENTRYPOINTS["mode"], package.ROUTER, package.UNSLOP):
-            text = self.assets[package.BUNDLE + "/" + path].data.decode()
-            target = re.search(r"(?m)^  attribution: (.+)$", text).group(1)
-            resolved = package.posixpath.normpath(package.posixpath.join(package.posixpath.dirname(path), target))
-            self.assertEqual(resolved, "ATTRIBUTION.md")
+            self.assertIn(path, checked)
 
     def test_distribution_rejects_an_incomplete_copyright_notice(self):
         original = package.source_asset
 
         def without_copyright(relative, root):
             asset = original(relative, root)
-            if relative == "ATTRIBUTION.md":
+            if relative == "bstack/ATTRIBUTION.md":
                 return package.replace(asset, data=asset.data.replace(b"Copyright (c) 2026 Cursor", b""))
             return asset
 
@@ -306,7 +312,11 @@ class PackageTests(unittest.TestCase):
         text = self.assets["bstack/ATTRIBUTION.md"].data.decode()
         self.assertIn("shared/unslop/SKILL.md", text)
         self.assertIn("https://github.com/cursor/plugins/blob/e31650eea443aaea1e84cc15d88c13f40080b275/pstack/README.md", text)
-        self.assertIn("source repository only", text)
+        self.assertIn("(`bstack/pstack-provenance.json`, source repository only)", text)
+        self.assertIn("(`bstack/engineering/prototype/REVIEW.md`, source repository only)", text)
+        self.assertIn("](LICENSE)", text)
+        self.assertNotIn("](../LICENSE)", text)
+        self.assertEqual(self.assets["bstack/LICENSE"].data, (package.ROOT.parent / "LICENSE").read_bytes())
         self.assertEqual(package.closure_errors(self.assets), [])
 
     def test_manifest_matches_every_capsule_file_and_source(self):

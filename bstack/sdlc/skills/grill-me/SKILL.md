@@ -4,7 +4,7 @@ description: Start a human-guided grilling session to sharpen a plan or design.
 disable-model-invocation: true
 metadata:
   author: Brenden Bishop
-  attribution: ../../../../ATTRIBUTION.md
+  attribution: ../../../ATTRIBUTION.md
 ---
 
 # Grill me

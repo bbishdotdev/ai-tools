@@ -31,7 +31,7 @@ The detailed product choices are in the [integration review](../../sdlc/integrat
 
 ## Integration boundary
 
-[Root attribution](../../../ATTRIBUTION.md) owns source credits, revisions, and notices. [layers.json](../../layers.json) now registers both reviewed source relationships as separate records. SDLC and engineering callers resolve to the same owned entry.
+[bstack attribution](../../ATTRIBUTION.md) owns source credits, revisions, and notices. [layers.json](../../layers.json) now registers both reviewed source relationships as separate records. SDLC and engineering callers resolve to the same owned entry.
 
 ## Review and activation checks
 

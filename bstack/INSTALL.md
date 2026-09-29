@@ -32,7 +32,7 @@ The short command above reads the committed installer on `main`. It can include 
 npx skills add 'bbishdotdev/ai-tools#v0.4.2' --skill install-bstack
 ```
 
-Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](../CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route automatically updates an installed project when `main` changes.
+Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route automatically updates an installed project when `main` changes.
 
 ### Install the installer once
 
