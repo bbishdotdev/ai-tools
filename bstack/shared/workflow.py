@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read workflow configuration without creating or upgrading a workspace."""
+"""Read workflow configuration and ADRs without creating or upgrading a workspace."""
 
 import argparse
 import json
@@ -159,14 +159,21 @@ def main(argv=None):
         check = commands.add_parser("preflight")
         check.add_argument("--mode", choices=("manual", "autonomous"), default="manual")
         check.add_argument("--area", choices=("wayfinder", "tickets", "both"), default="both")
+        adr = commands.add_parser("adr", help="Inspect only the selected ADR file or directory")
+        adr.add_argument("--path", default="docs/adr", help="Checkout-relative Markdown file or directory (default: docs/adr)")
         args = parser.parse_args(argv)
-        print(canonical(preflight(args.project, args.mode, args.area)))
+        if args.command == "adr":
+            from adr import inspect_adrs
+            result = {"ok": True, "value": inspect_adrs(args.project, args.path).value()}
+        else:
+            result = preflight(args.project, args.mode, args.area)
+        print(canonical(result))
         return 0
     except DomainError as error:
         print(canonical(error.response()))
         return 1
     except OSError:
-        print(canonical({"ok": False, "error": {"code": "io", "message": "Could not read workflow configuration"}}))
+        print(canonical({"ok": False, "error": {"code": "io", "message": "Could not read workflow input"}}))
         return 1
 
 

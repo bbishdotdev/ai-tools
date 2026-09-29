@@ -30,6 +30,6 @@ Keep private artifacts beneath `<workspace.root>/.bstack/workspace/artifacts/`:
 | Isolated prototype session | `prototypes/<session>/` |
 | New domain/ADR drafts | `domain/`, `adr/` |
 
-Preserve existing project `CONTEXT.md`, `CONTEXT-MAP.md` and ADR conventions. A private draft does not supersede an accepted repository decision. Promote drafts to repository documents when the user or project convention calls for it. Keep prototype targets usable through handoff; unfinished or explicitly saved experiments survive session changes.
+Preserve existing project `CONTEXT.md`, `CONTEXT-MAP.md` and ADR conventions. Follow [architecture decisions](architecture-decisions.md) for exceptional ADR capture: useful proposals can remain private, while accepted decisions default to repository Markdown. A private draft never supersedes an accepted decision. Read repository ADRs from the active checkout; it can differ from the shared workspace owner's checkout. Keep prototype targets usable through handoff; unfinished or explicitly saved experiments survive session changes.
 
 Store artifact references with the relevant answer, spec, ticket or handoff. The core treats references as opaque strings. It does not read files, verify freshness, authenticate decision makers, or prove that a cited check ran. The agent must inspect the relevant evidence before relying on it.

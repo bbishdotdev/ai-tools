@@ -20,7 +20,7 @@ Include only what the receiver needs:
 - Checked evidence, unresolved risks, waits, blockers, and what was only reported or remains unverified.
 - The governing router and needed skill paths, plus the proposed model role if configured. Paths and record IDs are the durable pointers; native session IDs are optional locators.
 
-Reference specs, ADRs, commits, diffs, and research instead of repeating their bodies. Exclude credentials, claim tokens, secrets, and unnecessary personal data. Finish with a short startup instruction naming the immediate action and source records to reread.
+Reference specs, applicable ADR IDs and paths, commits, diffs, and research instead of repeating their bodies. Name any unresolved proposed departure from an ADR; the receiver checks its current status using the shared [decision process](../../references/architecture-decisions.md). Exclude credentials, claim tokens, secrets, and unnecessary personal data. Finish with a short startup instruction naming the immediate action and source records to reread.
 
 A prototype-to-production transition requires a fresh context. Other substantial phase changes benefit from one; avoid restarting a small ongoing step merely because the skill name changes. Write the handoff before launching or relinquishing the current context. Release the current claim when pausing or transferring ownership; the receiver must acquire its own.
 

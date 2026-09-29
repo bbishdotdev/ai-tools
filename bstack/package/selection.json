@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "skills": [
     "architect",
     "arena",
@@ -87,8 +87,10 @@
     "shared/references/workspace.md",
     "shared/references/workspace-requests.md",
     "shared/references/decision-authority.md",
+    "shared/references/architecture-decisions.md",
     "shared/references/work-adapters.md",
     "shared/workflow.py",
+    "shared/adr.py",
     "workspace/cli.py",
     "workspace/README.md",
     "workspace/OPERATIONS.md",

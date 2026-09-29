@@ -183,6 +183,44 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(run(installed / "scripts/bstack.py", "doctor", "--project", str(consumer))["bindings"], "passed")
             self.assertFalse(list(installed.rglob("__pycache__")))
 
+    def test_installed_adr_catalog_runs_without_workspace_after_source_removal(self):
+        with tempfile.TemporaryDirectory(prefix="bstack offline adr ") as directory:
+            root = Path(directory)
+            release, consumer = root / "release", root / "consumer"
+            package.build(release)
+            consumer.mkdir()
+            subprocess.run(["git", "init", "-q", str(consumer)], check=True)
+
+            def run(script, *args):
+                result = subprocess.run([sys.executable, str(script), *args],
+                                        text=True, capture_output=True, cwd=root)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(result.stderr, "")
+                return json.loads(result.stdout)
+
+            run(release / "bstack/scripts/bstack.py", "install", "--project", str(consumer), "--hosts", "codex")
+            shutil.rmtree(release)
+            installed = consumer / ".bstack/package"
+            decision = consumer / "ADR.md"
+            decision.write_text("# Keep work offline\n\nStatus: accepted\n\nRemote access is optional.\n")
+            before = {str(path.relative_to(consumer)): (path.stat().st_mtime_ns, path.read_bytes() if path.is_file() else None)
+                      for path in [consumer, *consumer.rglob("*")]}
+            result = run(installed / "shared/workflow.py", "--project", str(consumer), "adr", "--path", "ADR.md")
+            self.assertTrue(result["ok"])
+            self.assertEqual(result["value"]["root"], str(consumer))
+            self.assertEqual(result["value"]["entries"][0]["title"], "Keep work offline")
+            self.assertEqual(result["value"]["findings"], [])
+            after = {str(path.relative_to(consumer)): (path.stat().st_mtime_ns, path.read_bytes() if path.is_file() else None)
+                     for path in [consumer, *consumer.rglob("*")]}
+            self.assertEqual(before, after)
+            self.assertFalse((consumer / ".bstack/workspace").exists())
+            self.assertFalse(list(installed.rglob("__pycache__")))
+            reference = installed / "shared/references/architecture-decisions.md"
+            self.assertTrue(reference.is_file())
+            for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", reference.read_text()):
+                if not re.match(r"[a-z]+:", target):
+                    self.assertTrue((reference.parent / target.split("#", 1)[0]).resolve().exists(), target)
+
     def test_memory_payload_is_private_and_bundled_offline(self):
         manifest = json.loads(self.assets["bstack/manifest.json"].data)
         index = json.loads(self.assets["bstack/index.json"].data)

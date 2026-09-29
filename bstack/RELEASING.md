@@ -43,6 +43,7 @@ python3 -B bstack/scripts/test_layers.py
 python3 -B bstack/package/test_runtime.py
 python3 -B bstack/package/test_transport.py
 python3 -B bstack/scripts/test_package.py
+python3 -B -m unittest discover -s bstack/shared/tests
 python3 -B bstack/scripts/package.py dist --output .bstack/dist/0.4.3
 ```
 

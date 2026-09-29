@@ -35,7 +35,7 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "684c259d50e8488c0044f76b025093f5c3452f7bd94237988546c56eafe615f9",
+      "sha256": "82e156ac2e4378f133e00e447b43007cd38469193c561a9d8be14f1a3936b926",
       "source": "bstack/package/templates/README.md",
       "source_sha256": "44991b380125429ce55a86f115b0d4396c25738aff444e1906a03efa3656a6a1",
       "transforms": [
@@ -1340,9 +1340,9 @@
     {
       "mode": 420,
       "path": "engineering/research/SKILL.md",
-      "sha256": "b4c29fc7add1b8624f90c0c263406496cd6d624d6b753ee9677843fd31a144c4",
+      "sha256": "beb466c86d10fee28bd474fb695c279a94f1b29524655c4285613d7b6ea2a9ed",
       "source": "bstack/engineering/research/SKILL.md",
-      "source_sha256": "ed5fc680e4a2362853a36c9dab7d8bb846274e2773b461de59ef4c4a05a99c2c",
+      "source_sha256": "242d782bedf3f6a3581e4a1a549df3b53b8c31655f1e53b121ea9c1b04b30051",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -1706,7 +1706,7 @@
       "path": "index.json",
       "sha256": "393f92d7c42cedbe6caf190ca35d32402105b039264f323f490497d91bfce8fe",
       "source": "bstack/package/selection.json",
-      "source_sha256": "14ad1b8cdfb22c94289d37e444fb2c29e06b4b8215863e9b00d36b26d2d7db74",
+      "source_sha256": "2694bcb8692ee9f7fa7e5cae862ec9a6e46cecac997f43695733d26a6b62beb4",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -1748,10 +1748,12 @@
     {
       "mode": 420,
       "path": "sdlc/domain-modeling/ADR-FORMAT.md",
-      "sha256": "e9076b0f2b451ca53a4f1d6399aa5a9ac89dcfde3371a8f636bd39d1300aaa72",
+      "sha256": "13df1ca988c1a9d46cee72cde0d9c8fba16861b7dd32e1341b007ec7d7a09faa",
       "source": "bstack/sdlc/skills/domain-modeling/ADR-FORMAT.md",
-      "source_sha256": "e9076b0f2b451ca53a4f1d6399aa5a9ac89dcfde3371a8f636bd39d1300aaa72",
-      "transforms": []
+      "source_sha256": "71129a26b8e8b131ae1221ba3c8064a8b1ced60ac00ea6dd4aabab1ecf4916c7",
+      "transforms": [
+        "rewrite-local-markdown-links"
+      ]
     },
     {
       "mode": 420,
@@ -1764,9 +1766,9 @@
     {
       "mode": 420,
       "path": "sdlc/domain-modeling/SKILL.md",
-      "sha256": "cbbdc086d215da98a58bde4b6a18c3efa0b44844a1411ee6f8200202586e81ef",
+      "sha256": "dabf1761cb5e61ddb54a946d22ee6be9be02e9013d806ae3ad44b07ff8411174",
       "source": "bstack/sdlc/skills/domain-modeling/SKILL.md",
-      "source_sha256": "574f9c308d2cac5875faee86204fff20900d2bbe56ae7764a63b6645306c70a7",
+      "source_sha256": "2a27c44f47a8caa3b58e4b18c0eecaa002ceadf819bec0ce11f49337fe5f1268",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -1975,6 +1977,14 @@
     },
     {
       "mode": 420,
+      "path": "shared/adr.py",
+      "sha256": "4fbd4d0bbea25bf3ea178b2f7d369f1d60e93761fd7d38c82afe5f7d95aafb16",
+      "source": "bstack/shared/adr.py",
+      "source_sha256": "4fbd4d0bbea25bf3ea178b2f7d369f1d60e93761fd7d38c82afe5f7d95aafb16",
+      "transforms": []
+    },
+    {
+      "mode": 420,
       "path": "shared/bstack-auto/SKILL.md",
       "sha256": "fd17d8ba1f06fd6cbbce1bea86471583f9eafa8eed0472ea2f22cd14cd7e7a9d",
       "source": "bstack/package/templates/auto.md",
@@ -1997,9 +2007,9 @@
     {
       "mode": 420,
       "path": "shared/handoff/SKILL.md",
-      "sha256": "1f9b1176aff99ca78f9dab192de0e8506c7197430497b3f6d3a99ae1aa52e931",
+      "sha256": "1f59f343e584d3c3b85beb7269f74986c5001f1d0a36c6c4b058582a43a6b800",
       "source": "bstack/shared/skills/handoff/SKILL.md",
-      "source_sha256": "e50be7bacc4590b0c94834f5c2ac12d4d0e205fabd169fb253f6ff37cf1ae686",
+      "source_sha256": "b5c62c59b38443ef3deb3ff5b8ef468839dbb7e893d1c296df2df7e10fb668c2",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -2124,10 +2134,20 @@
     },
     {
       "mode": 420,
+      "path": "shared/references/architecture-decisions.md",
+      "sha256": "96af8db7f3eee830bcf087fbbf1c501b2b32ec2c89aec644555ab17aa81c3ec2",
+      "source": "bstack/shared/references/architecture-decisions.md",
+      "source_sha256": "1e298c22a6884383adad81c1af6d10c4e11813cb595e35b87bd2d0a1e3e4ca11",
+      "transforms": [
+        "rewrite-local-markdown-links"
+      ]
+    },
+    {
+      "mode": 420,
       "path": "shared/references/decision-authority.md",
-      "sha256": "e313c90b8d0b206fb9245748e57e1da02e24021b09c5c9adea9c6d5dde62fce9",
+      "sha256": "b54cd8c62601e991f1a212ac3af5cb59945284cc36a2961edb6eda59f140b1ea",
       "source": "bstack/shared/references/decision-authority.md",
-      "source_sha256": "54b409925c626f487ef6ae400d2b572852bef07372f9696b3703635028f734bd",
+      "source_sha256": "0b6765a03ab4de4796df92ad21b4820b67a1872c6a3db8e824a56a19e5bb643f",
       "transforms": [
         "rewrite-local-markdown-links"
       ]
@@ -2151,17 +2171,17 @@
     {
       "mode": 420,
       "path": "shared/references/workspace.md",
-      "sha256": "3f5fb4f8056458514705f93debeabe79b6d6325777e288d920e786006704e1f7",
+      "sha256": "329566e22e358bd53ea84361106f61edb2167618e1d37268c8cc02dd455f7de7",
       "source": "bstack/shared/references/workspace.md",
-      "source_sha256": "3f5fb4f8056458514705f93debeabe79b6d6325777e288d920e786006704e1f7",
+      "source_sha256": "329566e22e358bd53ea84361106f61edb2167618e1d37268c8cc02dd455f7de7",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "shared/router/WORKFLOW.md",
-      "sha256": "f4dda464e6b3a1d7bea1eb9b82607fc60706ca681b84784338cdd3ae90795909",
+      "sha256": "2d705e8cad1c6547fc88eb02befaaa1bbb05726ff03d9439380d9349dfbd5632",
       "source": "bstack/shared/skills/bstack-router/SKILL.md",
-      "source_sha256": "9d33a54a5a41c62eac0f420a45e8aac3c0799f75bbcd564ee5464c663455f2a2",
+      "source_sha256": "77e53d6be09dccc67f6335e2438d66dbb8176c9ceeaf7e50e7e0416e1e596a1d",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -2300,9 +2320,9 @@
     {
       "mode": 420,
       "path": "shared/workflow.py",
-      "sha256": "e65378879a370359a3209403cf9e304d45d3db711b7125109622bdff626777af",
+      "sha256": "c96dc8941209eae838245970938b9993662eea5df7cc2a93eb867c090ee46aa9",
       "source": "bstack/shared/workflow.py",
-      "source_sha256": "e65378879a370359a3209403cf9e304d45d3db711b7125109622bdff626777af",
+      "source_sha256": "c96dc8941209eae838245970938b9993662eea5df7cc2a93eb867c090ee46aa9",
       "transforms": []
     },
     {
@@ -2646,5 +2666,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "0.4.2"
+  "version": "0.5.0"
 }

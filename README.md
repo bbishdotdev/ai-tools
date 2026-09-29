@@ -7,6 +7,7 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 ## What bstack adds
 
 - A connected [planning and engineering workflow](bstack/sdlc/README.md): questions, prototypes, specs, tickets, implementation, and PRs, with shared handoffs between phases.
+- A shared [ADR process](bstack/shared/references/architecture-decisions.md) that carries fundamental decisions between phases and avoids reopening settled choices without new evidence. Most features need no ADR.
 - A [local workspace app](bstack/workspace/README.md) for Wayfinder decision maps and a Kanban ticket board. You and your agent use the same saved work without needing an external tracker.
 - One installer for Codex, Claude Code, Cursor, and Grok CLIs, with direct skill invocation and optional automatic routing through Poteto Mode.
 - Optional [shared personal memory](bstack/shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.

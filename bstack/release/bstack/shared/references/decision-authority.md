@@ -4,6 +4,8 @@ Product choices and ADRs belong to the user by default. Reuse an existing explic
 
 An agent records human decisions with the actual decider and confirmation reference. Delegated decisions record the decider, scope and grant reference. Do not fabricate a human approval or widen a planning grant into implementation. Carry these limits into specs, tickets and [handoffs](../handoff/SKILL.md).
 
+For nontrivial planning or engineering choices, follow the shared [architecture decision process](architecture-decisions.md). Consult applicable current ADRs before exploring alternatives. Apply its high capture threshold and reconcile actual reversals; ordinary answers and prototype preferences need no ADR.
+
 ## Autonomous grilling
 
 Use this branch only when the user explicitly delegates the answers or asks for an autonomous run that needs grilling. Manual human grilling never requires model settings.

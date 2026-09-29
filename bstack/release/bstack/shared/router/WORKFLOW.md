@@ -46,6 +46,8 @@ Resolve imported Opening a PR instructions to the owned [to-pr entry](../../engi
 
 ## Grounding and design
 
+Before nontrivial research, design, implementation, or review, follow the shared [architecture decision process](../references/architecture-decisions.md). Read applicable current decisions and carry their links through delegates and phase changes. Existing rejections stand unless concrete evidence warrants a revisit. Capture only fundamental choices that meet its threshold; most features produce no ADR. Reuse this process across imported workflows without adding a second decision exercise.
+
 Retain **how** for nontrivial changes, architecture decisions, and uncertainty about how the system works. Reuse adequate grounding already established for the same code and question. Refresh when evidence, scope, or assumptions change. Architect should consume that grounding rather than automatically running the same exploration twice.
 
 Use **architect** when consequential design uncertainty or risk warrants competing approaches: unclear ownership or interfaces, shared state and concurrency, competing data models, or changes with broad or costly consequences. Merely crossing a function boundary is not a trigger. A routine change following a known pattern with unchanged contracts can skip architecture with a brief reason.

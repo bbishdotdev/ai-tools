@@ -9,6 +9,8 @@ metadata:
 
 # Research
 
+Use the shared [architecture decision process](../../shared/references/architecture-decisions.md) before investigating architectural alternatives. Reuse applicable decisions and prior rejected approaches unless a changed condition warrants new research. Findings alone do not authorize revising an accepted choice.
+
 Define the question and what evidence would answer it. Use supported background delegation for independent reading so the caller can continue other work. Pass a bounded scope, the relevant source pointers, and [bstack policy](../../shared/router/WORKFLOW.md). If delegation is unavailable, perform the bounded research directly and state that limit; do not claim a background agent ran.
 
 Follow claims to primary sources: official documentation, source code, standards, first-party APIs, or the local records that own the fact. Distinguish observed behavior, documented guarantees, and inference. Include relevant versions or dates for changing facts, conflicting evidence, and unanswered parts. A search snippet is a lead, not the source of record.
