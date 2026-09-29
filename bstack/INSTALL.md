@@ -24,6 +24,16 @@ There are two steps: skills.sh downloads `install-bstack`; asking your agent to 
 
 `bbishdotdev/ai-tools` is the source repository, and `install-bstack` is the skill selected from it. `npx skills add install-bstack` alone does not identify this repository. Keep `--skill install-bstack` so you don't have to choose from the development repository's individual skills. A broad install from `bbishdotdev/ai-tools/bstack` can list upstream and internal skills too; don't select all of those.
 
+### Install a published version
+
+The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag:
+
+```sh
+npx skills add 'bbishdotdev/ai-tools#v0.4.2' --skill install-bstack
+```
+
+Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](../CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route automatically updates an installed project when `main` changes.
+
 ### Install the installer once
 
 To reuse `install-bstack` across projects, install just that skill at user scope:

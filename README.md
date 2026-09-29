@@ -1,10 +1,19 @@
 # bstack
 
-bstack is my collection of engineering and SDLC workflows, agent adapters, and custom skills. It connects planning, prototyping, implementation, and verification across agent tools.
+bstack is my opinionated suite of skills, agents, and tools for planning, building, and reviewing software.
 
-The current bundle supports project installation for Codex, Claude Code, Cursor, and Grok CLIs. Engineering skills such as `how` and `architect` are available directly. Poteto Mode selects a complete engineering workflow; automatic routing is opt-in. [Owned SDLC adaptations](bstack/sdlc/README.md) connect Matt Pocock's planning approach to bstack's engineering workflows while preserving the pinned sources for selective updates.
+It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tree/main/pstack) and [Matt Pocock's skills](https://github.com/mattpocock/skills). Some workflows reuse their work directly, others adapt it, and others draw inspiration from it. Their work is a huge part of the foundation. bstack adds my own skills, preferences, and integrations to connect it all into one stack. [Attribution](ATTRIBUTION.md) records what comes from where.
 
-The bundled [local workspace app](bstack/workspace/README.md) provides Wayfinder maps, approved specs, and a Kanban ticket board. Browser and agent CLI use the same SQLite store. Planning and tickets have separate adapter choices; local is currently implemented, with external providers left for later integration.
+## What bstack adds
+
+- A connected [planning and engineering workflow](bstack/sdlc/README.md): questions, prototypes, specs, tickets, implementation, and PRs, with shared handoffs between phases.
+- A [local workspace app](bstack/workspace/README.md) for Wayfinder decision maps and a Kanban ticket board. You and your agent use the same saved work without needing an external tracker.
+- One installer for Codex, Claude Code, Cursor, and Grok CLIs, with direct skill invocation and optional automatic routing through Poteto Mode.
+- Optional [shared personal memory](bstack/shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.
+- Custom [prototyping](bstack/engineering/prototype/SKILL.md), [writing rules](bstack/shared/skills/unslop/SKILL.md), and [visual PR briefings](bstack/engineering/to-pr/SKILL.md), shaped around how I work.
+- A complete, pinned package that installs offline and preserves your selected tools and routing preferences when you upgrade.
+
+Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](bstack/shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. See [verification results and tool-specific limits](bstack/audit/package-layout.md) for tested coverage.
 
 ## Install
 
@@ -24,7 +33,7 @@ Choose your agent and project scope if prompted. Then open your agent in that pr
 
 Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor. If the skill does not appear, start a fresh session in the same project.
 
-The command downloads the installer skill. Your agent then runs it to install the full bstack package and checks it with `doctor`.
+The command downloads the installer skill from `main`. Your agent then runs it to install the full bstack package and checks it with `doctor`. To stay on a published version, use a [tagged skills.sh source](bstack/INSTALL.md#install-a-published-version) or the release download below.
 
 To make the installer available across projects, add `-g` to the command above. Then invoke it from any target repo. Only the installer is global; each repo gets its own bstack package.
 
@@ -50,6 +59,10 @@ After setup, start a fresh agent session to discover the skills. The agent offer
 
 See [installation and updates](bstack/INSTALL.md), [current scope](bstack/README.md), and [verification results and limits](bstack/audit/package-layout.md). Native plugin-manager installation and desktop behavior remain separate verification work.
 
+## Updates
+
+[Changelog](CHANGELOG.md) collects unreleased changes and links to published release notes. Normal commits and pushes to `main` do not publish a release. A version tag starts the tested release workflow; [release preparation](bstack/RELEASING.md) covers when and how to do that.
+
 ## Repository layout
 
 - `bstack/engineering/` contains bstack-owned engineering workflows.
@@ -59,7 +72,6 @@ See [installation and updates](bstack/INSTALL.md), [current scope](bstack/README
 - `bstack/upstream/` contains frozen third-party source snapshots used for comparison and release assembly.
 - `bstack/package/` and `bstack/scripts/` assemble and verify the consumer bundle.
 - `bstack/release/` is the complete generated installation artifact.
-- [Release preparation](bstack/RELEASING.md) covers building and publishing the downloadable package.
 - `bstack/audit/` records source reviews and verification results.
 
 Root `AGENTS.md`, `CLAUDE.md`, and hidden host configuration support development of bstack. Private work and runtime evidence stay in gitignored `.bstack/`.
