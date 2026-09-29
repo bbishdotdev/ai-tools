@@ -1,6 +1,8 @@
 # Upstream sources and bstack adaptations
 
-`upstream/pstack/` contains exact files from the pinned PStack source and its selected cursor-team-kit companions. [pstack-provenance.json](pstack-provenance.json) records their repository, commit, source paths, hashes, and file modes. Keep bstack-owned engineering workflows in `engineering/` and local adaptations outside every upstream boundary.
+`upstream/pstack/` contains files from the pinned PStack source and its selected cursor-team-kit companions. [pstack-provenance.json](pstack-provenance.json) records their repository, commit, source paths, hashes, and file modes. Keep bstack-owned engineering workflows in `engineering/` and local adaptations outside every upstream boundary.
+
+One reviewed wording exception changes an illustrative initiative title in `skills/why/references/sources/linear.md` to "Q3 Release Readiness". Its provenance entry retains the original `upstream_sha256` and records the exact local bytes and reason in `local_edit`. The checker accepts only those recorded bytes. Candidate updates still compare against the original upstream hash. All other imported files remain unchanged.
 
 bstack adopts upstream changes selectively. A new upstream release does not require a bstack update. Keep the current pin until a reviewed change is worth adopting. [Credits and source relationships](../ATTRIBUTION.md) identifies the authors and notices to preserve for both complete updates and selected improvements.
 
@@ -30,7 +32,7 @@ python3 bstack/scripts/audit_pstack.py
 python3 bstack/scripts/test_layers.py
 ```
 
-The layer check rejects altered, missing, unrecorded, or symlinked imported files, changed permissions, missing active entrypoints, and review bases that disagree with the source lock. Editing an upstream file and leaving the lock unchanged fails. Updating the source lock without reviewing affected layer bases also fails.
+The layer check rejects altered, missing, unrecorded, or symlinked imported files, changed permissions, missing active entrypoints, and review bases that disagree with the source lock. Editing an imported file beyond its locked content fails. A reviewed `local_edit` must record a valid SHA-256 digest and a reason; it never replaces the original upstream hash. Updating the source lock without reviewing affected layer bases also fails.
 
 ## Review a candidate update
 

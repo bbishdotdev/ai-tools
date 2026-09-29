@@ -4,7 +4,7 @@ bstack installs one package and a set of directly invocable skills. Poteto Mode 
 
 The controller requires Python 3.11+ on POSIX. These instructions cover project-local CLI installation and optional user-wide memory setup. Windows, global installation of the full skill collection, desktop apps, and native plugin managers need separate integration and verification.
 
-## Quick start
+## With skills.sh
 
 From the project where you want to use bstack, run:
 
@@ -44,18 +44,37 @@ Claude's [Code tab supports project skills and slash invocation](https://code.cl
 
 A separate worktree, cloud session, or SSH host can have a different filesystem. Install bstack in that session's checkout. Copying `.bstack/config.json` from another checkout is not a substitute: ownership records and generated bindings contain paths to their original project. Regular Chat and Cowork are separate environments and are not covered by this project installer.
 
-## Offline or manual install
+## From a download or clone
 
-From the ai-tools checkout:
+[Download bstack](https://github.com/bbishdotdev/ai-tools/releases/latest) and choose the `bstack-<version>.zip` asset. Extract it to get one `bstack/` folder. The automatic source ZIP and tarball on that page contain the development repository; the named bstack ZIP contains the ready-to-use installer.
+
+Ask your agent:
+
+> Read SKILL.md in the extracted bstack folder and install bstack into my project at /path/to/my-project.
+
+Or, from that extracted folder, run:
 
 ```sh
-python3 bstack/release/bstack/scripts/bstack.py install \
-  --project /path/to/your/project --hosts codex claude cursor grok
+python3 install.py --project /path/to/my-project
 ```
 
-Select the hosts you want configured. Installation copies `release/bstack/` into the project's `.bstack/package/` and creates the public skill bindings. You can transfer just that package directory to an offline machine and run its controller. No npm, skills.sh, Git, or network is needed, and the original source can be removed after installation.
+The project directory must already exist. Add `--hosts codex claude cursor grok`, with only the tools you want, to choose hosts. Without this flag, a new install configures all four; an upgrade preserves its existing selection.
 
-## Local skills.sh sources and internal distributors
+The installer checks the bundled files, copies the package into `.bstack/package/`, creates the skill bindings, and runs `doctor`. Setup needs Python 3.11+ but no npm, skills.sh, Git, or network. You can remove the downloaded folder afterward. Start a fresh agent session when the result requests it. Automatic routing and shared memory remain optional.
+
+To check a download before extracting it, save `SHA256SUMS` beside the ZIP and run `sha256sum -c SHA256SUMS` on Linux, or `shasum -a 256 -c SHA256SUMS` on macOS. Both assets come from the same release.
+
+### Use a clone or source archive
+
+The repository includes the same installer. From the ai-tools folder, run:
+
+```sh
+python3 bstack/release/skills-sh/install-bstack/install.py --project /path/to/my-project
+```
+
+Or ask your agent to read `bstack/release/skills-sh/install-bstack/SKILL.md` and install into the target project. Despite the directory name, this is a local Python installer; it does not call skills.sh. You can also transfer just the complete `install-bstack/` folder. Keep its `assets/` and `scripts/` alongside `install.py`.
+
+### Local skills.sh sources
 
 skills.sh copies skill folders, so the release includes a dedicated `install-bstack` transport skill containing an archive of the complete package. The installer unpacks that archive into the same canonical layout as the offline route.
 
@@ -64,11 +83,11 @@ For a local checkout, the following explicit commands use the skills.sh version 
 ```sh
 npx skills@1.7.0 add /path/to/ai-tools/bstack/release/skills-sh \
   --skill install-bstack --agent codex claude-code cursor grok
-python3 .agents/skills/install-bstack/scripts/install.py \
+python3 .agents/skills/install-bstack/install.py \
   --project "$PWD" --hosts codex claude cursor grok
 ```
 
-skills.sh supports its default host links and `--copy`; both transport the same archive. The second command is required because skills.sh does not execute setup. An internal distributor can copy the complete `install-bstack/` folder and run the same command. Keep the transport intact so its distributor retains ownership of it. The installed package operates independently of that archive.
+skills.sh supports its default host links and `--copy`; both transport the same archive. The second command is required because skills.sh does not execute setup. Keep the installer folder intact so skills.sh can update or remove it normally. The installed package operates independently of that archive.
 
 Check for an existing `install-bstack` skill before using a third-party installer. The bstack controller cannot protect a file that another installer overwrites first. It refuses collisions while creating its own package and bindings.
 

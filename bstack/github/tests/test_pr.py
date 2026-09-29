@@ -490,7 +490,7 @@ class PRTests(unittest.TestCase):
         gh.target("release/v2", "feature")
         self.assertTrue(any("release%2Fv2" in arg for call in calls for arg in call))
 
-    def test_enterprise_attachment_detection_does_not_attempt_upload(self):
+    def test_private_host_attachment_detection_does_not_attempt_upload(self):
         gh = pr.GitHub("acme/tool", "github.internal")
         gh.run = lambda *args, **kwargs: self.fail("GHES does not support attachments")
         self.assertFalse(gh.attachments_supported())

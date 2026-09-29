@@ -26,7 +26,7 @@ Use the Linear MCP.
 
 - An issue description stating the business problem: "Customer Acme needs X because of their SOC2 audit"
 - A comment recording a decision: "We decided to go with approach B because approach A would require touching the billing service"
-- A parent issue titled like an initiative: "Q3 Enterprise Readiness" or "Reduce Payment Failures"
+- A parent issue titled like an initiative: "Q3 Release Readiness" or "Reduce Payment Failures"
 - An attached PRD or spec
 - Labels like `customer:acme`, `incident-followup`, `compliance`, `perf-regression`
 

@@ -68,6 +68,55 @@ class LayersTest(unittest.TestCase):
         self.assertEqual(report["status"], "invalid")
         self.assertEqual(report["errors"], ["pstack: Local vendor content differs: skills/router/SKILL.md"])
 
+    def test_reviewed_local_edit_preserves_original_upstream_comparison(self):
+        entry = self.manifest["files"][0]
+        original_digest = entry["upstream_sha256"]
+        replacement = "A reviewed local example.\n"
+        write(self.root / "upstream/pstack" / entry["path"], replacement)
+        entry["local_edit"] = {"sha256": hashlib.sha256(replacement.encode()).hexdigest(),
+                               "reason": "Use a neutral example."}
+        self.save_config()
+        self.assertEqual(layers.check(self.root)["status"], "clean")
+        report = layers.review_update("pstack", self.candidate, self.root)
+        self.assertEqual(report["status"], "unchanged")
+        self.assertEqual(entry["upstream_sha256"], original_digest)
+        self.assertEqual(self.config["layers"][0]["upstream_files"][0]["sha256"], original_digest)
+
+        write(self.candidate / "pstack" / entry["path"], replacement)
+        report = layers.review_update("pstack", self.candidate, self.root)
+        self.assertEqual(report["status"], "review_required")
+        self.assertEqual(report["changes"][0]["path"], entry["path"])
+        self.assertTrue(report["layer_reviews"][0]["review_required"])
+
+    def test_local_edit_requires_digest_and_nonempty_reason(self):
+        entry = self.manifest["files"][0]
+        replacement = "A reviewed local example.\n"
+        digest = hashlib.sha256(replacement.encode()).hexdigest()
+        write(self.root / "upstream/pstack" / entry["path"], replacement)
+        for edit in (None, {}, {"sha256": digest}, {"reason": "Use a neutral example."},
+                     {"sha256": digest, "reason": "  "}, {"sha256": digest, "reason": False},
+                     {"sha256": "g" * 64, "reason": "Use a neutral example."},
+                     {"sha256": "short", "reason": "Use a neutral example."},
+                     {"sha256": None, "reason": "Use a neutral example."}):
+            with self.subTest(edit=edit):
+                entry["local_edit"] = edit
+                self.save_config()
+                report = layers.check(self.root)
+                self.assertEqual(report["status"], "invalid")
+                self.assertIn("pstack: Invalid reviewed local edit: " + entry["path"], report["errors"])
+
+    def test_local_edit_does_not_allow_unrecorded_bytes(self):
+        entry = self.manifest["files"][0]
+        entry["local_edit"] = {"sha256": hashlib.sha256(b"Reviewed local bytes.\n").hexdigest(),
+                               "reason": "Use a neutral example."}
+        self.save_config()
+        for content in (self.content[entry["path"]], "An additional unreviewed edit.\n"):
+            with self.subTest(content=content):
+                write(self.root / "upstream/pstack" / entry["path"], content)
+                report = layers.review_update("pstack", self.candidate, self.root)
+                self.assertEqual(report["status"], "invalid")
+                self.assertEqual(report["errors"], ["pstack: Local vendor content differs: " + entry["path"]])
+
     def test_candidate_changes_flag_adaptations_and_deleted_dependency(self):
         write(self.candidate / "pstack/skills/router/SKILL.md", "Route defects to reproduction first.\n")
         write(self.candidate / "pstack/skills/unslop/SKILL.md", "Use direct sentences.\n")

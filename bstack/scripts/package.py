@@ -458,6 +458,7 @@ def assemble(root=ROOT):
     release[TRANSPORT + "/assets/bstack.zip"] = generated_asset(archive(assets), root=root,
                                                                 transforms=("deterministic-package-archive",))
     release[TRANSPORT + "/scripts/install.py"] = source_asset("bstack/package/transport.py", root)
+    release[TRANSPORT + "/install.py"] = source_asset("bstack/package/download.py", root)
     release[TRANSPORT + "/SKILL.md"] = source_asset("bstack/package/templates/install.md", root)
     release[TRANSPORT + "/agents/openai.yaml"] = generated_asset(
         "policy:\n  allow_implicit_invocation: true\n", root=root, transforms=("discoverable-installer-metadata",))
@@ -579,6 +580,38 @@ def build(output, root=ROOT):
     return {"status": "built", "files": len(expected), "public_skills": sorted(json.loads(expected[BUNDLE + "/manifest.json"].data)["public_skills"]), "name": "bstack"}
 
 
+def dist(output, root=ROOT):
+    release = assemble(root)
+    version = json.loads(release[BUNDLE + "/manifest.json"].data)["version"]
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?", version):
+        raise ValueError("Release version must be a numeric semantic version with an optional prerelease")
+    files = {BUNDLE + "/" + path.removeprefix(TRANSPORT + "/"): asset
+             for path, asset in release.items() if path.startswith(TRANSPORT + "/")}
+    files[BUNDLE + "/README.md"] = source_asset("bstack/package/templates/download.md", root)
+    data = archive(files)
+    filename = "bstack-" + version + ".zip"
+    checksum = sha(data)
+    artifacts = {filename: data, "SHA256SUMS": (checksum + "  " + filename + "\n").encode()}
+    output = output.absolute()
+    if output.is_symlink():
+        raise ValueError("Distribution output cannot be a symlink")
+    for name, content in artifacts.items():
+        target = output / name
+        if target.is_symlink() or (target.exists() and (not target.is_file() or target.read_bytes() != content)):
+            raise ValueError("Refusing to replace an existing release artifact: " + str(target))
+    output.mkdir(parents=True, exist_ok=True)
+    for name, content in artifacts.items():
+        target = output / name
+        try:
+            with target.open("xb") as stream:
+                stream.write(content)
+        except FileExistsError:
+            if target.is_symlink() or not target.is_file() or target.read_bytes() != content:
+                raise ValueError("Release artifact changed while writing: " + str(target))
+    return {"status": "built", "name": "bstack", "version": version,
+            "archive": str(output / filename), "checksums": str(output / "SHA256SUMS"), "sha256": checksum}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -586,9 +619,14 @@ def main():
     build_parser.add_argument("--output", type=Path, default=ROOT / "release")
     check_parser = sub.add_parser("check")
     check_parser.add_argument("--package", type=Path, default=ROOT / "release")
+    dist_parser = sub.add_parser("dist", help="Build a versioned downloadable ZIP and SHA256SUMS")
+    dist_parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
-        result = build(args.output) if args.command == "build" else check(args.package)
+        if args.command == "dist":
+            result = dist(args.output)
+        else:
+            result = build(args.output) if args.command == "build" else check(args.package)
     except (ValueError, KeyError, OSError) as error:
         result = {"status": "invalid", "errors": [str(error)]}
     print(json.dumps(result, indent=2))

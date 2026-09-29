@@ -6,6 +6,10 @@ The local workspace app supports Wayfinder maps, accepted decisions, specs and K
 
 ## Install
 
+Python 3.11+ on macOS or Linux is required. Both routes install the same bundled package.
+
+### With skills.sh
+
 From the project where you want to use bstack, run:
 
 ```sh
@@ -16,17 +20,26 @@ Choose your agent and project scope if prompted. Then open your agent in that pr
 
 > Use install-bstack to set up this project for my installed tools.
 
-skills.sh downloads the installer skill; your agent runs it to install the full bundled package and check the result. Keep both the repository name and `--skill install-bstack` in the command. You don't need to select individual engineering or SDLC skills. Automatic routing stays opt-in. Python 3.11+ on POSIX is required.
+skills.sh downloads the installer skill; your agent runs it to install the full bundled package and check the result. Keep both the repository name and `--skill install-bstack` in the command. You don't need to select individual engineering or SDLC skills. Automatic routing stays opt-in.
 
-### Offline or manual install
+### From a download or clone
 
-To install this exact package from a reviewed clone or transferred release, run:
+[Download bstack](https://github.com/bbishdotdev/ai-tools/releases/latest), choose `bstack-<version>.zip`, and extract it. Ask your agent to read `SKILL.md` in the extracted folder and install bstack into your project. Or run there:
 
 ```sh
-python3 <package-path>/scripts/bstack.py install --project <project-root> --hosts codex claude cursor grok
+python3 install.py --project /path/to/my-project
 ```
 
-Select the hosts you need. This creates `.bstack/package/` and direct public entries in `.agents/skills/`, with links for the selected hosts. No network, skills.sh, Git, or upstream access is needed for this route. The original source can be removed afterward.
+From a clone or source archive, the same entrypoint is `bstack/release/skills-sh/install-bstack/install.py`. It installs the bundled package and runs `doctor` without Git, npm, skills.sh, or network access. Add `--hosts` followed by the tools you want to choose hosts. Without it, a new install configures all four and an upgrade preserves the existing selection.
+
+If you already have this unpacked runtime package, its controller also supports direct installation:
+
+```sh
+python3 <package-path>/scripts/bstack.py install --project <project-root>
+python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <project-root>
+```
+
+Installation creates `.bstack/package/` and direct public entries in `.agents/skills/`, with links for the selected hosts. The original source can be removed afterward.
 
 A skills.sh distributor uses the separate `install-bstack` transport skill, whose archive contains this same package. Run that skill's installer after distribution. skills.sh does not run setup automatically.
 

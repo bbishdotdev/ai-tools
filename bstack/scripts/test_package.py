@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Check release completeness, transformations, determinism, and stale-file detection."""
 import io
+from contextlib import redirect_stderr, redirect_stdout
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -354,6 +356,120 @@ class PackageTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "non-release directory"):
                 package.build(destination)
             self.assertEqual((destination / "keep.txt").read_text(), "keep\n")
+
+
+class DownloadTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.release = tempfile.TemporaryDirectory(prefix="bstack downloadable ")
+        cls.addClassCleanup(cls.release.cleanup)
+        cls.distribution = package.dist(Path(cls.release.name))
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix="bstack extracted ")
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        with zipfile.ZipFile(self.distribution["archive"]) as source:
+            source.extractall(self.root)
+        self.installer = self.root / "bstack/install.py"
+        self.consumer = self.root / "project with spaces"
+        self.consumer.mkdir()
+
+    def install(self, *args):
+        return subprocess.run([sys.executable, "-B", str(self.installer), "--project", str(self.consumer), *args],
+                              text=True, capture_output=True, cwd=self.root)
+
+    def test_distribution_contents_checksums_and_determinism(self):
+        other = package.dist(self.root / "another output")
+        data = Path(self.distribution["archive"]).read_bytes()
+        self.assertEqual(Path(other["archive"]).read_bytes(), data)
+        expected_checksum = package.sha(data) + "  " + Path(other["archive"]).name + "\n"
+        self.assertEqual(Path(other["checksums"]).read_text(), expected_checksum)
+        self.assertEqual(package.dist(self.root / "another output"), other)
+        with zipfile.ZipFile(io.BytesIO(data)) as source:
+            self.assertEqual(set(source.namelist()), {
+                "bstack/README.md", "bstack/SKILL.md", "bstack/install.py", "bstack/scripts/install.py",
+                "bstack/agents/openai.yaml", "bstack/assets/bstack.zip",
+            })
+            release = package.assemble()
+            self.assertEqual(source.read("bstack/assets/bstack.zip"), release[package.TRANSPORT + "/assets/bstack.zip"].data)
+        Path(other["archive"]).write_bytes(b"another release")
+        with self.assertRaisesRegex(ValueError, "Refusing to replace"):
+            package.dist(self.root / "another output")
+        self.assertEqual(Path(other["archive"]).read_bytes(), b"another release")
+
+    def test_extracted_installer_verifies_and_preserves_upgrade_preferences(self):
+        self.assertEqual(stat.S_IMODE(self.installer.stat().st_mode) & 0o111, 0)
+        installed = self.install("--hosts", "claude")
+        self.assertEqual(installed.returncode, 0, installed.stdout + installed.stderr)
+        first = json.loads(installed.stdout)
+        self.assertEqual(first["status"], "installed")
+        self.assertEqual(first["hosts"], ["claude"])
+        self.assertFalse(first["auto"])
+        self.assertTrue(first["fresh_session_required"])
+        self.assertIn("new Code chat", first["notice"])
+        self.assertFalse(first["doctor"]["fresh_session_required"])
+        self.assertEqual(first["doctor"]["bindings"], "passed")
+        self.assertEqual(first["doctor"]["package_integrity"], "passed")
+        manifest = json.loads((self.consumer / ".bstack/package/manifest.json").read_text())
+        for name, record in manifest["public_skills"].items():
+            for prefix in (".agents", ".claude"):
+                skill = self.consumer / prefix / "skills" / name / "SKILL.md"
+                self.assertTrue(skill.is_file())
+                self.assertIn(str(self.consumer / ".bstack/package" / record["path"]), skill.read_text())
+                self.assertEqual(skill.resolve(), self.consumer / ".agents/skills" / name / "SKILL.md")
+        for enabled in (False, True):
+            if enabled:
+                mode = subprocess.run([sys.executable, "-B", str(self.consumer / ".bstack/package/scripts/bstack.py"),
+                                       "auto", "on", "--project", str(self.consumer)], text=True, capture_output=True)
+                self.assertEqual(mode.returncode, 0, mode.stdout + mode.stderr)
+            result = self.install()
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            current = json.loads(result.stdout)
+            self.assertEqual(current["auto"], enabled)
+            self.assertEqual(current["hosts"], ["claude"])
+            self.assertEqual(current["doctor"]["bindings"], "passed")
+            self.assertFalse(current["fresh_session_required"])
+            self.assertFalse((self.consumer / ".codex").exists())
+            self.assertFalse((self.consumer / ".cursor/skills").exists())
+
+    def test_tampered_payload_fails_before_installation(self):
+        archive_path = self.root / "bstack/assets/bstack.zip"
+        with zipfile.ZipFile(archive_path) as source:
+            entries = [(entry, source.read(entry)) for entry in source.infolist()]
+        with zipfile.ZipFile(archive_path, "w") as target:
+            for entry, content in entries:
+                target.writestr(entry, b"tampered" if entry.filename == "scripts/bstack.py" else content)
+        result = self.install()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("Bundle content or mode changed", result.stderr)
+        self.assertFalse((self.consumer / ".bstack").exists())
+
+    def test_installation_conflict_propagates_without_a_success_receipt(self):
+        owned_by_user = self.consumer / ".agents/skills/how/SKILL.md"
+        owned_by_user.parent.mkdir(parents=True)
+        owned_by_user.write_text("my existing skill\n")
+        result = self.install("--hosts", "claude")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("error", result.stderr)
+        self.assertEqual(owned_by_user.read_text(), "my existing skill\n")
+
+    def test_doctor_failure_propagates_without_a_success_receipt(self):
+        spec = importlib.util.spec_from_file_location("bstack_download", self.installer)
+        download = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(download)
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with patch.object(download.subprocess, "run", side_effect=[
+            subprocess.CompletedProcess([], 0, '{"installed": true}', ""),
+            subprocess.CompletedProcess([], 7, "", "doctor rejected package"),
+        ]) as execute, redirect_stdout(stdout), redirect_stderr(stderr):
+            code = download.main(["--project", str(self.consumer)])
+        self.assertEqual(code, 7)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("verification failed", stderr.getvalue())
+        self.assertEqual(execute.call_args.args[0][-3:], ["doctor", "--project", str(self.consumer)])
 
 
 if __name__ == "__main__":

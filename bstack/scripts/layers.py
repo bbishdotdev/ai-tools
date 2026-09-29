@@ -13,6 +13,10 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def valid_digest(value):
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
 def relative_parts(relative):
     if not isinstance(relative, str) or not relative or "\\" in relative:
         raise ValueError(f"Unsafe relative path: {relative!r}")
@@ -64,13 +68,21 @@ def import_errors(root, manifest):
             errors.append(f"Duplicate import entry: {relative}")
         expected[relative] = entry
         locked = entry.get("upstream_sha256")
-        if not isinstance(locked, str) or len(locked) != 64:
+        if not valid_digest(locked):
             errors.append(f"Missing upstream digest: {relative}")
         if entry.get("installed_sha256", locked) != locked:
             errors.append(f"Import lock contains an adaptation: {relative}")
+        local_digest = locked
+        if "local_edit" in entry:
+            edit = entry["local_edit"]
+            if (not isinstance(edit, dict) or not valid_digest(edit.get("sha256"))
+                    or not isinstance(edit.get("reason"), str) or not edit["reason"].strip()):
+                errors.append(f"Invalid reviewed local edit: {relative}")
+            else:
+                local_digest = edit["sha256"]
         if not path.is_file():
             errors.append(f"Missing imported file: {relative}")
-        elif digest(path) != locked:
+        elif digest(path) != local_digest:
             errors.append(f"Local vendor content differs: {relative}")
         elif oct(stat.S_IMODE(path.stat().st_mode)) != entry["mode"]:
             errors.append(f"Local vendor permissions differ: {relative}")

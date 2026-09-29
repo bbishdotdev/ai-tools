@@ -4,7 +4,7 @@
   "method": "Static source inventory. Edges are explicit code-span, bold-name, principle-name, playbook-path, or relative-Markdown-link references. They include optional references and examples; they are not executed calls or proof of runtime reachability. Plain unmarked prose references may be absent. Built-ins and dynamically discovered tools need separate capability checks.",
   "summary": {
     "files": 162,
-    "bytes": 3438100,
+    "bytes": 3438097,
     "pstack_skills": 47,
     "principles": 23,
     "companion_skills": 3,
@@ -7921,8 +7921,8 @@
     },
     {
       "path": "skills/why/references/sources/linear.md",
-      "bytes": 2996,
-      "sha256": "01304e7f1badfcfb78babbb0edcadeb3cc8dd3f713793420cdff24ba190f907c"
+      "bytes": 2993,
+      "sha256": "de4a19ee2670a4a7521c6cb6e1133611d1b427f64130c009e24e17c5357d2078"
     },
     {
       "path": "skills/why/references/sources/notion.md",

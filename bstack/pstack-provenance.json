@@ -6,7 +6,7 @@
   "source_path": "pstack",
   "plugin_version": "0.15.2",
   "destination": "upstream/pstack",
-  "scope": "Exact pinned upstream files, including selected cursor-team-kit companions. bstack adaptations live outside engineering.",
+  "scope": "Pinned upstream files, including selected cursor-team-kit companions, with one recorded local example wording edit. Workflow adaptations live outside the source snapshot.",
   "files": [
     {
       "path": ".cursor-plugin/plugin.json",
@@ -958,7 +958,11 @@
       "path": "skills/why/references/sources/linear.md",
       "upstream_sha256": "01304e7f1badfcfb78babbb0edcadeb3cc8dd3f713793420cdff24ba190f907c",
       "mode": "0o644",
-      "source": "cursor/plugins"
+      "source": "cursor/plugins",
+      "local_edit": {
+        "sha256": "de4a19ee2670a4a7521c6cb6e1133611d1b427f64130c009e24e17c5357d2078",
+        "reason": "Replace one illustrative initiative title with neutral release wording."
+      }
     },
     {
       "path": "skills/why/references/sources/notion.md",

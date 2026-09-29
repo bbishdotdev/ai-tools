@@ -1,6 +1,6 @@
 # Pinned sources
 
-These are frozen inputs for bstack's workflows and release builder. Keep their contents unchanged. bstack-owned engineering work lives in [engineering](../engineering/README.md); SDLC integration lives in [sdlc](../sdlc/README.md).
+These are locked inputs for bstack's workflows and release builder. Keep their contents unchanged beyond the [recorded wording exception](../UPSTREAM.md). bstack-owned engineering work lives in [engineering](../engineering/README.md); SDLC integration lives in [sdlc](../sdlc/README.md).
 
 | Snapshot | Contents | Source lock |
 | --- | --- | --- |

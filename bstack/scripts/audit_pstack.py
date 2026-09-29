@@ -225,7 +225,7 @@ def render_catalog(inventory):
     lines = [
         "# PStack catalog", "",
         "Generated from the pinned bstack import. Start with [the architectural audit](pstack.md).", "",
-        "This catalog describes unchanged upstream files. bstack's active [router policy](../shared/skills/bstack-router/SKILL.md) and [unslop override](../shared/skills/unslop/SKILL.md) live outside the import. See [the layer manifest](../layers.json).", "",
+        "This catalog describes the locked source files, including the [recorded wording exception](../UPSTREAM.md). bstack's active [router policy](../shared/skills/bstack-router/SKILL.md) and [unslop override](../shared/skills/unslop/SKILL.md) live outside the import. See [the layer manifest](../layers.json).", "",
         "Purpose text comes from each skill's description. Manual means the file declares `disable-model-invocation: true`; normal means it does not. This records metadata, not proof that any host loaded the skill. Character counts cover the complete SKILL.md, not its supporting files. Dormant Benny skills are outside the plugin manifest's discovery directory.", "",
     ]
     groups = [("workflow", "Workflow and utility skills"), ("principle", "Engineering principles"),
