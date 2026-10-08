@@ -101,6 +101,20 @@ skills.sh supports its default host links and `--copy`; both transport the same 
 
 Check for an existing `install-bstack` skill before using a third-party installer. The bstack controller cannot protect a file that another installer overwrites first. It refuses collisions while creating its own package and bindings.
 
+## Project instructions
+
+Setup writes the seven-rule [bstack baseline](shared/references/baseline-agents.md) directly into a managed block in `AGENTS.md`. When Claude is selected, it also adds the block to `CLAUDE.md`. Missing files are created; existing project instructions stay intact. A `CLAUDE.md` link to `AGENTS.md` keeps one shared block. Baseline rules apply even when automatic routing is off.
+
+Keep project-specific guidance outside `<!-- bstack:begin -->` and `<!-- bstack:end -->`. Updates replace only the owned block; uninstall removes it and preserves your guidance. A repository with only `CLAUDE.md` also gets `AGENTS.md` so the other tools have a shared entry.
+
+Setup does not run any tool's native init. The baseline is enough to finish installation. You can then ask your agent to inspect the repository and add project-specific guidance outside the block, or use your tool's init if available. Preserve the block and check afterward:
+
+```sh
+python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
+```
+
+If another tool changes or removes a managed block, `doctor` reports it and setup refuses to overwrite the conflict. Ask your agent to preserve the new project text, restore the exact block recorded in `.bstack/config.json`, and rerun setup. This checks the file contents; it cannot prevent another tool from editing them or prove that an agent followed the instructions.
+
 ## Installed layout
 
 ```text

@@ -18,6 +18,8 @@ python3 <absolute-package-path>/scripts/bstack.py setup --project <project-root>
 
 Setup creates direct public skill entries and project instructions. It preserves an existing auto preference and defaults to manual routing for a new installation. Do not enable auto mode without the user's request. Run `doctor --project <project-root>` to check the resulting package and bindings.
 
+The seven-rule [baseline](../references/baseline-agents.md) is written into managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`, including new files. Existing project text and shared symlinks are preserved. Baseline rules apply independently of auto mode. Do not run a host's `/init` automatically. Offer optional project-specific guidance outside the blocks after setup; installation does not depend on it. If the user requests that guidance or a native init, preserve the blocks and run `doctor` afterward. A changed or missing block must be restored from its exact record in `.bstack/config.json` while preserving new project text; setup refuses to overwrite that conflict.
+
 For local planning and tickets, initialize the project's workspace before creating optional role or adapter configuration:
 
 ```sh

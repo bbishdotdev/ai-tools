@@ -8,6 +8,8 @@ The local workspace app supports Wayfinder maps, accepted decisions, specs and K
 
 Python 3.11+ on macOS or Linux is required. Both routes install the same bundled package.
 
+Setup adds the seven-rule [baseline](shared/references/baseline-agents.md) directly to managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`. It creates missing files and preserves existing project text and shared symlinks. The baseline applies with auto mode off. Add project-specific guidance outside the blocks; native tool init is optional and never runs automatically. Run `doctor` after an init to detect changed or missing blocks. Updates and uninstall touch only the owned blocks.
+
 ### With skills.sh
 
 From the project where you want to use bstack, run:

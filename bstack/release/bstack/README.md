@@ -1,12 +1,14 @@
 # bstack
 
-Version 0.5.1. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
+Version 0.6.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
 
 The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
 ## Install
 
 Python 3.11+ on macOS or Linux is required. Both routes install the same bundled package.
+
+Setup adds the seven-rule [baseline](shared/references/baseline-agents.md) directly to managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`. It creates missing files and preserves existing project text and shared symlinks. The baseline applies with auto mode off. Add project-specific guidance outside the blocks; native tool init is optional and never runs automatically. Run `doctor` after an init to detect changed or missing blocks. Updates and uninstall touch only the owned blocks.
 
 ### With skills.sh
 

@@ -20,6 +20,8 @@ Planning and ticket storage are local today. GitHub, Jira, and Linear tracker co
 
 Choose either route. Both install the same bundled skills, dependencies, and customizations. Python 3.11+ on macOS or Linux is required.
 
+Installation includes a concise [seven-rule baseline](shared/references/baseline-agents.md) in your project instructions, even with automatic routing off. Existing guidance is preserved; project-specific initialization is optional. See [project instructions](INSTALL.md#project-instructions).
+
 ### With skills.sh
 
 From the project where you want to use bstack, run:

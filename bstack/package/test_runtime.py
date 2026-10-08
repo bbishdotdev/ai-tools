@@ -14,6 +14,8 @@ from unittest import mock
 
 SOURCE = Path(__file__).resolve().parent
 BSTACK = SOURCE.parent
+BASELINE_PATH = "shared/references/baseline-agents.md"
+BASELINE = "# Fixture baseline\n\nUse the agreed project behavior.\n"
 PUBLIC_SKILLS = {
     "poteto-mode": "engineering/poteto-mode/SKILL.md",
     "how": "engineering/how/SKILL.md",
@@ -42,12 +44,13 @@ class RuntimeTests(unittest.TestCase):
         self.make_capsule(self.capsule)
 
     def make_capsule(self, root):
-        for directory in ("scripts", "runtime", "shared/router"):
+        for directory in ("scripts", "runtime", "shared/router", "shared/references"):
             (root / directory).mkdir(parents=True, exist_ok=True)
         shutil.copyfile(SOURCE / "runtime.py", root / "scripts/bstack.py")
         shutil.copyfile(BSTACK / "shared/router/hook.py", root / "runtime/reminder.py")
         shutil.copyfile(BSTACK / "shared/router/reminder.txt", root / "runtime/reminder.txt")
         (root / "shared/router/WORKFLOW.md").write_text("# Fixture router\n")
+        (root / BASELINE_PATH).write_text(BASELINE)
         (root / "index.json").write_text("{}\n")
         for name, relative in PUBLIC_SKILLS.items():
             path = root / relative
@@ -154,6 +157,8 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(result["native_hook_trust"], "not_applicable")
         self.assertEqual(result["hosts"], ["codex", "claude", "cursor", "grok"])
         instructions = (self.project / ".bstack/instructions.md").read_text()
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.assertEqual((self.project / name).read_text().count(BASELINE), 1)
         self.assertIn("unslop/SKILL.md", instructions)
         self.assertNotIn("router/WORKFLOW.md", instructions)
         self.assertIn("Engineering routing is manual", instructions)
@@ -264,7 +269,10 @@ class RuntimeTests(unittest.TestCase):
         self.write(".gitignore", "node_modules/\n")
         self.run_cli("setup")
         self.write(".bstack/work/private.md", "keep me")
-        self.run_cli("auto", "on")
+        for args in (("setup",), ("auto", "on"), ("auto", "off"), ("auto", "on")):
+            self.run_cli(*args)
+            for name in ("AGENTS.md", "CLAUDE.md"):
+                self.assertEqual((self.project / name).read_text().count(BASELINE), 1)
         self.run_cli("uninstall")
         self.assertEqual((self.project / "AGENTS.md").read_text(), before_agents)
         self.assertEqual((self.project / "CLAUDE.md").read_text(), "Claude preferences\n")
@@ -340,6 +348,21 @@ class RuntimeTests(unittest.TestCase):
         before = self.files()
         self.run_cli("auto", "on", success=False)
         self.assertEqual(self.files(), before)
+
+    def test_reinitializing_instructions_reports_baseline_conflict_without_mutation(self):
+        for changed in (False, True):
+            with self.subTest(changed=changed):
+                self.project = self.root / f"reinitialized-{changed}"
+                self.project.mkdir()
+                self.run_cli("setup")
+                path = self.project / "AGENTS.md"
+                replacement = BASELINE.replace("agreed", "different") if changed else ""
+                path.write_text(path.read_text().replace(BASELINE, replacement) + "New project guidance\n")
+                before = self.files()
+                for args in (("doctor",), ("setup",), ("auto", "on")):
+                    result = self.run_cli(*args, success=False)
+                    self.assertIn("Managed bstack block changed or disappeared", result.stderr)
+                    self.assertEqual(self.files(), before)
 
     def test_existing_codex_explicit_disable_is_not_overridden(self):
         self.write(".codex/config.toml", "[features]\nhooks = false\n")
@@ -485,21 +508,54 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse((self.project / ".bstack/package").exists())
 
     def test_offline_upgrade_uses_new_bundle_and_preserves_opt_in(self):
+        existing = "Existing project guidance without final newline"
+        path = self.write("AGENTS.md", existing)
         self.run_cli("install")
         installed = self.project / ".bstack/package"
         self.run_cli("auto", "on", capsule=installed)
+        guidance = "\n## Project checks\n\nRun the checkout's integration checks before delivery.\n"
+        content = path.read_text() + guidance
+        path.write_text(content)
+        before = self.files()
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.assertEqual(self.run_cli("setup")["changes"], [])
+        self.assertEqual(self.files(), before)
         updated = self.root / "new archive"
         self.make_capsule(updated)
         (updated / "shared/router/WORKFLOW.md").write_text("# Updated reviewed router\n")
+        baseline = BASELINE.replace("agreed", "updated")
+        (updated / BASELINE_PATH).write_text(baseline)
         self.refresh_manifest(updated)
         result = self.run_cli("install", capsule=updated)
         self.assertTrue(result["auto"])
-        self.assertEqual(result["changes"], [])
+        self.assertEqual(set(result["changes"]), {"AGENTS.md", "CLAUDE.md", ".bstack/config.json"})
         self.assertTrue(result["fresh_session_required"])
         self.assertFalse(self.run_cli("install", capsule=updated)["fresh_session_required"])
         self.assertEqual((installed / "manifest.json").read_bytes(), (updated / "manifest.json").read_bytes())
         self.assertEqual((installed / "shared/router/WORKFLOW.md").read_text(), "# Updated reviewed router\n")
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            text = (self.project / name).read_text()
+            self.assertEqual(text.count(baseline), 1)
+            self.assertNotIn(BASELINE, text)
+        self.assertEqual(path.read_text(), content.replace(BASELINE, baseline))
         self.assertEqual(self.run_cli("doctor", capsule=installed)["bindings"], "passed")
+        self.run_cli("uninstall")
+        self.assertEqual(path.read_text(), existing + guidance)
+
+    def test_upgrade_from_package_without_baseline_preserves_owned_project_text(self):
+        self.write("AGENTS.md", "Existing project guidance\n")
+        legacy = self.root / "package before baseline"
+        self.make_capsule(legacy)
+        (legacy / BASELINE_PATH).unlink()
+        self.refresh_manifest(legacy)
+        self.run_cli("install", capsule=legacy)
+        self.assertNotIn(BASELINE, (self.project / "AGENTS.md").read_text())
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.run_cli("install")
+        self.assertEqual((self.project / "AGENTS.md").read_text().count(BASELINE), 1)
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.run_cli("uninstall")
+        self.assertEqual((self.project / "AGENTS.md").read_text(), "Existing project guidance\n")
 
     def test_offline_upgrade_rolls_back_capsule_when_setup_fails(self):
         self.run_cli("install")
@@ -545,6 +601,20 @@ class RuntimeTests(unittest.TestCase):
         self.run_cli("uninstall", project=other)
         self.assertEqual((other / "AGENTS.md").read_text(), "Shared project instructions\n")
         self.assertEqual((other / ".gitignore").read_text(), "node_modules/\n")
+
+    def test_fresh_clone_adopts_old_pointer_block_without_ownership_state(self):
+        pointer = "<!-- bstack:begin -->\nRead and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n<!-- bstack:end -->\n"
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.write(name, "Shared project instructions\n" + pointer)
+        self.run_cli("setup")
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            text = (self.project / name).read_text()
+            self.assertEqual(text.count(BASELINE), 1)
+            self.assertEqual(text.count("bstack:begin"), 1)
+        self.assertEqual(self.run_cli("setup")["changes"], [])
+        self.run_cli("uninstall")
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.assertEqual((self.project / name).read_text(), "Shared project instructions\n")
 
     def test_fresh_clone_refuses_changed_portable_pointer_block(self):
         self.run_cli("setup")

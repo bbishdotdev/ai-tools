@@ -22,6 +22,8 @@ SCHEMA = 1
 HOSTS = ("codex", "claude", "cursor", "grok")
 STATE = ".bstack/config.json"
 PACKAGE = ".bstack/package"
+BASELINE = "shared/references/baseline-agents.md"
+POINTER = "Read and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n"
 BEGIN = "<!-- bstack:begin -->"
 END = "<!-- bstack:end -->"
 RELOAD = "Start a fresh agent session after these bstack binding or package changes. Existing conversation context is not erased."
@@ -191,7 +193,8 @@ def marker_block(body, style="markdown"):
 def without_block(text, record, path):
     block = record["text"]
     if text.count(block) != 1:
-        raise Conflict(f"Managed bstack block changed or disappeared: {path}")
+        raise Conflict(f"Managed bstack block changed or disappeared: {path}. "
+                       "Restore the original managed block and keep project edits outside it before rerunning setup")
     return text.replace(block, "", 1)
 
 
@@ -217,8 +220,15 @@ def wrapper(name, description, body, manual=True):
             "metadata:\n  package: bstack\n---\n\n" + body.rstrip() + "\n")
 
 
-def build_records(project, capsule, hosts, auto, old, manifest=None):
+def read_baseline(capsule, manifest):
+    if BASELINE not in {entry["path"] for entry in manifest["files"]}:
+        return ""
+    return (capsule / BASELINE).read_text().rstrip()
+
+
+def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None):
     manifest = manifest or package_check(capsule)
+    baseline = read_baseline(capsule, manifest) if baseline is None else baseline
     router = capsule / manifest["entrypoints"]["router"]
     unslop = capsule / manifest["entrypoints"]["unslop"]
     script = capsule / manifest["entrypoints"]["controller"]
@@ -262,12 +272,15 @@ def build_records(project, capsule, hosts, auto, old, manifest=None):
                         "explicitly invoked workflow across turns. Otherwise follow ordinary project guidance without "
                         "activating bstack engineering workflows.\n")
     add(".bstack/instructions.md", {"kind": "file", "text": "# bstack project instructions\n\n" + instruction})
-    pointer = "Read and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n"
-    add("AGENTS.md", {"kind": "block", "text": marker_block(pointer), "adopt": True}, instructions=True)
+    body = baseline + "\n\n" + POINTER if baseline else POINTER
+    instruction_record = {"kind": "block", "text": marker_block(body), "adopt": True}
+    if baseline:
+        instruction_record["adopt_from"] = [marker_block(POINTER)]
+    add("AGENTS.md", dict(instruction_record), instructions=True)
     if "claude" in hosts:
-        add("CLAUDE.md", {"kind": "block", "text": marker_block(pointer), "adopt": True}, instructions=True)
+        add("CLAUDE.md", dict(instruction_record), instructions=True)
     if "cursor" in hosts:
-        rule = "---\ndescription: bstack prose and optional engineering routing\nalwaysApply: true\n---\n\n" + pointer
+        rule = "---\ndescription: bstack prose and optional engineering routing\nalwaysApply: true\n---\n\n" + POINTER
         add(".cursor/rules/bstack.mdc", {"kind": "file", "text": rule})
     ignore_path = safe_path(project, ".gitignore", follow_leaf=True)
     ignore_key = str(ignore_path.relative_to(project))
@@ -388,11 +401,26 @@ def reconcile(project, previous, desired):
                     raise Conflict(f"Existing file would be replaced: {path}. Restore this project's .bstack/config.json ownership state or explicitly resolve the collision before setup; copied machine-specific bindings are not adopted automatically")
                 output = new["text"] if new else None
             elif kind == "block":
+                previous_block = None
                 if old:
-                    text = without_block(text, old, path)
-                elif new and new.get("adopt") and text.count(new["text"]) == 1:
-                    text = without_block(text, new, path)
-                output = insert_block(text, new, path) if new else (text or None)
+                    previous_block = old["text"]
+                elif new and new.get("adopt"):
+                    for block in (new["text"], *new.get("adopt_from", [])):
+                        if text.count(block) == 1:
+                            previous_block = block
+                            break
+                if previous_block is not None:
+                    surrounding = without_block(text, {"text": previous_block}, path)
+                    if new:
+                        if "bstack:begin" in surrounding or "bstack:end" in surrounding:
+                            raise Conflict(f"Unowned or malformed bstack block: {path}")
+                        if previous_block.startswith("\n") and not new["text"].startswith("\n"):
+                            new["text"] = "\n" + new["text"]
+                        output = text.replace(previous_block, new["text"], 1)
+                    else:
+                        output = surrounding or None
+                else:
+                    output = insert_block(text, new, path) if new else (text or None)
             elif kind == "json":
                 output = json_reconcile(text, old, new, path)
             else:
@@ -528,7 +556,8 @@ def install_offline(project, capsule, hosts=None):
         chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else HOSTS))
         enabled = current["auto"] if current else False
         previous = current["managed"] if current else {}
-        desired = build_records(project, target, chosen_hosts, enabled, previous, manifest=manifest)
+        desired = build_records(project, target, chosen_hosts, enabled, previous, manifest=manifest,
+                                baseline=read_baseline(capsule, manifest))
         preflight = dict(previous)
         if legacy:
             for relative in desired:

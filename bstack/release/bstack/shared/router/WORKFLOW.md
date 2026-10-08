@@ -10,6 +10,8 @@ metadata:
 
 This is bstack's policy layer over [PStack's router](../../engineering/poteto-mode/WORKFLOW.md). Keep the imported files unchanged. Apply this policy to every imported playbook, skill, agent, reference, and helper they select. User scope and host instructions take precedence; this layer resolves differences with the imported defaults.
 
+Apply the seven-rule [bstack baseline](../references/baseline-agents.md), reusing it when already present in project instructions. It governs imported guidance on implementation trade-offs, meaningful tests, and code comments. An imported comment exception or mandatory test-per-fix instruction does not override it.
+
 ## Select and continue
 
 When the user explicitly invokes a named skill such as `how` or `architect`, apply this policy and follow that skill within the requested scope. Load only its needed dependencies. Do not also load the upstream router or select a playbook unless that skill calls for it or the user requests Poteto Mode.

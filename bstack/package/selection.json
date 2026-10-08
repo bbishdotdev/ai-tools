@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "skills": [
     "architect",
     "arena",
@@ -84,6 +84,7 @@
     "to-pr": "engineering/to-pr"
   },
   "owned_resources": [
+    "shared/references/baseline-agents.md",
     "shared/references/workspace.md",
     "shared/references/workspace-requests.md",
     "shared/references/decision-authority.md",

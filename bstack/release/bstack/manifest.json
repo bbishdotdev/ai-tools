@@ -35,9 +35,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "5817479b85b3fbb1b14011406648cb62bf16d086e32b0b9908da5329046f9db8",
+      "sha256": "008d8610db8ebd0799b96c84974df0f13c26a61622c654d920b2a7ced668651d",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "44991b380125429ce55a86f115b0d4396c25738aff444e1906a03efa3656a6a1",
+      "source_sha256": "d829ea7d3402527bd710b77bdb3af195d8ab36c3dba5a997c0e914bcbfaa0111",
       "transforms": [
         "render-release-template"
       ]
@@ -1700,7 +1700,7 @@
       "path": "index.json",
       "sha256": "393f92d7c42cedbe6caf190ca35d32402105b039264f323f490497d91bfce8fe",
       "source": "bstack/package/selection.json",
-      "source_sha256": "151259df63d629fdc90ca6910f764f727ad83d0dcb9620a93cc4b92c6ce5fcc9",
+      "source_sha256": "897aa60239db5aac2aedc612578d791b2d40aa528cf13b77d1a8212221db4e1b",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -1734,9 +1734,9 @@
     {
       "mode": 420,
       "path": "scripts/bstack.py",
-      "sha256": "2bec0e26957ff42ef9e886ae10d407a6da44e0e7f7aab2f56b0c9fabd8c54601",
+      "sha256": "8daa5debd782c150dfc762d26f67c7fcdafe83f6a715749e6a41ba85be1a7f76",
       "source": "bstack/package/runtime.py",
-      "source_sha256": "2bec0e26957ff42ef9e886ae10d407a6da44e0e7f7aab2f56b0c9fabd8c54601",
+      "source_sha256": "8daa5debd782c150dfc762d26f67c7fcdafe83f6a715749e6a41ba85be1a7f76",
       "transforms": []
     },
     {
@@ -2138,6 +2138,14 @@
     },
     {
       "mode": 420,
+      "path": "shared/references/baseline-agents.md",
+      "sha256": "1def4afb51c6f33dbfedd36ef1f40de40a68140e473481d1ea6d1b3b96e477a9",
+      "source": "bstack/shared/references/baseline-agents.md",
+      "source_sha256": "1def4afb51c6f33dbfedd36ef1f40de40a68140e473481d1ea6d1b3b96e477a9",
+      "transforms": []
+    },
+    {
+      "mode": 420,
       "path": "shared/references/decision-authority.md",
       "sha256": "b54cd8c62601e991f1a212ac3af5cb59945284cc36a2961edb6eda59f140b1ea",
       "source": "bstack/shared/references/decision-authority.md",
@@ -2173,9 +2181,9 @@
     {
       "mode": 420,
       "path": "shared/router/WORKFLOW.md",
-      "sha256": "2d705e8cad1c6547fc88eb02befaaa1bbb05726ff03d9439380d9349dfbd5632",
+      "sha256": "093f806d4ac9e58a7cde9b1f54ea69699ee528cd82961aca99ee2efe1f44017d",
       "source": "bstack/shared/skills/bstack-router/SKILL.md",
-      "source_sha256": "a9488f45c854e733b894d6bb59a259ed0e410e374210adf26fe2f1361787dcd2",
+      "source_sha256": "4c39ab6e3d5d6fbd815d8400f360751d018fb60730740a3d8b192afe3ed8eff4",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -2195,9 +2203,9 @@
     {
       "mode": 420,
       "path": "shared/setup-bstack/SKILL.md",
-      "sha256": "4a8522b37f35c8c0f0a4c293c1cf462379bb6359095596850d610d94db5604be",
+      "sha256": "42e2df9821bb4e8e6b1da2b0f4f32a46bd97e8fef141724fc1cadc90234a8802",
       "source": "bstack/package/templates/setup.md",
-      "source_sha256": "4a8522b37f35c8c0f0a4c293c1cf462379bb6359095596850d610d94db5604be",
+      "source_sha256": "42e2df9821bb4e8e6b1da2b0f4f32a46bd97e8fef141724fc1cadc90234a8802",
       "transforms": [
         "render-release-template",
         "public-skill-invocation-policy"
@@ -2660,5 +2668,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "0.5.1"
+  "version": "0.6.0"
 }
