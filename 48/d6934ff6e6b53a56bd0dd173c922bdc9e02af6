@@ -1,0 +1,23 @@
+bstack/github/pr.py
+  s_822e08e34bda62::t_61a5b3a07fa6cb 406
+bstack/release/bstack/github/pr.py
+  s_822e08e34bda62::t_2a84b91932863d 406
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_31a417bbd403ae 1805,1807
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "48d6934ff6e6b53a56bd0dd173c922bdc9e02af6",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "unknown"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
