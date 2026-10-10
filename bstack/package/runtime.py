@@ -23,6 +23,8 @@ HOSTS = ("codex", "claude", "cursor", "grok")
 STATE = ".bstack/config.json"
 PACKAGE = ".bstack/package"
 BASELINE = "shared/references/baseline-agents.md"
+PR_TEMPLATE = "github/pull_request_template.md"
+PR_TEMPLATE_DESTINATION = ".github/pull_request_template.md"
 POINTER = "Read and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n"
 BEGIN = "<!-- bstack:begin -->"
 END = "<!-- bstack:end -->"
@@ -235,6 +237,21 @@ def read_baseline(capsule, manifest):
     if BASELINE not in {entry["path"] for entry in manifest["files"]}:
         return ""
     return (capsule / BASELINE).read_text().rstrip()
+
+
+def existing_pr_templates(project):
+    found = []
+    for directory in (project, project / "docs", project / ".github"):
+        if not directory.is_dir():
+            continue
+        for entry in directory.iterdir():
+            name = entry.name.casefold()
+            if name in ("pull_request_template.md", "pull_request_template.txt"):
+                found.append(str(entry.relative_to(project)))
+            if name == "pull_request_template" and entry.is_dir() and any(
+                    child.is_file() and child.suffix.casefold() in (".md", ".txt") for child in entry.iterdir()):
+                found.append(str(entry.relative_to(project)))
+    return sorted(found)
 
 
 def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None):
@@ -515,7 +532,21 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
             state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled, "managed": desired, "installation": install_kind}
         restored = missing_instruction_blocks(project, old, desired) if action == "setup" else []
         changes = reconcile(project, old, desired, restore_missing=restored)
-        bindings_changed = any(relative != ".gitignore" for relative in changes)
+        template_status = None
+        if action == "setup" and PR_TEMPLATE in {entry["path"] for entry in manifest["files"]}:
+            existing = existing_pr_templates(project)
+            if existing:
+                template_status = {
+                    "status": "existing",
+                    "paths": existing,
+                    "bundled": str(capsule / PR_TEMPLATE),
+                    "guidance": "Existing PR templates were left unchanged. Ask your agent to compare them with the bundled template and replace the file you choose, or add BStack as a named option.",
+                }
+            else:
+                safe_path(project, PR_TEMPLATE_DESTINATION)
+                changes[PR_TEMPLATE_DESTINATION] = (None, {"kind": "file", "data": (capsule / PR_TEMPLATE).read_bytes(), "mode": 0o644})
+                template_status = {"status": "created", "path": PR_TEMPLATE_DESTINATION}
+        bindings_changed = any(relative not in (".gitignore", PR_TEMPLATE_DESTINATION) for relative in changes)
         if action == "uninstall":
             retained = [p for p in (project / ".bstack").rglob("*")
                         if (p.is_file() or p.is_symlink()) and p not in
@@ -543,6 +574,8 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
             result["recovery_warning"] = ("Recreated the missing instruction file(s) with only bstack's managed block: "
                                           + ", ".join(restored) + ". Bstack cannot recover project guidance that "
                                           "was outside that block; check Git or a backup for it.")
+        if template_status:
+            result["pr_template"] = template_status
         return result
 
 

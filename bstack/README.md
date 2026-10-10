@@ -79,7 +79,7 @@ Autonomous cross-model execution remains separate implementation work. Configuri
 Paths below are relative to this `bstack/` folder:
 
 - [Engineering](engineering/README.md) holds bstack-owned research, prototype, implementation and PR entries.
-- `github/` holds the PR template and executable publishing helper, including the final overlap check and visual fallback.
+- `github/` holds the PR template and executable publishing helper, including the final overlap check and visual fallback. Setup copies the template into projects without one; the project owns its copy.
 - [SDLC](sdlc/README.md) holds owned planning skills and integration decisions.
 - [Workspace](workspace/README.md) provides Wayfinder, specs and Kanban, with shared SQLite operations for its browser UI and JSON CLI.
 - `shared/` holds the router, adapters, maintainer verification, and [memory implementation](shared/memory.md).

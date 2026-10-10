@@ -44,13 +44,14 @@ class RuntimeTests(unittest.TestCase):
         self.make_capsule(self.capsule)
 
     def make_capsule(self, root):
-        for directory in ("scripts", "runtime", "shared/router", "shared/references"):
+        for directory in ("scripts", "runtime", "shared/router", "shared/references", "github"):
             (root / directory).mkdir(parents=True, exist_ok=True)
         shutil.copyfile(SOURCE / "runtime.py", root / "scripts/bstack.py")
         shutil.copyfile(BSTACK / "shared/router/hook.py", root / "runtime/reminder.py")
         shutil.copyfile(BSTACK / "shared/router/reminder.txt", root / "runtime/reminder.txt")
         (root / "shared/router/WORKFLOW.md").write_text("# Fixture router\n")
         (root / BASELINE_PATH).write_text(BASELINE)
+        (root / "github/pull_request_template.md").write_text("# Fixture PR template\n")
         (root / "index.json").write_text("{}\n")
         for name, relative in PUBLIC_SKILLS.items():
             path = root / relative
@@ -179,6 +180,66 @@ class RuntimeTests(unittest.TestCase):
             if args == ("doctor",):
                 self.assertEqual(result["bindings"], "passed")
         self.assertEqual(self.files(), before)
+
+    def test_install_seeds_project_owned_pr_template_and_preserves_edits(self):
+        installed = self.run_cli("install")
+        template = self.project / ".github/pull_request_template.md"
+        self.assertEqual(installed["pr_template"], {"status": "created", "path": ".github/pull_request_template.md"})
+        self.assertEqual(template.read_text(), "# Fixture PR template\n")
+        self.assertNotIn(".github/pull_request_template.md", json.loads((self.project / ".bstack/config.json").read_text())["managed"])
+        template.write_text("# Project template\n")
+        upgraded = self.run_cli("install")
+        self.assertEqual(upgraded["pr_template"]["status"], "existing")
+        self.assertEqual(upgraded["pr_template"]["paths"], [".github/pull_request_template.md"])
+        self.assertTrue(Path(upgraded["pr_template"]["bundled"]).is_file())
+        self.assertIn("file you choose", upgraded["pr_template"]["guidance"])
+        self.assertEqual(template.read_text(), "# Project template\n")
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.run_cli("uninstall")
+        self.assertEqual(template.read_text(), "# Project template\n")
+
+    def test_existing_pr_templates_are_preserved(self):
+        for relative in ("PULL_REQUEST_TEMPLATE.md", "docs/pull_request_template.txt",
+                         ".github/PULL_REQUEST_TEMPLATE/change.md"):
+            with self.subTest(relative=relative):
+                project = self.root / relative.replace("/", "-")
+                project.mkdir()
+                template = project / relative
+                template.parent.mkdir(parents=True, exist_ok=True)
+                template.write_text("Project template\n")
+                result = self.run_cli("install", project=project)
+                expected = relative.split("/change.md")[0] if relative.endswith("/change.md") else relative
+                self.assertEqual(result["pr_template"]["paths"], [expected])
+                self.assertIn("left unchanged", result["pr_template"]["guidance"])
+                self.assertFalse((project / ".github/pull_request_template.md").exists())
+                self.assertEqual(template.read_text(), "Project template\n")
+                self.assertEqual(self.run_cli("doctor", project=project)["bindings"], "passed")
+
+    def test_setup_reports_every_existing_pr_template_location(self):
+        self.write("PULL_REQUEST_TEMPLATE.md", "Root template\n")
+        self.write(".github/PULL_REQUEST_TEMPLATE/change.md", "Change template\n")
+        result = self.run_cli("setup")
+        self.assertEqual(result["pr_template"]["paths"],
+                         [".github/PULL_REQUEST_TEMPLATE", "PULL_REQUEST_TEMPLATE.md"])
+        self.assertFalse((self.project / ".github/pull_request_template.md").exists())
+
+    def test_empty_pr_template_directory_does_not_hide_missing_template(self):
+        (self.project / ".github/PULL_REQUEST_TEMPLATE").mkdir(parents=True)
+        result = self.run_cli("setup")
+        self.assertEqual(result["pr_template"]["status"], "created")
+        self.assertEqual((self.project / ".github/pull_request_template.md").read_text(), "# Fixture PR template\n")
+
+    def test_offline_upgrade_seeds_template_missing_from_older_bundle(self):
+        (self.capsule / "github/pull_request_template.md").unlink()
+        self.refresh_manifest(self.capsule)
+        self.run_cli("install")
+        self.assertFalse((self.project / ".github/pull_request_template.md").exists())
+        latest = self.root / "latest package"
+        self.make_capsule(latest)
+        result = self.run_cli("install", capsule=latest)
+        self.assertEqual(result["pr_template"]["status"], "created")
+        self.assertEqual((self.project / ".github/pull_request_template.md").read_text(), "# Fixture PR template\n")
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
 
     def test_mode_guidance_distinguishes_transitions_noops_and_read_only_checks(self):
         self.run_cli("setup")
