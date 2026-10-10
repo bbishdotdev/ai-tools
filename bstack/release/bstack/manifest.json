@@ -1802,9 +1802,9 @@
     {
       "mode": 493,
       "path": "github/pr.py",
-      "sha256": "8c35e3e3b15a3738f64f2eb3372b1ad461c95340409f10c113223a24da148622",
+      "sha256": "447ffa013c79ae7168d582c718ce76553f9ab6b40d143391850ef1d974a893ed",
       "source": "bstack/github/pr.py",
-      "source_sha256": "8c35e3e3b15a3738f64f2eb3372b1ad461c95340409f10c113223a24da148622",
+      "source_sha256": "447ffa013c79ae7168d582c718ce76553f9ab6b40d143391850ef1d974a893ed",
       "transforms": []
     },
     {

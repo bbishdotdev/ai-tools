@@ -403,7 +403,7 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
             if not with_media:
                 return fallback
             alt = item["alt"].replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]").replace("\n", " ")
-            return f"![{alt}]({item['file']})\n\n<details>\n<summary>Text fallback</summary>\n\n{fallback}\n\n</details>"
+            return f"![{alt}]({item['file']})\n\n<details>\n<summary>Diagram fallback</summary>\n\n{fallback}\n\n</details>"
         result = VISUAL.sub(visual, body)
         if attention:
             heading = re.search(r"^## Reviewer attention\s*$", result, re.M | re.I)
