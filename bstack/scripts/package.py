@@ -338,7 +338,8 @@ def assemble(root=ROOT):
         if not (directory / "SKILL.md").is_file():
             raise ValueError("Selected owned skill missing: " + name)
         selected.extend(source + "/" + path for path in sorted(layers.tree_files(directory))
-                        if not path.startswith("agents/") and path != "REVIEW.md")
+                        if not path.startswith("agents/") and path != "REVIEW.md"
+                        and "__pycache__" not in PurePosixPath(path).parts and not path.endswith((".pyc", ".pyo")))
     selected.extend(selection["owned_resources"])
     memory = "shared/skills/memory-policy"
     selected.extend(memory + "/" + path for path in sorted(layers.tree_files(root / memory))
