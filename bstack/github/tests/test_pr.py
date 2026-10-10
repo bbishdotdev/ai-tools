@@ -435,6 +435,44 @@ class PRTests(unittest.TestCase):
             pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.root / "new", media_path)
         self.assertEqual(raised.exception.code, "invalid_media")
 
+    def test_text_only_visual_section_is_rejected(self):
+        self.body_path.write_text(self.body_path.read_text() + "\n## For visual nerds\n\n`A → B`\n")
+        with self.assertRaises(pr.Error) as raised:
+            self.prepare()
+        self.assertEqual(raised.exception.code, "invalid_visual")
+
+    def test_multi_file_change_requires_a_visual(self):
+        gh = FakeGitHub()
+        gh.compare_files = [FILE, {**FILE, "filename": "other.py"}]
+        with self.assertRaises(pr.Error) as raised:
+            self.prepare(gh)
+        self.assertEqual(raised.exception.code, "visual_required")
+        self.body_path.write_text(self.body_path.read_text() + "\n## For visual nerds\n\n![Diagram](./local.png)\n")
+        with self.assertRaises(pr.Error) as raised:
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.bundle)
+        self.assertEqual(raised.exception.code, "invalid_visual")
+        self.body_path.write_text("## What changed\n\nChange.\n\n## For visual nerds\n\n```mermaid\nflowchart LR\n A --> B\n```\n")
+        result = pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.bundle)
+        self.assertEqual(result["status"], "prepared")
+
+    def test_bstack_template_keeps_visual_section(self):
+        gh = FakeGitHub()
+        gh.compare_files = [FILE, {**FILE, "filename": "other.py"}]
+        self.body_path.write_text("## What changes and why\n\nChange.\n\n## Before and after\n\n![Before](https://example.com/before.png)\n\n## How it works and why\n\nReason.\n")
+        with self.assertRaises(pr.Error) as raised:
+            self.prepare(gh)
+        self.assertEqual(raised.exception.code, "visual_required")
+
+    def test_attached_visual_needs_a_diagram_fallback(self):
+        self.prepare(media=True)
+        media_path = self.root / "media.json"
+        entries = pr.read_json(media_path)
+        entries[0]["fallback"] = "A → B"
+        pr.write_json(media_path, entries)
+        with self.assertRaises(pr.Error) as raised:
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.root / "new", media_path)
+        self.assertEqual(raised.exception.code, "invalid_media")
+
     def test_self_contained_bundle_survives_removing_sources(self):
         self.prepare(media=True)
         for path in (self.root / "image with spaces.svg", self.root / "media.json", self.scan_path, self.review_path, self.body_path):
@@ -462,7 +500,7 @@ class PRTests(unittest.TestCase):
                 self.assertNotIn("files", value["pullRequests"][0])
 
     def test_coverage_collapsed_and_existing_attention_heading_merged(self):
-        self.body_path.write_text("## What changed\n\nChange\n\n## Reviewer attention\n\nAuthored note.\n")
+        self.body_path.write_text("## What changed\n\nChange\n\n## For visual nerds\n\n```mermaid\nflowchart LR\n A --> B\n```\n\n## Reviewer attention\n\nAuthored note.\n")
         gh = FakeGitHub([raw_pr()])
         gh.compare_files = [{"filename": f"binary-{number}", "changes": 0} for number in range(40)]
         self.prepare(gh)
