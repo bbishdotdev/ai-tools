@@ -1590,9 +1590,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "377aac2acef3179790a30979ab27fe4cd309f89b52665f59809ebe64c0e40856",
+      "sha256": "156e4231218a4c4b0ab74efd4789826ab925a8d28bb04cc68cdfa9c1e4150035",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "eb998be2650dacc5d3529f7e68282f5d0b40ecc32d744b17e654b88ad68654be",
+      "source_sha256": "ccfd1ddcb4ffbadd1ef74ea349d21fb9b49f046af186938ef93ec6501e163f80",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1611,17 +1611,17 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "12321cdf546aab8c5f7c04a8f7cc2b329950a7ca590c40d10bc1d1a45a32b453",
+      "sha256": "3bdd5b280899d139576b33ce379a5ac359c298318302c523d85836c16e9c4633",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "12321cdf546aab8c5f7c04a8f7cc2b329950a7ca590c40d10bc1d1a45a32b453",
+      "source_sha256": "3bdd5b280899d139576b33ce379a5ac359c298318302c523d85836c16e9c4633",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/to-pr/references/visuals.md",
-      "sha256": "7afdab7d3226b18ab6cf9cbf8dbbdd97674ac5ba4d8d1143269eb6ac32be0d03",
+      "sha256": "59b6d2fdaa06d7e2a5f4a9fd37f63f9911098038acac9633218e4ca42f8b755e",
       "source": "bstack/engineering/to-pr/references/visuals.md",
-      "source_sha256": "7afdab7d3226b18ab6cf9cbf8dbbdd97674ac5ba4d8d1143269eb6ac32be0d03",
+      "source_sha256": "59b6d2fdaa06d7e2a5f4a9fd37f63f9911098038acac9633218e4ca42f8b755e",
       "transforms": []
     },
     {
@@ -1802,17 +1802,17 @@
     {
       "mode": 493,
       "path": "github/pr.py",
-      "sha256": "2785d434366bb5ece6c5c44069569282fbd39d0ade9abc3a0e9aeecf2c985334",
+      "sha256": "8c35e3e3b15a3738f64f2eb3372b1ad461c95340409f10c113223a24da148622",
       "source": "bstack/github/pr.py",
-      "source_sha256": "2785d434366bb5ece6c5c44069569282fbd39d0ade9abc3a0e9aeecf2c985334",
+      "source_sha256": "8c35e3e3b15a3738f64f2eb3372b1ad461c95340409f10c113223a24da148622",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "github/pull_request_template.md",
-      "sha256": "bb534e5e1d7b667dc246843e0bd60de8d3cc0c05e1cb6c18f7f013a382306ac0",
+      "sha256": "a3b9171b6b3b2ff46c578e09f60e3fa5d37008165f25404828d7a720a7098025",
       "source": "bstack/github/pull_request_template.md",
-      "source_sha256": "bb534e5e1d7b667dc246843e0bd60de8d3cc0c05e1cb6c18f7f013a382306ac0",
+      "source_sha256": "a3b9171b6b3b2ff46c578e09f60e3fa5d37008165f25404828d7a720a7098025",
       "transforms": []
     },
     {

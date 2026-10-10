@@ -23,6 +23,8 @@ VERSION = 1
 MAX_PRS = 500
 MAX_BYTES = 50 * 1024 * 1024
 VISUAL = re.compile(r"<!--\s*bstack-visual:([A-Za-z0-9_-]+)\s*-->")
+IMAGE = re.compile(r"!\[[^\]\n]+\]\(https://[^\)\n]+\)")
+MERMAID = re.compile(r"(?im)^[ \t]*(?:`{3,}|~{3,})[ \t]*mermaid\b")
 DISPOSITIONS = {"clear", "related", "duplicate", "contradiction", "hard-conflict"}
 WARNINGS = {"duplicate", "contradiction", "hard-conflict"}
 
@@ -309,12 +311,46 @@ def review_notices(scan, review, assessment):
     return "\n".join(lines), "\n\n".join(details)
 
 
+def has_visual(value):
+    return bool(VISUAL.search(value) or IMAGE.search(value) or MERMAID.search(value))
+
+
+def visual_section(body):
+    start = re.search(r"(?im)^##[ \t]+For visual nerds[ \t]*$", body)
+    if not start:
+        return None
+    rest = body[start.end():]
+    end = re.search(r"(?m)^##[ \t]+", rest)
+    return rest[:end.start()] if end else rest
+
+
+def micro_change(scan):
+    files = scan.get("comparison", {}).get("files", [])
+    if len(files) != 1:
+        return False
+    patch = files[0].get("patch")
+    return isinstance(patch, str) and len(re.findall(r"(?m)^@@[ \t]", patch)) == 1
+
+
+def validate_visual(scan, body):
+    section = visual_section(body)
+    if section is not None and not has_visual(section):
+        fail("invalid_visual", "For visual nerds needs an image or Mermaid diagram; omit the section only for a self-explanatory micro change")
+    if micro_change(scan):
+        return
+    if section is None and "## What changes and why" in body and "## Before and after" in body:
+        fail("visual_required", "This PR uses the bstack template but has no For visual nerds section")
+    if not (has_visual(section) if section is not None else has_visual(body)):
+        fail("visual_required", "A multi-file or multi-hunk PR needs an image or Mermaid diagram")
+
+
 def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False):
     scan = validate_scan(read_json(scan_path))
     review = read_json(review_path)
     assessment = review_scan(scan, review)
     text_value(title, "Title")
     body = text_value(Path(body_path).read_text(), "Body")
+    validate_visual(scan, body)
     media = read_json(media_path) if media_path else []
     if not isinstance(media, list):
         fail("invalid_media", "Media must be an array")
@@ -330,7 +366,9 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
         text_value(item.get("alt"), "Media alt text")
         fallback = text_value(item.get("fallback"), "Media fallback Markdown")
         if re.search(r"!\[|<img\b|bstack-visual:", fallback, re.I):
-            fail("invalid_media", "Every visual needs a plain fallback: Mermaid, a table, or text")
+            fail("invalid_media", "The visual fallback must render without an image upload")
+        if not MERMAID.search(fallback):
+            fail("invalid_media", "An attached visual needs a Mermaid diagram if upload fails")
         file = Path(text_value(item.get("file"), "Media file"))
         if not file.is_absolute():
             file = Path(media_path).resolve().parent / file
