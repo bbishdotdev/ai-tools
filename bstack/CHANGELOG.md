@@ -4,15 +4,12 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- `to-pr` now tries Codex CLI image generation when allowed for the project, then the current agent's image tool and plain visual fallbacks. The packaged workflow includes a read-only image session, inspection, and attachment procedure.
-- Draft `review-pr` workflow: two independent reviews, anonymous adversarial adjudication, PR-necessity checks, incremental follow-ups, and concise GitHub verdicts. Claude Code/Codex execution and GitHub publication have been exercised on a live draft PR.
-- Review follow-ups now assess author rebuttals and existing public feedback, share compatible published assessments without duplicate approval, and save useful findings when noncritical artifacts limit coverage. Publication can react or reply to prior reviews, with a new request-changes event only for a unique blocker. A private live calibration exercised these decisions with real model calls.
-- Resolved review replies now point to the earlier discussion and reviewed commit, with the detailed evidence kept in the private assessment rather than repeated in the public comment.
 
 ## Published releases
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [0.7.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.7.0) | 2026-10-10 | [Independent PR review and clearer PR visuals](release-notes/0.7.0.md) |
 | [0.6.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.6.0) | 2026-10-07 | [Seven-rule baseline for project agents](release-notes/0.6.0.md) |
 | [0.5.1](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.5.1) | 2026-09-29 | [Module documentation and source credits](release-notes/0.5.1.md) |
 | [0.5.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.5.0) | 2026-09-29 | [Shared architecture decisions and ADR discovery](release-notes/0.5.0.md) |
