@@ -1,0 +1,39 @@
+bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_262b82bd89e708 14,16,20,24,26,28,32
+bstack/shared/skills/bstack-router/SKILL.md
+  s_822e08e34bda62::t_ec96943e7f3b3c 49
+bstack/engineering/resolve-pr/references/github.md
+  s_822e08e34bda62::t_262b82bd89e708 11,27,30-31,34
+  s_822e08e34bda62::t_b5757c8861101b 35
+bstack/github/tests/test_feedback.py
+  s_822e08e34bda62::t_262b82bd89e708 62-63,81-83
+bstack/release/bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_af34179888d7b4 14,16,20,24,26,28,32
+bstack/release/bstack/engineering/resolve-pr/references/github.md
+  s_822e08e34bda62::t_af34179888d7b4 11,27,30-31,34
+  s_822e08e34bda62::t_0ce44426c696e8 35
+bstack/release/bstack/engineering/resolve-pr/scripts/feedback.py
+  s_822e08e34bda62::t_af34179888d7b4 237,247,288,301
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_822e08e34bda62::t_af34179888d7b4 49
+bstack/engineering/resolve-pr/scripts/feedback.py
+  s_822e08e34bda62::t_262b82bd89e708 237,247,288,301
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_af34179888d7b4 1362,1364,1383,1385,1391,1393,2352,2354
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "534f443c4252130485bf9b27979f1288788a65fb",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
