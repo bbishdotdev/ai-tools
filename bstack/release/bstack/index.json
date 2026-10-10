@@ -34,6 +34,9 @@
     "worktree-cleanup": "engineering/poteto-mode/playbooks/worktree-cleanup.md"
   },
   "policy": "shared/router/WORKFLOW.md",
+  "pull_request_resolutions": {
+    "cli": "engineering/resolve-pr/scripts/feedback.py"
+  },
   "pull_request_reviews": {
     "cli": "engineering/review-pr/scripts/review.py"
   },
@@ -94,6 +97,7 @@
     "recall": "engineering/recall/SKILL.md",
     "reflect": "engineering/reflect/SKILL.md",
     "research": "engineering/research/SKILL.md",
+    "resolve-pr": "engineering/resolve-pr/SKILL.md",
     "review-pr": "engineering/review-pr/SKILL.md",
     "setup-bstack": "shared/setup-bstack/SKILL.md",
     "setup-matt-pocock-skills": "shared/setup-bstack/SKILL.md",

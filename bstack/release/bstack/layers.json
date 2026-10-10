@@ -11,6 +11,7 @@
     "implement": "engineering/implement/SKILL.md",
     "prototype": "engineering/prototype/SKILL.md",
     "research": "engineering/research/SKILL.md",
+    "resolve-pr": "engineering/resolve-pr/SKILL.md",
     "review-pr": "engineering/review-pr/SKILL.md",
     "setup-matt-pocock-skills": "shared/setup-bstack/SKILL.md",
     "setup-pstack": "shared/setup-bstack/SKILL.md",

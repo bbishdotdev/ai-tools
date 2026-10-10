@@ -12,6 +12,7 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 - One installer for Codex, Claude Code, Cursor, and Grok CLIs, with direct skill invocation and optional automatic routing through Poteto Mode.
 - Optional [shared personal memory](shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.
 - Custom [prototyping](engineering/prototype/SKILL.md), [writing rules](shared/skills/unslop/SKILL.md), and [visual PR briefings](engineering/to-pr/SKILL.md), shaped around how I work.
+- [PR feedback resolution](engineering/resolve-pr/SKILL.md) that checks reviewer claims before editing and keeps unrelated work out of the PR.
 - A complete, pinned package that installs offline and preserves your selected tools and routing preferences when you upgrade.
 
 Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. See [verification results and tool-specific limits](audit/package-layout.md) for tested coverage.
