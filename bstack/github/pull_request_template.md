@@ -18,9 +18,11 @@ required. For measurements, include units and comparable conditions. -->
 ## For visual nerds
 
 <!-- Show what was implemented or how it works. Choose the visual that fits: a UI
-screenshot, data flow, user flow, architecture SVG, sequence diagram, ERD, etc.
-Keep the important relationships readable at a glance. Label explanatory illustrations.
-Use Mermaid, a compact table, or a text flow when images are unavailable.
+screenshot, data flow, user flow, architecture illustration, sequence diagram, ERD, etc.
+For a generated explanation, try Codex CLI image generation when allowed for this
+project, then the current agent's image tool. Keep only a readable, accurate result.
+Use Mermaid, a compact table, or a text flow when that explains the change better.
+Label illustrations.
 Use bstack-visual:ID media markers only with the helper's media manifest.
 Remove this whole drafting comment before preparing the body. -->
 

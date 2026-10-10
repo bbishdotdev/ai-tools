@@ -23,7 +23,7 @@ Create `body.md` using the [template](../../../github/pull_request_template.md).
 ]
 ```
 
-Media paths resolve relative to the media manifest. The example describes an illustration, not a test result. Use a real visual and labels supported by the actual diff. Keep the fallback useful by itself. Inspect the rendered image and verify screenshot provenance before publication. If upload is unsupported, retain the fallback and report the missing attachment. Do not add an external image service or commit evidence files just to obtain a URL without authorization.
+Media paths resolve relative to the media manifest. The example describes an illustration, not a test result. Follow [the visual procedure](visuals.md) for generated explanations. Use a real visual and labels supported by the actual diff. Keep the fallback useful by itself. Inspect the rendered image and verify screenshot provenance before publication. If upload is unsupported, retain the fallback and report the missing attachment. Do not add an external image service or commit evidence files just to obtain a URL without authorization.
 
 ## Read all open work
 

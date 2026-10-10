@@ -1590,9 +1590,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "f1bf570b44bf27ba314deefef5640ae4c05b0b387b06f93d0389f9c3e58d84e8",
+      "sha256": "3836908b6081fca0d0252d7426d6a522aef3872bafccb47c9d07cb5ac9019b31",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "e572f136bcaa540987907a518893aede084796d8b2fcaafbc6703ba106f92572",
+      "source_sha256": "178fa042ed6740da096809fbf2754200ccf5d9c57a0a7de1f9cfae0f979301d3",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1611,9 +1611,17 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "90cd884e506b8d7cebe6840346232ae199a5890869a17fd7c4f1b63399581785",
+      "sha256": "12321cdf546aab8c5f7c04a8f7cc2b329950a7ca590c40d10bc1d1a45a32b453",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "90cd884e506b8d7cebe6840346232ae199a5890869a17fd7c4f1b63399581785",
+      "source_sha256": "12321cdf546aab8c5f7c04a8f7cc2b329950a7ca590c40d10bc1d1a45a32b453",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/to-pr/references/visuals.md",
+      "sha256": "7afdab7d3226b18ab6cf9cbf8dbbdd97674ac5ba4d8d1143269eb6ac32be0d03",
+      "source": "bstack/engineering/to-pr/references/visuals.md",
+      "source_sha256": "7afdab7d3226b18ab6cf9cbf8dbbdd97674ac5ba4d8d1143269eb6ac32be0d03",
       "transforms": []
     },
     {
@@ -1802,9 +1810,9 @@
     {
       "mode": 420,
       "path": "github/pull_request_template.md",
-      "sha256": "ec7d99ef8b86dd5e29f77d3662b9f7a081f763799f54d0a2681017ddf20b6dbe",
+      "sha256": "bb534e5e1d7b667dc246843e0bd60de8d3cc0c05e1cb6c18f7f013a382306ac0",
       "source": "bstack/github/pull_request_template.md",
-      "source_sha256": "ec7d99ef8b86dd5e29f77d3662b9f7a081f763799f54d0a2681017ddf20b6dbe",
+      "source_sha256": "bb534e5e1d7b667dc246843e0bd60de8d3cc0c05e1cb6c18f7f013a382306ac0",
       "transforms": []
     },
     {
