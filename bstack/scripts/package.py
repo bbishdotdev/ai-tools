@@ -38,6 +38,7 @@ ENTRYPOINTS = {
     "workspace": "workspace/cli.py",
     "workflow": "shared/workflow.py",
     "pull_requests": "github/pr.py",
+    "pr_review": "engineering/review-pr/scripts/review.py",
     "memory": "shared/memory/scripts/portable.py",
 }
 
@@ -432,6 +433,7 @@ def assemble(root=ROOT):
              "workspace": {"cli": ENTRYPOINTS["workspace"], "operations": "workspace/OPERATIONS.md"},
              "workflow": ENTRYPOINTS["workflow"],
              "pull_requests": {"cli": ENTRYPOINTS["pull_requests"], "template": "github/pull_request_template.md"},
+             "pull_request_reviews": {"cli": ENTRYPOINTS["pr_review"]},
              "memory": {"cli": ENTRYPOINTS["memory"], "policy": "shared/memory/WORKFLOW.md"},
              "upstream_router": mapping[upstream + "/skills/poteto-mode/SKILL.md"]}
     assets["index.json"] = generated_asset(json_bytes(index), "bstack/package/selection.json", root,
