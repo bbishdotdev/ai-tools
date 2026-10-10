@@ -542,6 +542,29 @@ class RuntimeTests(unittest.TestCase):
         self.run_cli("uninstall")
         self.assertEqual(path.read_text(), existing + guidance)
 
+    def test_upgrade_recreates_missing_instruction_files_without_hiding_lost_guidance(self):
+        self.write("AGENTS.md", "Project-only guidance\n")
+        self.run_cli("install", "--hosts", "codex", "claude")
+        installed = self.project / ".bstack/package"
+        self.run_cli("auto", "on", capsule=installed)
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            (self.project / name).unlink()
+        self.run_cli("doctor", success=False)
+        updated = self.root / "new archive"
+        self.make_capsule(updated)
+        (updated / "shared/router/WORKFLOW.md").write_text("# Updated reviewed router\n")
+        self.refresh_manifest(updated)
+        result = self.run_cli("install", capsule=updated)
+        self.assertEqual(result["recreated_instruction_files"], ["AGENTS.md", "CLAUDE.md"])
+        self.assertIn("cannot recover project guidance", result["recovery_warning"])
+        self.assertEqual(result["hosts"], ["codex", "claude"])
+        self.assertTrue(result["auto"])
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.assertIn(BASELINE, (self.project / name).read_text())
+        self.assertNotIn("Project-only guidance", (self.project / "AGENTS.md").read_text())
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.assertNotIn("recreated_instruction_files", self.run_cli("install", capsule=updated))
+
     def test_upgrade_from_package_without_baseline_preserves_owned_project_text(self):
         self.write("AGENTS.md", "Existing project guidance\n")
         legacy = self.root / "package before baseline"
