@@ -1,0 +1,19 @@
+.github/pull_request_template.md
+  s_822e08e34bda62::t_a313b71b40b80c 20-21,24-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4ec4301298134f8400cfa5afdea2ebc7c467ee91",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "unknown"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
