@@ -17,11 +17,13 @@ required. For measurements, include units and comparable conditions. -->
 
 ## For visual nerds
 
-<!-- Show what was implemented or how it works. Choose the visual that fits: a UI
-screenshot, data flow, user flow, architecture illustration, sequence diagram, ERD, etc.
+<!-- Show what was implemented or how it works with a real visual: a UI screenshot,
+generated image, authored diagram, Mermaid, sequence diagram, ERD, etc.
 For a generated explanation, try Codex CLI image generation when allowed for this
 project, then the current agent's image tool. Keep only a readable, accurate result.
-Use Mermaid, a compact table, or a text flow when that explains the change better.
+Use an authored SVG or Mermaid if image generation is unavailable or a diagram is clearer.
+Do not use a text flow or table as the visual. Omit this section only for a
+self-explanatory one-file, one-hunk micro change such as a typo or copy edit.
 Label illustrations.
 Use bstack-visual:ID media markers only with the helper's media manifest.
 Remove this whole drafting comment before preparing the body. -->
