@@ -31,7 +31,7 @@ class PackageTests(unittest.TestCase):
                     "reflect", "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
                     "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
                     "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
-                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr"}
+                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr"}
         self.assertEqual(set(manifest["public_skills"]), expected)
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}
@@ -163,10 +163,11 @@ class PackageTests(unittest.TestCase):
                 "--hosts", "codex", "claude", "cursor", "grok")
             shutil.rmtree(release)
             installed = consumer / ".bstack/package"
-            helper = subprocess.run([sys.executable, str(installed / "github/pr.py"), "--help"],
-                                    text=True, capture_output=True, cwd=root)
-            self.assertEqual(helper.returncode, 0, helper.stdout + helper.stderr)
-            self.assertIn("publish", helper.stdout)
+            for relative in ("github/pr.py", "engineering/review-pr/scripts/review.py"):
+                helper = subprocess.run([sys.executable, str(installed / relative), "--help"],
+                                        text=True, capture_output=True, cwd=root)
+                self.assertEqual(helper.returncode, 0, helper.stdout + helper.stderr)
+                self.assertIn("publish", helper.stdout)
             initial = run(installed / "workspace/cli.py", "--project", str(consumer), "init")
             self.assertTrue(initial["ok"])
             current = run(installed / "workspace/cli.py", "--project", str(consumer), "call",

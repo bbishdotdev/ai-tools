@@ -4,7 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-No unreleased changes.
+- Draft `review-pr` workflow: two independent reviews, anonymous adversarial adjudication, PR-necessity checks, incremental follow-ups, and concise GitHub verdicts. Claude Code/Codex execution and GitHub publication are implemented for local validation; live-model calibration is pending.
 
 ## Published releases
 

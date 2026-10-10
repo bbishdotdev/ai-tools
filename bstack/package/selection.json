@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "0.6.0",
+  "version": "0.7.0-dev.1",
   "skills": [
     "architect",
     "arena",
@@ -81,7 +81,8 @@
     "research": "engineering/research",
     "prototype": "engineering/prototype",
     "implement": "engineering/implement",
-    "to-pr": "engineering/to-pr"
+    "to-pr": "engineering/to-pr",
+    "review-pr": "engineering/review-pr"
   },
   "owned_resources": [
     "shared/references/baseline-agents.md",

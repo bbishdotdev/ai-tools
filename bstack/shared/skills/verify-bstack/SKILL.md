@@ -36,6 +36,8 @@ Add `--live` for authorized provider-backed checks. The verifier installs into i
 
 For PR workflow changes, follow [pull requests](features/pull-requests.md). Run the helper fault tests and package checks. Use a fresh agent for semantic overlap cases. A fake forge proves state handling, not a real GitHub upload or publication; live checks need existing publication authorization.
 
+For `review-pr` changes, follow [PR reviews](features/pr-reviews.md). Check the incremental lifecycle and publication mechanics locally, then calibrate actual model judgments only within an authorized live test. Missing reviewers or material coverage gaps cannot produce approval.
+
 ## Evidence
 
 For workspace or SDLC changes, follow [local workspace and SDLC](features/workspace-sdlc.md). Run the core, browser-recovery and preflight suites, then drive the affected UI in a disposable workspace and forward-test the installed skills with fresh agents. Check actual saved planning, spec and ticket records. Preserve source review, claims, authority and independent provider selection. A successful configuration check does not prove cross-model execution or native session launch.

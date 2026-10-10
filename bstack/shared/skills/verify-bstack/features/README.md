@@ -13,5 +13,6 @@ The POC verifies real CLI sessions against bstack's policy entry and its pinned 
 - [Local workspace and SDLC](workspace-sdlc.md): persistent planning/spec/ticket operations, Kanban interactions, independent adapters, owned skill execution and fresh-context handoffs.
 
 - [Pull requests](pull-requests.md): visual briefings, complete overlap review, draft decisions, publication retries and media fallback.
+- [PR reviews](pr-reviews.md): independent headless reviewers, anonymous adjudication, incremental scope and review publication.
 
 Run doctor first. Capture commands, exit codes, model responses, and hook output receipts in `.bstack/verification/`. A missing client, missing authentication, unsupported hook, or unexercised surface must remain visible in the report. Test receipts exist only during verification; they do not turn the production reminder into a transcript analyzer.
