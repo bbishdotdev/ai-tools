@@ -188,6 +188,20 @@ class ReviewPublicationTests(unittest.TestCase):
                 publish_result(result, directory, github, True)
                 self.assertEqual(len(github.writes), 1)
 
+    def test_resolved_review_links_context_without_repeating_the_evidence_list(self):
+        self.source("reviews", 10, "Three issues need attention.")
+        feedback = [{"kind": "reviews", "id": 10, "relation": "resolved", "finding_ids": [],
+                     "body": "I rechecked the three issues. They're fixed, and I don't see anything else that needs work.",
+                     "evidence": [self.evidence[0], {**self.evidence[0], "line": 2}]}]
+        result = self.result(feedback=feedback)
+        preview = publish_result(result, self.directory, FakeGitHub(self.snapshot), False)
+        body = preview["body"]
+        self.assertIn("I rechecked the three issues", body)
+        self.assertIn("[Earlier review](https://github.com/owner/repo/pull/4#10)", body)
+        self.assertIn("[Reviewed commit](https://github.com/owner/repo/commit/" + "a" * 40 + ")", body)
+        self.assertNotIn("On [this review feedback]", body)
+        self.assertNotIn("Evidence 1", body)
+
     def test_external_rebuttal_after_our_reply_stops_remaining_publication(self):
         self.source("inline", 10, "This API needs to be public.")
         feedback = [{"kind": "inline", "id": 10, "relation": "disagree", "finding_ids": ["F-one"], "body": "Public access exposes private records.", "evidence": self.evidence}]

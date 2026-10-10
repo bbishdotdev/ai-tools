@@ -89,6 +89,11 @@ def source_url(result, kind, item):
     return result["snapshot"]["pr"]["html_url"] + "#" + prefix + str(item["id"])
 
 
+def reviewed_commit_url(result):
+    target = result["snapshot"]["target"]
+    return f"https://{target['host']}/{target['repo']}/commit/{result['evidence_commits']['head']}"
+
+
 def action(result, kind, destination, body=None, **values):
     identity = digest({"kind": kind, "destination": destination, "body": body, **values})[:24]
     marker = f"<!-- bstack-review-action:{result['run_id']}:{identity} -->"
@@ -123,11 +128,20 @@ def plan_actions(result, user):
         target = root["id"] if kind == "inline" else identity
         prefix = {"extend": "⚠️", "disagree": "💬", "resolved": "✅"}[feedback["relation"]]
         mention = "@" + source["author"] + " " if source.get("author") and source["author"].casefold() != user.casefold() else ""
-        reference = "" if kind == "inline" else f"On [this review feedback]({source_url(result, kind, source)}): "
-        body = f"{prefix} {mention}{reference}{feedback['body']}"
-        links = evidence_links(result, feedback.get("evidence", []))
-        if links:
-            body += " " + links
+        body = f"{prefix} {mention}{feedback['body'].strip()}"
+        if feedback["relation"] == "resolved":
+            references = []
+            if kind != "inline":
+                label = "Earlier review" if kind == "reviews" else "Earlier comment"
+                references.append(f"[{label}]({source_url(result, kind, source)})")
+            references.append(f"[Reviewed commit]({reviewed_commit_url(result)})")
+            body += "\n\n" + " · ".join(references)
+        else:
+            if kind != "inline":
+                body += f" [Earlier {'review' if kind == 'reviews' else 'comment'}]({source_url(result, kind, source)})"
+            links = evidence_links(result, feedback.get("evidence", []))
+            if links:
+                body += " " + links
         responses[(kind, target)].append(body)
     timeline = []
     timeline_sources = []

@@ -61,7 +61,7 @@ Unknown formats and non-text changes are assessed for material relevance. A chan
 
 ## Publication
 
-`run` collects evidence and invokes models without posting. `publish --run ...` previews the actions; `--write` performs them within the user's authorization. Agreement adds a thumbs-up, useful additions and disagreements reply in an existing inline thread, and responses to overall reviews use a short linked timeline comment. New findings appear in a concise review with category icons and the models that performed it.
+`run` collects evidence and invokes models without posting. `publish --run ...` previews the actions; `--write` performs them within the user's authorization. Agreement adds a thumbs-up, useful additions and disagreements reply in an existing inline thread, and responses to overall reviews use a short linked timeline comment. Resolved feedback links the earlier discussion and reviewed commit without repeating its evidence list. New findings appear in a concise review with category icons and the models that performed it.
 
 Only unique new blockers cause a new request-changes event. Agreement with an existing blocker does not mean approval; it leaves the formal state alone. Complete assessments without blockers or unresolved human decisions may approve. Partial assessments can publish supported blockers or a comment explaining their limits. The runner never dismisses someone else's review or resolves their thread automatically.
 
