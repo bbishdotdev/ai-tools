@@ -87,7 +87,7 @@ if judge:
                 disposition, duplicate = "dismissed", None
             elif state.get("fixed"):
                 disposition, duplicate = "resolved", None
-            elif not findings:
+            elif not findings or state.get("keep_each_candidate"):
                 disposition, duplicate = "kept", None
                 findings.append(item)
             else:
@@ -96,6 +96,10 @@ if judge:
         result = {"coverage": coverage, "decisions": decisions, "findings": findings}
 else:
     findings = [finding] if scenario in {"bug", "malformed_judge"} and not state.get("fixed") else []
+    if findings and state.get("reuse_prior"):
+        history = context["prior_findings"] or context["settled_findings"]
+        findings[0]["id"] = history[0]["id"]
+        findings[0]["explanation"] = "The caller permits a different user." if name == "claude" else "The selected record can belong to another user."
     if scenario == "false_positive" and name == "claude":
         findings = [{**finding, "id": "unnecessary", "title": "The PR might be unnecessary", "evidence": [{"path": "@pr", "line": 1, "side": "head", "reason": "An open PR appears to address this requirement."}]}]
     result = {"coverage": coverage, "neededness": {"assessment": "unnecessary" if scenario == "false_positive" and name == "claude" else "needed", "evidence": ["Compared the requested behavior and the open PR inventory."]}, "findings": findings, "prior": prior}
@@ -178,6 +182,23 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.save()
         first = self.run_review()
         self.assertEqual(first["verdict"], "REQUEST_CHANGES")
+        initial = json.loads((Path(first["run"]) / "result.json").read_text())
+        stable_id = initial["findings"][0]["id"]
+        self.assertEqual(len(json.loads((self.home / "judge-context.json").read_text())["candidates"]), 2)
+        (self.repo / "service.py").write_text("def read_record(user):\n    selected = record\n    return selected\n")
+        self.git("commit", "-qam", "refine retrieval")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.git("update-ref", "refs/pull/1/head", self.head)
+        self.state.update({"pr": self.pr(), "reuse_prior": True, "keep_each_candidate": True})
+        self.save()
+        repeated = self.run_review()
+        repeated_result = json.loads((Path(repeated["run"]) / "result.json").read_text())
+        self.assertEqual([item["id"] for item in repeated_result["findings"]], [stable_id])
+        judge = json.loads((self.home / "judge-context.json").read_text())
+        self.assertEqual(len(judge["candidates"]), 1)
+        shared_id = judge["prior_findings"][0]["id"]
+        self.assertEqual([item["report"]["findings"][0]["id"] for item in judge["reviews"]], [shared_id, shared_id])
+        self.assertNotEqual(judge["reviews"][0]["report"]["findings"][0]["explanation"], judge["reviews"][1]["report"]["findings"][0]["explanation"])
         (self.repo / "service.py").write_text("def read_record(user):\n    return record if record.owner == user else None\n")
         self.git("commit", "-qam", "authorize")
         self.head = self.git("rev-parse", "HEAD").strip()
@@ -205,6 +226,20 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertEqual(reviewer["settled_findings"][0]["disposition"], "resolved")
         third_result = json.loads((Path(third["run"]) / "result.json").read_text())
         self.assertEqual(third_result["settled_findings"], result["settled_findings"])
+        (self.repo / "service.py").write_text("def read_record(user):\n    return record\n")
+        self.git("commit", "-qam", "reintroduce ownership defect")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.git("update-ref", "refs/pull/1/head", self.head)
+        self.state.update({"pr": self.pr(), "fixed": False})
+        self.save()
+        reopened = self.run_review()
+        reopened_result = json.loads((Path(reopened["run"]) / "result.json").read_text())
+        self.assertEqual([item["id"] for item in reopened_result["findings"]], [stable_id])
+        self.assertEqual(reopened_result["settled_findings"], [])
+        judge = json.loads((self.home / "judge-context.json").read_text())
+        self.assertEqual(len(judge["candidates"]), 1)
+        self.assertEqual(judge["settled_findings"][0]["id"], judge["candidates"][0]["id"])
+        self.assertEqual([item["report"]["findings"][0]["id"] for item in judge["reviews"]], [judge["candidates"][0]["id"]] * 2)
 
     def test_failed_reviewer_and_missing_judgment_decisions_never_replace_complete_baseline(self):
         initial = self.run_review()

@@ -101,25 +101,32 @@ def context_for(state, checks, scope, trees, changes, patch, previous):
 def anonymous_reports(reports, previous, config):
     ordered = list(reports.items())
     random.SystemRandom().shuffle(ordered)
-    aliases, candidates, anonymous = {}, [], []
-    prior_ids = {item["id"] for item in previous["findings"] + previous.get("settled_findings", [])} if previous else set()
+    aliases, candidates, anonymous, historical_aliases = {}, [], [], {}
+    prior_findings = previous["findings"] if previous else []
+    prior_ids = {item["id"] for item in prior_findings + (previous.get("settled_findings", []) if previous else [])}
     models = [role["model"] for role in config["roles"].values()] + ["reviewer_a", "reviewer_b", "Claude", "Anthropic", "Codex", "OpenAI", "Opus", "Astra", "GPT"]
+    for item in prior_findings:
+        alias = "P-" + uuid.uuid4().hex[:12]
+        historical_aliases[item["id"]] = alias
+        aliases[alias] = {"role": "prior", "source_id": item["id"], "stable_id": item["id"], "sources": []}
+        candidates.append({**scrub(item, models), "id": alias})
     for index, (role, report) in enumerate(ordered):
         copy = json.loads(canonical(report))
         for item in copy["findings"]:
-            alias = "C-" + uuid.uuid4().hex[:12]
-            aliases[alias] = {"role": role, "source_id": item["id"], "stable_id": item["id"] if item["id"] in prior_ids else "F-" + digest([role, item["id"], item["title"], item["evidence"]])[:16]}
+            source_id = item["id"]
+            alias = historical_aliases.get(source_id)
+            if alias is None:
+                alias = "C-" + uuid.uuid4().hex[:12]
+                stable_id = source_id if source_id in prior_ids else "F-" + digest([role, source_id, item["title"], item["evidence"]])[:16]
+                aliases[alias] = {"role": "settled" if source_id in prior_ids else role, "source_id": source_id, "stable_id": stable_id, "sources": []}
+                if source_id in prior_ids:
+                    historical_aliases[source_id] = alias
+                candidates.append({**item, "id": alias})
+            aliases[alias]["sources"].append({"role": role, "source_id": source_id})
             item["id"] = alias
-            candidates.append(item)
+        for item in copy["prior"]:
+            item["id"] = historical_aliases[item["id"]]
         anonymous.append({"review": chr(65 + index), "report": scrub(copy, models)})
-    for item in previous["findings"] if previous else []:
-        alias = "P-" + uuid.uuid4().hex[:12]
-        aliases[alias] = {"role": "prior", "source_id": item["id"], "stable_id": item["id"]}
-        candidates.append({**scrub(item, models), "id": alias})
-    prior_aliases = {value["source_id"]: alias for alias, value in aliases.items() if value["role"] == "prior"}
-    for review in anonymous:
-        for item in review["report"]["prior"]:
-            item["id"] = prior_aliases[item["id"]]
     return anonymous, scrub(candidates, models), aliases
 
 
@@ -196,7 +203,8 @@ def perform_run(project, pr_url, config_path):
                 judge_context["reviews"] = anonymous
                 judge_context["candidates"] = candidates
                 judge_context["prior_findings"] = [item for item in candidates if aliases[item["id"]]["role"] == "prior"]
-                judge_context["settled_findings"] = scrub(context["settled_findings"], [role["model"] for role in config["roles"].values()])
+                historical_aliases = {value["stable_id"]: alias for alias, value in aliases.items() if value["role"] in {"prior", "settled"}}
+                judge_context["settled_findings"] = scrub([{**item, "id": historical_aliases.get(item["id"], item["id"])} for item in context["settled_findings"]], [role["model"] for role in config["roles"].values()])
                 prior_aliases = {value["source_id"]: alias for alias, value in aliases.items() if value["role"] == "prior"}
                 judge_context["prior_decisions"] = [{**item, "id": prior_aliases[item["id"]], "duplicate_of": prior_aliases.get(item["duplicate_of"])} for item in context["prior_decisions"] if item["id"] in prior_aliases]
                 write_json(output / "provenance.json", aliases)
