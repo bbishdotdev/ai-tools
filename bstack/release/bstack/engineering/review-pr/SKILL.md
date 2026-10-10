@@ -15,7 +15,7 @@ Apply [bstack's router](../../shared/router/WORKFLOW.md) within this review scop
 
 ## Run
 
-Resolve [the runner](scripts/review.py) from this skill's real location, including installed symlinks. Use its commands instead of assembling model prompts or publication calls yourself. Read [configuration and run details](references/running.md) when configuring roles or interpreting incomplete runs.
+Resolve [the runner](scripts/review.py) from this skill's real location, including installed symlinks. Use its commands instead of assembling model prompts or publication calls yourself. Read [configuration and run details](references/running.md) when configuring roles or interpreting incomplete runs. When a generated ZIP needs coverage, use the runner's source-tree verification described there.
 
 ```sh
 python3 /absolute/skill-directory/scripts/review.py doctor --project /path/to/project

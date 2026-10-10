@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "engineering/review-pr/scripts/review.py"
@@ -70,6 +71,9 @@ scenario = state.get("scenario", "clean")
 coverage = {"complete": True, "limits": []}
 prior = [{"id": item["id"], "status": "resolved" if state.get("fixed") else "open", "evidence": ["The changed authorization check now rejects other users" if state.get("fixed") else "The changed path still accepts other users"]} for item in context["prior_findings"]]
 finding = {"id": "ownership", "category": "blocker", "title": "Another user can read this record", "explanation": "The changed handler returns a record without checking its owner.", "evidence": [{"path": "service.py", "line": 1, "side": "head", "reason": "The handler returns data without an ownership check."}], "action": "Check ownership before returning the record."}
+if scenario == "stdout_failure" and name == "claude":
+    print(json.dumps({"is_error": True, "subtype": "error_during_execution", "result": "Failed to authenticate: OAuth session expired and could not be refreshed. credential=" + os.environ["REVIEW_TEST_API_KEY"]}))
+    raise SystemExit(7)
 if scenario == "reviewer_failure" and name == "codex":
     print("authentication unavailable", file=sys.stderr)
     raise SystemExit(1)
@@ -133,7 +137,7 @@ class ReviewLifecycleTests(unittest.TestCase):
             path = binary / name
             path.write_text("#!" + sys.executable + "\n" + FAKE_HOST)
             path.chmod(0o700)
-        self.env = {**os.environ, "PATH": str(binary) + os.pathsep + os.environ["PATH"], "REVIEW_TEST_HOME": str(self.home), "REVIEW_REAL_GIT": self.real_git}
+        self.env = {**os.environ, "PATH": str(binary) + os.pathsep + os.environ["PATH"], "REVIEW_TEST_HOME": str(self.home), "REVIEW_REAL_GIT": self.real_git, "REVIEW_TEST_API_KEY": "fake-review-secret-credential"}
 
     def git(self, *args):
         return subprocess.check_output([self.real_git, "-C", str(self.repo), *args], text=True)
@@ -206,7 +210,7 @@ class ReviewLifecycleTests(unittest.TestCase):
         initial = self.run_review()
         pointer = Path(initial["run"]).parent / "last-complete.json"
         original = pointer.read_text()
-        for scenario in ("reviewer_failure", "malformed_judge"):
+        for scenario in ("reviewer_failure", "stdout_failure", "malformed_judge"):
             with self.subTest(scenario=scenario):
                 self.state["scenario"] = scenario
                 self.state["pr"]["body"] = scenario
@@ -214,7 +218,93 @@ class ReviewLifecycleTests(unittest.TestCase):
                 failed = self.run_review(success=False)
                 self.assertEqual(failed["status"], "incomplete")
                 self.assertEqual(pointer.read_text(), original)
+                if scenario == "stdout_failure":
+                    self.assertIn("OAuth session expired and could not be refreshed", failed["error"])
+                    self.assertNotIn(self.env["REVIEW_TEST_API_KEY"], failed["error"])
+                    failure_run = Path(failed["error"].rsplit("Evidence: ", 1)[1])
+                    captured = json.loads((failure_run / "reviewer_a.raw").read_text())
+                    self.assertIn("[redacted]", captured["result"])
+                    self.assertEqual((failure_run / "reviewer_a.stderr").read_text(), "")
+                    self.assertEqual(json.loads((failure_run / "reviewer_a.process.json").read_text())["exit_code"], 7)
         self.assertEqual(json.loads((self.home / "published.json").read_text()), [])
+
+    def test_zip_coverage_requires_configured_exact_content_and_rechecks_delta(self):
+        source = self.repo / "release/library"
+        source.mkdir(parents=True)
+        (source / "message.txt").write_text("Original package\n")
+        (source / "run.sh").write_text("#!/bin/sh\nexit 1\n")
+        (source / "run.sh").chmod(0o755)
+        target = self.repo / "library.zip"
+
+        def package():
+            with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                for path in sorted(source.iterdir()):
+                    entry = zipfile.ZipInfo(path.name, date_time=(1980, 1, 1, 0, 0, 0))
+                    entry.create_system = 3
+                    entry.external_attr = (0o100755 if path.name == "run.sh" else 0o100644) << 16
+                    entry.compress_type = zipfile.ZIP_DEFLATED
+                    archive.writestr(entry, path.read_bytes())
+
+        def commit():
+            self.git("add", ".")
+            self.git("commit", "-qm", "update package")
+            self.head = self.git("rev-parse", "HEAD").strip()
+            self.git("update-ref", "refs/pull/1/head", self.head)
+            self.state["pr"] = self.pr()
+            self.save()
+
+        package()
+        commit()
+        self.base = self.head
+        original_archive = target.read_bytes()
+        (source / "message.txt").write_text("Updated package\n")
+        package()
+        commit()
+        unmapped = self.run_review(success=False)
+        self.assertEqual(unmapped["status"], "incomplete")
+        context = json.loads((self.home / "codex-context.json").read_text())
+        self.assertEqual(context["verified_archives"], [])
+        self.assertIn("library.zip", context["coverage_limits"][0])
+
+        (self.project / ".bstack/review.json").write_text(json.dumps({"zip_trees": {"library.zip": "release/library"}}))
+        first = self.run_review()
+        self.assertEqual(first["status"], "complete")
+        context = json.loads((Path(first["run"]) / "snapshot.json").read_text())
+        self.assertEqual(context["coverage_limits"], [])
+        verified = context["verified_archives"]
+        self.assertEqual([(item["side"], item["commit"], item["files"]) for item in verified],
+                         [("base", self.base, 2), ("head", self.head, 2)])
+        self.assertEqual(verified[1]["blob"], self.git("rev-parse", "HEAD:library.zip").strip())
+        judge = json.loads((self.home / "judge-context.json").read_text())
+        self.assertEqual(judge["verified_archives"], verified)
+        pointer = Path(first["run"]).parent / "last-complete.json"
+        baseline = pointer.read_text()
+        previous_head = self.head
+
+        for change, payload in (("trailing payload", target.read_bytes() + b"unreviewed trailing payload"),
+                                ("reverted archive", original_archive)):
+            with self.subTest(change=change):
+                target.write_bytes(payload)
+                commit()
+                tampered = self.run_review(success=False)
+                self.assertEqual(tampered["status"], "incomplete")
+                self.assertEqual(pointer.read_text(), baseline)
+                context = json.loads((self.home / "codex-context.json").read_text())
+                self.assertEqual(context["verified_archives"], [])
+                self.assertIn("Archive bytes differ", context["coverage_limits"][0])
+                if change == "reverted archive":
+                    self.assertNotIn("library.zip", context["full_pr_changed_paths"])
+                    self.assertIn("library.zip", context["changed_paths"])
+
+        (source / "message.txt").write_text("Follow-up package\n")
+        package()
+        commit()
+        followup = self.run_review()
+        self.assertEqual(followup["scope"]["mode"], "delta")
+        self.assertEqual(followup["scope"]["from"], previous_head)
+        context = json.loads((self.home / "codex-context.json").read_text())
+        self.assertEqual(context["coverage_limits"], [])
+        self.assertEqual([item["commit"] for item in context["verified_archives"]], [previous_head, self.head])
 
     def test_publish_previews_rejects_stale_and_reconciles_uncertain_write_without_duplicate(self):
         report = self.run_review()

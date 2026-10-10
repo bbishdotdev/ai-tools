@@ -38,4 +38,4 @@ A finding names a reachable trigger or material structural cost, the consequence
 - `moderate`: substantiated, useful improvement that can safely follow later.
 - `low`: small but concrete benefit worth the author's attention. Omit cosmetic nits and theoretical risks.
 
-An unresolved material coverage gap makes the review incomplete. It is not evidence of a bug. No findings is valid; do not fill empty categories. Be concise without suppressing real blockers to meet a word or finding limit.
+An unresolved material coverage gap makes the review incomplete. It is not evidence of a bug. Read-only review does not require rerunning tests. A missing live check makes coverage incomplete only when you can name the consequential behavior you cannot assess from the available code and evidence. No findings is valid; do not fill empty categories. Be concise without suppressing real blockers to meet a word or finding limit.

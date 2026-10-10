@@ -17,6 +17,8 @@ python3 -B bstack/scripts/package.py check
 
 Use temporary Git repositories and fake forge/model executables for lifecycle checks. Cover a clean result, disproved concern, incremental resolution across several follow-ups, human replies without code changes, unchanged-run reuse, missing or malformed model output, stale publication and retry reconciliation. These checks establish orchestration behavior, not review quality or live authentication.
 
+Include stdout-only client failures and generated ZIP coverage. A configured ZIP must match its pinned source tree exactly, including after a follow-up reverts only the archive. A mismatch must leave the prior complete assessment intact.
+
 Install the generated bundle into a disposable consumer, remove the downloaded installer and run the installed review helper's help/doctor. Confirm its prompts and referenced principles resolve from the installed package. Doctor's runtime-unchecked result is not a successful model review.
 
 ## Live calibration, when requested

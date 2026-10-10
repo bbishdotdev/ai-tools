@@ -27,6 +27,8 @@ The roles are separate from autonomous grilling configuration. Changing review r
 
 Run from the consumer's project and use its `.bstack/` directory for private review data. Run records include pinned source metadata, diffs, model responses, prior decisions, and publication state. Temporary source trees are removed when the run ends. Records can still contain private source code. Keep `.bstack/` gitignored.
 
+Failed model processes also retain private standard output, standard error and exit status. Authentication errors should name the failed login instead of appearing as an empty CLI failure. Reauthenticate the named client before retrying; the runner never replaces a failed reviewer with another model.
+
 The runner records the reviewed commits and context, keeps the last complete review as the incremental baseline, and gives each role a fresh session. It reuses an unchanged completed review. A changed head normally produces a delta review; changed base/history or review policy/configuration can require a full pass. Changed PR intent, discussion or competing work requires reassessing that context. The reviewing models still determine which unchanged callers or contracts a delta affects.
 
 This draft also invalidates a review when CI status changes during or after it. A retry can refresh context without new code, but still costs another model pass. Other open PRs are supplied as titles, descriptions and commit identities. If that information cannot establish whether work overlaps, the models must report the gap rather than claim a duplicate is proven.
@@ -34,6 +36,22 @@ This draft also invalidates a review when CI status changes during or after it. 
 Reviewers inspect materialized source as data. The runner disables supported host customization paths and restricts model tools; it does not run repository tests or hooks to establish behavior. These controls are not a claim of universal OS isolation or immunity to prompt injection. Explicit model metadata is withheld from the judge; prose may still reveal stylistic clues.
 
 The result schema is defined in [contracts.py](../scripts/contracts.py) and supplied to the model by the runner. Don't recreate the schema, anonymization, or GitHub calls in shell snippets. A valid schema proves structure, not that a finding is correct.
+
+## Generated ZIPs
+
+A generated ZIP can be covered through its reviewed source files when the runner proves that those files reproduce the exact archive. Configure the corresponding repository-relative paths in the private review configuration:
+
+```json
+{
+  "zip_trees": {
+    "dist/package.zip": "dist/package"
+  }
+}
+```
+
+The runner checks each existing base/head version against its own pinned source tree. Supported archives contain sorted regular UTF-8 files, Unix file modes, a fixed 1980 timestamp and deflate compression. It reconstructs bytes from that tree without extracting the supplied archive or executing project code. Exact matches produce source-equivalence evidence for the reviewers; they must still assess the source changes.
+
+Unknown formats, non-text members or mismatches remain coverage limits. Different compression-library output can prevent an exact match. This is a deliberately narrow format check, not permission to ignore arbitrary binary changes.
 
 ## Publication
 

@@ -12,7 +12,33 @@ from contracts import ReviewError, canonical, digest
 MAX_BYTES = 50 * 1024 * 1024
 
 
-def command(args, cwd=None, data=None, timeout=120, env=None):
+def diagnostic_text(data):
+    text = data.decode(errors="replace")
+    for key, value in os.environ.items():
+        if len(value) >= 8 and re.search(r"(?:TOKEN|SECRET|PASSWORD|API_KEY|ACCESS_KEY|CREDENTIAL)", key, re.IGNORECASE):
+            text = text.replace(value, "[redacted]")
+    return re.sub(r"(?i)(bearer\s+)[A-Za-z0-9._~+/-]+=*", r"\1[redacted]", text)
+
+
+def command_failure(output, error):
+    detail = diagnostic_text(error).strip()
+    if not detail:
+        detail = diagnostic_text(output).strip()
+        try:
+            envelope = json.loads(detail)
+            if isinstance(envelope, dict):
+                value = envelope.get("error") or envelope.get("result") or envelope.get("errors") or envelope.get("message")
+                if isinstance(value, dict):
+                    value = value.get("message") or value
+                if value:
+                    detail = value if isinstance(value, str) else json.dumps(value)
+        except ValueError:
+            pass
+    return detail[-2000:] or "No error text was returned"
+
+
+def command(args, cwd=None, data=None, timeout=120, env=None, capture=None):
+    timed_out = False
     try:
         process = subprocess.Popen(args, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    start_new_session=True, env={**os.environ, **(env or {})})
@@ -20,14 +46,23 @@ def command(args, cwd=None, data=None, timeout=120, env=None):
             output, error = process.communicate(data.encode() if isinstance(data, str) else data, timeout=timeout)
         except subprocess.TimeoutExpired:
             os.killpg(process.pid, signal.SIGKILL)
-            process.communicate()
-            raise ReviewError(f"Command timed out after {timeout}s: {args[0]}")
+            output, error = process.communicate()
+            timed_out = True
     except FileNotFoundError:
         raise ReviewError(f"Required executable not found: {args[0]}")
-    if len(output) > MAX_BYTES or len(error) > MAX_BYTES:
+    oversized = len(output) > MAX_BYTES or len(error) > MAX_BYTES
+    if capture is not None:
+        for suffix, value in ((".raw", output), (".stderr", error)):
+            path = Path(capture).with_suffix(suffix)
+            path.write_text(diagnostic_text(value[:MAX_BYTES]))
+            path.chmod(0o600)
+        write_json(Path(capture).with_suffix(".process.json"), {"exit_code": process.returncode, "timed_out": timed_out, "output_truncated": oversized})
+    if timed_out:
+        raise ReviewError(f"Command timed out after {timeout}s: {args[0]}")
+    if oversized:
         raise ReviewError(f"Command output exceeds {MAX_BYTES} bytes: {args[0]}")
     if process.returncode:
-        raise ReviewError(f"Command failed ({args[0]}): {error.decode(errors='replace')[-2000:]}")
+        raise ReviewError(f"Command failed ({args[0]}, exit {process.returncode}): {command_failure(output, error)}")
     return output
 
 

@@ -16,6 +16,7 @@ from urllib.parse import quote
 sys.dont_write_bytecode = True
 
 from contracts import JUDGMENT, REVIEW, ReviewError, canonical, consolidate, digest, scrub, unique, validate_review, verdict
+from artifacts import coverage
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
 
@@ -160,18 +161,19 @@ def perform_run(project, pr_url, config_path):
                 trees = {}
                 for side, commit in (("base", scope["from"]), ("head", head)):
                     trees[side], _ = materialize(repository, commit, scratch / side)
+                snapshots = {side: scratch / side for side in ("base", "head")}
+                commits = {"base": scope["from"], "head": head}
                 full_changes = changed_paths(repository, merge_base, head)
-                limits = [f"Changed content cannot be inspected as text: {name}" for name in full_changes
-                          if any(name in trees[side] and trees[side][name]["lines"] is None for side in trees)]
                 changes = changed_paths(repository, scope["from"], head)
+                limits, verified_archives = coverage(sorted(set(full_changes) | set(changes)), trees, snapshots, commits, config["zip_trees"])
                 patch = diff(repository, scope["from"], head)
                 context = context_for(state, checks, scope, trees, changes, patch, previous)
-                context["evidence_commits"] = {"base": scope["from"], "head": head}
+                context["evidence_commits"] = commits
                 context["full_pr_changed_paths"] = full_changes
                 context["coverage_limits"] = limits
+                context["verified_archives"] = verified_archives
                 write_json(output / "snapshot.json", context)
                 context = {key: value for key, value in context.items() if key != "tree_index"}
-                snapshots = {side: scratch / side for side in ("base", "head")}
                 previous_dir = directory / previous["run_id"] if previous else None
                 reports = {}
                 def review_role(role):
