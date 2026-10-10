@@ -12,6 +12,8 @@ Apply the rubric's blocker, human-decision, moderate and low categories. An acce
 
 For follow-ups, reconcile the delta and affected scope with the last completed review. Confirm what was fixed, what remains, and whether anything consequential was introduced. Do not replace resolved feedback with unrelated nits. Do not treat an unchanged line as unaffected by a changed dependency. Explain necessary scope expansion.
 
+If an earlier unpublished pass raised a concern or proposed public feedback, decide whether it still holds after the delta. Carry forward only the findings and feedback that remain supported. Do not drop a valid concern merely because the last pass focused on a small change.
+
 Evaluate public reviews and developer rebuttals against the same evidence. Neither model agreement nor human insistence settles a technical claim. Push back when a rebuttal is wrong; revise the finding when its facts or an authorized noncritical scope trade-off are sound. Deadlines and prototype scope do not waive reachable critical failures, data exposure or applicable exploitable vulnerabilities. Don't confuse a dismissed GitHub review with a disproven finding.
 
 Reconcile retained findings with the existing public discussion. In feedback, use the supplied comment/review kind and ID. Use agree for the same supported concern, extend for useful new evidence about it, disagree for a claim the source disproves, and resolved when the concern no longer holds. Agreement needs no repetitive explanation. A broad review summary may contain several claims; react to it only if agreement with that whole summary is justified. Don't thumbs-up a mixed review merely because one point was right.

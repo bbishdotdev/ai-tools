@@ -34,7 +34,7 @@ class FakeGitHub:
         self.serial += 1
         item = {"id": self.serial, "body": payload["body"], "author": self.user, "html_url": f"https://github.com/owner/repo/pull/4#{self.serial}", "node_id": "node" + str(self.serial)}
         if kind == "reviews":
-            item.update({"commit_id": payload["commit_id"], "state": {"APPROVE": "APPROVED", "REQUEST_CHANGES": "CHANGES_REQUESTED", "COMMENT": "COMMENTED"}[payload["event"]]})
+            item.update({"commit_id": payload.get("commit_id", self.current["pr"]["head"]["sha"]), "state": {"APPROVE": "APPROVED", "REQUEST_CHANGES": "CHANGES_REQUESTED", "COMMENT": "COMMENTED"}[payload["event"]]})
         if kind == "inline":
             item["in_reply_to_id"] = parent
         self.current["discussion"][kind].append(item)

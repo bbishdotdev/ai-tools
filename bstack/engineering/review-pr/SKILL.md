@@ -26,7 +26,7 @@ Confirm the target PR and local project. The first draft uses authenticated GitH
 
 The runner checks whether review work is needed before starting models. Closed PRs are skipped; confirmed merge conflicts defer review. Unchanged compatible assessments can be reused locally or from a trusted published review. Different models or `run --fresh` start an independent pass, with earlier public feedback available as evidence. Reusing someone else's assessment never submits an approval as the current developer.
 
-A follow-up uses the last complete assessment, new changes and affected context. Each reviewer receives its own earlier report when available, not the other current reviewer's report. Human rebuttals can trigger reassessment without a code change. Evaluate them honestly: accept supported corrections or justified noncritical trade-offs, and defend findings that still hold. Follow the rubric for critical failures and decision authority.
+A follow-up uses the last complete assessment, new changes and affected context. Each reviewer receives its own earlier report when available, not the other current reviewer's report. If the PR changes during review or before publication, the runner repeats both reviewers and the adjudicator on the delta, up to three passes total. Human rebuttals can also trigger reassessment without a code change. Evaluate them honestly: accept supported corrections or justified noncritical trade-offs, and defend findings that still hold. Follow the rubric for critical failures and decision authority.
 
 ## Read the result
 
@@ -43,7 +43,7 @@ python3 /absolute/skill-directory/scripts/review.py publish --project /path/to/p
 python3 /absolute/skill-directory/scripts/review.py publish --project /path/to/project --run /absolute/run-directory --write
 ```
 
-Inspect the first command's read-only action plan. The second performs its reactions, replies and any new review. Agree with existing feedback in place; publish only useful additions, disagreements, resolutions and genuinely new findings. Existing-only blockers do not create another request-changes status. Approval still requires a complete assessment with no unresolved blocker or human decision. A stale result cannot publish.
+Inspect the first command's read-only action plan and use its returned run path for `--write`; publication may refresh the assessment first. The second performs its reactions, replies and any new review. Agree with existing feedback in place; publish only useful additions, disagreements, resolutions and genuinely new findings. Existing-only blockers do not create another request-changes status. Approval still requires a complete assessment with no unresolved blocker or human decision. If the PR changes after the third pass, publish only a comment that names the reviewed commit and warns that the latest changes were not checked. A stale assessment cannot approve or request changes.
 
 Use concise, human wording, category icons and the actual model signature. GitHub may accept only a comment on the current user's own PR; distinguish that recommendation from a formal approval. Report the actual submitted actions and links.
 

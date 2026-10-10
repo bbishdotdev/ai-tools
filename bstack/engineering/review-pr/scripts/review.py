@@ -22,6 +22,7 @@ from shared import compatible_receipt, config_digest, context_digest, matching_c
 
 ROOT = Path(__file__).resolve().parent.parent
 ANALYSIS_VERSION = 2
+MAX_REVIEW_PASSES = 3
 
 
 def now():
@@ -66,7 +67,9 @@ def policy():
     for name in ("rubric", "reviewer", "adjudicator"):
         visit(ROOT / "references" / (name + ".md"))
     fingerprint = digest({"analysis_version": ANALYSIS_VERSION, "prompts": sorted(digest(text) for text in files.values())})
-    return fingerprint, {name: rendered(ROOT / "references" / (name + ".md")) for name in ("rubric", "reviewer", "adjudicator")}
+    prompts = {name: rendered(ROOT / "references" / (name + ".md")) for name in ("rubric", "reviewer", "adjudicator")}
+    prompts["rubric"] += "\n\n" + (ROOT.parent.parent / "shared/references/pr-standards.md").read_text()
+    return fingerprint, prompts
 
 
 def last_assessment(directory, pointer="last-complete.json"):
@@ -148,8 +151,8 @@ def anonymous_reports(reports, previous, config):
     return anonymous, scrub(candidates, models), aliases
 
 
-def perform_run(project, pr_url, config_path, fresh=False):
-    config = configuration(project, config_path)
+def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_number=1, chain=(), config_override=None, force=False):
+    config = config_override or configuration(project, config_path)
     target = parse_pr(pr_url)
     root = private_root(project)
     with locked(root, target) as directory:
@@ -172,13 +175,13 @@ def perform_run(project, pr_url, config_path, fresh=False):
             policy_id, prompts = policy()
             config_id, context_id = config_digest(config), context_digest(state, checks)
             fingerprint = digest({"context": context_id, "config": config_id, "policy": policy_id})
-            previous = last_assessment(directory)
-            recent = last_assessment(directory, "last-assessment.json") or previous
+            previous = prior_run if force else last_assessment(directory)
+            recent = None if force else last_assessment(directory, "last-assessment.json") or previous
             if not fresh and recent and not recent.get("stale") and recent.get("config_digest") == config_id and recent["policy_digest"] == policy_id and matching_context(recent, state, checks, publication_echoes(directory, recent, state)):
                 write_json(output / "reuse.json", {"run_id": run_id, "reused_run": recent["run_id"], "reason": "Review inputs are unchanged"})
                 return {"status": "reused", "run": str(directory / recent["run_id"]), "verdict": recent["verdict"], "assessment_status": recent["status"]}
             public = receipts(state, github)
-            if not fresh:
+            if not fresh and not force:
                 for record in reversed(public):
                     if compatible_receipt(record, state, checks, config_id, policy_id):
                         outcome = {"status": "reused_shared", "url": record["source"]["url"], "author": record["source"]["author"],
@@ -187,7 +190,7 @@ def perform_run(project, pr_url, config_path, fresh=False):
                         return outcome
             if fresh or (previous and (previous.get("config_digest") != config_id or previous["policy_digest"] != policy_id)):
                 previous = None
-            if previous is None and not fresh:
+            if previous is None and not fresh and not force:
                 compatible = [record for record in public if record["receipt"]["config_digest"] == config_id and record["receipt"]["policy_digest"] == policy_id and record["receipt"]["base"] == state["pr"]["base"]["sha"]]
                 if compatible:
                     previous = shared_baseline(compatible[-1], state)
@@ -238,6 +241,7 @@ def perform_run(project, pr_url, config_path, fresh=False):
                         raise ReviewError("; ".join(errors))
                 anonymous, candidates, aliases = anonymous_reports(reports, previous, config)
                 judge_context = dict(context)
+                judge_context["earlier_unpublished_feedback"] = previous.get("feedback", []) if prior_run else []
                 judge_context["reviews"] = anonymous
                 judge_context["candidates"] = candidates
                 judge_context["prior_findings"] = [item for item in candidates if aliases[item["id"]]["role"] == "prior"]
@@ -265,12 +269,19 @@ def perform_run(project, pr_url, config_path, fresh=False):
                 result_verdict = verdict(findings)
                 if (not complete or stale) and result_verdict == "APPROVE":
                     result_verdict = "COMMENT"
-                result = {"status": "complete" if complete and not stale else "partial", "stale": stale, "run_id": run_id, "completed_at": now(), "snapshot": state, "checks": checks,
+                complete_pointer = directory / "last-complete.json"
+                previous_complete = read_json(complete_pointer)["run_id"] if complete_pointer.exists() else None
+                result = {"status": "complete" if complete and not stale else "partial", "stale": stale, "stale_exhausted": stale and pass_number == MAX_REVIEW_PASSES,
+                          "review_passes": pass_number, "review_chain": [*chain, run_id], "run_id": run_id, "completed_at": now(), "snapshot": state, "checks": checks,
+                          "previous_complete_run_id": previous_complete,
                           "input_digest": fingerprint, "context_digest": context_id, "config_digest": config_id, "policy_digest": policy_id, "config": config, "scope": scope,
                           "findings": findings, "decisions": decisions, "verdict": result_verdict, "evidence_commits": commits, "coverage": coverage_result,
                           "artifact_assessments": judgment["artifact_assessments"],
                           "feedback": [{**item, "finding_ids": [aliases[name]["stable_id"] for name in item["finding_ids"]]} for item in judgment["feedback"]],
                           "new_findings": [aliases[name]["stable_id"] for name in judgment["new_findings"]]}
+                if prior_run:
+                    retained = {item["id"] for item in findings}
+                    result["new_findings"] = list(dict.fromkeys([name for name in [*prior_run["new_findings"], *result["new_findings"]] if name in retained]))
                 settled = {item["id"]: item for item in context["settled_findings"]}
                 for candidate in candidates:
                     stable_id = aliases[candidate["id"]]["stable_id"]
@@ -292,23 +303,101 @@ def perform_run(project, pr_url, config_path, fresh=False):
             raise ReviewError(f"{exc} Evidence: {output}")
 
 
+def review_cycle(project, pr_url, config_path=None, fresh=False, initial=None):
+    outcome = initial or perform_run(project, pr_url, config_path, fresh)
+    while outcome.get("stale"):
+        previous = read_json(Path(outcome["run"]) / "result.json")
+        if previous["review_passes"] >= MAX_REVIEW_PASSES:
+            break
+        outcome = perform_run(project, pr_url, config_path, prior_run=previous if previous["coverage"]["complete"] else None,
+                              pass_number=previous["review_passes"] + 1, chain=previous["review_chain"], config_override=previous["config"], force=True)
+    return outcome
+
+
+def assessed_result(directory):
+    result = read_json(directory / "result.json")
+    if result.get("status") not in {"complete", "partial"} or result.get("digest") != digest({key: value for key, value in result.items() if key != "digest"}):
+        raise ReviewError("Only an intact assessment can be published")
+    return result
+
+
+def mark_exhausted(directory, result):
+    journal = directory / "publication.json"
+    if journal.exists():
+        actions = read_json(journal).get("actions", [])
+        if any(item["status"] != "pending" for item in actions):
+            raise ReviewError("A review action may already have been posted; reconcile it before reassessing")
+        journal.unlink()
+    result.update({"status": "partial", "stale": True, "stale_exhausted": True, "verdict": "COMMENT"})
+    result["digest"] = digest({key: value for key, value in result.items() if key != "digest"})
+    write_json(directory / "result.json", result)
+    pointer = directory.parent / "last-complete.json"
+    if pointer.exists() and read_json(pointer)["run_id"] == result["run_id"]:
+        previous = result.get("previous_complete_run_id")
+        if previous:
+            write_json(pointer, {"run_id": previous})
+        else:
+            pointer.unlink()
+    return result
+
+
+def publication_started(directory):
+    journal = directory / "publication.json"
+    return journal.exists() and any(item["status"] != "pending" for item in read_json(journal).get("actions", []))
+
+
+def refresh_review(project, pr_url, result):
+    outcome = review_cycle(project, pr_url, initial=perform_run(
+        project, pr_url, None, prior_run=result if result["coverage"]["complete"] else None,
+        pass_number=result.get("review_passes", 1) + 1, chain=result.get("review_chain", [result["run_id"]]),
+        config_override=result["config"], force=True))
+    if outcome["status"] in {"skipped", "deferred"}:
+        return outcome, None, None
+    directory = Path(outcome["run"])
+    return outcome, directory, assessed_result(directory)
+
+
 def publish(project, run_path, write):
     from publication import publish_result
     root = private_root(project).resolve()
     directory = Path(run_path).resolve()
     if directory.parent.parent != root:
         raise ReviewError("The run must belong to this project's .bstack/reviews directory")
-    result = read_json(directory / "result.json")
-    if result.get("status") not in {"complete", "partial"} or result.get("digest") != digest({key: value for key, value in result.items() if key != "digest"}):
-        raise ReviewError("Only an intact assessment can be published")
-    if result.get("stale"):
-        raise ReviewError("Review is stale; run a follow-up review before publishing")
+    result = assessed_result(directory)
+    if not publication_started(directory):
+        recent = last_assessment(directory.parent, "last-assessment.json")
+        if recent and result["run_id"] in recent.get("review_chain", []) and recent.get("review_passes", 1) > result.get("review_passes", 1):
+            directory = directory.parent / recent["run_id"]
+            result = recent
     current_policy, _ = policy()
     if current_policy != result["policy_digest"]:
         raise ReviewError("Review policy changed; run a follow-up review")
     target = result["snapshot"]["target"]
-    with locked(root, target):
-        return publish_result(result, directory, GitHub(target), write)
+    pr_url = f"https://{target['host']}/{target['repo']}/pull/{target['number']}"
+    while True:
+        github = GitHub(target)
+        state = github.state()
+        checks = github.checks(state["pr"]["head"]["sha"])
+        if not publication_started(directory) and not result.get("stale_exhausted") and (result.get("stale") or not matching_context(result, state, checks)):
+            if result.get("review_passes", 1) >= MAX_REVIEW_PASSES:
+                result = mark_exhausted(directory, result)
+            else:
+                outcome, directory, result = refresh_review(project, pr_url, result)
+                if directory is None:
+                    return outcome
+                continue
+        try:
+            with locked(root, target):
+                return publish_result(result, directory, github, write)
+        except ReviewError as exc:
+            if "Review is stale" not in str(exc) or result.get("stale_exhausted") or publication_started(directory):
+                raise
+            if result.get("review_passes", 1) >= MAX_REVIEW_PASSES:
+                result = mark_exhausted(directory, result)
+            else:
+                outcome, directory, result = refresh_review(project, pr_url, result)
+                if directory is None:
+                    return outcome
 
 
 def main():
@@ -335,7 +424,7 @@ def main():
         if args.command == "doctor":
             result = doctor(configuration(project, args.config))
         elif args.command == "run":
-            result = perform_run(project, args.pr, args.config, args.fresh)
+            result = review_cycle(project, args.pr, args.config, args.fresh)
         else:
             result = publish(project, args.run, args.write)
         print(json.dumps(result, indent=2))

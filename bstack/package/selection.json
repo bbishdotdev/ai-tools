@@ -90,6 +90,7 @@
     "shared/references/workspace-requests.md",
     "shared/references/decision-authority.md",
     "shared/references/architecture-decisions.md",
+    "shared/references/pr-standards.md",
     "shared/references/work-adapters.md",
     "shared/workflow.py",
     "shared/adr.py",

@@ -38,7 +38,7 @@ if name == "gh":
     if "--method" in args:
         payload = json.load(sys.stdin)
         reviews = json.loads((home / "published.json").read_text())
-        response = {"id": len(reviews) + 1, "html_url": "https://github.com/example/project/pull/1#review", "body": payload["body"], "state": {"APPROVE": "APPROVED", "REQUEST_CHANGES": "CHANGES_REQUESTED", "COMMENT": "COMMENTED"}[payload["event"]], "commit_id": payload["commit_id"], "user": {"login": state.get("viewer", "reviewer")}}
+        response = {"id": len(reviews) + 1, "html_url": "https://github.com/example/project/pull/1#review", "body": payload["body"], "state": {"APPROVE": "APPROVED", "REQUEST_CHANGES": "CHANGES_REQUESTED", "COMMENT": "COMMENTED"}[payload["event"]], "commit_id": payload.get("commit_id", state["pr"]["head"]["sha"]), "user": {"login": state.get("viewer", "reviewer")}}
         reviews.append(response)
         (home / "published.json").write_text(json.dumps(reviews))
         if state.get("publication_timeout"):
@@ -131,6 +131,20 @@ if name == "codex":
     print(json.dumps({"type": "turn.completed"}))
 else:
     print(json.dumps({"structured_output": result, "is_error": False, "modelUsage": {args[args.index("--model") + 1]: {"inputTokens": 100}}}))
+if judge and state.get("shift_on_judge", 0):
+    repository = home / "repository"
+    source = repository / "service.py"
+    count = state.get("shift_number", 0) + 1
+    source.write_text(source.read_text() + f"shift_{count} = True\n")
+    git = os.environ["REVIEW_REAL_GIT"]
+    subprocess.check_call([git, "-C", str(repository), "add", "service.py"])
+    subprocess.check_call([git, "-C", str(repository), "commit", "-qm", f"shift {count}"])
+    head = subprocess.check_output([git, "-C", str(repository), "rev-parse", "HEAD"], text=True).strip()
+    subprocess.check_call([git, "-C", str(repository), "update-ref", "refs/pull/1/head", head])
+    state["pr"]["head"]["sha"] = head
+    state["shift_number"] = count
+    state["shift_on_judge"] -= 1
+    (home / "state.json").write_text(json.dumps(state))
 '''
 
 
@@ -380,22 +394,81 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertEqual(context["coverage_limits"], [])
         self.assertEqual([item["commit"] for item in context["verified_archives"]], [previous_head, self.head])
 
-    def test_publish_previews_rejects_stale_and_reconciles_uncertain_write_without_duplicate(self):
+    def test_publish_refreshes_stale_review_and_reconciles_uncertain_write_without_duplicate(self):
         report = self.run_review()
         args = ("publish", "--run", report["run"])
         self.assertEqual(self.cli(*args)["status"], "preview")
         self.assertEqual(json.loads((self.home / "published.json").read_text()), [])
         self.state["pr"]["body"] = "The requirement changed"
         self.save()
-        self.assertIn("stale", self.cli(*args, "--write", success=False)["error"])
-        self.state["pr"] = self.pr()
+        preview = self.cli(*args)
+        self.assertEqual(preview["status"], "preview")
+        self.assertNotEqual(preview["run"], report["run"])
+        refreshed = json.loads((Path(preview["run"]) / "result.json").read_text())
+        self.assertEqual(refreshed["review_passes"], 2)
+        self.assertEqual(refreshed["scope"]["mode"], "context")
         self.state["publication_timeout"] = True
         self.save()
         self.assertIn("uncertain", self.cli(*args, "--write", success=False)["error"])
         retry = self.cli(*args, "--write")
         self.assertEqual(retry["status"], "already_published")
         self.assertEqual(len(json.loads((self.home / "published.json").read_text())), 1)
+        self.assertEqual((self.home / "judge-calls.txt").read_text(), "2")
         self.assertEqual(self.run_review()["status"], "reused")
+
+    def test_mid_review_pushes_trigger_delta_passes_and_cap_stale_publication(self):
+        self.state["shift_on_judge"] = 1
+        self.save()
+        updated = self.run_review()
+        self.assertEqual(updated["status"], "complete")
+        self.assertEqual(updated["scope"]["mode"], "delta")
+        self.assertEqual((self.home / "claude-calls.txt").read_text(), "2")
+        self.assertEqual((self.home / "codex-calls.txt").read_text(), "2")
+        self.assertEqual((self.home / "judge-calls.txt").read_text(), "2")
+        reviewed = json.loads((Path(updated["run"]) / "result.json").read_text())
+        self.assertEqual(reviewed["review_passes"], 2)
+        self.assertEqual(len(reviewed["review_chain"]), 2)
+        self.assertEqual(self.cli("publish", "--run", updated["run"])["event"], "APPROVE")
+
+        self.project = self.home / "moving-project"
+        self.project.mkdir()
+        self.state["shift_on_judge"] = 3
+        self.save()
+        moving = self.run_review()
+        self.assertEqual(moving["status"], "partial")
+        self.assertTrue(moving["stale"])
+        self.assertEqual((self.home / "judge-calls.txt").read_text(), "5")
+        result = json.loads((Path(moving["run"]) / "result.json").read_text())
+        self.assertEqual(result["review_passes"], 3)
+        self.assertTrue(result["stale_exhausted"])
+        preview = self.cli("publish", "--run", moving["run"])
+        self.assertEqual(preview["event"], "COMMENT")
+        self.assertIn("three review passes", preview["body"])
+        self.assertIn("latest changes haven't been checked", preview["body"])
+        posted = self.cli("publish", "--run", moving["run"], "--write")
+        self.assertEqual(posted["event"], "COMMENT")
+        self.assertEqual(posted["status"], "published_but_stale")
+        self.assertEqual(len(json.loads((self.home / "published.json").read_text())), 1)
+
+    def test_push_after_third_pass_keeps_old_complete_baseline_and_posts_comment_only(self):
+        self.state["shift_on_judge"] = 2
+        self.save()
+        third = self.run_review()
+        self.assertEqual(third["status"], "complete")
+        self.assertEqual(json.loads((Path(third["run"]) / "result.json").read_text())["review_passes"], 3)
+        (self.repo / "service.py").write_text("def read_record(user):\n    return None\n")
+        self.git("commit", "-qam", "change after third pass")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.git("update-ref", "refs/pull/1/head", self.head)
+        self.state["pr"] = self.pr()
+        self.save()
+        preview = self.cli("publish", "--run", third["run"])
+        self.assertEqual(preview["event"], "COMMENT")
+        self.assertIn("three review passes", preview["body"])
+        self.assertFalse((Path(third["run"]).parent / "last-complete.json").exists())
+        posted = self.cli("publish", "--run", third["run"], "--write")
+        self.assertEqual(posted["status"], "published_but_stale")
+        self.assertEqual((self.home / "judge-calls.txt").read_text(), "3")
 
     def test_context_changes_refresh_neededness_and_author_publication_is_comment(self):
         first = self.run_review()

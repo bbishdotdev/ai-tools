@@ -66,6 +66,13 @@ def assessment_details(result):
 
 
 def summary_body(result, event, self_review):
+    if result.get("stale_exhausted"):
+        reviewed = reviewed_commit_url(result)
+        warning = ("⚠️ This PR kept changing through three review passes. I reviewed "
+                   f"[this commit]({reviewed}), but the latest changes haven't been checked. "
+                   "These findings may be stale. Please rerun the review once the PR settles.")
+        text = [warning, *assessment_details({**result, "new_findings": [item["id"] for item in result["findings"]]}), signature(result)]
+        return "\n\n".join(text)
     intended = desired_event(result)
     if intended == "APPROVE":
         text = ["✅ Looks good. GitHub won't let me formally approve my own PR." if self_review else "✅ Looks good."]
@@ -105,6 +112,9 @@ def action(result, kind, destination, body=None, **values):
 
 
 def plan_actions(result, user):
+    if result.get("stale_exhausted"):
+        body = summary_body(result, "COMMENT", False)
+        return [action(result, "review", {"kind": "reviews", "pr": result["snapshot"]["target"]["number"]}, body, event="COMMENT")], "COMMENT"
     discussion = result["snapshot"]["discussion"]
     sources = {(kind, item["id"]): item for kind, items in discussion.items() for item in items}
     responses = defaultdict(list)
@@ -207,7 +217,7 @@ def reaction_present(github, item, user):
             raise ReviewError("GitHub returned incomplete reaction pagination")
 
 
-def reconcile_action(item, state, github, user, head):
+def reconcile_action(item, state, github, user, head, stale_exhausted=False):
     if item["kind"] == "reaction":
         reaction = reaction_present(github, item, user)
         return {"id": reaction["id"]} if reaction else None
@@ -218,7 +228,7 @@ def reconcile_action(item, state, github, user, head):
         if candidate["body"] != item["body"]:
             raise ReviewError("A published review action was edited; reassess before posting again")
         if item["kind"] == "review":
-            if candidate.get("commit_id") != head:
+            if not stale_exhausted and candidate.get("commit_id") != head:
                 raise ReviewError("The existing review action belongs to a different commit")
             expected = {"APPROVE": {"APPROVE", "APPROVED"}, "REQUEST_CHANGES": {"REQUEST_CHANGES", "CHANGES_REQUESTED"}, "COMMENT": {"COMMENT", "COMMENTED"}}[item["event"]]
             if candidate.get("state", "").upper() not in expected:
@@ -238,7 +248,10 @@ def execute_action(item, result, github):
         prefix = "issues" if destination["kind"] == "comments" else "pulls"
         return github.api(f"{prefix}/comments/{destination['id']}/reactions", data={"content": "+1"})
     if item["kind"] == "review":
-        return github.api(f"pulls/{number}/reviews", data={"body": item["body"], "event": item["event"], "commit_id": result["snapshot"]["pr"]["head"]["sha"]})
+        data = {"body": item["body"], "event": item["event"]}
+        if not result.get("stale_exhausted"):
+            data["commit_id"] = result["snapshot"]["pr"]["head"]["sha"]
+        return github.api(f"pulls/{number}/reviews", data=data)
     path = f"pulls/{number}/comments/{destination['id']}/replies" if item["kind"] == "reply" else f"issues/{number}/comments"
     return github.api(path, data={"body": item["body"]})
 
@@ -254,7 +267,7 @@ def assert_fresh(result, journal, state, checks):
     pr = state["pr"]
     if pr["state"] != "open" or pr.get("merged") or pr.get("mergeable") is False or pr.get("mergeable_state") == "dirty":
         raise ReviewError("The PR is closed or has merge conflicts; reassess before publishing")
-    if not matching_context(result, state, checks, extra_ignored=echoes(journal)):
+    if not result.get("stale_exhausted") and not matching_context(result, state, checks, extra_ignored=echoes(journal)):
         raise ReviewError("Review is stale: code, requirements, checks or discussion changed. Run a follow-up review before publishing.")
 
 
@@ -273,7 +286,7 @@ def completed_response(journal, stale=False, repeated=False):
 
 def publish_result(result, directory, github, write):
     directory = directory.resolve()
-    if result.get("stale"):
+    if result.get("stale") and not result.get("stale_exhausted"):
         raise ReviewError("Review is stale; run a follow-up before publishing")
     saved = directory / "publication.json"
     user = github.api("user", global_path=True)["login"]
@@ -292,25 +305,26 @@ def publish_result(result, directory, github, write):
         if journal.get("result_digest") != result["digest"] or journal.get("actor", "").casefold() != user.casefold():
             raise ReviewError("This publication belongs to a different assessment or GitHub account")
         for item in journal["actions"]:
-            receipt = reconcile_action(item, state, github, user, head)
+            receipt = reconcile_action(item, state, github, user, head, result.get("stale_exhausted", False))
             if receipt:
                 item.update({"status": "done", "receipt": receipt})
             elif item["status"] in {"done", "sending", "uncertain"}:
                 raise ReviewError("A prior review action is missing or uncertain. Reconcile it before posting again.")
         write_json(saved, journal)
         if all(item["status"] == "done" for item in journal["actions"]):
-            stale = not matching_context(result, state, checks, extra_ignored=echoes(journal))
+            stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
             return completed_response(journal, stale=stale, repeated=True)
     else:
-        for record in receipts(state, github):
-            if compatible_receipt(record, state, checks, result["config_digest"], result["policy_digest"]) and equivalent(result, record["receipt"]):
-                return {"status": "already_reviewed", "url": record["source"]["url"], "author": record["source"]["author"], "event": None}
+        if not result.get("stale_exhausted"):
+            for record in receipts(state, github):
+                if compatible_receipt(record, state, checks, result["config_digest"], result["policy_digest"]) and equivalent(result, record["receipt"]):
+                    return {"status": "already_reviewed", "url": record["source"]["url"], "author": record["source"]["author"], "event": None}
         actions, event = plan_actions(result, user)
         journal = {"version": 1, "actor": user, "run_id": result["run_id"], "result_digest": result["digest"], "status": "planned", "event": event, "actions": actions}
     assert_fresh(result, journal, state, checks)
     for item in journal["actions"]:
         if item["kind"] == "review" and item["status"] == "pending":
-            receipt = public_receipt({**result, "publication_echoes": echoes(journal)}, item["visible_body"] + "\n\n" + item["marker"])
+            receipt = "" if result.get("stale_exhausted") else public_receipt({**result, "publication_echoes": echoes(journal)}, item["visible_body"] + "\n\n" + item["marker"])
             item["body"] = item["visible_body"] + "\n\n" + item["marker"] + ("\n\n" + receipt if receipt else "")
     review = next((item for item in journal["actions"] if item["kind"] == "review"), None)
     preview = {"status": "preview", "event": journal["event"], "actions": journal["actions"], "body": review["body"] if review else "", "run": str(directory)}
@@ -323,14 +337,14 @@ def publish_result(result, directory, github, write):
             continue
         state, checks = github.state(), github.checks(head)
         assert_fresh(result, journal, state, checks)
-        existing = reconcile_action(item, state, github, user, head)
+        existing = reconcile_action(item, state, github, user, head, result.get("stale_exhausted", False))
         if existing:
             item.update({"status": "done", "receipt": existing})
             write_json(saved, journal)
             continue
         if item["kind"] == "review":
             visible = item["visible_body"] + "\n\n" + item["marker"]
-            receipt = public_receipt({**result, "publication_echoes": echoes(journal)}, visible)
+            receipt = "" if result.get("stale_exhausted") else public_receipt({**result, "publication_echoes": echoes(journal)}, visible)
             item["body"] = visible + ("\n\n" + receipt if receipt else "")
         item["status"] = "sending"
         journal["status"] = "sending"
@@ -345,7 +359,7 @@ def publish_result(result, directory, github, write):
                 kind = "reviews" if item["kind"] == "review" else "inline" if item["kind"] == "reply" else "comments"
                 if response.get("body") != item["body"] or (response.get("user") or {}).get("login", "").casefold() != user.casefold():
                     raise ReviewError("GitHub returned an unexpected action author or body")
-                if item["kind"] == "review" and (response.get("commit_id") != head or not response.get("state")):
+                if item["kind"] == "review" and (not response.get("state") or (not result.get("stale_exhausted") and response.get("commit_id") != head)):
                     raise ReviewError("GitHub returned an unexpected review commit or state")
                 receipt = item_record(kind, response)
             item.update({"status": "done", "receipt": receipt})
@@ -358,5 +372,5 @@ def publish_result(result, directory, github, write):
     journal.update({"status": "published", "published_at": now()})
     write_json(saved, journal)
     state, checks = github.state(), github.checks(head)
-    stale = not matching_context(result, state, checks, extra_ignored=echoes(journal))
+    stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
     return completed_response(journal, stale=stale)
