@@ -215,6 +215,17 @@ def insert_block(text, record, path):
     return text + record["text"]
 
 
+def missing_instruction_blocks(project, previous, desired):
+    missing = set()
+    for name in ("AGENTS.md", "CLAUDE.md"):
+        path = safe_path(project, name, follow_leaf=True)
+        relative = str(path.relative_to(project))
+        old, new = previous.get(relative), desired.get(relative)
+        if old and new and old["kind"] == new["kind"] == "block" and snapshot(path) is None:
+            missing.add(relative)
+    return sorted(missing)
+
+
 def wrapper(name, description, body, manual=True):
     return (f"---\nname: {name}\ndescription: {json.dumps(description)}\ndisable-model-invocation: {str(manual).lower()}\n"
             "metadata:\n  package: bstack\n---\n\n" + body.rstrip() + "\n")
@@ -377,7 +388,7 @@ def json_reconcile(content, previous, wanted, path):
     return json.dumps(obj, indent=2, sort_keys=True) + "\n" if obj or preserve_empty else None
 
 
-def reconcile(project, previous, desired):
+def reconcile(project, previous, desired, restore_missing=()):
     changes = {}
     for relative in sorted(set(previous) | set(desired)):
         path = safe_path(project, relative)
@@ -401,10 +412,8 @@ def reconcile(project, previous, desired):
                     raise Conflict(f"Existing file would be replaced: {path}. Restore this project's .bstack/config.json ownership state or explicitly resolve the collision before setup; copied machine-specific bindings are not adopted automatically")
                 output = new["text"] if new else None
             elif kind == "block":
-                previous_block = None
-                if old:
-                    previous_block = old["text"]
-                elif new and new.get("adopt"):
+                previous_block = old["text"] if old and not (before is None and relative in restore_missing) else None
+                if previous_block is None and new and new.get("adopt"):
                     for block in (new["text"], *new.get("adopt_from", [])):
                         if text.count(block) == 1:
                             previous_block = block
@@ -504,7 +513,8 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
             install_kind = installation or (current.get("installation", "external") if current else "external")
             desired = build_records(project, capsule, chosen_hosts, enabled, old, manifest=manifest)
             state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled, "managed": desired, "installation": install_kind}
-        changes = reconcile(project, old, desired)
+        restored = missing_instruction_blocks(project, old, desired) if action == "setup" else []
+        changes = reconcile(project, old, desired, restore_missing=restored)
         bindings_changed = any(relative != ".gitignore" for relative in changes)
         if action == "uninstall":
             retained = [p for p in (project / ".bstack").rglob("*")
@@ -525,9 +535,15 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
         if before != after:
             changes[STATE] = (before, after)
         apply(project, changes)
-        return {"installed": state is not None, "auto": state["auto"] if state else False,
+        result = {"installed": state is not None, "auto": state["auto"] if state else False,
                 "hosts": state["hosts"] if state else [], "changes": list(changes),
                 **session_guidance(state["auto"] if state else False, state["hosts"] if state else [], bindings_changed)}
+        if restored:
+            result["recreated_instruction_files"] = restored
+            result["recovery_warning"] = ("Recreated the missing instruction file(s) with only bstack's managed block: "
+                                          + ", ".join(restored) + ". Bstack cannot recover project guidance that "
+                                          "was outside that block; check Git or a backup for it.")
+        return result
 
 
 def install_offline(project, capsule, hosts=None):
@@ -566,7 +582,8 @@ def install_offline(project, capsule, hosts=None):
                     before = snapshot(path)
                     if before is not None:
                         preflight[relative] = {"kind": "file", "text": text_snapshot(before, path)}
-        reconcile(project, preflight, desired)
+        reconcile(project, preflight, desired,
+                  restore_missing=missing_instruction_blocks(project, preflight, desired))
         if target == capsule:
             result = configure(project, target, "setup", hosts=chosen_hosts, installation="offline", locked=True)
             result["installation"] = "offline"

@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Upgrades recreate a missing BStack-owned `AGENTS.md` or `CLAUDE.md` block and warn that project guidance outside the block cannot be recovered from BStack. Existing files with changed blocks still stop for reconciliation. Setup now calls out newly created, untracked root instruction files.
 
 ## Published releases
 
