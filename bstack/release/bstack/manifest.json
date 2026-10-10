@@ -1590,9 +1590,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "f1bf570b44bf27ba314deefef5640ae4c05b0b387b06f93d0389f9c3e58d84e8",
+      "sha256": "b7274f272a49d43485ada87e28951f346e5f058e22ed05c160c31111a29f94c5",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "e572f136bcaa540987907a518893aede084796d8b2fcaafbc6703ba106f92572",
+      "source_sha256": "0881b4f71130fe69cacc3e39880346500da6eabfd648ad3e9c65e1a50f98ba5e",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1611,9 +1611,17 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "90cd884e506b8d7cebe6840346232ae199a5890869a17fd7c4f1b63399581785",
+      "sha256": "12321cdf546aab8c5f7c04a8f7cc2b329950a7ca590c40d10bc1d1a45a32b453",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "90cd884e506b8d7cebe6840346232ae199a5890869a17fd7c4f1b63399581785",
+      "source_sha256": "12321cdf546aab8c5f7c04a8f7cc2b329950a7ca590c40d10bc1d1a45a32b453",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/to-pr/references/visuals.md",
+      "sha256": "87f4e43cb8a626e894a4f852b173e6c5eabbb6c5e876c08a6f74f869897e4828",
+      "source": "bstack/engineering/to-pr/references/visuals.md",
+      "source_sha256": "87f4e43cb8a626e894a4f852b173e6c5eabbb6c5e876c08a6f74f869897e4828",
       "transforms": []
     },
     {
@@ -1802,9 +1810,9 @@
     {
       "mode": 420,
       "path": "github/pull_request_template.md",
-      "sha256": "ec7d99ef8b86dd5e29f77d3662b9f7a081f763799f54d0a2681017ddf20b6dbe",
+      "sha256": "6303a40cf3e5ff49d3db27403f8ab4a1791366824634ad66a1a6f16251fd941d",
       "source": "bstack/github/pull_request_template.md",
-      "source_sha256": "ec7d99ef8b86dd5e29f77d3662b9f7a081f763799f54d0a2681017ddf20b6dbe",
+      "source_sha256": "6303a40cf3e5ff49d3db27403f8ab4a1791366824634ad66a1a6f16251fd941d",
       "transforms": []
     },
     {
