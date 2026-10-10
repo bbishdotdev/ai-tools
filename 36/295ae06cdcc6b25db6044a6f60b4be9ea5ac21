@@ -1,0 +1,73 @@
+bstack/engineering/resolve-pr/references/github.md
+  s_822e08e34bda62::t_a946e32a1acda5 18
+  s_822e08e34bda62::t_4d06d3b8cf45cb 1-17,19-34
+bstack/engineering/README.md
+  s_822e08e34bda62::t_265e99d5f1e49e 9-10
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_265e99d5f1e49e 80-81
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_265e99d5f1e49e 7
+bstack/release/bstack/engineering/resolve-pr/agents/openai.yaml
+  s_822e08e34bda62::t_991433e744924b 1-2
+bstack/release/bstack/engineering/resolve-pr/references/github.md
+  s_822e08e34bda62::t_2b67826364f3d3 18
+  s_822e08e34bda62::t_991433e744924b 1-17,19-34
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_991433e744924b 80-81
+bstack/shared/skills/bstack-router/SKILL.md
+  s_822e08e34bda62::t_265e99d5f1e49e 42,49
+  s_822e08e34bda62::t_96ab0fa3286563 50
+bstack/scripts/package.py
+  s_822e08e34bda62::t_e1f9829325f6e0 42,439
+bstack/release/bstack/layers.json
+  s_822e08e34bda62::t_991433e744924b 14
+bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_4d06d3b8cf45cb 1-32
+bstack/release/bstack/engineering/resolve-pr/scripts/feedback.py
+  s_822e08e34bda62::t_991433e744924b 1-184,188-237,241-243,246-293,295,298-310
+  s_822e08e34bda62::t_2b67826364f3d3 186-187,244-245,294,296-297
+  s_822e08e34bda62::t_48ca19c8c978ac 185,238-240
+bstack/engineering/resolve-pr/scripts/feedback.py
+  s_822e08e34bda62::t_714136a31cb656 1-54,60-132,136-184,188-216,218-219,221-237,241,246-248,254-260,262-293,295,298-310
+  s_822e08e34bda62::t_a946e32a1acda5 186-187,244-245,294,296-297
+  s_822e08e34bda62::t_e1f9829325f6e0 55-59,133-135,217,220,242-243,249-253,261
+  s_822e08e34bda62::t_2adacb45006e06 185,238-240
+bstack/release/bstack/index.json
+  s_822e08e34bda62::t_991433e744924b 37-39,100
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_822e08e34bda62::t_991433e744924b 42,49
+  s_822e08e34bda62::t_9a832f4fbced8a 50
+bstack/scripts/test_package.py
+  s_822e08e34bda62::t_265e99d5f1e49e 34
+bstack/release/bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_991433e744924b 1-32
+bstack/README.md
+  s_822e08e34bda62::t_265e99d5f1e49e 15
+bstack/github/tests/test_feedback.py
+  s_822e08e34bda62::t_698508ebeb7cc0 31-40
+  s_822e08e34bda62::t_55121feac1c17f 48-52,55
+  s_822e08e34bda62::t_a946e32a1acda5 16,26-27,45,61
+  s_822e08e34bda62::t_86989ce5c413a4 1-15,17-25,28-30,41-44,46-47,53-54,56-60,62-90
+bstack/package/selection.json
+  s_822e08e34bda62::t_265e99d5f1e49e 85-86
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_48ca19c8c978ac 1391,1393
+  s_822e08e34bda62::t_2b67826364f3d3 1383,1385
+  s_822e08e34bda62::t_991433e744924b 7,40,42,83,134,155,176,197,218,239,260,312,333,354,395,416,477,498,519,552,1235,1272,1293,1354,1359-1382,1384,1386-1390,1392,1394-1395,1412,1523,1560,1581,1602,1623,1644,1681,1713,1859,1861,1869,1935,1956,1977,1999,2021,2043,2065,2103,2125,2154,2176,2352,2354,2387,2408,2429,2754-2758
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "36295ae06cdcc6b25db6044a6f60b4be9ea5ac21",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
