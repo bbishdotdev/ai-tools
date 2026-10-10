@@ -1,0 +1,75 @@
+bstack/engineering/review-pr/references/adjudicator.md
+  s_6bee40818cb301::t_29df5f03ea4e1e 15-16
+bstack/release/bstack/engineering/review-pr/references/adjudicator.md
+  s_822e08e34bda62::t_9995e96cd52c57 15-16
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_af74066a81f2dd 29,46
+bstack/github/tests/test_review_publication.py
+  s_6bee40818cb301::t_88d608638fe3c4 37
+bstack/release/bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_ca24b8bfca0731 3,7
+  s_822e08e34bda62::t_58cf3d61956df6 9
+bstack/engineering/review-pr/references/running.md
+  s_6bee40818cb301::t_20a5824637078d 32,64,68,70
+bstack/scripts/package.py
+  s_822e08e34bda62::t_4417983107bcd7 341-342
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_4151590ee646d1 25,70-72,154-155,178-179,184,193,244,272-276,282-284,306-359,366-371,376-400,427
+bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_b74e17aee15a31 3,7
+  s_822e08e34bda62::t_0487a3ed95f356 9
+bstack/release/bstack/shared/references/pr-standards.md
+  s_822e08e34bda62::t_08a0889d96e2fe 1-19
+  s_822e08e34bda62::t_c5ff92e28f00c4 20-22
+  s_822e08e34bda62::t_edcc10f7a44726 23-36
+bstack/release/bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_57f497d85b1846 20-21
+bstack/shared/references/pr-standards.md
+  s_822e08e34bda62::t_5be3e579c45df1 1-19
+  s_822e08e34bda62::t_108de731e09491 20-22
+  s_822e08e34bda62::t_751f36c083158a 23-36
+bstack/engineering/review-pr/SKILL.md
+  s_6bee40818cb301::t_35924b169f7028 29,46
+bstack/engineering/review-pr/scripts/publication.py
+  s_6bee40818cb301::t_7899622e71538b 69-75,115-117,220,231,251-254,270,289,308,315,318-321,327,340,347,362,375
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_c99df6db8f0d87 9
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_2c44583cc0cb4a 82,133,154,175,196,217,238,259,311,332,353,394,415,476,497,518,551,1234,1271,1292,1353,1361,1363,1374,1382,1384,1398,1400,1408,1410,1448,1450,1456,1458,1485,1522,1543,1564,1585,1593,1595,1606,1643,1675,1823,1897,1918,1939,1961,1983,2005,2027,2065,2087,2116,2138,2277-2286,2349,2370,2391
+bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_52dd399cef432d 20-21
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_8a00aa2716150c 69-75,115-117,220,231,251-254,270,289,308,315,318-321,327,340,347,362,375
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_a8fe294f5afd90 32,64,68,70
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_7696750fe0b79b 25,70-72,154-155,178-179,184,193,244,272-276,282-284,306-359,366-371,376-400,427
+bstack/package/selection.json
+  s_822e08e34bda62::t_9ba952a38f6be6 93
+bstack/github/tests/test_review.py
+  s_6bee40818cb301::t_b3ffd95fa1dad7 41,134-147,397,404-409,416,419-472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4a20918a0c6c58ca683bcfe26c6012efc78020b5",
+  "prompts": {},
+  "sessions": {
+    "s_6bee40818cb301": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12705-fd35-78e2-868a-090f4b573330",
+        "model": "unknown"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "unknown"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
