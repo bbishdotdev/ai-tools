@@ -1,0 +1,47 @@
+bstack/CHANGELOG.md
+  s_fb3d29e198f713::t_549622a817da86 7
+bstack/INSTALL.md
+  s_fb3d29e198f713::t_7bbc055e3f2564 108-110
+bstack/package/selection.json
+  s_fb3d29e198f713::t_b601885b11feae 4
+bstack/package/test_runtime.py
+  s_fb3d29e198f713::t_6ddfa22db295bd 545-567
+bstack/package/runtime.py
+  s_822e08e34bda62::t_ac66e1ca40b3cd 218-228,391,415-416,516-517,538,541-546,585-586
+bstack/package/templates/install.md
+  s_822e08e34bda62::t_77db626cf837ce 24-25
+bstack/release/README.md
+  s_822e08e34bda62::t_1b66090df9ef49 3
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_764bff963cda40 3
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_7abd5777bb9537 39,1823,1857,1859,2796
+bstack/release/bstack/scripts/bstack.py
+  s_822e08e34bda62::t_2c6ce5e1b27a80 218-228,391,415-416,516-517,538,541-546,585-586
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_822e08e34bda62::t_c2c0c9f522dfac 24-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "14b17c39e5ca03482fa8ae4a09fbfe280a2f3843",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "unknown"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_fb3d29e198f713": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8116ce42-48e5-4cf8-8063-8165288a3d1a",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
