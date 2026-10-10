@@ -1359,9 +1359,9 @@
     {
       "mode": 420,
       "path": "engineering/resolve-pr/SKILL.md",
-      "sha256": "f25262bd6b208f55cca60d190140807bb165720f72e5d81295a1d47b6738585e",
+      "sha256": "5a3b7bb3471a91148e45e6ad8446023d393406339987d2c165af54f93dfd5d26",
       "source": "bstack/engineering/resolve-pr/SKILL.md",
-      "source_sha256": "58a380a3e5f071bf72c60207dfb8cc0ef6bd6f9519b674429104b8f312df5145",
+      "source_sha256": "c51fd7477c6b6c1be51397b962866a8d9f78d7b1652a071f64f473a9d20f06d6",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1380,17 +1380,17 @@
     {
       "mode": 420,
       "path": "engineering/resolve-pr/references/github.md",
-      "sha256": "3a11e664c2ea8f08ec3ee210ff4eea4377af4d72a2975a26feb53644438d53bf",
+      "sha256": "781844f8c90d41b1a3bb5be7f32c2bdd95105eab3cfbba63272799b4d1b9da30",
       "source": "bstack/engineering/resolve-pr/references/github.md",
-      "source_sha256": "3a11e664c2ea8f08ec3ee210ff4eea4377af4d72a2975a26feb53644438d53bf",
+      "source_sha256": "781844f8c90d41b1a3bb5be7f32c2bdd95105eab3cfbba63272799b4d1b9da30",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/resolve-pr/scripts/feedback.py",
-      "sha256": "3ef7069102a467a9ac78a831f3ad8924152f2ced03f8b6f39e47b768396801c0",
+      "sha256": "6acd1fd8d51e44f73a76ed3c65d9dd003a8c1cb066874b71ae6bfa527c3a249e",
       "source": "bstack/engineering/resolve-pr/scripts/feedback.py",
-      "source_sha256": "3ef7069102a467a9ac78a831f3ad8924152f2ced03f8b6f39e47b768396801c0",
+      "source_sha256": "6acd1fd8d51e44f73a76ed3c65d9dd003a8c1cb066874b71ae6bfa527c3a249e",
       "transforms": []
     },
     {
@@ -2349,9 +2349,9 @@
     {
       "mode": 420,
       "path": "shared/router/WORKFLOW.md",
-      "sha256": "953801d445089e873eaa60fb6f8d9ea00d06657d44ee6946afc880b25221bfbd",
+      "sha256": "7c38d5b7a3188ea1271f9b087a4e2c1dc27f067ce84d85a03918e7d94a678bd1",
       "source": "bstack/shared/skills/bstack-router/SKILL.md",
-      "source_sha256": "ada1650c9867c37d058cb924abed1121502d98dc233d0d8cd749c2b5085b6657",
+      "source_sha256": "288da039881dab3598ce2de2a0999d6baa587b841765347d1be1984157f2bfdb",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",

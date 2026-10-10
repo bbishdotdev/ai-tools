@@ -59,8 +59,8 @@ class FeedbackTests(unittest.TestCase):
         original = fixture()
         current = fixture()
         responses = {"version": 1, "snapshot_id": original["id"], "head": original["pr"]["head"],
-                     "replies": [{"kind": "inline", "id": 101, "body": "Fixed the write path in the pushed commit."},
-                                 {"kind": "review", "id": 201, "body": "The existing retry contract remains intact."}]}
+                     "replies": [{"kind": "inline", "id": 101, "body": "The existing write path already handles this case; no code change is needed."},
+                                 {"kind": "review", "id": 201, "body": "I checked the retry contract. It remains intact."}]}
         writes = []
         uncertain = [True]
 
@@ -78,10 +78,9 @@ class FeedbackTests(unittest.TestCase):
                 raise feedback.FeedbackError("Connection lost after GitHub accepted the reply")
             return item
 
-        with patch.object(feedback, "local_head", return_value=original["pr"]["head"]):
-            with self.assertRaisesRegex(feedback.FeedbackError, "Connection lost"):
-                feedback.respond(original, responses, Path("/project"), True, lambda _: current, publisher)
-            result = feedback.respond(original, responses, Path("/project"), True, lambda _: current, publisher)
+        with self.assertRaisesRegex(feedback.FeedbackError, "Connection lost"):
+            feedback.respond(original, responses, write=True, collector=lambda _: current, publisher=publisher)
+        result = feedback.respond(original, responses, write=True, collector=lambda _: current, publisher=publisher)
         self.assertEqual(len(writes), 2)
         self.assertEqual([item["status"] for item in result["actions"]], ["already_posted", "already_posted"])
 

@@ -46,7 +46,7 @@ Named invocation selects that entry. Within opted-in automatic routing, propose 
 
 PR review selects the owned review entry before general investigation or PR-status routing. It evaluates necessity and implementation, then challenges anonymous findings. It does not run the complete Arena/Interrogate workflows, fix code, or merge. A status-only or CI-repair request remains Babysit; publishing a review needs its own applicable authorization.
 
-Author-side review follow-up selects resolve-pr. Judge each concern against evidence and the PR's purpose before changing code. Keep independent cleanup out of the PR, and do not treat an existing request-changes review as cleared by the author's reply.
+Author-side review follow-up selects resolve-pr. Judge each concern against evidence and the PR's purpose; an evidence-backed reply may resolve it without changing code. Keep independent cleanup out of the PR, and do not treat an existing request-changes review as cleared by the author's reply.
 
 Read [decision authority](../../references/decision-authority.md) when deciding who can settle product choices, ADRs, or autonomous grilling. Human decisions remain the default; automatic routing and autonomous decision authority are separate. Use [workspace access](../../references/workspace.md) for saved work and [independent work adapters](../../references/work-adapters.md) for planning and ticket destinations. Local operation requires no external tracker or model-role setup.
 

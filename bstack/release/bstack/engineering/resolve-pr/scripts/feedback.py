@@ -234,7 +234,7 @@ def local_head(project):
     return value
 
 
-def respond(snapshot, responses, project, write=False, collector=collect, publisher=github_api):
+def respond(snapshot, responses, project=None, write=False, collector=collect, publisher=github_api):
     if (not isinstance(snapshot, dict) or snapshot.get("version") != 1 or not isinstance(snapshot.get("target"), dict)
             or not isinstance(snapshot.get("pr"), dict) or not isinstance(snapshot["pr"].get("url"), str)
             or not all(key in snapshot for key in ("discussion", "threads", "checks", "statuses", "limits"))):
@@ -244,7 +244,7 @@ def respond(snapshot, responses, project, write=False, collector=collect, publis
     if snapshot.get("id") != fingerprint(snapshot):
         raise FeedbackError("Snapshot identity is missing or changed; capture feedback again")
     actions = plan_actions(snapshot, responses)
-    if write and local_head(project) != snapshot["pr"]["head"]:
+    if write and project is not None and local_head(project) != snapshot["pr"]["head"]:
         raise FeedbackError("Local checkout is not at the reviewed PR head; push fixes before replying")
     actor = None
     if write:
@@ -285,7 +285,7 @@ def main():
     answer = sub.add_parser("respond")
     answer.add_argument("--snapshot", required=True)
     answer.add_argument("--responses", required=True)
-    answer.add_argument("--project", required=True)
+    answer.add_argument("--project")
     answer.add_argument("--write", action="store_true")
     args = parser.parse_args()
     try:
@@ -298,7 +298,7 @@ def main():
                       "comments": {kind: len(items) for kind, items in snapshot["discussion"].items()},
                       "limits": snapshot["limits"]}
         else:
-            result = respond(read_json(args.snapshot), read_json(args.responses), Path(args.project), args.write)
+            result = respond(read_json(args.snapshot), read_json(args.responses), Path(args.project) if args.project else None, args.write)
         print(json.dumps(result, indent=2, ensure_ascii=False))
     except FeedbackError as exc:
         print(json.dumps({"status": "error", "message": str(exc)}), file=sys.stderr)
