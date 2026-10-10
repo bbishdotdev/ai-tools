@@ -24,11 +24,13 @@ python3 /absolute/skill-directory/scripts/review.py run --project /path/to/proje
 
 Confirm the target PR and local project. The first draft uses authenticated GitHub CLI for the forge and Claude Code/Codex CLIs for model execution. The calling agent can run in any host with those dependencies. Missing clients, unsupported flags, unavailable models, and failed responses are incomplete reviews, never permission to substitute a model or approve.
 
-The first run covers the PR. A follow-up uses the last complete assessment, the new diff and affected context. Retain settled decisions unless new evidence invalidates them. Broader review must name what changed: a base revision, rewritten history, policy, model configuration, or a shared contract. Each reviewer receives its own previous report and the prior consolidated findings, not the other reviewer's raw report. Failed runs must not become the next review baseline.
+The runner checks whether review work is needed before starting models. Closed PRs are skipped; confirmed merge conflicts defer review. Unchanged compatible assessments can be reused locally or from a trusted published review. Different models or `run --fresh` start an independent pass, with earlier public feedback available as evidence. Reusing someone else's assessment never submits an approval as the current developer.
+
+A follow-up uses the last complete assessment, new changes and affected context. Each reviewer receives its own earlier report when available, not the other current reviewer's report. Human rebuttals can trigger reassessment without a code change. Evaluate them honestly: accept supported corrections or justified noncritical trade-offs, and defend findings that still hold. Follow the rubric for critical failures and decision authority.
 
 ## Read the result
 
-Inspect the saved review and its coverage before reporting success. Findings need concrete evidence; model agreement alone is insufficient. The adjudicator must account for candidates and prior findings, including those dismissed or resolved. Keep that detailed record private. The public review contains the verdict, meaningful resolutions, surviving findings, and material limits.
+Inspect the saved review and its coverage before reporting success. Findings need concrete evidence; model agreement alone is insufficient. The adjudicator accounts for candidates, prior findings, existing public feedback and artifact limitations. Valid partial assessments keep their findings and may publish useful feedback, but cannot approve or replace the complete follow-up baseline. Failed model calls or malformed results are not publishable assessments.
 
 The [rubric](references/rubric.md) distinguishes blockers, consequential human decisions, and nonblocking moderate/low findings. No finding quota, mandatory test-per-fix rule, or code-size threshold. Don't invent uncertainty to justify another review round. Don't call an unavailable check a code defect.
 
@@ -41,6 +43,8 @@ python3 /absolute/skill-directory/scripts/review.py publish --project /path/to/p
 python3 /absolute/skill-directory/scripts/review.py publish --project /path/to/project --run /absolute/run-directory --write
 ```
 
-Inspect the first command's read-only publication plan. The second posts one GitHub review with its body and supported verdict at the reviewed commit. A stale or incomplete review cannot approve. GitHub self-review restrictions may require a comment that states the intended verdict. Report the actual submitted status and URL, not just the intended status.
+Inspect the first command's read-only action plan. The second performs its reactions, replies and any new review. Agree with existing feedback in place; publish only useful additions, disagreements, resolutions and genuinely new findings. Existing-only blockers do not create another request-changes status. Approval still requires a complete assessment with no unresolved blocker or human decision. A stale result cannot publish.
+
+Use concise, human wording, category icons and the actual model signature. GitHub may accept only a comment on the current user's own PR; distinguish that recommendation from a formal approval. Report the actual submitted actions and links.
 
 Do not post rejected findings, raw model transcripts, or a second copy of the same review. Do not retry an uncertain publication blindly. Use the same run so the runner can reconcile an existing review first. For new commits, run the incremental review before publishing again.

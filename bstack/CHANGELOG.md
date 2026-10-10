@@ -4,7 +4,8 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- Draft `review-pr` workflow: two independent reviews, anonymous adversarial adjudication, PR-necessity checks, incremental follow-ups, and concise GitHub verdicts. Claude Code/Codex execution and GitHub publication are implemented for local validation; live-model calibration is pending.
+- Draft `review-pr` workflow: two independent reviews, anonymous adversarial adjudication, PR-necessity checks, incremental follow-ups, and concise GitHub verdicts. Claude Code/Codex execution and GitHub publication have been exercised on a live draft PR.
+- Review follow-ups now assess author rebuttals and existing public feedback, share compatible published assessments without duplicate approval, and save useful findings when noncritical artifacts limit coverage. Publication can react or reply to prior reviews, with a new request-changes event only for a unique blocker. A private live calibration exercised these decisions with real model calls.
 
 ## Published releases
 

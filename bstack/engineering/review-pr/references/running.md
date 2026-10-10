@@ -29,9 +29,15 @@ Run from the consumer's project and use its `.bstack/` directory for private rev
 
 Failed model processes also retain private standard output, standard error and exit status. Authentication errors should name the failed login instead of appearing as an empty CLI failure. Reauthenticate the named client before retrying; the runner never replaces a failed reviewer with another model.
 
-The runner records the reviewed commits and context, keeps the last complete review as the incremental baseline, and gives each role a fresh session. It reuses an unchanged completed review. A changed head normally produces a delta review; changed base/history or review policy/configuration can require a full pass. Changed PR intent, discussion or competing work requires reassessing that context. The reviewing models still determine which unchanged callers or contracts a delta affects.
+The runner pins the comparison tree, proposed head and current target tip. Reviewers can consult current target ADRs even when they landed after the PR forked. Only complete assessments become incremental baselines. A changed head normally produces a delta review; changed base/history or review policy/configuration can require a full pass. A rebuttal or requirement change without new code produces a context reassessment. Reviewers decide which callers or contracts are affected.
 
-This draft also invalidates a review when CI status changes during or after it. A retry can refresh context without new code, but still costs another model pass. Other open PRs are supplied as titles, descriptions and commit identities. If that information cannot establish whether work overlaps, the models must report the gap rather than claim a duplicate is proven.
+Closed or merged PRs are skipped before models run. Confirmed merge conflicts defer review; unknown mergeability is not a confirmed conflict. Draft status and failing CI alone do not skip an explicitly requested review.
+
+Unchanged assessments are reused, including saved partial assessments so the same missing evidence does not repeatedly spend model calls. Use `run --fresh` to request a new independent pass. Different role models or efforts also require a new pass. Timeout changes alone do not change the assessment.
+
+Published reviews carry a bounded receipt containing their public assessment and compatibility information. Another checkout can reuse a complete matching assessment from the same authenticated user or a reviewer with verified repository write access. Unknown, edited, dismissed or incompatible receipts remain discussion evidence. Receipt checks establish consistency and source identity, not proof that a collaborator actually ran the named models. Shared reuse links their result without posting a new approval. A shared baseline contains public findings, never another developer's private model reports.
+
+Changed CI results or public discussion can require a context refresh. Reactions and timestamps alone do not. Existing reviews remain visible to the models; only an assessment's own verified publication batch is excluded from its freshness comparison. Arbitrary new prose is conservatively reassessed rather than discarded by a keyword filter. Other open PRs are supplied as titles, descriptions and commit identities; titles alone cannot prove duplication.
 
 Reviewers inspect materialized source as data. The runner disables supported host customization paths and restricts model tools; it does not run repository tests or hooks to establish behavior. These controls are not a claim of universal OS isolation or immunity to prompt injection. Explicit model metadata is withheld from the judge; prose may still reveal stylistic clues.
 
@@ -51,12 +57,14 @@ A generated ZIP can be covered through its reviewed source files when the runner
 
 The runner checks each existing base/head version against its own pinned source tree. Supported archives contain sorted regular UTF-8 files, Unix file modes, a fixed 1980 timestamp and deflate compression. It reconstructs bytes from that tree without extracting the supplied archive or executing project code. Exact matches produce source-equivalence evidence for the reviewers; they must still assess the source changes.
 
-Unknown formats, non-text members or mismatches remain coverage limits. Different compression-library output can prevent an exact match. This is a deliberately narrow format check, not permission to ignore arbitrary binary changes.
+Unknown formats and non-text changes are assessed for material relevance. A changed image need not block unrelated code findings. A failed mapped archive verification remains an integrity gap; different compression-library output can prevent an exact match. Valid partial results retain findings and limits, but cannot approve or become the next complete baseline.
 
 ## Publication
 
-`run` is local. `publish --run ...` previews the event and body; adding `--write` submits only within the user's existing authorization. The body includes the intended verdict and meaningful findings or resolutions. The runner checks freshness and reconciles repeat publication against the same run before writing again.
+`run` collects evidence and invokes models without posting. `publish --run ...` previews the actions; `--write` performs them within the user's authorization. Agreement adds a thumbs-up, useful additions and disagreements reply in an existing inline thread, and responses to overall reviews use a short linked timeline comment. New findings appear in a concise review with category icons and the models that performed it.
+
+Only unique new blockers cause a new request-changes event. Agreement with an existing blocker does not mean approval; it leaves the formal state alone. Complete assessments without blockers or unresolved human decisions may approve. Partial assessments can publish supported blockers or a comment explaining their limits. The runner never dismisses someone else's review or resolves their thread automatically.
 
 When GitHub disallows a review event for the acting account, report the supported comment and intended verdict separately. An incomplete result cannot approve. A review is tied to a commit; a later push needs a new review. Required CI and repository merge policy remain separate from the model's judgment. The runner never merges a PR or changes branch protection.
 
-For an uncertain network result, retain the run and retry through its publication command so it can look for the existing review. Don't manually post the body again. If the runner reports that it cannot resolve the attempt, inspect GitHub before retrying a write.
+Writes are recorded action by action. After an uncertain response, retry the same run so the runner can reconcile already-posted reactions, replies and reviews. Don't manually post the body again. Fresh discussion can require reassessment before the remaining actions proceed. A final freshness check reduces concurrent duplicates, but there is no cross-machine lock or guarantee of exactly-once model execution or publication.

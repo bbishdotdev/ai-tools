@@ -94,7 +94,7 @@ def parse_pr(url):
 
 
 def pr_metadata(raw):
-    value = {key: raw.get(key) for key in ("number", "title", "body", "state", "draft", "html_url")}
+    value = {key: raw.get(key) for key in ("number", "title", "body", "state", "draft", "html_url", "merged", "mergeable", "mergeable_state")}
     value["body"] = value["body"] or ""
     value["author"] = raw["user"]["login"]
     for side in ("base", "head"):
@@ -132,8 +132,8 @@ class GitHub:
     def state(self):
         number = self.target["number"]
         pr = pr_metadata(self.api(f"pulls/{number}"))
-        if pr["state"] != "open":
-            raise ReviewError("The pull request is no longer open")
+        if pr["state"] != "open" or pr.get("merged") or pr.get("mergeable") is False:
+            return {"target": self.target, "pr": pr, "open_prs": [], "discussion": {"comments": [], "reviews": [], "inline": []}}
         pulls = self.api("pulls?state=open&per_page=100", pages=True)
         inventory = sorted([pr_metadata(item) for item in pulls if item["number"] != number], key=lambda item: item["number"])
         if len({item["number"] for item in inventory}) != len(inventory):
@@ -143,8 +143,8 @@ class GitHub:
             items = self.api(endpoint, pages=True)
             if len(items) > 2000:
                 raise ReviewError("PR discussion exceeds 2000 entries; narrow the review context before running")
-            discussion[label] = [{**{key: item.get(key) for key in ("id", "body", "created_at", "updated_at", "submitted_at", "state", "commit_id", "path", "line", "side", "in_reply_to_id")}, "author": (item.get("user") or {}).get("login")}
-                                 for item in items if not (label == "reviews" and item.get("id") in self.ignored_review_ids)]
+            discussion[label] = [{**{key: item.get(key) for key in ("id", "body", "created_at", "updated_at", "submitted_at", "state", "commit_id", "path", "line", "side", "in_reply_to_id", "html_url", "node_id")}, "author": (item.get("user") or {}).get("login")}
+                                 for item in items]
         return {"target": self.target, "pr": pr, "open_prs": inventory, "discussion": discussion}
 
     def checks(self, head):

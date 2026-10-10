@@ -28,7 +28,7 @@ def array_schema(items, maximum=100):
 
 
 COVERAGE = object_schema({"complete": {"type": "boolean"}, "limits": array_schema(text_schema())})
-EVIDENCE = object_schema({"path": text_schema(), "line": {"type": "integer", "minimum": 1}, "side": {"type": "string", "enum": ["head", "base"]}, "reason": text_schema()})
+EVIDENCE = object_schema({"path": text_schema(), "line": {"type": "integer", "minimum": 1}, "side": {"type": "string", "enum": ["head", "base", "target"]}, "reason": text_schema()})
 FINDING = object_schema({
     "id": text_schema(100), "category": {"type": "string", "enum": ["blocker", "human-decision", "moderate", "low"]},
     "title": text_schema(200), "explanation": text_schema(2000),
@@ -41,7 +41,12 @@ REVIEW = object_schema({
     "findings": array_schema(FINDING, 30), "prior": array_schema(PRIOR, 100),
 })
 DECISION = object_schema({"id": text_schema(100), "disposition": {"type": "string", "enum": ["kept", "dismissed", "resolved", "duplicate"]}, "reason": text_schema(), "duplicate_of": {"type": ["string", "null"]}})
-JUDGMENT = object_schema({"coverage": COVERAGE, "decisions": array_schema(DECISION, 200), "findings": array_schema(FINDING, 30)})
+FEEDBACK = object_schema({"kind": {"type": "string", "enum": ["comments", "inline", "reviews"]}, "id": {"type": "integer", "minimum": 1},
+    "relation": {"type": "string", "enum": ["agree", "extend", "disagree", "resolved"]}, "finding_ids": array_schema(text_schema(100), 30),
+    "body": {"type": "string", "maxLength": 1600}, "evidence": array_schema(EVIDENCE, 12)})
+ARTIFACT_ASSESSMENT = object_schema({"id": text_schema(100), "material": {"type": "boolean"}, "reason": text_schema(1000)})
+JUDGMENT = object_schema({"coverage": COVERAGE, "decisions": array_schema(DECISION, 200), "findings": array_schema(FINDING, 30),
+    "feedback": array_schema(FEEDBACK, 100), "new_findings": array_schema(text_schema(100), 30), "artifact_assessments": array_schema(ARTIFACT_ASSESSMENT, 500)})
 
 
 def validate(value, schema, path="result"):
@@ -86,6 +91,9 @@ def validate_findings(findings, trees):
             name, side = evidence["path"], evidence["side"]
             if name == "@pr" and evidence["line"] == 1:
                 continue
+            prefix = side + "/"
+            if name not in trees[side] and name.startswith(prefix) and name[len(prefix):] in trees[side]:
+                name = evidence["path"] = name[len(prefix):]
             metadata = trees[side].get(name)
             if not metadata or not metadata.get("lines") or evidence["line"] > metadata["lines"]:
                 raise ReviewError(f"Invalid evidence location: {side}:{name}:{evidence['line']}")
@@ -101,7 +109,7 @@ def validate_review(report, prior_ids, trees):
     return report
 
 
-def consolidate(judgment, candidates, trees):
+def consolidate(judgment, candidates, trees, discussion=None, artifacts=()):
     validate(judgment, JUDGMENT)
     validate_findings(judgment["findings"], trees)
     expected = unique(candidates)
@@ -116,6 +124,27 @@ def consolidate(judgment, candidates, trees):
                 raise ReviewError("Duplicate findings must point to a retained finding")
         elif item["duplicate_of"] is not None:
             raise ReviewError("Only duplicate decisions may name duplicate_of")
+    targets, matched = set(), set()
+    for item in judgment["feedback"]:
+        target = (item["kind"], item["id"])
+        if target in targets or not any(source["id"] == item["id"] for source in (discussion or {}).get(item["kind"], [])):
+            raise ReviewError("Feedback must reference unique existing discussion targets")
+        targets.add(target)
+        identifiers = item["finding_ids"]
+        if len(set(identifiers)) != len(identifiers) or not set(identifiers) <= kept:
+            raise ReviewError("Feedback must reference retained findings")
+        if item["relation"] in {"agree", "extend"}:
+            if matched & set(identifiers):
+                raise ReviewError("An existing finding must have one discussion match")
+            matched.update(identifiers)
+        if item["relation"] != "agree" and (not item["body"].strip() or not item["evidence"]):
+            raise ReviewError("A discussion reply needs an explanation and source evidence")
+        validate_findings([{"id": "feedback", "evidence": item["evidence"]}], trees)
+    new = judgment["new_findings"]
+    if len(set(new)) != len(new) or matched & set(new) or matched | set(new) != kept:
+        raise ReviewError("Retained findings must partition into new findings and existing discussion matches")
+    if unique(judgment["artifact_assessments"]) != {item["id"] for item in artifacts}:
+        raise ReviewError("Adjudicator must assess every artifact coverage issue exactly once")
     return judgment
 
 

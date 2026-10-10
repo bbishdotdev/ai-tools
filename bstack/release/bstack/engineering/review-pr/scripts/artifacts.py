@@ -2,7 +2,7 @@ import hashlib
 import io
 import zipfile
 
-from contracts import ReviewError
+from contracts import ReviewError, digest
 
 MAX_ZIP_BYTES = 250 * 1024 * 1024
 
@@ -60,15 +60,15 @@ def verify_zip(name, source, index, snapshot, side, commit):
 def coverage(changes, trees, snapshots, commits, zip_trees):
     limits, verified = [], []
     for name in changes:
-        if not any(name in tree and tree[name]["lines"] is None for tree in trees.values()):
+        if name not in zip_trees and not any(name in tree and tree[name]["lines"] is None for tree in trees.values()):
             continue
         if name not in zip_trees:
-            limits.append(f"Changed content cannot be inspected as text: {name}")
+            limits.append({"id": "A-" + digest(name)[:16], "path": name, "mandatory": False, "reason": f"Changed content cannot be inspected as text: {name}"})
             continue
         try:
             evidence = [verify_zip(name, zip_trees[name], tree, snapshots[side], side, commits[side])
                         for side, tree in trees.items() if name in tree]
             verified.extend(evidence)
         except (ReviewError, OSError, ValueError, zipfile.LargeZipFile) as exc:
-            limits.append(f"Changed ZIP could not be verified: {name}: {exc}")
+            limits.append({"id": "A-" + digest(name)[:16], "path": name, "mandatory": True, "reason": f"Changed ZIP could not be verified: {name}: {exc}"})
     return limits, verified

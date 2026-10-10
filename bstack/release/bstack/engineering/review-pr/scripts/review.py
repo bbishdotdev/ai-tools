@@ -11,7 +11,6 @@ import re
 import sys
 import tempfile
 import uuid
-from urllib.parse import quote
 
 sys.dont_write_bytecode = True
 
@@ -19,8 +18,10 @@ from contracts import JUDGMENT, REVIEW, ReviewError, canonical, consolidate, dig
 from artifacts import coverage
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
+from shared import compatible_receipt, config_digest, context_digest, matching_context, model_state, receipts
 
 ROOT = Path(__file__).resolve().parent.parent
+ANALYSIS_VERSION = 2
 
 
 def now():
@@ -64,38 +65,55 @@ def policy():
                     visit(candidate)
     for name in ("rubric", "reviewer", "adjudicator"):
         visit(ROOT / "references" / (name + ".md"))
-    fingerprint = digest(sorted(digest(text) for text in files.values()))
+    fingerprint = digest({"analysis_version": ANALYSIS_VERSION, "prompts": sorted(digest(text) for text in files.values())})
     return fingerprint, {name: rendered(ROOT / "references" / (name + ".md")) for name in ("rubric", "reviewer", "adjudicator")}
 
 
-def managed_reviews(directory):
-    records = []
-    for path in directory.glob("*/publication.json"):
-        value = read_json(path)
-        if value.get("status") == "published" and type(value.get("id")) is int:
-            records.append(value["id"])
-    return records
-
-
-def last_complete(directory):
-    pointer = directory / "last-complete.json"
-    if not pointer.exists():
+def last_assessment(directory, pointer="last-complete.json"):
+    path = directory / pointer
+    if not path.exists():
         return None
-    record = read_json(pointer)
+    record = read_json(path)
     if not re.fullmatch(r"[a-f0-9]{32}", record.get("run_id", "")):
         raise ReviewError("Invalid previous review pointer")
     result = read_json(directory / record["run_id"] / "result.json")
-    if result.get("status") != "complete" or result.get("digest") != digest({key: value for key, value in result.items() if key != "digest"}):
-        raise ReviewError("Previous complete review record failed integrity validation")
+    allowed = {"complete"} if pointer == "last-complete.json" else {"complete", "partial"}
+    if result.get("status") not in allowed or result.get("digest") != digest({key: value for key, value in result.items() if key != "digest"}):
+        raise ReviewError("Previous review record failed integrity validation")
     return result
 
 
+def publication_echoes(directory, result, state):
+    path = directory / result["run_id"] / "publication.json"
+    if not path.exists():
+        return []
+    journal = read_json(path)
+    if journal.get("result_digest") != result["digest"]:
+        return []
+    echoes = []
+    for action in journal.get("actions", []):
+        record = action.get("receipt")
+        if action.get("status") != "done" or action["kind"] == "reaction" or not record:
+            continue
+        current = next((item for item in state["discussion"].get(record["kind"], []) if item["id"] == record["id"]), None)
+        if current and (record["kind"] != "reviews" or record.get("state") == current.get("state")):
+            echoes.append({key: record[key] for key in ("kind", "id", "author", "body_digest")})
+    return echoes
+
+
+def shared_baseline(record, state):
+    value = record["receipt"]
+    snapshot = {**state, "pr": {**state["pr"], "head": {**state["pr"]["head"], "sha": value["head"]}}}
+    return {"run_id": value["run_id"], "snapshot": snapshot, "config_digest": value["config_digest"], "policy_digest": value["policy_digest"],
+            "findings": value["findings"], "decisions": [], "settled_findings": [], "shared_source": record["source"]}
+
+
 def context_for(state, checks, scope, trees, changes, patch, previous):
-    return {"snapshot": state, "checks": checks, "scope": scope, "changed_paths": changes, "diff": patch,
+    return {"snapshot": model_state(state), "checks": checks, "scope": scope, "changed_paths": changes, "diff": patch,
             "tree_index": trees, "prior_findings": previous["findings"] if previous else [],
             "prior_decisions": previous["decisions"] if previous else [],
             "settled_findings": previous.get("settled_findings", []) if previous else [],
-            "evidence_contract": "Use base/head relative paths and 1-based lines. Use @pr line 1 for a PR-level need, requirements or duplication concern; name the source in reason. Prior decisions stand absent changed evidence."}
+            "evidence_contract": "Evidence paths are repository-relative and must omit snapshot directory prefixes: use side=head, path=service.py, line=11, never path=head/service.py. Choose side base, head or target separately. target is the current target branch, not the comparison base. Lines are 1-based. Use @pr line 1 for a PR-level need, requirements or duplication concern; name the source in reason. Prior decisions stand absent changed evidence."}
 
 
 def anonymous_reports(reports, previous, config):
@@ -130,64 +148,84 @@ def anonymous_reports(reports, previous, config):
     return anonymous, scrub(candidates, models), aliases
 
 
-def perform_run(project, pr_url, config_path):
+def perform_run(project, pr_url, config_path, fresh=False):
     config = configuration(project, config_path)
-    diagnostics = doctor(config)
     target = parse_pr(pr_url)
     root = private_root(project)
     with locked(root, target) as directory:
         run_id = uuid.uuid4().hex
         output = directory / run_id
         output.mkdir(mode=0o700)
-        write_json(output / "run.json", {"run_id": run_id, "started_at": now(), "target": target, "config": config, "doctor": diagnostics})
+        write_json(output / "run.json", {"run_id": run_id, "started_at": now(), "target": target, "config": config, "fresh": fresh})
         try:
-            github = GitHub(target, managed_reviews(directory))
+            github = GitHub(target)
             state = github.state()
+            if state["pr"]["state"] != "open" or state["pr"].get("merged"):
+                outcome = {"status": "skipped", "reason": "The pull request is closed or merged"}
+                write_json(output / "preflight.json", outcome)
+                return outcome
+            if state["pr"].get("mergeable") is False:
+                outcome = {"status": "deferred", "reason": "Resolve the merge conflicts before reviewing"}
+                write_json(output / "preflight.json", outcome)
+                return outcome
             checks = github.checks(state["pr"]["head"]["sha"])
             policy_id, prompts = policy()
-            fingerprint = digest({"state": state, "checks": checks, "config": config, "policy": policy_id})
-            previous = last_complete(directory)
-            if previous and previous["input_digest"] == fingerprint:
-                write_json(output / "reuse.json", {"run_id": run_id, "reused_run": previous["run_id"], "reason": "Review inputs are unchanged"})
-                return {"status": "reused", "run": str(directory / previous["run_id"]), "verdict": previous["verdict"]}
+            config_id, context_id = config_digest(config), context_digest(state, checks)
+            fingerprint = digest({"context": context_id, "config": config_id, "policy": policy_id})
+            previous = last_assessment(directory)
+            recent = last_assessment(directory, "last-assessment.json") or previous
+            if not fresh and recent and not recent.get("stale") and recent.get("config_digest") == config_id and recent["policy_digest"] == policy_id and matching_context(recent, state, checks, publication_echoes(directory, recent, state)):
+                write_json(output / "reuse.json", {"run_id": run_id, "reused_run": recent["run_id"], "reason": "Review inputs are unchanged"})
+                return {"status": "reused", "run": str(directory / recent["run_id"]), "verdict": recent["verdict"], "assessment_status": recent["status"]}
+            public = receipts(state, github)
+            if not fresh:
+                for record in reversed(public):
+                    if compatible_receipt(record, state, checks, config_id, policy_id):
+                        outcome = {"status": "reused_shared", "url": record["source"]["url"], "author": record["source"]["author"],
+                                   "verdict": record["receipt"]["verdict"], "reason": "This published assessment already covers these inputs; no new approval was submitted"}
+                        write_json(output / "reuse.json", outcome)
+                        return outcome
+            if fresh or (previous and (previous.get("config_digest") != config_id or previous["policy_digest"] != policy_id)):
+                previous = None
+            if previous is None and not fresh:
+                compatible = [record for record in public if record["receipt"]["config_digest"] == config_id and record["receipt"]["policy_digest"] == policy_id and record["receipt"]["base"] == state["pr"]["base"]["sha"]]
+                if compatible:
+                    previous = shared_baseline(compatible[-1], state)
+            write_json(output / "doctor.json", doctor(config))
             with tempfile.TemporaryDirectory(prefix="bstack-review-snapshot-") as temporary:
                 scratch = Path(temporary)
                 repository, prior_head = fetch_snapshot(scratch, state, previous["snapshot"]["pr"]["head"]["sha"] if previous else None)
                 head, base = state["pr"]["head"]["sha"], state["pr"]["base"]["sha"]
                 merge_base = git(repository, "merge-base", base, head).decode().strip()
-                scope = {"mode": "full", "reason": "First complete review", "from": merge_base, "to": head}
+                scope = {"mode": "full", "reason": "Fresh independent assessment" if fresh else "First compatible complete review", "from": merge_base, "to": head}
                 if previous:
                     if previous["snapshot"]["pr"]["base"] != state["pr"]["base"]:
                         scope["reason"] = "The target base changed"
-                    elif previous["policy_digest"] != policy_id or previous["config"] != config:
-                        scope["reason"] = "Review policy or model configuration changed"
                     elif not prior_head or not is_ancestor(repository, prior_head, head):
                         scope["reason"] = "The previous head is unavailable or history was rewritten"
                     else:
-                        scope = {"mode": "delta" if prior_head != head else "context", "reason": "Changed code and affected callers only; refresh changed PR context and neededness", "from": prior_head, "to": head}
-                trees = {}
-                for side, commit in (("base", scope["from"]), ("head", head)):
-                    trees[side], _ = materialize(repository, commit, scratch / side)
-                snapshots = {side: scratch / side for side in ("base", "head")}
-                commits = {"base": scope["from"], "head": head}
+                        scope = {"mode": "delta" if prior_head != head else "context", "reason": "Changed code and affected callers only; assess new context and rebuttals against the evidence", "from": prior_head, "to": head}
+                commits = {"base": scope["from"], "head": head, "target": base}
+                trees, snapshots = {}, {}
+                for side, commit in commits.items():
+                    snapshots[side] = scratch / side
+                    trees[side], _ = materialize(repository, commit, snapshots[side])
                 full_changes = changed_paths(repository, merge_base, head)
                 changes = changed_paths(repository, scope["from"], head)
-                limits, verified_archives = coverage(sorted(set(full_changes) | set(changes)), trees, snapshots, commits, config["zip_trees"])
-                patch = diff(repository, scope["from"], head)
-                context = context_for(state, checks, scope, trees, changes, patch, previous)
-                context["evidence_commits"] = commits
-                context["full_pr_changed_paths"] = full_changes
-                context["coverage_limits"] = limits
-                context["verified_archives"] = verified_archives
+                limits, verified_archives = coverage(sorted(set(full_changes) | set(changes)), {side: trees[side] for side in ("base", "head")}, snapshots, commits, config["zip_trees"])
+                context = context_for(state, checks, scope, trees, changes, diff(repository, scope["from"], head), previous)
+                context.update({"evidence_commits": commits, "full_pr_changed_paths": full_changes, "coverage_limits": limits, "verified_archives": verified_archives})
                 write_json(output / "snapshot.json", context)
                 context = {key: value for key, value in context.items() if key != "tree_index"}
-                previous_dir = directory / previous["run_id"] if previous else None
+                previous_dir = directory / previous["run_id"] if previous and not previous.get("shared_source") else None
                 reports = {}
                 def review_role(role):
                     own = dict(context)
-                    own["own_prior_report"] = read_json(previous_dir / (role + ".json")) if previous else None
+                    own["own_prior_report"] = read_json(previous_dir / (role + ".json")) if previous_dir else None
                     report = invoke(config["roles"][role], REVIEW, prompts["rubric"] + "\n\n" + prompts["reviewer"], own, snapshots, config, output / (role + ".json"))
-                    return validate_review(report, [item["id"] for item in context["prior_findings"]], trees)
+                    validate_review(report, [item["id"] for item in context["prior_findings"]], trees)
+                    write_json(output / (role + ".json"), report)
+                    return report
                 with ThreadPoolExecutor(max_workers=2) as pool:
                     futures = {role: pool.submit(review_role, role) for role in ("reviewer_a", "reviewer_b")}
                     errors = []
@@ -209,19 +247,30 @@ def perform_run(project, pr_url, config_path):
                 judge_context["prior_decisions"] = [{**item, "id": prior_aliases[item["id"]], "duplicate_of": prior_aliases.get(item["duplicate_of"])} for item in context["prior_decisions"] if item["id"] in prior_aliases]
                 write_json(output / "provenance.json", aliases)
                 judgment = invoke(config["roles"]["adjudicator"], JUDGMENT, prompts["rubric"] + "\n\n" + prompts["adjudicator"], judge_context, snapshots, config, output / "adjudicator.json")
-                consolidate(judgment, candidates, trees)
-                if limits or not all(item["coverage"]["complete"] for item in [*reports.values(), judgment]):
-                    raise ReviewError("Review coverage is incomplete; see snapshot and role reports. No approval is available.")
-                if github.state() != state or github.checks(head) != checks:
-                    raise ReviewError("PR or review context changed during review; rerun before any verdict")
+                consolidate(judgment, candidates, trees, state["discussion"], limits)
+                write_json(output / "adjudicator.json", judgment)
                 findings = [{**item, "id": aliases[item["id"]]["stable_id"]} for item in judgment["findings"]]
                 unique(findings)
                 decisions = [{**item, "id": aliases[item["id"]]["stable_id"], "duplicate_of": aliases[item["duplicate_of"]]["stable_id"] if item["duplicate_of"] else None} for item in judgment["decisions"]]
                 dispositions = {"kept": 3, "resolved": 2, "dismissed": 1, "duplicate": 0}
                 decisions = list({item["id"]: item for item in sorted(decisions, key=lambda item: dispositions[item["disposition"]])}.values())
-                result = {"status": "complete", "run_id": run_id, "completed_at": now(), "snapshot": state, "checks": checks,
-                          "input_digest": fingerprint, "policy_digest": policy_id, "config": config, "scope": scope,
-                          "findings": findings, "decisions": decisions, "verdict": verdict(findings), "evidence_commits": context["evidence_commits"]}
+                mandatory = [item["reason"] for item in limits if item["mandatory"]]
+                material = [item["reason"] for item in judgment["artifact_assessments"] if item["material"]]
+                report_limits = [limit for report in [*reports.values(), judgment] for limit in report["coverage"]["limits"] if not report["coverage"]["complete"]]
+                complete = not mandatory and not material and all(item["coverage"]["complete"] for item in [*reports.values(), judgment])
+                stale = context_digest(github.state(), github.checks(head)) != context_id
+                coverage_result = {"complete": complete, "limits": list(dict.fromkeys(mandatory + material + report_limits))}
+                if not complete and not coverage_result["limits"]:
+                    coverage_result["limits"] = ["The reviewers could not finish assessing the supplied evidence"]
+                result_verdict = verdict(findings)
+                if (not complete or stale) and result_verdict == "APPROVE":
+                    result_verdict = "COMMENT"
+                result = {"status": "complete" if complete and not stale else "partial", "stale": stale, "run_id": run_id, "completed_at": now(), "snapshot": state, "checks": checks,
+                          "input_digest": fingerprint, "context_digest": context_id, "config_digest": config_id, "policy_digest": policy_id, "config": config, "scope": scope,
+                          "findings": findings, "decisions": decisions, "verdict": result_verdict, "evidence_commits": commits, "coverage": coverage_result,
+                          "artifact_assessments": judgment["artifact_assessments"],
+                          "feedback": [{**item, "finding_ids": [aliases[name]["stable_id"] for name in item["finding_ids"]]} for item in judgment["feedback"]],
+                          "new_findings": [aliases[name]["stable_id"] for name in judgment["new_findings"]]}
                 settled = {item["id"]: item for item in context["settled_findings"]}
                 for candidate in candidates:
                     stable_id = aliases[candidate["id"]]["stable_id"]
@@ -234,91 +283,32 @@ def perform_run(project, pr_url, config_path):
                 result["resolved_findings"] = [item for item in context["prior_findings"] if item["id"] not in {finding["id"] for finding in findings} and any(decision["id"] == item["id"] and decision["disposition"] == "resolved" for decision in decisions)]
                 result["digest"] = digest(result)
                 write_json(output / "result.json", result)
-                write_json(directory / "last-complete.json", {"run_id": run_id})
-                return {"status": "complete", "run": str(output), "verdict": result["verdict"], "findings": len(findings), "scope": scope}
+                write_json(directory / "last-assessment.json", {"run_id": run_id})
+                if result["status"] == "complete":
+                    write_json(directory / "last-complete.json", {"run_id": run_id})
+                return {"status": result["status"], "run": str(output), "verdict": result["verdict"], "findings": len(findings), "scope": scope, "coverage": coverage_result, "stale": stale}
         except Exception as exc:
             write_json(output / "failure.json", {"status": "incomplete", "error": str(exc), "finished_at": now()})
             raise ReviewError(f"{exc} Evidence: {output}")
 
 
-def review_body(result, event):
-    titles = {"APPROVE": "Approved", "REQUEST_CHANGES": "Changes requested", "COMMENT": "Human decision needed"}
-    text = [titles[result["verdict"]] + "."]
-    if event != result["verdict"]:
-        text.append("This account authored the PR, so GitHub receives a comment. Intended verdict: " + result["verdict"] + ".")
-    if not result["findings"]:
-        text.append("No actionable findings survived independent review and adversarial verification.")
-    for category, label in (("blocker", "Blockers"), ("human-decision", "Human decision"), ("moderate", "Nonblocking"), ("low", "Low impact")):
-        items = [item for item in result["findings"] if item["category"] == category]
-        if not items:
-            continue
-        text.append("**" + label + "**")
-        for item in items:
-            evidence = item["evidence"][0]
-            if evidence["path"] == "@pr":
-                link = result["snapshot"]["pr"]["html_url"]
-            else:
-                target = result["snapshot"]["target"]
-                sha = result["evidence_commits"][evidence["side"]]
-                link = f"https://{target['host']}/{target['repo']}/blob/{sha}/{quote(evidence['path'], safe='/')}#L{evidence['line']}"
-            text.append(f"- **{item['title']}**. {item['explanation']} {item['action']} [Evidence]({link})")
-    if result["scope"]["mode"] != "full":
-        resolved = result.get("resolved_findings", [])
-        text.append("Follow-up review: changed code and affected behavior.")
-        if resolved:
-            text.append("Resolved: " + "; ".join(item["title"] for item in resolved) + ".")
-    text.append(f"<!-- bstack-review:{result['run_id']}:{result['snapshot']['pr']['head']['sha']} -->")
-    return "\n\n".join(text)
-
-
 def publish(project, run_path, write):
+    from publication import publish_result
     root = private_root(project).resolve()
     directory = Path(run_path).resolve()
     if directory.parent.parent != root:
         raise ReviewError("The run must belong to this project's .bstack/reviews directory")
     result = read_json(directory / "result.json")
-    if result.get("status") != "complete" or result.get("digest") != digest({key: value for key, value in result.items() if key != "digest"}):
-        raise ReviewError("Only an intact complete run can be published")
+    if result.get("status") not in {"complete", "partial"} or result.get("digest") != digest({key: value for key, value in result.items() if key != "digest"}):
+        raise ReviewError("Only an intact assessment can be published")
+    if result.get("stale"):
+        raise ReviewError("Review is stale; run a follow-up review before publishing")
+    current_policy, _ = policy()
+    if current_policy != result["policy_digest"]:
+        raise ReviewError("Review policy changed; run a follow-up review")
     target = result["snapshot"]["target"]
     with locked(root, target):
-        github = GitHub(target, managed_reviews(directory.parent))
-        saved = directory / "publication.json"
-        publication = read_json(saved) if saved.exists() else {}
-        marker = f"<!-- bstack-review:{result['run_id']}:{result['snapshot']['pr']['head']['sha']} -->"
-        user = github.api("user", global_path=True)["login"]
-        existing = github.api(f"pulls/{target['number']}/reviews?per_page=100", pages=True)
-        matching = [item for item in existing if marker in (item.get("body") or "") and item.get("commit_id") == result["snapshot"]["pr"]["head"]["sha"] and item.get("user", {}).get("login", "").casefold() == user.casefold()]
-        if matching:
-            write_json(saved, {"status": "published", "url": matching[0]["html_url"], "id": matching[0]["id"], "state": matching[0]["state"], "reconciled_at": now()})
-            github.ignored_review_ids.add(matching[0]["id"])
-            stale = github.state() != result["snapshot"] or github.checks(result["snapshot"]["pr"]["head"]["sha"]) != result["checks"]
-            return {"status": "already_published_stale" if stale else "already_published", "url": matching[0]["html_url"], "state": matching[0]["state"]}
-        if publication.get("status") in {"sending", "uncertain", "published"}:
-            raise ReviewError("A prior publication may have succeeded. Reconcile GitHub and publication.json before another write.")
-        if github.state() != result["snapshot"] or github.checks(result["snapshot"]["pr"]["head"]["sha"]) != result["checks"]:
-            raise ReviewError("Review is stale: head, base, intent, open PRs or checks changed. Run a follow-up review.")
-        current_policy, _ = policy()
-        if current_policy != result["policy_digest"]:
-            raise ReviewError("Review policy changed; run a follow-up review")
-        event = "COMMENT" if user.casefold() == result["snapshot"]["pr"]["author"].casefold() else result["verdict"]
-        body = review_body(result, event)
-        payload = {"body": body, "event": event, "commit_id": result["snapshot"]["pr"]["head"]["sha"]}
-        write_json(directory / "publication-preview.json", payload)
-        if not write:
-            return {"status": "preview", "event": event, "body": body, "run": str(directory)}
-        write_json(saved, {"status": "sending", "started_at": now(), "payload_digest": digest(payload)})
-        try:
-            response = github.api(f"pulls/{target['number']}/reviews", data=payload)
-            if not isinstance(response, dict) or not all(key in response for key in ("html_url", "id", "state")):
-                raise ReviewError("GitHub returned an incomplete publication receipt")
-        except Exception as exc:
-            write_json(saved, {"status": "uncertain", "error": str(exc), "attempted_at": now()})
-            raise ReviewError("Publication result is uncertain; retry only to reconcile the existing review")
-        write_json(saved, {"status": "published", "url": response["html_url"], "id": response["id"], "state": response["state"], "published_at": now()})
-        github.ignored_review_ids.add(response["id"])
-        if github.state() != result["snapshot"] or github.checks(result["snapshot"]["pr"]["head"]["sha"]) != result["checks"]:
-            return {"status": "published_but_stale", "url": response["html_url"], "warning": "PR context changed during publication. The review is bound to the old commit; do not treat it as current approval. Run again."}
-        return {"status": "published", "url": response["html_url"], "state": response["state"]}
+        return publish_result(result, directory, GitHub(target), write)
 
 
 def main():
@@ -330,6 +320,7 @@ def main():
     run_parser = sub.add_parser("run")
     run_parser.add_argument("--pr", required=True)
     run_parser.add_argument("--config", type=Path)
+    run_parser.add_argument("--fresh", action="store_true")
     publish_parser = sub.add_parser("publish")
     publish_parser.add_argument("--run", type=Path, required=True)
     publish_parser.add_argument("--write", action="store_true")
@@ -344,7 +335,7 @@ def main():
         if args.command == "doctor":
             result = doctor(configuration(project, args.config))
         elif args.command == "run":
-            result = perform_run(project, args.pr, args.config)
+            result = perform_run(project, args.pr, args.config, args.fresh)
         else:
             result = publish(project, args.run, args.write)
         print(json.dumps(result, indent=2))

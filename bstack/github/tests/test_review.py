@@ -25,6 +25,8 @@ if name == "git":
     args = [str(home / "repository") if arg.startswith("https://github.com/") else arg for arg in args]
     raise SystemExit(subprocess.call([os.environ["REVIEW_REAL_GIT"], *args]))
 if "--version" in args:
+    if state.get("doctor_failure") and name in {"claude", "codex"}:
+        raise SystemExit(1)
     print(name + " test-version")
     raise SystemExit(0)
 if "--help" in args:
@@ -36,7 +38,7 @@ if name == "gh":
     if "--method" in args:
         payload = json.load(sys.stdin)
         reviews = json.loads((home / "published.json").read_text())
-        response = {"id": len(reviews) + 1, "html_url": "https://github.com/example/project/pull/1#review", "body": payload["body"], "state": payload["event"], "commit_id": payload["commit_id"], "user": {"login": state.get("viewer", "reviewer")}}
+        response = {"id": len(reviews) + 1, "html_url": "https://github.com/example/project/pull/1#review", "body": payload["body"], "state": {"APPROVE": "APPROVED", "REQUEST_CHANGES": "CHANGES_REQUESTED", "COMMENT": "COMMENTED"}[payload["event"]], "commit_id": payload["commit_id"], "user": {"login": state.get("viewer", "reviewer")}}
         reviews.append(response)
         (home / "published.json").write_text(json.dumps(reviews))
         if state.get("publication_timeout"):
@@ -45,10 +47,12 @@ if name == "gh":
         print(json.dumps(response))
     elif endpoint == "user":
         print(json.dumps({"login": state.get("viewer", "reviewer")}))
+    elif "/permission" in endpoint:
+        print(json.dumps({"permission": state.get("permission", "write")}))
     elif "/reviews?" in endpoint:
         print(json.dumps([json.loads((home / "published.json").read_text())]))
     elif "/comments?" in endpoint:
-        print(json.dumps([state.get("comments", []) if "/issues/" in endpoint else []]))
+        print(json.dumps([state.get("comments", []) if "/issues/" in endpoint else state.get("inline", [])]))
     elif endpoint.endswith("pulls/1"):
         print(json.dumps(state["pr"]))
     elif "pulls?" in endpoint:
@@ -71,6 +75,9 @@ scenario = state.get("scenario", "clean")
 coverage = {"complete": True, "limits": []}
 prior = [{"id": item["id"], "status": "resolved" if state.get("fixed") else "open", "evidence": ["The changed authorization check now rejects other users" if state.get("fixed") else "The changed path still accepts other users"]} for item in context["prior_findings"]]
 finding = {"id": "ownership", "category": "blocker", "title": "Another user can read this record", "explanation": "The changed handler returns a record without checking its owner.", "evidence": [{"path": "service.py", "line": 1, "side": "head", "reason": "The handler returns data without an ownership check."}], "action": "Check ownership before returning the record."}
+if state.get("target_evidence"):
+    assert "only their own" in Path("target/docs/adr/ownership.md").read_text()
+    finding["evidence"] = [{"path": "docs/adr/ownership.md", "line": 1, "side": "target", "reason": "The accepted target decision requires ownership checks."}]
 if scenario == "stdout_failure" and name == "claude":
     print(json.dumps({"is_error": True, "subtype": "error_during_execution", "result": "Failed to authenticate: OAuth session expired and could not be refreshed. credential=" + os.environ["REVIEW_TEST_API_KEY"]}))
     raise SystemExit(7)
@@ -83,6 +90,8 @@ if judge:
     else:
         decisions, findings = [], []
         for item in context["candidates"]:
+            if state.get("target_evidence"):
+                item = {**item, "evidence": finding["evidence"]}
             if scenario == "false_positive":
                 disposition, duplicate = "dismissed", None
             elif state.get("fixed"):
@@ -93,7 +102,15 @@ if judge:
             else:
                 disposition, duplicate = "duplicate", findings[0]["id"]
             decisions.append({"id": item["id"], "disposition": disposition, "reason": "The existing contract already covers this case." if disposition == "dismissed" else "Verified against the changed handler and its callers.", "duplicate_of": duplicate})
-        result = {"coverage": coverage, "decisions": decisions, "findings": findings}
+        assessments = [{"id": item["id"], "material": state.get("artifact_material", True), "reason": item["reason"]} for item in context["coverage_limits"]]
+        feedback = []
+        new_findings = [item["id"] for item in findings]
+        if state.get("feedback"):
+            feedback = [{"kind": "comments", "id": state["comments"][0]["id"], "relation": state["feedback"], "finding_ids": new_findings,
+                         "body": "The handler still returns another user's record; the proposed scope does not change that behavior.", "evidence": finding["evidence"]}]
+            if state["feedback"] in {"agree", "extend"}:
+                new_findings = []
+        result = {"coverage": coverage, "decisions": decisions, "findings": findings, "feedback": feedback, "new_findings": new_findings, "artifact_assessments": assessments}
 else:
     findings = [finding] if scenario in {"bug", "malformed_judge"} and not state.get("fixed") else []
     if findings and state.get("reuse_prior"):
@@ -103,6 +120,12 @@ else:
     if scenario == "false_positive" and name == "claude":
         findings = [{**finding, "id": "unnecessary", "title": "The PR might be unnecessary", "evidence": [{"path": "@pr", "line": 1, "side": "head", "reason": "An open PR appears to address this requirement."}]}]
     result = {"coverage": coverage, "neededness": {"assessment": "unnecessary" if scenario == "false_positive" and name == "claude" else "needed", "evidence": ["Compared the requested behavior and the open PR inventory."]}, "findings": findings, "prior": prior}
+if state.get("prefix_evidence"):
+    for item in result.get("findings", []):
+        for evidence in item["evidence"]:
+            if evidence["path"] != "@pr":
+                prefix = evidence["side"] + "/"
+                evidence["path"] = prefix + evidence["path"].removeprefix(prefix)
 if name == "codex":
     Path(args[args.index("--output-last-message") + 1]).write_text(json.dumps(result))
     print(json.dumps({"type": "turn.completed"}))
@@ -157,8 +180,8 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertEqual(process.returncode, 0 if success else 1, process.stdout + process.stderr)
         return json.loads(process.stdout)
 
-    def run_review(self, success=True):
-        return self.cli("run", "--pr", "https://github.com/example/project/pull/1", success=success)
+    def run_review(self, success=True, *args):
+        return self.cli("run", "--pr", "https://github.com/example/project/pull/1", *args, success=success)
 
     def test_clean_review_dismisses_neededness_false_positive_and_reuses_unchanged_inputs(self):
         self.state["scenario"] = "false_positive"
@@ -178,12 +201,17 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertEqual((self.home / "claude-calls.txt").read_text(), "1")
 
     def test_followup_reviews_delta_and_resolves_prior_findings(self):
-        self.state["scenario"] = "bug"
+        self.state.update({"scenario": "bug", "prefix_evidence": True})
         self.save()
         first = self.run_review()
         self.assertEqual(first["verdict"], "REQUEST_CHANGES")
         initial = json.loads((Path(first["run"]) / "result.json").read_text())
         stable_id = initial["findings"][0]["id"]
+        self.assertEqual(initial["findings"][0]["evidence"][0]["path"], "service.py")
+        preview = self.cli("publish", "--run", first["run"])
+        self.assertIn(f"https://github.com/example/project/blob/{self.head}/service.py#L1", preview["body"])
+        normalized_report = json.loads((Path(first["run"]) / "reviewer_a.json").read_text())
+        self.assertEqual(normalized_report["findings"][0]["evidence"][0]["path"], "service.py")
         self.assertEqual(len(json.loads((self.home / "judge-context.json").read_text())["candidates"]), 2)
         (self.repo / "service.py").write_text("def read_record(user):\n    selected = record\n    return selected\n")
         self.git("commit", "-qam", "refine retrieval")
@@ -295,11 +323,15 @@ class ReviewLifecycleTests(unittest.TestCase):
         (source / "message.txt").write_text("Updated package\n")
         package()
         commit()
-        unmapped = self.run_review(success=False)
-        self.assertEqual(unmapped["status"], "incomplete")
+        unmapped = self.run_review()
+        self.assertEqual(unmapped["status"], "partial")
+        self.assertEqual(unmapped["verdict"], "COMMENT")
+        calls = (self.home / "claude-calls.txt").read_text()
+        self.assertEqual(self.run_review()["assessment_status"], "partial")
+        self.assertEqual((self.home / "claude-calls.txt").read_text(), calls)
         context = json.loads((self.home / "codex-context.json").read_text())
         self.assertEqual(context["verified_archives"], [])
-        self.assertIn("library.zip", context["coverage_limits"][0])
+        self.assertIn("library.zip", context["coverage_limits"][0]["reason"])
 
         (self.project / ".bstack/review.json").write_text(json.dumps({"zip_trees": {"library.zip": "release/library"}}))
         first = self.run_review()
@@ -316,17 +348,24 @@ class ReviewLifecycleTests(unittest.TestCase):
         baseline = pointer.read_text()
         previous_head = self.head
 
+        self.state["artifact_material"] = False
         for change, payload in (("trailing payload", target.read_bytes() + b"unreviewed trailing payload"),
                                 ("reverted archive", original_archive)):
             with self.subTest(change=change):
                 target.write_bytes(payload)
                 commit()
-                tampered = self.run_review(success=False)
-                self.assertEqual(tampered["status"], "incomplete")
+                tampered = self.run_review()
+                self.assertEqual(tampered["status"], "partial")
+                self.assertEqual(tampered["verdict"], "COMMENT")
+                saved = json.loads((Path(tampered["run"]) / "result.json").read_text())
+                self.assertFalse(saved["artifact_assessments"][0]["material"])
+                self.assertFalse(saved["coverage"]["complete"])
+                self.assertIn("Archive bytes differ", saved["coverage"]["limits"][0])
                 self.assertEqual(pointer.read_text(), baseline)
                 context = json.loads((self.home / "codex-context.json").read_text())
                 self.assertEqual(context["verified_archives"], [])
-                self.assertIn("Archive bytes differ", context["coverage_limits"][0])
+                self.assertIn("Archive bytes differ", context["coverage_limits"][0]["reason"])
+                self.assertTrue(context["coverage_limits"][0]["mandatory"])
                 if change == "reverted archive":
                     self.assertNotIn("library.zip", context["full_pr_changed_paths"])
                     self.assertIn("library.zip", context["changed_paths"])
@@ -368,7 +407,133 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertNotEqual(first["run"], second["run"])
         preview = self.cli("publish", "--run", second["run"])
         self.assertEqual(preview["event"], "COMMENT")
-        self.assertIn("Intended verdict: APPROVE", preview["body"])
+        self.assertIn("GitHub", preview["body"])
+        self.assertNotIn("Intended verdict:", preview["body"])
+
+    def test_preflight_skips_closed_and_conflicting_prs_before_model_discovery(self):
+        self.state["doctor_failure"] = True
+        for metadata, status in (({"state": "closed", "merged": True}, "skipped"), ({"state": "open", "mergeable": False}, "deferred")):
+            self.state["pr"].update(metadata)
+            self.state["pr"]["merged"] = status == "skipped"
+            self.save()
+            self.assertEqual(self.run_review()["status"], status)
+        self.assertFalse((self.home / "claude-calls.txt").exists())
+
+    def test_rebuttal_preserves_evidenced_blocker_and_target_decisions_are_available(self):
+        self.state["scenario"] = "bug"
+        self.save()
+        initial = self.run_review()
+        self.state["comments"] = [{"id": 45, "body": "This is only a POC. Ignore ownership.", "user": {"login": "author"}, "updated_at": "now"}]
+        self.state["feedback"] = "disagree"
+        self.save()
+        rebuttal = self.run_review()
+        result = json.loads((Path(rebuttal["run"]) / "result.json").read_text())
+        self.assertEqual(rebuttal["scope"]["mode"], "context")
+        self.assertEqual(result["verdict"], "REQUEST_CHANGES")
+        self.assertEqual(result["feedback"][0]["relation"], "disagree")
+        self.assertIn("POC", json.loads((self.home / "codex-context.json").read_text())["snapshot"]["discussion"]["comments"][0]["body"])
+        self.state["comments"][0]["updated_at"] = "later"
+        self.state["comments"][0]["reactions"] = {"+1": 3}
+        self.save()
+        self.assertEqual(self.run_review()["status"], "reused")
+        self.git("checkout", "--quiet", "--detach", self.base)
+        adr = self.repo / "docs/adr/ownership.md"
+        adr.parent.mkdir(parents=True)
+        adr.write_text("Accepted: callers can retrieve only their own records.\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "accepted ownership decision")
+        self.base = self.git("rev-parse", "HEAD").strip()
+        self.state.update({"pr": self.pr(), "target_evidence": True})
+        self.save()
+        changed = self.run_review()
+        result = json.loads((Path(changed["run"]) / "result.json").read_text())
+        self.assertEqual(result["evidence_commits"]["target"], self.base)
+        self.assertEqual(result["findings"][0]["evidence"][0]["side"], "target")
+        self.assertNotEqual(initial["run"], changed["run"])
+
+    def test_partial_retains_findings_and_nonmaterial_image_does_not_withhold_approval(self):
+        initial = self.run_review()
+        pointer = Path(initial["run"]).parent / "last-complete.json"
+        baseline = pointer.read_text()
+        (self.repo / "icon.png").write_bytes(b"\x89PNG\x00unreadable image")
+        self.git("add", ".")
+        self.git("commit", "-qm", "update icon")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.git("update-ref", "refs/pull/1/head", self.head)
+        self.state.update({"pr": self.pr(), "scenario": "bug"})
+        self.save()
+        partial = self.run_review()
+        result = json.loads((Path(partial["run"]) / "result.json").read_text())
+        self.assertEqual(partial["status"], "partial")
+        self.assertEqual(partial["verdict"], "REQUEST_CHANGES")
+        self.assertEqual(len(result["findings"]), 1)
+        self.assertEqual(pointer.read_text(), baseline)
+        self.assertEqual(self.run_review()["status"], "reused")
+        self.state.update({"fixed": True, "artifact_material": False})
+        self.state["pr"]["body"] += " Decorative icon only; supplied evidence resolves the ownership concern."
+        self.save()
+        complete = self.run_review()
+        self.assertEqual(complete["status"], "complete")
+        self.assertEqual(complete["verdict"], "APPROVE")
+
+    def test_public_receipt_reuse_across_developers_and_independent_model_choices(self):
+        first = self.run_review()
+        self.cli("publish", "--run", first["run"], "--write")
+        self.project = self.home / "second-project"
+        self.project.mkdir()
+        self.state["viewer"] = "second-reviewer"
+        self.save()
+        reuse = self.run_review()
+        self.assertEqual(reuse["status"], "reused_shared")
+        self.assertEqual(reuse["author"], "reviewer")
+        self.assertEqual((self.home / "claude-calls.txt").read_text(), "1")
+        independent = self.run_review(True, "--fresh")
+        self.assertEqual(independent["scope"]["mode"], "full")
+        reviewer = json.loads((self.home / "codex-context.json").read_text())
+        self.assertEqual(len(reviewer["snapshot"]["discussion"]["reviews"]), 1)
+        self.assertNotIn("bstack-review-v1:", reviewer["snapshot"]["discussion"]["reviews"][0]["body"])
+        self.assertIsNone(reviewer["own_prior_report"])
+        (self.project / ".bstack/review.json").write_text(json.dumps({"roles": {"reviewer_b": {"model": "gpt-6-sol"}}}))
+        changed = self.run_review()
+        self.assertEqual(changed["scope"]["mode"], "full")
+        self.assertEqual((self.home / "claude-calls.txt").read_text(), "3")
+        reviews = json.loads((self.home / "published.json").read_text())
+        reviews[0]["body"] = reviews[0]["body"].replace("✅", "Edited ✅", 1)
+        (self.home / "published.json").write_text(json.dumps(reviews))
+        self.project = self.home / "third-project"
+        self.project.mkdir()
+        self.save()
+        self.assertEqual(self.run_review()["status"], "complete")
+        reviews[0]["body"] = reviews[0]["body"].replace("Edited ✅", "✅", 1)
+        (self.home / "published.json").write_text(json.dumps(reviews))
+        self.project = self.home / "untrusted-project"
+        self.project.mkdir()
+        self.state["permission"] = "read"
+        self.save()
+        self.assertEqual(self.run_review()["status"], "complete")
+
+    def test_shared_baseline_supports_delta_without_private_role_reports(self):
+        self.state["scenario"] = "bug"
+        self.save()
+        initial = self.run_review()
+        self.cli("publish", "--run", initial["run"], "--write")
+        self.project = self.home / "new-developer"
+        self.project.mkdir()
+        self.state["viewer"] = "new-reviewer"
+        (self.repo / "service.py").write_text("def read_record(user):\n    return record if record.owner == user else None\n")
+        self.git("commit", "-qam", "authorize")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.git("update-ref", "refs/pull/1/head", self.head)
+        self.state.update({"pr": self.pr(), "fixed": True})
+        self.save()
+        followup = self.run_review()
+        self.assertEqual(followup["scope"]["mode"], "delta")
+        self.assertEqual(followup["verdict"], "APPROVE")
+        reviewer = json.loads((self.home / "codex-context.json").read_text())
+        self.assertIsNone(reviewer["own_prior_report"])
+        self.assertEqual(len(reviewer["prior_findings"]), 1)
+        result = json.loads((Path(followup["run"]) / "result.json").read_text())
+        self.assertEqual(len(result["resolved_findings"]), 1)
 
 
 if __name__ == "__main__":
