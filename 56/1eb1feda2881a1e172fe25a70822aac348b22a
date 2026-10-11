@@ -1,0 +1,54 @@
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_73e7ef0ecca373 40-41,108-118,126-144,147-161,199,207,212-213
+  s_822e08e34bda62::t_927c4ecb93d6dc 145-146,206,341,514,521,558-559,566-567,625,630
+  s_822e08e34bda62::t_749b35201d7f2a 385-387,389,485-487
+  s_822e08e34bda62::t_0d7ee63f6b477d 388,390-484
+  s_822e08e34bda62::t_3dd07b0500e9db 509-513,515-520,522-557,560-565,568-624,626-629,631-660
+  s_822e08e34bda62::t_c25d9a2e6fd83f 119-125,214,317-324,382
+  s_822e08e34bda62::t_ad91169ea89385 237-238,240,252,304-316,325-340,342,376-381,383
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_c5c4a2cb94875b 40,42,2162,2164
+  s_822e08e34bda62::t_bb65c6c152b903 2182,2184
+.github/workflows/release.yml
+  s_822e08e34bda62::t_3ac67861b4b212 56
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_d2ef368591a506 50
+bstack/release/bstack/shared/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_c5c4a2cb94875b 17
+bstack/shared/skills/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_d2ef368591a506 16
+bstack/README.md
+  s_822e08e34bda62::t_d2ef368591a506 62
+bstack/release-notes/0.9.0.md
+  s_822e08e34bda62::t_d2ef368591a506 7
+  s_822e08e34bda62::t_2315cb4e2cfb48 17
+bstack/RELEASING.md
+  s_822e08e34bda62::t_3ac67861b4b212 39,41
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_c5c4a2cb94875b 50
+bstack/scripts/guide_catalog.py
+  s_822e08e34bda62::t_1c375176c3f9bf 1-209,215-229
+  s_822e08e34bda62::t_abff869c2af2ae 210-214
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_1054c763760073 385-387,389,485-487
+  s_822e08e34bda62::t_c5c4a2cb94875b 40-41,108-118,126-144,147-161,199,207,212-213,237-238,240,252,304-316,325-326,328-340,342,376-381,383,509-513,515-520,522-557,560-565,568-624,626-629,631-660
+  s_822e08e34bda62::t_bb65c6c152b903 119-125,145-146,206,214,317-324,341,382,514,521,558-559,566-567,625,630
+  s_822e08e34bda62::t_b5664d6a9f788b 388,390-484
+  s_822e08e34bda62::t_6233132bd54bb8 327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "561eb1feda2881a1e172fe25a70822aac348b22a",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
