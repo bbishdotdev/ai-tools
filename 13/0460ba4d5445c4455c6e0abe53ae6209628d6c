@@ -1,0 +1,51 @@
+bstack/release/README.md
+  s_822e08e34bda62::t_93dff2a9b28d98 3
+  s_822e08e34bda62::t_2436cf3e371312 25
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_a79add341dab24 52-53
+  s_822e08e34bda62::t_798b2bb9ee2608 48,50,106-108
+  s_822e08e34bda62::t_54f10c0ba14fa2 54-56
+bstack/release-notes/0.8.1.md
+  s_822e08e34bda62::t_f3508c6a5868db 1-17,19-28
+  s_822e08e34bda62::t_3e9d180f510f19 18
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_f3508c6a5868db 11
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_93dff2a9b28d98 3
+  s_822e08e34bda62::t_a5b6eddfe6548d 52-53
+  s_822e08e34bda62::t_0d600637c35b46 54-56
+  s_822e08e34bda62::t_2436cf3e371312 48,50,106-108
+bstack/scripts/package.py
+  s_822e08e34bda62::t_4885a82903d1ff 488-490
+bstack/README.md
+  s_822e08e34bda62::t_696b367d9be1ac 18,22,64,66,68-76,78-79,81,84-85,87-88,126,128
+  s_822e08e34bda62::t_54f10c0ba14fa2 77,80,86
+  s_822e08e34bda62::t_a79add341dab24 82-83
+bstack/INSTALL.md
+  s_822e08e34bda62::t_d30da9b0575964 5-11,35,38,41,164,192,201
+  s_822e08e34bda62::t_5ba84817768398 209-210,215
+bstack/package/selection.json
+  s_822e08e34bda62::t_f3508c6a5868db 4
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_2436cf3e371312 83,134,155,176,197,218,239,260,312,333,354,395,416,477,498,519,552,1235,1272,1293,1354,1375,1412,1523,1560,1581,1602,1623,1644,1681,1713,1935,1956,1977,1999,2021,2043,2065,2103,2125,2154,2176,2387,2408,2429
+  s_822e08e34bda62::t_93dff2a9b28d98 1861,2849
+  s_822e08e34bda62::t_a5b6eddfe6548d 40,42
+bstack/engineering/README.md
+  s_822e08e34bda62::t_d36f80ac1390e3 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "130460ba4d5445c4455c6e0abe53ae6209628d6c",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
