@@ -82,7 +82,8 @@
     "prototype": "engineering/prototype",
     "implement": "engineering/implement",
     "to-pr": "engineering/to-pr",
-    "review-pr": "engineering/review-pr"
+    "review-pr": "engineering/review-pr",
+    "resolve-pr": "engineering/resolve-pr"
   },
   "owned_resources": [
     "shared/references/baseline-agents.md",

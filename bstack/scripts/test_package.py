@@ -31,7 +31,7 @@ class PackageTests(unittest.TestCase):
                     "reflect", "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
                     "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
                     "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
-                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr"}
+                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr", "resolve-pr"}
         self.assertEqual(set(manifest["public_skills"]), expected)
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}

@@ -39,11 +39,14 @@ Use bstack's owned entries for selected SDLC workflows, including references fro
 | Research, prototype, or implement | [research](../../../engineering/research/SKILL.md), [prototype](../../../engineering/prototype/SKILL.md), [implement](../../../engineering/implement/SKILL.md) |
 | Prepare or publish an authorized PR | [to-pr](../../../engineering/to-pr/SKILL.md) |
 | Review a PR or recheck its revisions | [review-pr](../../../engineering/review-pr/SKILL.md) |
+| Respond to feedback on your PR | [resolve-pr](../../../engineering/resolve-pr/SKILL.md) |
 | Transfer work to a fresh context | [handoff](../handoff/SKILL.md) |
 
 Named invocation selects that entry. Within opted-in automatic routing, propose or select the matching phase from the user's task. A sufficient spec or small known task can skip Wayfinder. Planning completion does not authorize implementation. Triage is intake coordination, not a mandatory step between planning and tickets.
 
 PR review selects the owned review entry before general investigation or PR-status routing. It evaluates necessity and implementation, then challenges anonymous findings. It does not run the complete Arena/Interrogate workflows, fix code, or merge. A status-only or CI-repair request remains Babysit; publishing a review needs its own applicable authorization.
+
+Author-side review follow-up selects resolve-pr. Judge each concern against evidence and the PR's purpose; an evidence-backed reply may resolve it without changing code. Keep independent cleanup out of the PR, and do not treat an existing request-changes review as cleared by the author's reply.
 
 Read [decision authority](../../references/decision-authority.md) when deciding who can settle product choices, ADRs, or autonomous grilling. Human decisions remain the default; automatic routing and autonomous decision authority are separate. Use [workspace access](../../references/workspace.md) for saved work and [independent work adapters](../../references/work-adapters.md) for planning and ticket destinations. Local operation requires no external tracker or model-role setup.
 
