@@ -1,0 +1,27 @@
+bstack/shared/skills/bstack-guide/references/walkthrough.md
+  s_822e08e34bda62::t_9157bb63c2ac28 3,5-9,11,13
+bstack/release/bstack/shared/bstack-guide/references/walkthrough.md
+  s_822e08e34bda62::t_051461ca146cd2 3,5-9,11,13
+bstack/shared/skills/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_9157bb63c2ac28 12
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_051461ca146cd2 2162,2164,2190,2192
+bstack/release/bstack/shared/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_051461ca146cd2 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0680441d2cf1cbf71ce146c025763f9a012783ab",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
