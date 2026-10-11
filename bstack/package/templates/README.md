@@ -47,7 +47,7 @@ A skills.sh distributor uses the separate `install-bstack` transport skill, whos
 
 ## Choose a workflow
 
-Start where the work is. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [one-page visual overview](shared/bstack-guide/assets/overview.html) opens locally. Use `how` or `why` to understand code, `bro` to restate the last answer plainly, `poteto-mode` to select an engineering workflow, `grill-me` or `wayfinder` to explore a plan, `prototype` to compare designs, `to-spec` and `to-tickets` to organize accepted work, and `implement` when the request is ready to build. The PR entries are `to-pr`, `review-pr`, and `resolve-pr`. No full sequence is required.
+Start where the work is. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [offline visual guide](shared/bstack-guide/assets/overview.html) has a searchable catalog, Cmd/Ctrl+K palette, and manual-versus-auto routing explainer. Use `how` or `why` to understand code, `bro` to restate the last answer plainly, `poteto-mode` to select an engineering workflow, `grill-me` or `wayfinder` to explore a plan, `prototype` to compare designs, `to-spec` and `to-tickets` to organize accepted work, and `implement` when the request is ready to build. The PR entries are `to-pr`, `review-pr`, and `resolve-pr`. No full sequence is required.
 
 Some workflows need more than the host running your chat. [review-pr](engineering/review-pr/SKILL.md), for example, currently calls authenticated GitHub, Codex, and Claude Code CLIs for its model-backed run. Installing bstack does not sign in to those services.
 

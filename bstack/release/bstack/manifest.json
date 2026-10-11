@@ -37,9 +37,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "4d9b46fdd456d78d2bffa1879271884856c0fc3bdb35f33ce9435b4906004d8f",
+      "sha256": "0aa837dbde7438fdc6bf293cdb98c22344cede3197fc6401212312959fd913ba",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "7b57bb6022e88cec20f973e58ba38fffb9fa9bc9feab005fadf42fef407db5e7",
+      "source_sha256": "a346a6cfbffd98213db44597ff4e89a8f96c701fac953b3a1bed09238ba952ec",
       "transforms": [
         "render-release-template"
       ]
@@ -2159,9 +2159,9 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/SKILL.md",
-      "sha256": "e8ae6c88dcf3f393441ab673dc1a4bfdc25be53be6958b78f866e73c021e796d",
+      "sha256": "b38329050af3b365597ccd447a93e859dbe4310f0d234232d6bb89901be3e6ff",
       "source": "bstack/shared/skills/bstack-guide/SKILL.md",
-      "source_sha256": "64b6412d61726d385dfcafcddffd0088a44533217bab1a57e3dbf0a7d8c8a260",
+      "source_sha256": "a53d7e4fec8e79b529cd4a953a2b548019b3dcc8e73d7e9632e46a2ee8feaae6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2179,9 +2179,9 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/assets/overview.html",
-      "sha256": "2a0f2d3d7893a25d7a484ac8fb7a3f383e4586e81d21216f916928d89ccf155b",
+      "sha256": "12a1a5f5f2ae165b8bede19274863bff2db2ac73dbd9843f56b064632b82808d",
       "source": "bstack/shared/skills/bstack-guide/assets/overview.html",
-      "source_sha256": "2a0f2d3d7893a25d7a484ac8fb7a3f383e4586e81d21216f916928d89ccf155b",
+      "source_sha256": "12a1a5f5f2ae165b8bede19274863bff2db2ac73dbd9843f56b064632b82808d",
       "transforms": []
     },
     {

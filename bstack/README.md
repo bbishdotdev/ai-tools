@@ -59,7 +59,7 @@ python3 install.py --project /path/to/my-project
 
 No Git, npm, skills.sh, or network access is needed during installation. A clone works too; use its bundled installer as described in [installation](INSTALL.md#from-a-download-or-clone).
 
-After setup, start a fresh agent session to discover the skills. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. The guide also includes a [one-page visual overview](shared/skills/bstack-guide/assets/overview.html) you can open locally. The agent offers automatic routing if it is off; enabling it is opt-in. Upgrades preserve your existing mode and selected tools. Neither route fetches upstream latest.
+After setup, start a fresh agent session to discover the skills. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [offline visual guide](shared/skills/bstack-guide/assets/overview.html) includes the full searchable skill and playbook catalog, a Cmd/Ctrl+K palette, and a manual-versus-auto routing explainer. The agent offers automatic routing if it is off; enabling it is opt-in. Upgrades preserve your existing mode and selected tools. Neither route fetches upstream latest.
 
 See [installation and updates](INSTALL.md). The supported installation path is the project-local CLI bundle. Desktop discovery has [separate checks](INSTALL.md#claude-desktop-discovery); native plugin-manager installation is not part of this package.
 
