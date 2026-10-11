@@ -14,4 +14,6 @@ For a general introduction, follow the short [walkthrough](references/walkthroug
 
 For a specific question, answer that slice first. Read [common routes](references/routes.md) only when examples or a walkthrough would help. For exact setup, limits, or commands, read the installed package's `README.md` or relevant skill from its `index.json` rather than relying on this overview. Resolve those files from the package containing this skill, not from the generated discovery entry. Check the local `doctor` result only when the person asks about their installation; don't imply a documented capability is configured or working here.
 
+When the person wants a visual overview, open the bundled [one-page guide](assets/overview.html) in a browser if the host can display local files. It is a self-contained offline HTML file. If the host cannot display it, give the absolute file path and explain the relevant path conversationally. The page shows available workflows; it does not inspect this project's setup or grant permission to run them.
+
 Use a small diagram or concrete example if it clarifies the path. Keep the first answer short and let the person choose where to go deeper. If they ask to try a workflow, use its actual skill and honor its own scope and authorization. An explanation of `review-pr`, for example, does not publish a review.

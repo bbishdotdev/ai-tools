@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="A one-page guide to what BStack gives you, where to start, and how its workflows stay connected.">
+  <title>BStack | Start anywhere</title>
+  <style>
+    :root {
+      --ink: #19221f;
+      --muted: #52615a;
+      --paper: #f5f5ef;
+      --white: #fffefa;
+      --line: #d9e0d7;
+      --dark: #16231d;
+      --dark-line: #40564a;
+      --lime: #dcf58e;
+      --mint: #cfe6d9;
+      --blue: #dbeaf4;
+      --coral: #f3dfd0;
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; }
+    a { color: inherit; }
+    button { font: inherit; }
+    .skip { position: absolute; top: -100px; left: 12px; z-index: 20; padding: 10px 14px; background: var(--lime); color: var(--ink); }
+    .skip:focus { top: 12px; }
+    .shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar { background: var(--dark); color: #eef5eb; border-bottom: 1px solid var(--dark-line); }
+    .topbar .shell { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; font-size: 20px; font-weight: 760; letter-spacing: -.06em; }
+    .brand-mark { width: 27px; height: 27px; border: 3px solid var(--lime); border-radius: 8px; display: inline-grid; place-items: center; font-size: 14px; letter-spacing: 0; line-height: 1; }
+    .topbar nav { display: flex; gap: 26px; align-items: center; font-size: 13px; color: #c7d7ca; }
+    .topbar nav a { text-decoration: none; }
+    .topbar nav a:hover, .topbar nav a:focus-visible { color: var(--lime); }
+    .topbar .version { border: 1px solid var(--dark-line); border-radius: 99px; padding: 4px 10px; font-size: 11px; color: #bed2c1; white-space: nowrap; }
+
+    .hero { background: var(--dark); color: #f6f8f2; position: relative; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: 0; opacity: .13; background-image: radial-gradient(#b7cebd 1px, transparent 1px); background-size: 26px 26px; mask-image: linear-gradient(90deg, transparent 16%, #000 100%); pointer-events: none; }
+    .hero .shell { position: relative; display: grid; grid-template-columns: 1.02fr .98fr; gap: clamp(36px, 6vw, 80px); align-items: center; min-height: 550px; padding-top: 74px; padding-bottom: 76px; }
+    .eyebrow { margin: 0 0 18px; color: var(--lime); text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: .18em; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 22px; max-width: 680px; font-size: clamp(54px, 5.4vw, 76px); letter-spacing: -.075em; line-height: .99; font-weight: 760; }
+    h1 span { color: var(--lime); }
+    .hero-copy { max-width: 520px; }
+    .hero-copy > p:not(.eyebrow) { max-width: 510px; color: #d1dfd1; font-size: 18px; line-height: 1.63; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 29px; }
+    .button { display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 10px; padding: 10px 17px; text-decoration: none; font-size: 13px; font-weight: 750; transition: transform .18s ease, background .18s ease; }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { background: var(--lime); color: var(--dark); }
+    .button-ghost { color: #ecf2e9; border: 1px solid #617466; }
+    .hero-note { margin: 20px 0 0; color: #a9c0ad; font-size: 12px; }
+    .hero-map { position: relative; border: 1px solid #54705b; border-radius: 22px; padding: 20px; background: rgba(22, 35, 29, .93); box-shadow: 0 32px 80px rgba(0, 0, 0, .22); }
+    .map-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 2px 4px 19px; border-bottom: 1px solid var(--dark-line); font-size: 11px; color: #c7dcc8; letter-spacing: .11em; text-transform: uppercase; }
+    .map-dots { display: flex; gap: 6px; }
+    .map-dots i { width: 7px; height: 7px; border-radius: 100%; background: #71927b; }
+    .map-dots i:first-child { background: var(--lime); }
+    .map-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 11px; align-items: center; min-height: 73px; border-bottom: 1px solid #344a3d; }
+    .map-row:last-of-type { border-bottom: 0; }
+    .map-number { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; color: #9eb7a1; }
+    .map-label { font-size: 15px; font-weight: 650; }
+    .map-label small { display: block; margin-top: 2px; font-size: 11px; font-weight: 450; color: #afc5b1; }
+    .map-pill { color: var(--dark); border-radius: 8px; padding: 7px 9px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .map-pill.lime { background: var(--lime); }
+    .map-pill.blue { background: var(--blue); }
+    .map-pill.coral { background: var(--coral); }
+    .map-pill.mint { background: var(--mint); }
+    .map-bottom { margin-top: 17px; padding: 10px 12px; border: 1px dashed #6a826e; border-radius: 11px; color: #d5e6d4; font-size: 11px; display: flex; gap: 10px; align-items: center; }
+    .map-bottom b { color: var(--lime); text-transform: uppercase; font-size: 10px; letter-spacing: .1em; white-space: nowrap; }
+
+    .section { padding: 82px 0; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 30px; }
+    .section-kicker { display: block; color: #66766b; text-transform: uppercase; letter-spacing: .16em; font-size: 11px; font-weight: 800; margin-bottom: 10px; }
+    h2 { margin-bottom: 0; max-width: 680px; font-size: clamp(36px, 4.1vw, 53px); line-height: 1.07; letter-spacing: -.055em; font-weight: 750; }
+    .section-heading p { max-width: 315px; margin-bottom: 3px; color: var(--muted); font-size: 14px; }
+    .benefits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .benefit { min-height: 205px; padding: 23px; border: 1px solid var(--line); background: var(--white); border-radius: 17px; display: flex; flex-direction: column; }
+    .benefit-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; font-size: 17px; font-weight: 800; margin-bottom: 31px; }
+    .benefit:nth-child(1) .benefit-icon { background: var(--lime); }
+    .benefit:nth-child(2) .benefit-icon { background: var(--blue); }
+    .benefit:nth-child(3) .benefit-icon { background: var(--mint); }
+    .benefit:nth-child(4) .benefit-icon { background: var(--coral); }
+    .benefit h3 { margin-bottom: 7px; font-size: 17px; letter-spacing: -.025em; }
+    .benefit p { margin-bottom: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+    .routes-section { background: #e9eee5; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .route-tabs { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; }
+    .route-tab { cursor: pointer; flex: 0 0 auto; border: 1px solid #c8d4c9; border-radius: 99px; background: transparent; color: #43564a; padding: 9px 15px; font-size: 13px; font-weight: 700; }
+    .route-tab[aria-selected="true"] { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .route-tab:focus-visible, a:focus-visible { outline: 3px solid #8cbb59; outline-offset: 3px; }
+    .route-panel { display: grid; grid-template-columns: minmax(230px, .72fr) 1.28fr; gap: 48px; min-height: 275px; padding: 36px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); }
+    .route-panel[hidden] { display: none; }
+    .route-title { font-size: 28px; letter-spacing: -.05em; line-height: 1.14; margin-bottom: 12px; }
+    .route-description { max-width: 340px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .route-takeaway { display: inline-block; margin-top: 9px; padding: 7px 10px; background: #ecf2e6; border-radius: 7px; color: #33523b; font-size: 11px; font-weight: 740; }
+    .flow { display: flex; flex-wrap: wrap; align-content: center; align-items: center; gap: 9px; }
+    .flow-step { display: inline-flex; flex-direction: column; min-width: 117px; min-height: 82px; justify-content: center; padding: 12px 13px; border: 1px solid #cbd7ca; border-radius: 12px; background: #f7f9f4; }
+    .flow-step strong { font-size: 13px; letter-spacing: -.01em; }
+    .flow-step small { margin-top: 2px; color: #657467; font-size: 10px; }
+    .flow-step.optional { border-style: dashed; background: transparent; }
+    .flow-arrow { font-size: 18px; color: #8fa28f; }
+    .flow-note { flex-basis: 100%; margin: 9px 0 0; color: #5c6c60; font-size: 12px; }
+
+    .continuity { display: grid; grid-template-columns: .75fr 1.25fr; gap: 60px; align-items: start; }
+    .continuity-intro p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-top: 20px; }
+    .continuity-list { display: grid; gap: 10px; }
+    .continuity-item { display: grid; grid-template-columns: 42px 1fr; gap: 13px; padding: 19px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
+    .continuity-item .index { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: #edf3e5; color: #386245; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 800; }
+    .continuity-item h3 { margin-bottom: 3px; font-size: 15px; }
+    .continuity-item p { margin-bottom: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+    .mechanics { background: #f0f2eb; border-top: 1px solid var(--line); }
+    .mechanic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .mechanic { padding: 24px; background: var(--white); border: 1px solid var(--line); border-radius: 16px; }
+    .mechanic .step-number { color: #6a806b; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; letter-spacing: .08em; }
+    .mechanic h3 { margin: 16px 0 8px; font-size: 18px; letter-spacing: -.025em; }
+    .mechanic p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.62; }
+    code { padding: 2px 5px; border-radius: 5px; background: #e6ece4; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
+
+    .start { background: var(--dark); color: #f4f7f0; }
+    .start .section-kicker { color: var(--lime); }
+    .start-grid { display: grid; grid-template-columns: .95fr 1.05fr; gap: 70px; align-items: start; }
+    .start h2 { max-width: 400px; }
+    .start p { max-width: 445px; color: #c9d8c9; font-size: 14px; line-height: 1.7; margin-top: 20px; }
+    .start-card { padding: 24px; border-radius: 17px; background: #24382c; border: 1px solid #54705b; }
+    .start-card h3 { font-size: 15px; margin-bottom: 7px; }
+    .start-card p { margin: 0 0 15px; font-size: 12px; }
+    .command { display: block; overflow-x: auto; padding: 14px 15px; border-radius: 9px; background: #102219; color: #dcf58e; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; white-space: nowrap; }
+    .start-card .subtle { margin: 14px 0 0; color: #afc6b1; }
+    .start-card .subtle a { color: var(--lime); }
+    footer { background: #101c15; color: #a9c0ad; padding: 26px 0; font-size: 12px; }
+    footer .shell { display: flex; justify-content: space-between; gap: 25px; align-items: center; }
+    footer p { margin: 0; }
+    footer a { color: #dcebbd; text-decoration: none; }
+
+    @media (max-width: 920px) {
+      .hero .shell, .continuity, .start-grid { grid-template-columns: 1fr; }
+      .hero .shell { padding-top: 65px; }
+      .hero-map { max-width: 610px; }
+      .benefits { grid-template-columns: repeat(2, 1fr); }
+      .section-heading { align-items: start; flex-direction: column; gap: 15px; }
+      .section-heading p { max-width: 610px; }
+    }
+    @media (max-width: 650px) {
+      .shell { width: min(100% - 32px, 1180px); }
+      .topbar .shell { min-height: 65px; }
+      .topbar nav { gap: 14px; }
+      .topbar nav a:nth-child(1), .topbar nav a:nth-child(3), .topbar .version { display: none; }
+      .hero .shell { padding-top: 55px; padding-bottom: 60px; gap: 44px; }
+      h1 { font-size: clamp(48px, 13vw, 72px); }
+      .hero-copy > p:not(.eyebrow) { font-size: 16px; }
+      .section { padding: 61px 0; }
+      .benefits, .mechanic-grid { grid-template-columns: 1fr; }
+      .benefit { min-height: unset; }
+      .benefit-icon { margin-bottom: 18px; }
+      .route-panel { grid-template-columns: 1fr; gap: 18px; padding: 23px; }
+      .flow { gap: 6px; }
+      .flow-step { min-width: 98px; min-height: 72px; }
+      .flow-arrow { font-size: 14px; }
+      footer .shell { flex-direction: column; align-items: start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="shell">
+      <a class="brand" href="#top" aria-label="BStack, back to top"><span class="brand-mark">b</span> bstack</a>
+      <nav aria-label="Page sections">
+        <a href="#benefits">What you get</a>
+        <a href="#routes">Start anywhere</a>
+        <a href="#mechanics">How it works</a>
+      </nav>
+      <span class="version">one-page guide</span>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="shell">
+        <div class="hero-copy">
+          <p class="eyebrow">A field guide to bstack</p>
+          <h1 id="hero-title">Start anywhere.<br><span>Keep what matters.</span></h1>
+          <p>BStack connects planning, engineering, and PR work. It brings Lauren Tan's PStack and Matt Pocock's skills into one package with local work management and clean handoffs between agents.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#routes">Find your starting point ↗</a>
+            <a class="button button-ghost" href="#benefits">See what you get</a>
+          </div>
+          <p class="hero-note">Pick the part you need. There is no required start-to-finish ceremony.</p>
+        </div>
+        <div class="hero-map" aria-label="BStack lets you enter from an idea, code, a bug, or a pull request">
+          <div class="map-top"><span>One stack / multiple entries</span><span class="map-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="map-row"><span class="map-number">01</span><span class="map-label">An open idea<small>Ask better questions</small></span><span class="map-pill lime">grill-me · wayfinder</span></div>
+          <div class="map-row"><span class="map-number">02</span><span class="map-label">A known task<small>Build from the real requirement</small></span><span class="map-pill blue">poteto-mode</span></div>
+          <div class="map-row"><span class="map-number">03</span><span class="map-label">Unfamiliar code<small>Understand before changing</small></span><span class="map-pill mint">how · why</span></div>
+          <div class="map-row"><span class="map-number">04</span><span class="map-label">A pull request<small>Explain, challenge, resolve</small></span><span class="map-pill coral">to-pr · review-pr</span></div>
+          <div class="map-bottom"><b>Across every path</b><span>project baseline · decisions · handoffs · optional memory</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="benefits" aria-labelledby="benefits-title">
+      <div class="shell">
+        <div class="section-heading"><div><span class="section-kicker">What you get</span><h2 id="benefits-title">Less re-explaining.<br>More useful work.</h2></div><p>Lauren's engineering habits and Matt's planning methods work together, with BStack filling the gaps between them.</p></div>
+        <div class="benefits">
+          <article class="benefit"><span class="benefit-icon" aria-hidden="true">↔</span><h3>Move between tools</h3><p>Selected Codex, Claude Code, Cursor, and Grok hosts use the same packaged skills in a project.</p></article>
+          <article class="benefit"><span class="benefit-icon" aria-hidden="true">◇</span><h3>Keep the why</h3><p>Local maps, handoffs, and a small set of meaningful ADRs keep decisions beyond one chat.</p></article>
+          <article class="benefit"><span class="benefit-icon" aria-hidden="true">⌁</span><h3>Plan without a tracker</h3><p>Wayfinder maps, specs, and Kanban tickets work locally. Connect external tools only when supported.</p></article>
+          <article class="benefit"><span class="benefit-icon" aria-hidden="true">✓</span><h3>Make PRs easier to review</h3><p>Explain the change, get independent challenge, and weigh feedback before widening the scope.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section routes-section" id="routes" aria-labelledby="routes-title">
+      <div class="shell">
+        <div class="section-heading"><div><span class="section-kicker">Common starting points</span><h2 id="routes-title">What are you doing today?</h2></div><p>These are paths you can take, not boxes you need to check. Skip anything that adds no value.</p></div>
+        <div class="route-tabs" role="tablist" aria-label="Choose a developer use case">
+          <button class="route-tab" id="tab-bug" role="tab" aria-selected="true" aria-controls="panel-bug" tabindex="0" type="button">Fix a bug</button>
+          <button class="route-tab" id="tab-feature" role="tab" aria-selected="false" aria-controls="panel-feature" tabindex="-1" type="button">Shape a feature</button>
+          <button class="route-tab" id="tab-pr" role="tab" aria-selected="false" aria-controls="panel-pr" tabindex="-1" type="button">Work on a PR</button>
+          <button class="route-tab" id="tab-learn" role="tab" aria-selected="false" aria-controls="panel-learn" tabindex="-1" type="button">Understand code</button>
+        </div>
+        <section class="route-panel" id="panel-bug" role="tabpanel" aria-labelledby="tab-bug" tabindex="0">
+          <div><span class="section-kicker">01 / engineering</span><h3 class="route-title">Find the cause. Fix the cause.</h3><p class="route-description">A clear bug can go straight into engineering. PStack's code investigation and BStack's baseline push the agent past test-only fixes and patches that hide the problem.</p><span class="route-takeaway">No map, spec, or ticket required</span></div>
+          <div class="flow" aria-label="Optional how and why, engineering workflow, then an optional pull request"><span class="flow-step optional"><strong>how · why</strong><small>if context is missing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>poteto-mode</strong><small>or auto routing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>root-cause fix</strong><small>behavioral checks</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>to-pr</strong><small>when ready</small></span><p class="flow-note">Relevant ADRs come into context if they explain an existing choice.</p></div>
+        </section>
+        <section class="route-panel" id="panel-feature" role="tabpanel" aria-labelledby="tab-feature" tabindex="0" hidden>
+          <div><span class="section-kicker">02 / planning to build</span><h3 class="route-title">Get clear before you commit.</h3><p class="route-description">Matt's questioning and Wayfinder approach help settle the unknowns. BStack keeps the work local and hands the accepted direction to engineering in a fresh context.</p><span class="route-takeaway">Use only the steps the idea needs</span></div>
+          <div class="flow" aria-label="Grilling, optional Wayfinder and prototype, optional spec and tickets, handoff, then implementation"><span class="flow-step"><strong>grill-me</strong><small>surface decisions</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>wayfinder</strong><small>map open questions</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>prototype</strong><small>compare options</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>spec · tickets</strong><small>slice accepted work</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>handoff</strong><small>fresh context</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>implement</strong><small>engineering workflow</small></span><p class="flow-note">A consequential architecture choice can become a short ADR. Routine picks don't need one.</p></div>
+        </section>
+        <section class="route-panel" id="panel-pr" role="tabpanel" aria-labelledby="tab-pr" tabindex="0" hidden>
+          <div><span class="section-kicker">03 / review and delivery</span><h3 class="route-title">Make the change easy to judge.</h3><p class="route-description">BStack's PR skills keep the explanation short, challenge the code with independent reviewers when available, and test feedback before turning it into more work.</p><span class="route-takeaway">An existing PR can start at review</span></div>
+          <div class="flow" aria-label="Optional to-pr for a new PR, review-pr, then resolve-pr as needed"><span class="flow-step optional"><strong>to-pr</strong><small>new PR briefing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>review-pr</strong><small>independent challenge</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>resolve-pr</strong><small>judge feedback</small></span><p class="flow-note">A reply can be enough. Not every review comment calls for code changes.</p></div>
+        </section>
+        <section class="route-panel" id="panel-learn" role="tabpanel" aria-labelledby="tab-learn" tabindex="0" hidden>
+          <div><span class="section-kicker">04 / understanding</span><h3 class="route-title">Know the code before touching it.</h3><p class="route-description">Ask how a subsystem works, why it was shaped that way, or for a plain explanation. These entries can be used without starting an implementation.</p><span class="route-takeaway">Read-only understanding is a valid outcome</span></div>
+          <div class="flow" aria-label="Choose how, why, or teach for code understanding"><span class="flow-step"><strong>how</strong><small>what the code does</small></span><span class="flow-arrow" aria-hidden="true">·</span><span class="flow-step"><strong>why</strong><small>the reasons behind it</small></span><span class="flow-arrow" aria-hidden="true">·</span><span class="flow-step"><strong>teach</strong><small>the fuller picture</small></span><p class="flow-note">BStack's ADR process helps separate recorded decisions from the agent's guesses.</p></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" id="continuity" aria-labelledby="continuity-title">
+      <div class="shell continuity">
+        <div class="continuity-intro"><span class="section-kicker">The work survives the chat</span><h2 id="continuity-title">Pick up without starting over.</h2><p>Agents can change, models can change, and a task can move from planning to implementation. What matters should have somewhere durable to live.</p></div>
+        <div class="continuity-list">
+          <article class="continuity-item"><span class="index">01</span><div><h3>Project baseline</h3><p>Seven shared engineering rules live in project instructions. They apply even when automatic routing is off.</p></div></article>
+          <article class="continuity-item"><span class="index">02</span><div><h3>Work and decisions</h3><p>Local Wayfinder maps, specs, and tickets hold the active work. Important architecture decisions live in repository decision records (ADRs).</p></div></article>
+          <article class="continuity-item"><span class="index">03</span><div><h3>Handoffs</h3><p>Accepted scope, evidence, and decision links can move to a fresh context before the next phase or model takes over.</p></div></article>
+          <article class="continuity-item"><span class="index">04</span><div><h3>Optional personal memory</h3><p>Approved personal preferences can carry across Codex, Claude Code, and Cursor. Project facts stay with the project.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section mechanics" id="mechanics" aria-labelledby="mechanics-title">
+      <div class="shell">
+        <div class="section-heading"><div><span class="section-kicker">Under the hood, briefly</span><h2 id="mechanics-title">How does it stay lean?</h2></div><p>BStack ships one reviewed package, but your agent only reads the parts the current task needs.</p></div>
+        <div class="mechanic-grid">
+          <article class="mechanic"><span class="step-number">01 / install</span><h3>One package, selected tools</h3><p>The installer gives each selected host direct skill entries pointing at the same local package. It does not fetch new upstream skills during setup.</p></article>
+          <article class="mechanic"><span class="step-number">02 / choose</span><h3>Manual first, auto if you want it</h3><p>Call a skill by name, or opt into <code>bstack-auto</code> for ordinary engineering prompts. A short router reminder does not dump every playbook into context.</p></article>
+          <article class="mechanic"><span class="step-number">03 / carry forward</span><h3>Keep the right context</h3><p>Local work, ADRs, and handoffs carry decisions forward. A workflow uses supported host capabilities and calls out what is missing.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section start" id="start" aria-labelledby="start-title">
+      <div class="shell start-grid">
+        <div><span class="section-kicker">Try it</span><h2 id="start-title">Start with the work in front of you.</h2><p>Already installed? Ask your agent “How do I use BStack for this task?” or invoke <code>bstack-guide</code>. You can use a named skill without enabling automatic routing.</p></div>
+        <div class="start-card"><h3>Need to install it?</h3><p>Install the small entry skill, then ask your agent to install the full bundled package in your project.</p><span class="command">npx skills add bbishdotdev/ai-tools --skill install-bstack</span><p class="subtle">A <a href="https://github.com/bbishdotdev/ai-tools/releases" target="_blank" rel="noopener noreferrer">release ZIP</a> works without skills.sh. Both routes install the reviewed package.</p></div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="shell"><p>BStack is Brenden Bishop's stack, built on work from <a href="https://github.com/cursor/plugins/tree/main/pstack" target="_blank" rel="noopener noreferrer">Lauren “poteto” Tan</a> and <a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener noreferrer">Matt Pocock</a>.</p><p>Static page. No CDN, account, or tracking.</p></div></footer>
+  <script>
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+    function selectTab(tab, focus = false) {
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach(panel => { panel.hidden = panel.id !== tab.getAttribute('aria-controls'); });
+      if (focus) tab.focus();
+    }
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectTab(tab));
+      tab.addEventListener('keydown', event => {
+        const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length : event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length : event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : -1;
+        if (next < 0) return;
+        event.preventDefault();
+        selectTab(tabs[next], true);
+      });
+    });
+  </script>
+</body>
+</html>
