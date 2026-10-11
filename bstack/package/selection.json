@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "skills": [
     "architect",
     "arena",
@@ -68,6 +68,7 @@
     "upstream/pstack/skills/poteto-mode/playbooks/opening-a-pr.md": "Replaced by engineering/to-pr/SKILL.md."
   },
   "owned_skills": {
+    "bstack-guide": "shared/skills/bstack-guide",
     "grilling": "sdlc/skills/grilling",
     "grill-me": "sdlc/skills/grill-me",
     "grill-with-docs": "sdlc/skills/grill-with-docs",

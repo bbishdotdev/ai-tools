@@ -1,6 +1,6 @@
 # bstack
 
-Version 0.8.1. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
+Version 0.9.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
 
 The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
@@ -47,13 +47,13 @@ A skills.sh distributor uses the separate `install-bstack` transport skill, whos
 
 ## Choose a workflow
 
-Start where the work is. Use `how` or `why` to understand code, `bro` for direct engineering help, `grill-me` or `wayfinder` to explore a plan, `prototype` to compare designs, `to-spec` and `to-tickets` to organize accepted work, and `implement` when the request is ready to build. The PR entries are `to-pr`, `review-pr`, and `resolve-pr`. No full sequence is required.
+Start where the work is. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Use `how` or `why` to understand code, `bro` to restate the last answer plainly, `poteto-mode` to select an engineering workflow, `grill-me` or `wayfinder` to explore a plan, `prototype` to compare designs, `to-spec` and `to-tickets` to organize accepted work, and `implement` when the request is ready to build. The PR entries are `to-pr`, `review-pr`, and `resolve-pr`. No full sequence is required.
 
 Some workflows need more than the host running your chat. [review-pr](engineering/review-pr/SKILL.md), for example, currently calls authenticated GitHub, Codex, and Claude Code CLIs for its model-backed run. Installing bstack does not sign in to those services.
 
 Invoke a public skill with the host's command prefix. Codex uses `$how`; slash-command hosts use `/how`. Use `poteto-mode` when you want the router to select a complete engineering workflow. The [index](index.json) resolves internal dependencies; the [manifest](manifest.json) lists public skills and exact installed files.
 
-The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. Engineering and SDLC skills are explicit-only by default. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control optional automatic routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
+The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. Engineering and SDLC skills are explicit-only by default. `bstack-guide` can answer questions about using the stack without enabling engineering routing. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control optional automatic routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
 
 ```sh
 python3 <project-root>/.bstack/package/scripts/bstack.py auto on --project <project-root>

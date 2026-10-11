@@ -129,8 +129,8 @@ def package_check(capsule, legacy=False):
                     paths.add(relative)
                 if not isinstance(skill.get("description"), str) or not skill["description"].strip():
                     errors.append(f"Public skill needs a description: {name}")
-                if not isinstance(skill.get("implicit"), bool) or skill["implicit"] != (name == "unslop"):
-                    errors.append(f"Only unslop may be implicitly invoked: {name}")
+                if not isinstance(skill.get("implicit"), bool) or skill["implicit"] != (name in ("unslop", "bstack-guide")):
+                    errors.append(f"Only unslop and bstack-guide may be implicitly invoked: {name}")
             for name, entrypoint in (("poteto-mode", "mode"), ("unslop", "unslop"), ("setup-bstack", "setup"), ("verify-bstack", "verification")):
                 if not isinstance(public.get(name), dict) or public[name].get("path") != entrypoints.get(entrypoint):
                     errors.append(f"Public skill does not match its entrypoint: {name}")

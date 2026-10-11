@@ -21,6 +21,7 @@ For Poteto Mode or automatic engineering routing, read the upstream router in fu
 - Use a matching playbook for ordinary engineering tasks. A reported defect routes to Bug fix, measured slowness to Perf issue, and a cited read-only explanation to Investigation. New behavior routes to Feature.
 - Use **figure-it-out** for engineering work needing a bespoke execution plan, including large or cross-cutting work whose coordination exceeds a narrower playbook. A one-time migration can need it. Repetition and creation of a reusable skill are not prerequisites. A standing multi-day coordinated program can instead need Orchestrate, as defined upstream.
 - Ordinary writing, casual conversation, and other requests with no engineering workflow need a normal response. Select no engineering playbook. Apply [bstack's unslop](../unslop/SKILL.md) to prose without loading the upstream engineering corpus.
+- When the user asks how to use bstack or which entry fits their task, use [bstack-guide](../bstack-guide/SKILL.md) without starting an engineering playbook.
 - Respect explicit skill requests and the requested deliverable. Planning, discussing, classifying, or verifying a route does not authorize executing the described work. A plan-only figure-it-out request stops at the plan.
 - Within that scope, honor the selected playbook's explicit exceptions and skip conditions before generic defaults. Investigation stays read-only; it does not inherit a mandatory PR or prototype step.
 

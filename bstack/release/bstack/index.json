@@ -52,6 +52,7 @@
     "blast-radius": "engineering/blast-radius/SKILL.md",
     "bro": "engineering/bro/SKILL.md",
     "bstack-auto": "shared/bstack-auto/SKILL.md",
+    "bstack-guide": "shared/bstack-guide/SKILL.md",
     "bstack-router": "shared/router/WORKFLOW.md",
     "control-cli": "engineering/control-cli/SKILL.md",
     "control-ui": "engineering/control-ui/SKILL.md",

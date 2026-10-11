@@ -26,6 +26,8 @@ Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor
 
 Your agent runs the bundled installer, connects the selected tools, and checks the installation with `doctor`. After a successful check, it offers automatic routing if it is off. It only enables routing when you opt in, including when you already requested it alongside installation. Upgrades preserve your existing mode and selected tools.
 
+Ask "How do I use bstack?" or invoke `$bstack-guide` in Codex or `/bstack-guide` in slash-command hosts for a short walkthrough. It is also available while automatic engineering routing is off. If setup says a fresh session is required, use the guide there.
+
 There are two steps: skills.sh downloads `install-bstack`; asking your agent to use it installs the full bstack package. skills.sh does not run setup automatically.
 
 `bbishdotdev/ai-tools` is the source repository, and `install-bstack` is the skill selected from it. `npx skills add install-bstack` alone does not identify this repository. Keep `--skill install-bstack` so you don't have to choose from the development repository's individual skills. A broad install from `bbishdotdev/ai-tools/bstack` can list upstream and internal skills too; don't select all of those.
