@@ -2159,9 +2159,9 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/SKILL.md",
-      "sha256": "33d2ccacd768e4976bc9c8ade9d75ca85519bbc330231cd4119c80ce27ca749b",
+      "sha256": "39f59c9371783225255559f870fef0aa37eee382a95919a9b41d4f476b84b803",
       "source": "bstack/shared/skills/bstack-guide/SKILL.md",
-      "source_sha256": "16d79bf32a651301f3239450c36a323f32b4918d67f190326d04b8b488153df5",
+      "source_sha256": "30647ca7ffaec70e25232885e2252655b59dbc4ed551dea6ac20dc67d11f2f75",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2187,9 +2187,9 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/references/walkthrough.md",
-      "sha256": "62c53904e6adb87a0017562ea65e4376fe4eefc5efedc3b1e47d39d886df6714",
+      "sha256": "f9489b563e550a644f3e89eb9ce670eb9a6865c65427e0d4e2c33a5c535c475b",
       "source": "bstack/shared/skills/bstack-guide/references/walkthrough.md",
-      "source_sha256": "62c53904e6adb87a0017562ea65e4376fe4eefc5efedc3b1e47d39d886df6714",
+      "source_sha256": "f9489b563e550a644f3e89eb9ce670eb9a6865c65427e0d4e2c33a5c535c475b",
       "transforms": []
     },
     {
