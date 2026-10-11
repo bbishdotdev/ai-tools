@@ -45,11 +45,15 @@ Installation creates `.bstack/package/` and direct public entries in `.agents/sk
 
 A skills.sh distributor uses the separate `install-bstack` transport skill, whose archive contains this same package. Run that skill's installer after distribution. skills.sh does not run setup automatically.
 
-## Use skills directly
+## Choose a workflow
 
-Invoke `how`, `architect`, `tdd`, or another public skill by its native host command prefix. Codex uses `$how`; slash-command hosts use `/how`. Use `poteto-mode` when you want the router to select a complete engineering workflow. The [index](index.json) resolves internal dependencies; the [manifest](manifest.json) lists public skills and exact installed files.
+Start where the work is. Use `how` or `why` to understand code, `bro` for direct engineering help, `grill-me` or `wayfinder` to explore a plan, `prototype` to compare designs, `to-spec` and `to-tickets` to organize accepted work, and `implement` when the request is ready to build. The PR entries are `to-pr`, `review-pr`, and `resolve-pr`. No full sequence is required.
 
-Engineering and SDLC skills are explicit-only by default. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control optional automatic routing with the host's skill prefix. A bare invocation shows these choices without running a command. The same commands are available from the controller:
+Some workflows need more than the host running your chat. [review-pr](engineering/review-pr/SKILL.md), for example, currently calls authenticated GitHub, Codex, and Claude Code CLIs for its model-backed run. Installing bstack does not sign in to those services.
+
+Invoke a public skill with the host's command prefix. Codex uses `$how`; slash-command hosts use `/how`. Use `poteto-mode` when you want the router to select a complete engineering workflow. The [index](index.json) resolves internal dependencies; the [manifest](manifest.json) lists public skills and exact installed files.
+
+The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. Engineering and SDLC skills are explicit-only by default. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control optional automatic routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
 
 ```sh
 python3 <project-root>/.bstack/package/scripts/bstack.py auto on --project <project-root>
@@ -99,7 +103,9 @@ Project setup and auto mode do not activate memory. Existing notes and unrelated
 
 ## Update and remove
 
-Rerun the installer from a reviewed release to update. It preserves the chosen mode, verifies owned files, and refuses unowned or changed content. Existing offline Poteto Mode bundles migrate to the package layout. Old third-party distributor entries must be resolved through their owner if they collide.
+Get a newer installer first. With skills.sh, rerun `npx skills add bbishdotdev/ai-tools --skill install-bstack` or the tagged command you chose, adding `-g` again for a user-scoped installer. Then ask your agent to use `install-bstack` to upgrade this project. From a newer release ZIP or clone, run its `install.py --project <project-root>`. Updating the installer skill alone does not update this package. Stop workspace servers and writers before upgrading the local app.
+
+The installer preserves the chosen mode and hosts, checks owned files, and refuses unowned or changed content. Check its `doctor` result and start a fresh session when requested. Existing offline Poteto Mode bundles migrate to the package layout. Old third-party distributor entries must be resolved through their owner if they collide.
 
 Run the canonical controller with `uninstall --project <project-root>` to remove its verified package and owned bindings. Private work, workspace databases, role and adapter configuration, artifacts, and separately distributed installer skills are preserved. Install separately per checkout; generated absolute bindings are machine-specific.
 

@@ -8,6 +8,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [0.8.1](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.8.1) | 2026-10-11 | [Clearer setup and workflow documentation](release-notes/0.8.1.md) |
 | [0.8.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.8.0) | 2026-10-10 | [Scoped PR feedback and safer upgrades](release-notes/0.8.0.md) |
 | [0.7.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.7.0) | 2026-10-10 | [Independent PR review and clearer PR visuals](release-notes/0.7.0.md) |
 | [0.6.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.6.0) | 2026-10-07 | [Seven-rule baseline for project agents](release-notes/0.6.0.md) |

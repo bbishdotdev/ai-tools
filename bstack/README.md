@@ -15,11 +15,11 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 - [PR feedback resolution](engineering/resolve-pr/SKILL.md) that checks reviewer claims before editing and keeps unrelated work out of the PR.
 - A complete, pinned package that installs offline and preserves your selected tools and routing preferences when you upgrade.
 
-Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. See [verification results and tool-specific limits](audit/package-layout.md) for tested coverage.
+Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. The [verification skill](shared/skills/verify-bstack/SKILL.md) explains what to check for a given change; dated results live in [audit](audit/).
 
 ## Install
 
-Choose either route. Both install the same bundled skills, dependencies, and customizations. Python 3.11+ on macOS or Linux is required.
+Choose either route. Both install the same bundled skills, dependencies, and customizations. Python 3.11+ on macOS or Linux is required. The full [installation guide](INSTALL.md) covers host selection, upgrades, and removal.
 
 Installation includes a concise [seven-rule baseline](shared/references/baseline-agents.md) in your project instructions, even with automatic routing off. Existing guidance is preserved; project-specific initialization is optional. See [project instructions](INSTALL.md#project-instructions).
 
@@ -61,11 +61,31 @@ No Git, npm, skills.sh, or network access is needed during installation. A clone
 
 After setup, start a fresh agent session to discover the skills. The agent offers automatic routing if it is off; enabling it is opt-in. Upgrades preserve your existing mode and selected tools. Neither route fetches upstream latest.
 
-See [installation and updates](INSTALL.md) and [verification results and limits](audit/package-layout.md). Native plugin-manager installation and desktop behavior remain separate verification work.
+See [installation and updates](INSTALL.md). The supported installation path is the project-local CLI bundle. Desktop discovery has [separate checks](INSTALL.md#claude-desktop-discovery); native plugin-manager installation is not part of this package.
 
-## Use bstack
+## Pick a workflow
 
-Invoke engineering skills such as `how` and `architect` directly, or use Poteto Mode to select a complete workflow. Automatic routing is opt-in. The bundle also includes Wayfinder, grilling, specs, ticket breakdown, triage, research, prototype, implementation entry, PR preparation, and shared handoff. Planning uses the same local records as the browser app.
+You can enter at any point. A bug fix does not need a Wayfinder map, and a planning session does not commit you to implementation.
+
+| When you want to... | Start with... |
+| --- | --- |
+| Understand existing code or why it works that way | `how` or `why` |
+| Get direct engineering help or select a full workflow | `bro` or `poteto-mode` |
+| Work through an idea with questions | `grill-me`, or `wayfinder` when decisions need to survive across sessions |
+| Compare a design before building it | `prototype` |
+| Turn accepted decisions into work | `to-spec`, then `to-tickets` if tickets help |
+| Build from an approved plan or a clear request | `implement`; automatic routing can also select the engineering workflow for an ordinary prompt |
+| Prepare, review, or respond to a PR | `to-pr`, `review-pr`, or `resolve-pr` |
+
+Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
+
+Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) currently calls authenticated GitHub, Codex, and Claude Code CLIs for its first model-backed implementation. Installing bstack does not sign in to those services.
+
+### What loads into context
+
+Setup writes the seven-rule baseline and a short package pointer into the project's `AGENTS.md` and, for Claude, `CLAUDE.md`. Each public skill has a small discovery entry that points the agent to its bundled instructions. Those instructions call for only the dependencies the task needs; the whole collection is not inserted into every prompt. Customized `unslop` applies to prose.
+
+Manual invocation is the default. Turn on `bstack-auto` if you want ordinary engineering prompts to enter Poteto Mode without naming it. Its hooks carry a short reminder to load the router when needed; they do not inject the full skill corpus. The [installation guide](INSTALL.md#direct-skills-and-automatic-routing) covers the mode, session refresh, and host-specific limits.
 
 Optional [shared memory setup](shared/memory.md) copies a user-wide runtime from the bundle for Codex, Claude, and Cursor's file bridge. Project installation leaves it inactive. It preserves existing notes and leaves legacy source-linked installations unchanged.
 
@@ -103,9 +123,9 @@ python3 bstack/scripts/package.py build
 python3 bstack/scripts/package.py check
 ```
 
-The [verification skill](shared/skills/verify-bstack/SKILL.md) describes targeted source, package, installation, and live CLI checks. See the [current package results](audit/package-layout.md) for direct skill discovery and installation evidence. Historical [packaging results](audit/packaging.md), [router results](audit/router-poc.md), [fallback results](audit/router-fallback.md), and [policy-layer results](audit/bstack-layers.md) record earlier checks and their limits. New evidence goes in gitignored `.bstack/verification/`.
+The [verification skill](shared/skills/verify-bstack/SKILL.md) describes targeted source, package, installation, and live CLI checks. The [release manifest](release/bstack/manifest.json) is the current package inventory. Dated [package installation](audit/package-layout.md), [packaging](audit/packaging.md), [router](audit/router-poc.md), [fallback](audit/router-fallback.md), and [policy-layer](audit/bstack-layers.md) reports record what passed at those points in time, with their limits. New evidence goes in gitignored `.bstack/verification/`.
 
-[Kanban and SDLC verification](audit/kanban-sdlc.md) records the local app, 42-entry release, independent reviews, installed planning-to-tickets flow and fresh handoff checks, with their current limits.
+[Kanban and SDLC verification](audit/kanban-sdlc.md) records the 0.3.0 local app and planning-to-tickets checks. It is historical evidence, not a test of every skill in the current release.
 
 [Portable memory verification](audit/portable-memory.md) records optional user installation, offline runtime independence, preservation and recovery tests, and the remaining live-recall and review limits.
 
