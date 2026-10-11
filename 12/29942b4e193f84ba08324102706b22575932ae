@@ -1,0 +1,38 @@
+bstack/README.md
+  s_822e08e34bda62::t_3f3587f6a8407d 62
+bstack/release-notes/0.9.0.md
+  s_822e08e34bda62::t_d22c831af766fe 17
+  s_822e08e34bda62::t_3f3587f6a8407d 7
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_dd4f3bed6a1581 50
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_c40c892ba99053 47,191,254
+  s_822e08e34bda62::t_2e1ab9ca321028 1-46,48-190,192-253,255-303
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_dd4f3bed6a1581 40,42,2162,2164,2179-2185
+  s_822e08e34bda62::t_aa30503add3aef 2186
+bstack/shared/skills/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_3f3587f6a8407d 16-17
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_3f3587f6a8407d 50
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_dd4f3bed6a1581 1-303
+bstack/release/bstack/shared/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_dd4f3bed6a1581 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1229942b4e193f84ba08324102706b22575932ae",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
