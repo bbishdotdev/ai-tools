@@ -2,7 +2,13 @@
 
 bstack installs one package and a set of directly invocable skills. Poteto Mode is an engineering entry within that collection. The package contains the exact reviewed dependencies and customizations; installation never fetches newer upstream sources.
 
-The controller requires Python 3.11+ on POSIX. These instructions cover project-local CLI installation and optional user-wide memory setup. Windows, global installation of the full skill collection, desktop apps, and native plugin managers need separate integration and verification.
+The controller requires Python 3.11+ on macOS or Linux. It installs the full collection per project. The installer skill alone can live at user scope. Windows and native plugin-manager installation are not supported by this package; desktop skill discovery needs a separate check after setup.
+
+| If you have... | Use... |
+| --- | --- |
+| Access to skills.sh | [Install the installer skill](#with-skillssh), then ask your agent to install bstack |
+| A release ZIP or a clone | [Run the bundled installer](#from-a-download-or-clone) without skills.sh |
+| An existing installation | [Update with a newer installer](#update-migrate-and-remove) |
 
 ## With skills.sh
 
@@ -26,13 +32,13 @@ There are two steps: skills.sh downloads `install-bstack`; asking your agent to 
 
 ### Install a published version
 
-The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag:
+The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 0.8.0:
 
 ```sh
-npx skills add 'bbishdotdev/ai-tools#v0.4.2' --skill install-bstack
+npx skills add 'bbishdotdev/ai-tools#v0.8.0' --skill install-bstack
 ```
 
-Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route automatically updates an installed project when `main` changes.
+Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route updates an installed project just because `main` changes.
 
 ### Install the installer once
 
@@ -155,7 +161,7 @@ your-project/
     how/SKILL.md                  # Points to the packaged how skill
     architect/SKILL.md
     poteto-mode/SKILL.md
-    ...                          # All 43 public entries
+    ...                          # One entry per public skill in manifest.json
   .claude/skills/                 # Per-skill links to .agents/skills
   .cursor/skills/                 # Same shared entries
   .grok/skills/                   # Same shared entries
@@ -183,7 +189,7 @@ Memory setup is independent of auto routing. It can enable native memory use and
 
 Invoke `$how` in Codex or `/how` in slash-command hosts. This selects the how workflow and bstack's policy without first entering Poteto Mode. Other public skills work the same way. Invoke `poteto-mode` when you want its router to select a full engineering workflow.
 
-Engineering and SDLC entrypoints are manual by default. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing. Invoking `bstack-auto` without an argument shows those choices without running a command. You can also use the controller directly:
+Engineering and SDLC entrypoints are manual by default. Invoke a named skill to load its instructions and relevant dependencies. Poteto Mode selects a full engineering workflow. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing. Invoking `bstack-auto` without an argument shows those choices without running a command. You can also use the controller directly:
 
 ```sh
 python3 .bstack/package/scripts/bstack.py auto on --project "$PWD"
@@ -192,7 +198,7 @@ python3 .bstack/package/scripts/bstack.py auto off --project "$PWD"
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 ```
 
-Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Checking status or repeating an unchanged mode does not require a fresh session.
+Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Auto hooks send a short router reminder; they do not add the full engineering corpus to every turn. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Checking status or repeating an unchanged mode does not require a fresh session.
 
 When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack has no automatic routing hooks to review. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
 
@@ -200,11 +206,13 @@ Cursor and Grok's after-tool reminders do not provide first-tool or tool-free pr
 
 ## Update, migrate, and remove
 
+Refresh the installer first, then run it again for the target project. If you used skills.sh, repeat the same `npx skills add ... --skill install-bstack` command from [above](#with-skillssh), with the new tag if you pin releases. Use `-g` again if your installer is user-scoped. Then ask your agent: "Use install-bstack to upgrade this project." If you installed from a release ZIP or clone, get the newer bundle and run its `install.py --project <project-root>`. Updating the installer skill alone does not update the project package.
+
 The [workspace app](workspace/README.md) runs from `.bstack/package/workspace/cli.py`. Initialize it once with `--project <project-root> init`, then use `serve` for the browser or `call` for agent operations. Private work survives package updates and removal. Stop old workspace servers and writers before upgrading the runtime; the new core backs up and migrates existing stores on discovery.
 
 Planning and tickets each default to local and have [independent provider settings](shared/references/work-adapters.md). External providers are not yet implemented. Manual work needs no role configuration; autonomous grilling follows the [decision-authority preflight](shared/references/decision-authority.md).
 
-Rerun the installer from a reviewed newer release. It verifies the owned package, preserves auto preference and selected hosts, and rolls back on installation errors. Modified or unowned files stop the update.
+The installer checks the owned package, preserves auto preference and selected hosts, runs `doctor`, and rolls back on installation errors. Modified or unowned files stop the update. Read the result before starting a new agent session; `doctor` checks files and bindings, not live skill selection or hook delivery. The installed version is in `.bstack/package/manifest.json`.
 
 Existing offline installs under `.agents/skills/poteto-mode/` migrate to `.bstack/package/` after their integrity and ownership checks pass. Existing third-party-distributed Poteto Mode folders are not adopted or deleted; resolve those conflicts through their distributor before installing the new package.
 

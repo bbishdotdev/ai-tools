@@ -37,9 +37,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "93b7ef9d7def888b4d00ae045a9b89ad7872aa23c89fa32fdb3e1e9c483272a6",
+      "sha256": "5eafdb895320a6aae8b43a30ba5a1ed1d783f8aa9617a7713ee07e65ddfcb0b7",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "738ecd39bdc38c04efc8b67e793144b7dc1df491166bcd0763e46e9f133eaf8f",
+      "source_sha256": "67af6e4aa43e05449f7c219e368c0202992a53e629fc1091c5a4ad0b0c871e2c",
       "transforms": [
         "render-release-template"
       ]
@@ -80,7 +80,7 @@
       "path": "engineering/architect/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -131,7 +131,7 @@
       "path": "engineering/arena/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -152,7 +152,7 @@
       "path": "engineering/automate-me/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -173,7 +173,7 @@
       "path": "engineering/blast-radius/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -194,7 +194,7 @@
       "path": "engineering/bro/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -215,7 +215,7 @@
       "path": "engineering/control-cli/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -236,7 +236,7 @@
       "path": "engineering/control-ui/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -257,7 +257,7 @@
       "path": "engineering/create-verification-skill/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -309,7 +309,7 @@
       "path": "engineering/deslop/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -330,7 +330,7 @@
       "path": "engineering/figure-it-out/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -351,7 +351,7 @@
       "path": "engineering/how/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -392,7 +392,7 @@
       "path": "engineering/implement/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -413,7 +413,7 @@
       "path": "engineering/interrogate/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -474,7 +474,7 @@
       "path": "engineering/maintain-verification-skill/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -495,7 +495,7 @@
       "path": "engineering/make-bot-ui/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -516,7 +516,7 @@
       "path": "engineering/no-comments/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -549,7 +549,7 @@
       "path": "engineering/poteto-mode/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1232,7 +1232,7 @@
       "path": "engineering/prototype/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1269,7 +1269,7 @@
       "path": "engineering/recall/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1290,7 +1290,7 @@
       "path": "engineering/reflect/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1351,7 +1351,7 @@
       "path": "engineering/research/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1372,7 +1372,7 @@
       "path": "engineering/resolve-pr/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1409,7 +1409,7 @@
       "path": "engineering/review-pr/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1520,7 +1520,7 @@
       "path": "engineering/show-me-your-work/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1557,7 +1557,7 @@
       "path": "engineering/swarm/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1578,7 +1578,7 @@
       "path": "engineering/tdd/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1599,7 +1599,7 @@
       "path": "engineering/teach/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1620,7 +1620,7 @@
       "path": "engineering/technical-writing/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1641,7 +1641,7 @@
       "path": "engineering/to-pr/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1678,7 +1678,7 @@
       "path": "engineering/typescript-best-practices/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1710,7 +1710,7 @@
       "path": "engineering/why/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1858,7 +1858,7 @@
       "path": "index.json",
       "sha256": "8f544755ef9cd1aeb44871e767c3c6728cca1802ab94b711291a91571318bd85",
       "source": "bstack/package/selection.json",
-      "source_sha256": "290acc7b41d1e6c1f3a9b8c8dea2a6ecb6f8888d41397a0347b53f58a86a81eb",
+      "source_sha256": "8f5907e712f06f47f4d91b16906d4b27ebc69bf24937e84c945b8787084aa5f2",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -1932,7 +1932,7 @@
       "path": "sdlc/domain-modeling/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1953,7 +1953,7 @@
       "path": "sdlc/grill-me/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1974,7 +1974,7 @@
       "path": "sdlc/grill-with-docs/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -1996,7 +1996,7 @@
       "path": "sdlc/grilling/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2018,7 +2018,7 @@
       "path": "sdlc/to-questionnaire/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2040,7 +2040,7 @@
       "path": "sdlc/to-spec/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2062,7 +2062,7 @@
       "path": "sdlc/to-tickets/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2100,7 +2100,7 @@
       "path": "sdlc/triage/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2122,7 +2122,7 @@
       "path": "sdlc/wayfinder/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2151,7 +2151,7 @@
       "path": "shared/bstack-auto/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2173,7 +2173,7 @@
       "path": "shared/handoff/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2384,7 +2384,7 @@
       "path": "shared/setup-bstack/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2405,7 +2405,7 @@
       "path": "shared/unslop/agents/openai.yaml",
       "sha256": "8619a54e8c098122a7f3881394f84ca89b684366e848233a29ad18b6ec363935",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2426,7 +2426,7 @@
       "path": "shared/verify-bstack/agents/openai.yaml",
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "source": "bstack/scripts/package.py",
-      "source_sha256": "2413e4ccf03894235bacd813a4b804a8f65516bd02b01405b5a027804047ca89",
+      "source_sha256": "ae7af398d6872e3ca2834430034937175174dc6e48459854713bbf3c0445e8a6",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -2846,5 +2846,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "0.8.0"
+  "version": "0.8.1"
 }

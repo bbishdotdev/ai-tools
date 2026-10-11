@@ -4,7 +4,7 @@ This directory contains bstack-owned engineering entries. [Research](research/SK
 
 Prototype's [design notes](prototype/REVIEW.md) preserve the source comparison and instruction review.
 
-The [review-pr draft](review-pr/SKILL.md) uses two independent headless reviews followed by a fresh adjudicator that tries to disprove their findings. It checks whether a change is needed, consults ADRs, and reviews follow-up deltas against the last completed assessment. The bundled Python runner handles pinned snapshots, private history, existing public feedback, and authorized GitHub review publication. Claude Code and Codex are the first execution adapters. A live calibration checked that the reviewers upheld a reproduced privacy defect despite an author rebuttal and rejected an unsupported architecture demand.
+The [review-pr workflow](review-pr/SKILL.md) uses two independent headless reviews followed by an adjudicator that tries to disprove their findings. It checks whether a change is needed, consults ADRs, and reviews follow-up deltas against the last completed assessment. The bundled Python runner handles pinned snapshots, private history, existing public feedback, and authorized GitHub review publication. Claude Code and Codex are the model execution adapters.
 
 [Resolve PR](resolve-pr/SKILL.md) is the author-side follow-up. It checks feedback against code and the PR's purpose, fixes only valid in-scope concerns, and explains rejections or separate work in the original discussion. Its GitHub helper pins feedback before assessment, checks freshness before replies, and reconciles retries without clearing another person's review state.
 
