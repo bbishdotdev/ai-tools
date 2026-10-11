@@ -37,7 +37,7 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "63cd4466978a5ba67ae9447170b2cb54a81788a710bb163fee6a1889d39d0c2f",
+      "sha256": "93b7ef9d7def888b4d00ae045a9b89ad7872aa23c89fa32fdb3e1e9c483272a6",
       "source": "bstack/package/templates/README.md",
       "source_sha256": "738ecd39bdc38c04efc8b67e793144b7dc1df491166bcd0763e46e9f133eaf8f",
       "transforms": [
@@ -1858,7 +1858,7 @@
       "path": "index.json",
       "sha256": "8f544755ef9cd1aeb44871e767c3c6728cca1802ab94b711291a91571318bd85",
       "source": "bstack/package/selection.json",
-      "source_sha256": "e49c67c010d894521ea020ae7daae9793b315a6d39bc4f8bf531137937c0372e",
+      "source_sha256": "290acc7b41d1e6c1f3a9b8c8dea2a6ecb6f8888d41397a0347b53f58a86a81eb",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -2846,5 +2846,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "0.7.1-dev.1"
+  "version": "0.8.0"
 }
