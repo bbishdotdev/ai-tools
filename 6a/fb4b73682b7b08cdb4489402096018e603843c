@@ -1,0 +1,29 @@
+bstack/release-notes/0.8.0.md
+  s_822e08e34bda62::t_7468431be33f56 1-41
+bstack/release/README.md
+  s_822e08e34bda62::t_210c961e1904a9 3
+bstack/package/selection.json
+  s_822e08e34bda62::t_7468431be33f56 4
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_7468431be33f56 11
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_210c961e1904a9 40,1861,2849
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_210c961e1904a9 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6afb4b73682b7b08cdb4489402096018e603843c",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
