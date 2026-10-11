@@ -1,0 +1,92 @@
+bstack/shared/skills/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_6ceccf39018041 3
+  s_822e08e34bda62::t_19041d66a262a5 12
+  s_822e08e34bda62::t_6e38593a72d377 1-2,4-11,13-16
+bstack/release/README.md
+  s_822e08e34bda62::t_21accd0529497d 3
+bstack/release/bstack/shared/setup-bstack/SKILL.md
+  s_822e08e34bda62::t_21accd0529497d 21-22
+bstack/README.md
+  s_822e08e34bda62::t_6483bbce80d3ff 62,72
+  s_822e08e34bda62::t_19041d66a262a5 74
+bstack/release-notes/0.9.0.md
+  s_822e08e34bda62::t_e0db6e9270de23 1-16,18-27
+  s_822e08e34bda62::t_1a265a8f36e114 17
+bstack/release/bstack/layers.json
+  s_822e08e34bda62::t_21accd0529497d 6
+bstack/package/test_runtime.py
+  s_822e08e34bda62::t_0078afeadbabb0 24,75,748,750
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_19041d66a262a5 50
+  s_822e08e34bda62::t_6483bbce80d3ff 56
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_21accd0529497d 3,56
+  s_822e08e34bda62::t_5a9b2ce3f142b5 50
+bstack/package/templates/setup.md
+  s_822e08e34bda62::t_6483bbce80d3ff 21-22
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_822e08e34bda62::t_21accd0529497d 36-37
+bstack/scripts/package.py
+  s_822e08e34bda62::t_0078afeadbabb0 423
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_3ea4f697f3704c 2162,2164,2686
+  s_822e08e34bda62::t_21accd0529497d 83,134,155,176,197,218,239,260,312,333,354,395,416,477,498,519,552,1235,1272,1293,1354,1375,1412,1523,1560,1581,1602,1623,1644,1681,1713,1859,1861,1869,1895,1897,1935,1956,1977,1999,2021,2043,2065,2103,2125,2154,2159-2161,2163,2165-2181,2183,2193-2194,2212,2388,2390,2410,2412,2423,2444,2465,2685,2687-2689,2890
+  s_822e08e34bda62::t_3727962c8965dc 2190,2192
+  s_822e08e34bda62::t_5a9b2ce3f142b5 40,42,2182,2184-2189,2191
+bstack/shared/skills/bstack-guide/references/routes.md
+  s_822e08e34bda62::t_6e38593a72d377 1-6,8-18
+  s_822e08e34bda62::t_19041d66a262a5 7
+bstack/release/bstack/shared/bstack-guide/references/walkthrough.md
+  s_822e08e34bda62::t_3727962c8965dc 8
+  s_822e08e34bda62::t_5a9b2ce3f142b5 1-7,9-10
+  s_822e08e34bda62::t_3ea4f697f3704c 11-16
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_e0db6e9270de23 7-8
+bstack/release/bstack/index.json
+  s_822e08e34bda62::t_21accd0529497d 55
+bstack/release/bstack/shared/bstack-guide/SKILL.md
+  s_822e08e34bda62::t_3ea4f697f3704c 3
+  s_822e08e34bda62::t_21accd0529497d 1-2,4-12,14-17
+  s_822e08e34bda62::t_5a9b2ce3f142b5 13
+bstack/package/templates/install.md
+  s_822e08e34bda62::t_6483bbce80d3ff 36-37
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_822e08e34bda62::t_21accd0529497d 24
+bstack/shared/skills/bstack-guide/references/walkthrough.md
+  s_822e08e34bda62::t_1e954ab69ad63a 8
+  s_822e08e34bda62::t_19041d66a262a5 1-7,9-10
+  s_822e08e34bda62::t_6ceccf39018041 11-16
+bstack/package/selection.json
+  s_822e08e34bda62::t_0078afeadbabb0 4,71
+bstack/package/runtime.py
+  s_822e08e34bda62::t_0078afeadbabb0 132-133
+bstack/release/bstack/shared/bstack-guide/agents/openai.yaml
+  s_822e08e34bda62::t_21accd0529497d 1-2
+bstack/release/bstack/shared/bstack-guide/references/routes.md
+  s_822e08e34bda62::t_21accd0529497d 1-6,8-18
+  s_822e08e34bda62::t_5a9b2ce3f142b5 7
+bstack/shared/skills/bstack-router/SKILL.md
+  s_822e08e34bda62::t_6483bbce80d3ff 24
+bstack/release/bstack/scripts/bstack.py
+  s_822e08e34bda62::t_21accd0529497d 132-133
+bstack/scripts/test_package.py
+  s_822e08e34bda62::t_0078afeadbabb0 34,42-43,45
+bstack/INSTALL.md
+  s_822e08e34bda62::t_6483bbce80d3ff 29-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "97088ae7df45835247b64cf8e1b4ce50bc0e1101",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
