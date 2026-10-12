@@ -4,6 +4,8 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Prepared [0.9.0](release-notes/0.9.0.md): added an on-demand bstack guide and linked it from setup, while keeping engineering routing opt-in.
+
 ## Published releases
 
 | Version | Date | Notes |

@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="BStack documentation: start a workflow, understand routing, and browse the complete skill catalog.">
+  <title>bstack docs | Brenden Bishop</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #fff;
+      --soft: #fafafa;
+      --ink: #18181b;
+      --copy: #3f3f46;
+      --muted: #71717a;
+      --line: #e4e4e7;
+      --accent: #a95024;
+      --accent-soft: #fff4ed;
+      --focus: #c7713e;
+      --code: #f4f4f5;
+      --shadow: 0 16px 48px #18181b24;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #09090b;
+      --panel: #18181b;
+      --soft: #111114;
+      --ink: #fafafa;
+      --copy: #d4d4d8;
+      --muted: #a1a1aa;
+      --line: #27272a;
+      --accent: #e2a37a;
+      --accent-soft: #2c1c15;
+      --focus: #e2a37a;
+      --code: #27272a;
+      --shadow: 0 16px 48px #0009;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #09090b; --panel: #18181b; --soft: #111114; --ink: #fafafa; --copy: #d4d4d8;
+        --muted: #a1a1aa; --line: #27272a; --accent: #e2a37a;
+        --accent-soft: #2c1c15; --focus: #e2a37a; --code: #27272a;
+        --shadow: 0 16px 48px #0009;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.7 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+    .skip { position: fixed; top: -90px; left: 12px; z-index: 20; padding: 8px 12px; background: var(--panel); }
+    .skip:focus { top: 12px; }
+    .topbar { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar-inner { max-width: 1390px; min-height: 58px; margin: auto; padding: 0 26px; display: flex; align-items: center; gap: 15px; }
+    .brand { color: var(--ink); text-decoration: none; font: 750 16px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: -.04em; white-space: nowrap; }
+    .brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin-right: 7px; border-radius: 5px; background: var(--ink); color: var(--bg); font-size: 11px; vertical-align: 1px; }
+    .crumb { color: var(--muted); font-size: 12px; }
+    .top-links { display: flex; align-items: center; gap: 18px; margin-left: 20px; }
+    .top-links a { color: var(--muted); font-size: 13px; text-decoration: none; }
+    .top-links a:hover { color: var(--ink); }
+    .top-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .palette-launch, .theme-toggle { border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: var(--panel); min-height: 32px; padding: 5px 10px; font-size: 12px; }
+    .palette-launch { min-width: 208px; text-align: left; }
+    .palette-launch kbd { float: right; color: var(--muted); font-size: 10px; }
+    .palette-launch:hover, .theme-toggle:hover { color: var(--ink); border-color: var(--muted); }
+    .docs-layout { max-width: 1450px; margin: auto; padding: 0 26px; display: grid; grid-template-columns: 245px minmax(0, 1fr) 145px; gap: clamp(28px, 4vw, 60px); }
+    .sidebar, .on-this-page { position: sticky; top: 59px; max-height: calc(100vh - 59px); overflow-y: auto; align-self: start; padding: 29px 0 40px; }
+    .sidebar .palette-launch { width: 100%; min-width: 0; margin-bottom: 15px; }
+    .sidebar h2, .on-this-page h2 { margin: 18px 0 8px; color: var(--muted); font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .sidebar h2:first-child, .on-this-page h2:first-child { margin-top: 0; }
+    .sidebar a, .on-this-page a { display: block; padding: 6px 9px; margin-left: -9px; border-radius: 5px; color: var(--muted); text-decoration: none; font-size: 13px; line-height: 1.45; }
+    .sidebar a:hover, .on-this-page a:hover, .sidebar a[aria-current="location"] { background: var(--soft); color: var(--ink); }
+    .sidebar a[aria-current="location"] { border-left: 2px solid var(--accent); }
+    .sidebar .external { margin-top: 10px; color: var(--accent); }
+    .doc-main { min-width: 0; padding: 48px 0 100px; }
+    .on-this-page { font-size: 12px; }
+    .on-this-page a { padding: 4px 0; }
+    .kicker { margin: 0 0 10px; color: var(--accent); font: 750 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .07em; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    h1 { margin-bottom: 18px; font-size: clamp(38px, 3.7vw, 52px); line-height: 1.12; letter-spacing: -.06em; }
+    h2 { margin-bottom: 17px; font-size: clamp(24px, 2.25vw, 30px); line-height: 1.26; letter-spacing: -.045em; }
+    h3 { margin-bottom: 7px; font-size: 16px; line-height: 1.35; letter-spacing: -.025em; }
+    p { margin-bottom: 17px; }
+    .lead { max-width: 56ch; color: var(--muted); font-size: 18px; line-height: 1.62; }
+    .intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .92fr); gap: clamp(26px, 4vw, 52px); align-items: start; }
+    .intro-copy > p:not(.kicker) { max-width: 62ch; }
+    .quickstart-card { overflow: hidden; margin-top: 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    .quickstart-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .quickstart-head strong { font: 750 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .quickstart-head span { color: var(--muted); font-size: 11px; }
+    .quickstart-card pre { margin: 0; padding: 18px 16px; border: 0; border-radius: 0; background: var(--soft); font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .quickstart-card p { margin: 0; padding: 12px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .doc-section { padding: 52px 0 58px; border-top: 1px solid var(--line); }
+    .doc-section:first-child { border-top: 0; padding-top: 0; }
+    .section-intro { max-width: 64ch; color: var(--muted); font-size: 16px; }
+    .quick-links { display: flex; gap: 8px; flex-wrap: wrap; margin: 25px 0 8px; }
+    .quick-links a { display: inline-block; padding: 7px 11px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 12px; }
+    .quick-links a:hover { border-color: var(--accent); color: var(--accent); }
+    .info-list { margin: 38px 0 0; border-top: 1px solid var(--line); }
+    .info-row { display: grid; grid-template-columns: minmax(155px, 30%) 1fr; gap: 20px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .info-row dt { font: 750 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .info-row dd { margin: 0; color: var(--muted); }
+    .route-tabs { display: flex; gap: 3px; overflow-x: auto; margin: 20px 0 0; padding-bottom: 0; border-bottom: 1px solid var(--line); }
+    .route-tab { flex: 0 0 auto; padding: 9px 13px; border: 0; border-bottom: 2px solid transparent; color: var(--muted); background: none; font-size: 12px; }
+    .route-tab[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--ink); font-weight: 750; }
+    .route-panel { padding: 28px 0 7px; }
+    .route-panel[hidden] { display: none; }
+    .route-panel p { color: var(--muted); }
+    .route-panel .flow-note { font-size: 12px; }
+    .route-title { font-size: 19px; }
+    .route-takeaway { display: inline-block; margin: 0 0 15px; color: var(--accent); font-size: 12px; }
+    .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin: 15px 0; }
+    .flow-step { display: inline-flex; flex-direction: column; gap: 1px; min-width: 105px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
+    .flow-step strong { font: 750 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .flow-step small { color: var(--muted); font-size: 10px; }
+    .flow-step.optional { border-style: dashed; background: transparent; }
+    .flow-arrow { color: var(--muted); }
+    .flow-note { flex-basis: 100%; margin: 4px 0 0; }
+    .route-footnote { color: var(--muted); font-size: 12px; }
+    .mode-list, .connection-map, .continuity-list { border-top: 1px solid var(--line); margin-top: 20px; }
+    .mode, .connection-row, .continuity-item { display: grid; grid-template-columns: minmax(155px, 30%) 1fr; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .mode-label, .connection-label { color: var(--accent); font: 750 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .mode p, .connection-row p, .continuity-item p { margin: 0; color: var(--muted); }
+    .mode small, .connection-row small { display: block; margin-top: 5px; color: var(--muted); }
+    .note { margin: 22px 0; padding: 12px 15px; border-left: 2px solid var(--accent); background: var(--accent-soft); color: var(--ink); font-size: 12px; }
+    .note p { margin: 0; }
+    .connection-map h3 { margin-top: 30px; }
+    .connection-map > p { color: var(--muted); }
+    .catalog-actions { display: flex; gap: 8px; margin: 19px 0 13px; }
+    .catalog-search, .dialog-head input { min-width: 0; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); }
+    .catalog-search { flex: 1; }
+    .catalog-open, .catalog-more { border: 1px solid var(--line); border-radius: 6px; padding: 8px 11px; background: var(--panel); color: var(--ink); font-size: 12px; }
+    .catalog-filters { display: flex; flex-wrap: wrap; gap: 5px; }
+    .catalog-filter { border: 1px solid var(--line); border-radius: 5px; padding: 5px 9px; background: var(--panel); color: var(--muted); font-size: 11px; }
+    .catalog-filter[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+    .catalog-count { margin: 13px 0; color: var(--muted); font-size: 11px; }
+    .catalog-results { border-top: 1px solid var(--line); }
+    .catalog-item { display: block; width: 100%; min-height: 86px; padding: 15px 4px; border: 0; border-bottom: 1px solid var(--line); text-align: left; background: transparent; color: var(--ink); }
+    .catalog-item:hover { background: var(--soft); }
+    .catalog-item-top { display: flex; gap: 12px; align-items: center; margin-bottom: 3px; }
+    .catalog-item strong { overflow-wrap: anywhere; font: 750 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .catalog-kind { margin-left: auto; color: var(--accent); font-size: 10px; white-space: nowrap; }
+    .catalog-item small { display: block; color: var(--muted); font-size: 10px; }
+    .catalog-item .reason { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .catalog-empty { padding: 18px 0; color: var(--muted); }
+    .catalog-more { display: block; margin: 16px 0 0; }
+    .catalog-more[hidden] { display: none; }
+    .continuity-item h3 { margin: 0; }
+    .mechanic-list { margin: 18px 0 0; padding: 0 0 0 21px; }
+    .mechanic-list li { margin-bottom: 10px; padding-left: 4px; }
+    .mechanic-list li span { color: var(--muted); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; }
+    code { padding: 1px 4px; background: var(--code); border-radius: 3px; }
+    pre { overflow-x: auto; padding: 13px 15px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); line-height: 1.6; }
+    pre code { padding: 0; background: none; }
+    .reference-list { margin: 12px 0 0; padding-left: 20px; }
+    .reference-list li { margin: 6px 0; }
+    .muted { color: var(--muted); }
+    dialog { width: min(690px, calc(100% - 24px)); max-height: min(720px, calc(100vh - 24px)); padding: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); color: var(--ink); box-shadow: var(--shadow); }
+    dialog::backdrop { background: #09090bb3; }
+    .dialog-head { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-bottom: 1px solid var(--line); font-size: 12px; }
+    .dialog-head input { flex: 1; border: 0; outline: 0; background: transparent; }
+    .dialog-close { border: 1px solid var(--line); border-radius: 5px; padding: 3px 8px; background: var(--panel); color: var(--muted); }
+    .palette-results { max-height: 540px; overflow-y: auto; padding: 0 15px 12px; }
+    .detail-body { overflow-y: auto; max-height: 620px; padding: 24px; }
+    .detail-body h2 { margin: 12px 0 20px; overflow-wrap: anywhere; }
+    .detail-body h3 { margin: 22px 0 5px; font-size: 12px; }
+    .detail-body p { color: var(--muted); font-size: 14px; }
+    .detail-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+    .detail-meta span, .related-button { padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); background: var(--soft); font-size: 10px; }
+    .related-button { margin: 3px; }
+    .lead, .section-intro, .info-row dd, .route-panel p, .mode p, .connection-row p, .continuity-item p, .detail-body p, .catalog-item .reason, .quickstart-card p { color: var(--copy); }
+    footer { border-top: 1px solid var(--line); padding: 20px 0 28px; color: var(--muted); font-size: 11px; }
+    footer p { margin: 0 0 8px; }
+    @media (max-width: 1150px) { .docs-layout { grid-template-columns: 220px minmax(0, 1fr); gap: 38px; } .on-this-page { display: none; } }
+    @media (max-width: 960px) { .intro-grid { grid-template-columns: 1fr; } .quickstart-card { max-width: 520px; margin-top: 0; } }
+    @media (max-width: 720px) { .top-links { display: none; } .topbar-inner { padding: 0 16px; } .crumb { display: none; } .palette-launch { min-width: 0; } .palette-launch kbd { display: none; } .docs-layout { display: block; padding: 0 18px; } .sidebar { position: static; max-height: none; display: flex; gap: 7px; overflow-x: auto; padding: 10px 0; border-bottom: 1px solid var(--line); white-space: nowrap; } .sidebar h2, .sidebar .external { display: none; } .sidebar .palette-launch { width: auto; flex: 0 0 auto; margin: 0; } .sidebar a { margin: 0; padding: 5px 8px; } .doc-main { padding-top: 28px; } .info-row, .mode, .connection-row, .continuity-item { grid-template-columns: 1fr; gap: 4px; } .catalog-actions { flex-direction: column; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar"><div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="bstack guide, back to top"><span class="brand-mark">bb</span> bstack</a>
+    <span class="crumb">/ guide</span>
+    <nav class="top-links" aria-label="Primary"><a href="#top">Guide</a><a href="#catalog">Catalog</a><a href="#setup">Get started</a></nav><div class="top-actions"><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Change color theme">Theme</button></div>
+  </div></header>
+  <div class="docs-layout">
+    <nav class="sidebar" aria-label="Guide sections">
+      <button class="palette-launch" id="top-palette" type="button" aria-label="Open skill search">Search docs and skills <kbd>⌘/Ctrl K</kbd></button>
+      <h2>Get started</h2><a href="#top">Overview</a><a href="#routes">Common use cases</a><a href="#routing">Routing and modes</a>
+      <h2>Reference</h2><a href="#catalog">Skill catalog</a><a href="#continuity">Context and memory</a><a href="#workspace">Local workspace</a><a href="#setup">Install and update</a>
+      <a class="external" href="https://github.com/bbishdotdev/ai-tools/tree/main/bstack" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a>
+    </nav>
+    <main class="doc-main" id="main">
+      <section class="doc-section" id="top" aria-labelledby="intro-title">
+        <div class="intro-grid">
+          <div class="intro-copy">
+            <p class="kicker">Docs / overview</p><h1 id="intro-title">bstack</h1>
+            <p class="lead">Skills and local tools for planning, building, and reviewing software with agents. Start with the work you have. There's no required pipeline.</p>
+            <p>Built from <a href="https://github.com/cursor/plugins/tree/main/pstack" target="_blank" rel="noopener noreferrer">Lauren Tan's PStack</a>, <a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener noreferrer">Matt Pocock's skills</a>, and BStack's own workflows. Selected agent tools use the same project-local package.</p>
+            <div class="quick-links"><a href="#routes">Choose a starting point →</a><a href="#catalog">Browse every skill →</a></div>
+          </div>
+          <aside class="quickstart-card" aria-label="Quick installation">
+            <div class="quickstart-head"><strong>Quick start</strong><span>terminal</span></div>
+            <pre><code>npx skills add bbishdotdev/ai-tools --skill install-bstack</code></pre>
+            <p>Then ask your agent to install BStack in this project. <a href="#setup">Download and update options →</a></p>
+          </aside>
+        </div>
+        <dl class="info-list">
+          <div class="info-row"><dt>Pick your entry</dt><dd>Investigate code, work through an idea, prototype, implement, or review a PR. You can begin at any of them.</dd></div>
+          <div class="info-row"><dt>Keep work local</dt><dd>Wayfinder maps, specs, and Kanban tickets live in a private workspace. External tracker adapters are planned, not required.</dd></div>
+          <div class="info-row"><dt>Carry decisions forward</dt><dd>Handoffs move accepted work to a fresh agent context. Important architecture choices become short repository ADRs.</dd></div>
+          <div class="info-row"><dt>Use your tools</dt><dd>One pinned package supports selected Codex, Claude Code, Cursor, and Grok hosts. Optional shared memory covers approved personal preferences across supported tools.</dd></div>
+        </dl>
+      </section>
+      <section class="doc-section" id="routes" aria-labelledby="routes-title">
+        <p class="kicker">Workflows</p><h2 id="routes-title">Common use cases</h2>
+        <p class="section-intro">These are examples, not mandatory sequences. Dashed steps are optional. A later phase starts when you ask for it or the current request already authorizes it.</p>
+        <div class="route-tabs" role="tablist" aria-label="Choose a developer use case">
+          <button class="route-tab" id="tab-bug" role="tab" aria-selected="true" aria-controls="panel-bug" tabindex="0" type="button">Fix a bug</button>
+          <button class="route-tab" id="tab-feature" role="tab" aria-selected="false" aria-controls="panel-feature" tabindex="-1" type="button">Shape a feature</button>
+          <button class="route-tab" id="tab-pr" role="tab" aria-selected="false" aria-controls="panel-pr" tabindex="-1" type="button">Work on a PR</button>
+          <button class="route-tab" id="tab-learn" role="tab" aria-selected="false" aria-controls="panel-learn" tabindex="-1" type="button">Understand code</button>
+        </div>
+        <section class="route-panel" id="panel-bug" role="tabpanel" aria-labelledby="tab-bug" tabindex="0">
+          <h3 class="route-title">Find the cause. Fix the cause.</h3><p>A clear bug can go straight into engineering. Use <code>how</code> or <code>why</code> if you need to understand the existing behavior first. Poteto Mode chooses the matching engineering playbook; the project baseline pushes the fix toward the root cause and meaningful verification.</p><span class="route-takeaway">No map, spec, or ticket required.</span>
+          <div class="flow" aria-label="Optional how and why, engineering workflow, then an optional pull request"><span class="flow-step optional"><strong>how · why</strong><small>if context is missing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>poteto-mode</strong><small>or auto routing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>root-cause fix</strong><small>behavioral checks</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>to-pr</strong><small>if PR delivery is in scope</small></span><p class="flow-note">Relevant ADRs can explain an existing choice before the agent proposes changing it.</p></div>
+        </section>
+        <section class="route-panel" id="panel-feature" role="tabpanel" aria-labelledby="tab-feature" tabindex="0" hidden>
+          <h3 class="route-title">Settle what matters before building.</h3><p><code>grill-me</code> helps expose assumptions. Use <code>wayfinder</code> when decisions need to survive across sessions, and <code>prototype</code> when a cheap example will help choose a direction. Accepted scope can move through a spec, tickets, or directly to implementation.</p><span class="route-takeaway">Skip steps that add no value.</span>
+          <div class="flow" aria-label="Grilling, optional Wayfinder and prototype, optional spec and tickets, handoff, then implementation"><span class="flow-step"><strong>grill-me</strong><small>surface decisions</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>wayfinder</strong><small>map open questions</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>prototype</strong><small>compare options</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>spec · tickets</strong><small>slice accepted work</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>handoff</strong><small>fresh context</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>implement</strong><small>engineering workflow</small></span><p class="flow-note">A consequential architecture choice may need an ADR. Routine feature decisions do not.</p></div>
+        </section>
+        <section class="route-panel" id="panel-pr" role="tabpanel" aria-labelledby="tab-pr" tabindex="0" hidden>
+          <h3 class="route-title">Make the change easy to judge.</h3><p><code>to-pr</code> explains a new PR and checks overlapping work. <code>review-pr</code> challenges it with independent reviewers when the required CLIs are available. <code>resolve-pr</code> checks feedback before making a fix or replying.</p><span class="route-takeaway">An existing PR can start at review.</span>
+          <div class="flow" aria-label="Optional to-pr for a new PR, review-pr, then resolve-pr as needed"><span class="flow-step optional"><strong>to-pr</strong><small>new PR briefing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>review-pr</strong><small>independent challenge</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>resolve-pr</strong><small>judge feedback</small></span><p class="flow-note">A reply can resolve a comment. Code changes are not automatic.</p></div>
+        </section>
+        <section class="route-panel" id="panel-learn" role="tabpanel" aria-labelledby="tab-learn" tabindex="0" hidden>
+          <h3 class="route-title">Understand before editing.</h3><p>Use <code>how</code> for current behavior, <code>why</code> for the reason behind it, or <code>teach</code> for a fuller explanation. A read-only answer is a complete outcome.</p>
+          <div class="flow" aria-label="Choose how, why, or teach for code understanding"><span class="flow-step"><strong>how</strong><small>what it does</small></span><span class="flow-arrow" aria-hidden="true">·</span><span class="flow-step"><strong>why</strong><small>why it works that way</small></span><span class="flow-arrow" aria-hidden="true">·</span><span class="flow-step"><strong>teach</strong><small>the fuller picture</small></span><p class="flow-note">ADRs help separate recorded decisions from an agent's guesses.</p></div>
+        </section>
+        <p class="route-footnote">Want a different starting point? <a href="#catalog">Search the complete catalog.</a></p>
+      </section>
+      <section class="doc-section" id="routing" aria-labelledby="routing-title">
+        <p class="kicker">Behavior</p><h2 id="routing-title">What runs when</h2>
+        <p class="section-intro">Manual invocation is the default. Auto mode changes how an engineering request enters the router. It does not grant authority to make product decisions or run every phase.</p>
+        <div class="mode-list">
+          <div class="mode"><span class="mode-label">Direct skill</span><div><h3>Invoke the entry you need</h3><p>Call <code>grill-me</code>, <code>prototype</code>, <code>how</code>, or another named skill. It reads only its relevant dependencies. The project baseline and <code>unslop</code> still apply.</p></div></div>
+          <div class="mode"><span class="mode-label">Poteto Mode</span><div><h3>Ask for an engineering workflow</h3><p>Invoke <code>poteto-mode</code>. The router selects one matching PStack playbook and its needed principles and skills. A bug fix can start here without a Wayfinder map.</p></div></div>
+          <div class="mode"><span class="mode-label">Auto mode / opt-in</span><div><h3>Prompt normally</h3><p><code>bstack-auto on</code> lets an ordinary engineering request enter that same router. Named skills remain available. Auto routing does not silently publish a PR or decide product scope.</p></div></div>
+        </div>
+        <div class="note"><p><strong>Try it:</strong> ask “Fix the sign-in bug and verify the behavior.” With auto mode off, invoke <code>poteto-mode</code> for its playbook. With auto mode on, the normal prompt can select it.</p></div>
+        <div class="connection-map" aria-labelledby="connection-title"><h3 id="connection-title">What connects automatically?</h3><p>These relationships happen inside a selected skill. The later phases remain separate jobs unless your request includes them.</p>
+          <div class="connection-row"><span class="connection-label">Loads its method</span><p><code>grill-me</code> → <code>grilling</code> &nbsp; · &nbsp; <code>grill-with-docs</code> → <code>grilling</code> + <code>domain-modeling</code><small>Supporting skills load when you invoke the entry.</small></p></div>
+          <div class="connection-row"><span class="connection-label">Chooses per question</span><p><code>wayfinder</code> → <code>grilling</code>, <code>research</code>, or <code>prototype</code><small>It selects a method for the current question, within your instructions.</small></p></div>
+          <div class="connection-row"><span class="connection-label">Routes engineering</span><p><code>implement</code> or <code>poteto-mode</code> → BStack router → a matching PStack playbook → needed skills and principles<small>Auto mode lets ordinary engineering prompts enter the same router.</small></p></div>
+          <div class="connection-row"><span class="connection-label">Separate next jobs</span><p><code>wayfinder</code> ⇢ <code>to-spec</code> ⇢ <code>to-tickets</code> ⇢ <code>implement</code> &nbsp; · &nbsp; <code>to-pr</code> ⇢ <code>review-pr</code> ⇢ <code>resolve-pr</code><small>Finishing one does not automatically run the next.</small></p></div>
+        </div>
+      </section>
+      <section class="doc-section" id="catalog" aria-labelledby="catalog-title">
+        <p class="kicker">Reference</p><h2 id="catalog-title">Skill catalog</h2>
+        <p class="section-intro">Search directly invocable skills, routed principles, playbooks, and internal aliases. Open an entry to see what it does, when to use it, and how it loads.</p>
+        <div class="catalog-actions"><input class="catalog-search" id="catalog-search" type="search" autocomplete="off" placeholder="Search by task, skill, or topic..." aria-label="Search BStack catalog"><button class="catalog-open" id="catalog-palette" type="button">Quick search · Ctrl K</button></div>
+        <div class="catalog-filters" role="group" aria-label="Catalog type"><button class="catalog-filter" type="button" data-kind="all" aria-pressed="true">All</button><button class="catalog-filter" type="button" data-kind="skill" aria-pressed="false">Direct skills</button><button class="catalog-filter" type="button" data-kind="principle" aria-pressed="false">Principles</button><button class="catalog-filter" type="button" data-kind="playbook" aria-pressed="false">Playbooks</button><button class="catalog-filter" type="button" data-kind="internal" aria-pressed="false">Internal / aliases</button></div>
+        <p class="catalog-count" id="catalog-count" role="status" aria-live="polite"></p><div class="catalog-results" id="catalog-results"></div><button class="catalog-more" id="catalog-more" type="button">Show every entry</button>
+        <noscript><p>The searchable catalog needs local JavaScript enabled. The rest of this guide works without it.</p></noscript>
+      </section>
+      <section class="doc-section" id="continuity" aria-labelledby="continuity-title">
+        <p class="kicker">Context</p><h2 id="continuity-title">What survives a chat</h2>
+        <p class="section-intro">Keep project decisions in the project. Keep active work in the workspace. Move only accepted scope and evidence to the next agent or model.</p>
+        <div class="continuity-list"><div class="continuity-item"><h3>Project baseline</h3><p>Seven engineering rules go in project instructions, including when auto routing is off.</p></div><div class="continuity-item"><h3>ADRs</h3><p>Short repository records capture fundamental architecture choices. Most feature-level decisions do not need one.</p></div><div class="continuity-item"><h3>Local work + handoffs</h3><p>Maps, specs, and tickets persist in a private SQLite workspace. Handoffs carry accepted work into a fresh agent context.</p></div><div class="continuity-item"><h3>Optional personal memory</h3><p>Approved preferences can carry across Codex, Claude Code, and Cursor. Project facts stay outside personal memory.</p></div></div>
+      </section>
+      <section class="doc-section" id="workspace" aria-labelledby="workspace-title">
+        <p class="kicker">Local data</p><h2 id="workspace-title">Workspace and operations</h2>
+        <p class="section-intro">The browser app and agent CLI use the same local records. You can plan in Focus or Atlas, then manage implementation tickets on the Kanban board. No account or external tracker is needed.</p>
+        <h3>Start the local app</h3><pre><code>python3 .bstack/package/workspace/cli.py --project . init
+python3 .bstack/package/workspace/cli.py --project . serve --port 4174</code></pre>
+        <h3>Read it from an agent</h3><pre><code>python3 .bstack/package/workspace/cli.py --project . request workspace.read
+python3 .bstack/package/workspace/cli.py request --help</code></pre>
+        <p class="muted">The CLI handles request envelopes, revisions, and saved receipts. Use its operations rather than asking an agent to rewrite database logic.</p>
+        <ul class="reference-list"><li>Maps and tickets share the same private SQLite workspace under <code>.bstack/workspace/</code>.</li><li>Planning and tickets have independent adapter settings. This release implements local operations only; external providers are reported as unsupported.</li><li>For exact request and response shapes, read <code>workspace/OPERATIONS.md</code> in the bundled package. For agent request examples, read <code>shared/references/workspace-requests.md</code>.</li></ul>
+      </section>
+      <section class="doc-section" id="setup" aria-labelledby="setup-title">
+        <p class="kicker">Setup</p><h2 id="setup-title">Install and update</h2>
+        <p>Use the installer skill if you have skills.sh. Then ask your agent to install the bundled package into the current project.</p>
+        <pre><code>npx skills add bbishdotdev/ai-tools --skill install-bstack</code></pre>
+        <p>Alternatively, download the <a href="https://github.com/bbishdotdev/ai-tools/releases/latest" target="_blank" rel="noopener noreferrer">bstack release ZIP</a>, extract it, and run its <code>install.py --project /path/to/project</code>. A clone works too. Setup does not fetch the latest PStack or Matt Pocock skills.</p>
+        <p>Start a new agent session after install or upgrade so the skill catalog refreshes. To update, refresh the installer and ask the agent to upgrade the project. Your selected hosts and auto-mode preference are preserved.</p>
+        <h3>Check or change auto mode</h3><pre><code>python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
+python3 .bstack/package/scripts/bstack.py auto status --project "$PWD"
+python3 .bstack/package/scripts/bstack.py auto on --project "$PWD"</code></pre>
+        <p class="muted">Auto mode is optional. Install integrity and live model behavior are separate checks. For host-specific limits, use the bundled <code>INSTALL.md</code>.</p>
+      </section>
+      <footer><p>Built by <a href="https://www.bbish.dev/home" target="_blank" rel="noopener noreferrer">Brenden Bishop</a>. BStack builds on work by <a href="https://github.com/cursor/plugins/tree/main/pstack" target="_blank" rel="noopener noreferrer">Lauren “poteto” Tan</a> and <a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener noreferrer">Matt Pocock</a>.</p><p>This reference is a single offline HTML file. No CDN, account, or tracking.</p></footer>
+    </main>
+    <nav class="on-this-page" aria-label="On this page"><h2>On this page</h2><a href="#top">Overview</a><a href="#routes">Common use cases</a><a href="#routing">What runs when</a><a href="#catalog">Skill catalog</a><a href="#continuity">What survives a chat</a><a href="#workspace">Workspace and operations</a><a href="#setup">Install and update</a></nav>
+  </div>
+  <dialog id="palette" aria-label="Search BStack skills and workflows"><div class="dialog-head"><input id="palette-search" type="search" autocomplete="off" placeholder="Find a skill, principle, or playbook..." aria-label="Search BStack"><button class="dialog-close" id="palette-close" type="button" aria-label="Close search">Esc</button></div><div class="palette-results" id="palette-results"></div></dialog>
+  <dialog id="catalog-detail" aria-labelledby="detail-title"><div class="dialog-head"><span>Catalog entry</span><span style="flex:1"></span><button class="dialog-close" id="detail-close" type="button" aria-label="Close catalog entry">Close</button></div><div class="detail-body"><div class="detail-meta" id="detail-meta"></div><h2 id="detail-title"></h2><h3>What it does</h3><p id="detail-what"></p><h3>Why or when to use it</h3><p id="detail-why"></p><h3>How it gets loaded</h3><p id="detail-loading"></p><div id="detail-related-wrap"><h3>Related entries</h3><div id="detail-related"></div><p>Related doesn't mean they run in sequence. The routing map shows which calls happen within a skill.</p></div></div></dialog>
+  <script id="catalog-data" type="application/json">
+{
+  "version": "0.9.0",
+  "counts": {"skills":46,"principles":23,"playbooks":23,"internal":3},
+  "items": [
+    {"name":"architect","kind":"skill","area":"Engineering","what":"Sketch types, signatures, and module structure before code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', or non-trivial work where jumping to code would lock in the wrong shape.","why":"Settle risky interfaces and ownership before code locks in the wrong shape.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"arena","kind":"skill","area":"Engineering","what":"Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for /arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape.","why":"Compare real alternatives when one attempt would be too easy to accept.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"automate-me","kind":"skill","area":"Engineering","what":"Use for \"automate me\", \"create/update/refresh my -mode skill\", \"turn/capture my preferences or working style into a skill\", or wanting agents to follow how the user works. Drafts or revises a personal -mode skill via create-skill + unslop, optionally pulling fresh evidence from recent transcripts.","why":"Turn a recurring personal working pattern into reusable agent instructions.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"blast-radius","kind":"skill","area":"Engineering","what":"Find what a change could break somewhere else before it ships, beyond the diff, and prove the one fact it's safe because of by running real code instead of writing it up. Use for 'blast radius of X', 'what could this break', or reviewing a small diff you don't trust.","why":"Find effects outside the diff before a change ships.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"bro","kind":"skill","area":"Engineering","what":"Restate the last message in plain human language, with no jargon.","why":"Get the last answer in language you would use with another developer.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"bstack-auto","kind":"skill","area":"Setup and routing","what":"Explicitly enable, disable, or inspect bstack automatic routing for this project.","why":"Choose whether ordinary engineering requests enter Poteto Mode automatically.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["poteto-mode","bstack-router"]},
+    {"name":"bstack-guide","kind":"skill","area":"Setup and routing","what":"Explain how to use bstack, choose a starting skill, or understand its setup, routing, workspace, and memory. Use when someone asks how bstack works or where to start.","why":"Find a useful starting point without reading the whole package.","loading":"Discoverable for guide questions","related":[]},
+    {"name":"control-cli","kind":"skill","area":"Engineering","what":"Build or adapt a local harness to drive, inspect, and profile an interactive CLI or TUI without external services. Use for CLI UX checks, startup regressions, memory leaks, hangs, prompt flows, or terminal demos.","why":"Prove interactive terminal behavior by driving the actual program.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"control-ui","kind":"skill","area":"Engineering","what":"Build or adapt a local browser/CDP harness to drive and inspect a web, IDE, or Electron UI. Use for local UI verification, screenshots, accessibility snapshots, perf profiles, visual diffs, or reproducing UI bugs.","why":"Prove UI behavior in a real browser or app surface.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"create-verification-skill","kind":"skill","area":"Engineering","what":"Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior.","why":"Give a project a repeatable way to verify user-visible behavior.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"deslop","kind":"skill","area":"Engineering","what":"Remove AI-generated code slop and clean up code style","why":"Remove code patterns that look plausible but add noise or fragility.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"domain-modeling","kind":"skill","area":"Planning","what":"Sharpen domain terms and boundaries, maintain the glossary, and record consequential architectural decisions during design.","why":"Give a team shared terms and capture only consequential design choices.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["grill-with-docs","to-spec"]},
+    {"name":"figure-it-out","kind":"skill","area":"Engineering","what":"Design an auditable playbook when no narrower one fits: a large migration, an ambitious multi-part change, or work a human reviews after stepping away. Scales rigor to the task, runs a hypothesis loop, and logs decisions via show-me-your-work. Use for /figure-it-out, 'figure it out', a large migration, or when no narrower playbook applies.","why":"Shape a one-off, complex job into a checkable execution plan.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"grill-me","kind":"skill","area":"Planning","what":"Start a human-guided grilling session to sharpen a plan or design.","why":"Expose weak assumptions while the decision owner is present.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["grilling","wayfinder"]},
+    {"name":"grill-with-docs","kind":"skill","area":"Planning","what":"Grill a design while capturing settled domain language and consequential architectural decisions.","why":"Question a design while keeping source evidence and decisions together.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["grilling","domain-modeling"]},
+    {"name":"grilling","kind":"skill","area":"Planning","what":"Stress-test a plan or decision through dependency-ordered question rounds until the decision owner confirms shared understanding.","why":"Reach a sound decision by following dependent questions in order.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"handoff","kind":"skill","area":"Continuity","what":"Prepare a durable, concise transfer to a fresh context with current records, decision authority, evidence, and the next action.","why":"Move accepted work into a fresh context without losing the important bits.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"how","kind":"skill","area":"Engineering","what":"Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Use why for motivation.","why":"Ground a change in what the code actually does and where it belongs.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["why","architect","teach"]},
+    {"name":"implement","kind":"skill","area":"Engineering","what":"Execute authorized work from a sufficient ticket or specification through bstack’s existing PStack engineering workflow.","why":"Start building from accepted scope without recreating the planning process.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["poteto-mode","handoff","to-pr"]},
+    {"name":"interrogate","kind":"skill","area":"Engineering","what":"Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Multiple LLM reviewers challenge changes from independent angles.","why":"Let independent reviewers challenge a change from different angles.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"maintain-verification-skill","kind":"skill","area":"Engineering","what":"Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\".","why":"Keep an existing verification skill aligned with the real product.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"make-bot-ui","kind":"skill","area":"Engineering","what":"Use when building a custom UI (page, dashboard, buttons) that should wake a Grok Bot over a webhook, when the user must provide a webhook sender key, or when exposing that UI on Tailscale.","why":"Connect a purpose-built local UI to a Grok Bot webhook when that host is available.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"no-comments","kind":"skill","area":"Engineering","what":"Spawn Comment Sicko, fix accepted findings, and offer encodings for claimed constraints.","why":"Check whether comments hide code that should explain itself.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"poteto-mode","kind":"skill","area":"Setup and routing","what":"Enter bstack's Poteto Mode for an explicitly requested engineering workflow.","why":"Choose a full PStack engineering playbook for the current task.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["how","architect","to-pr"]},
+    {"name":"prototype","kind":"skill","area":"Engineering","what":"Build and iterate on disposable prototypes for design or behavior questions, preserving the chosen reference for a clean implementation handoff.","why":"Make a design or behavior choice with a cheap, disposable example.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["wayfinder","handoff","implement"]},
+    {"name":"recall","kind":"skill","area":"Continuity","what":"Reconstruct your recent working context from your own chat history, live state, and the shared record (user reports, prior fixes, incidents), then hand back a tight current-state brief. Use for 'recall my work on X', 'catch me up', 'what have I been working on', 'where did I leave off', before starting or resuming work.","why":"Recover enough recent context to resume the right work.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"reflect","kind":"skill","area":"Engineering","what":"Spawn three parallel review subagents over the active transcript, surface learnings, and route each to a concrete edit on an existing skill. Use when the user says reflect.","why":"Find improvements to agent instructions from an actual work session.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"research","kind":"skill","area":"Engineering","what":"Investigate a bounded question against primary sources and return a cited finding artifact for a planning or engineering decision.","why":"Answer a bounded question from evidence before a decision depends on it.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"resolve-pr","kind":"skill","area":"PR work","what":"Assess and resolve feedback on an open PR without blindly accepting suggestions or expanding its purpose. Use for author-side PR follow-up, not an independent review.","why":"Judge review feedback before replying or changing code.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"review-pr","kind":"skill","area":"PR work","what":"Review a pull request with two independent headless models and a fresh adjudicator that challenges their findings. Recheck follow-up changes without repeating settled review, then prepare or publish a concise verdict.","why":"Challenge a PR independently and filter out weak findings.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["resolve-pr"]},
+    {"name":"setup-bstack","kind":"skill","area":"Setup and routing","what":"Configure or check bstack's local project bindings and selected agent tools.","why":"Check or adjust the package and host bindings in this project.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"show-me-your-work","kind":"skill","area":"Engineering","what":"Keep a reviewable decision trail for long-running or unattended work: a TSV log with one row per decision (what, why, evidence, result). Local by default; commit it when a reviewer needs the trail to trust the result. Use for /show-me-your-work, autonomous or multi-phase runs, or work a human reviews after stepping away.","why":"Leave a compact decision trail for work someone must audit later.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"swarm","kind":"skill","area":"Engineering","what":"Fan out N parallel workers, drain them, and return one report. Use for /swarm, 'swarm this', or parallel coverage, races, gauntlets, and exploration.","why":"Cover independent work in parallel and return one usable report.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"tdd","kind":"skill","area":"Engineering","what":"Use only when the user explicitly asks for TDD, a failing test, or a regression test, OR when the bug has an obvious cheap local test target. Skip when the test path is unclear, expensive, integration-heavy, or not requested.","why":"Use a failing behavioral test when it is a useful way to drive the change.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"teach","kind":"skill","area":"Engineering","what":"Explain a body of work plainly so a person actually understands it. Runs the `how` and `why` skills and weaves what they find into one clear explanation. Use for 'teach me this', 'help me really understand X', 'explain this change or subsystem to me'.","why":"Combine how the code works with why it was built that way.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"technical-writing","kind":"skill","area":"Engineering","what":"Layered technical-writing standard: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing or when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages.","why":"Make technical docs easier to follow and maintain.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"to-pr","kind":"skill","area":"PR work","what":"Prepare a short visual PR briefing, check open work for overlap, and publish to the authorized destination. Use for an explicit PR request or an authorized PR delivery step.","why":"Give a reviewer a short, useful explanation of an authorized PR.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["review-pr","resolve-pr"]},
+    {"name":"to-questionnaire","kind":"skill","area":"Planning","what":"Draft an asynchronous questionnaire for someone who holds facts or decisions the current discussion lacks.","why":"Get needed facts or decisions from someone who is not in the session.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"to-spec","kind":"skill","area":"Planning","what":"Synthesize accepted conversation and planning decisions into a versioned specification without restarting the interview.","why":"Turn settled planning into a stable implementation reference.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["to-tickets","implement"]},
+    {"name":"to-tickets","kind":"skill","area":"Planning","what":"Turn approved scope into verifiable vertical implementation slices with source references and real blocking relationships.","why":"Split accepted scope into work that can be owned and verified.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["triage","implement"]},
+    {"name":"triage","kind":"skill","area":"Planning","what":"Evaluate incoming bugs, enhancements, or proposed changes for duplication, accepted intent, evidence, and a usable implementation brief.","why":"Avoid duplicate or contradictory work before it enters the queue.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"typescript-best-practices","kind":"skill","area":"Engineering","what":"TypeScript best practices. Use when reading or editing any .ts or .tsx file.","why":"Catch TypeScript design and correctness issues while working in TS code.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"unslop","kind":"skill","area":"Continuity","what":"Cut AI tells from any writing and rewrite it in Brenden's voice. Spoken, blunt, slightly unpolished. Must always apply. Use for posts, emails, docs, replies, and turning raw notes into something he'd actually say.","why":"Keep the agent's prose plain, specific, and human.","loading":"Always available for prose","related":[]},
+    {"name":"verify-bstack","kind":"skill","area":"Continuity","what":"Verify the installed bstack package, public skill bindings, and optional live CLI behavior.","why":"Check package bindings and runtime behavior before claiming BStack works.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},
+    {"name":"wayfinder","kind":"skill","area":"Planning","what":"Chart and resolve a map of dependent planning questions across sessions, using local storage or the configured planning adapter.","why":"Keep connected planning questions visible across sessions.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["grilling","research","prototype","to-spec"]},
+    {"name":"why","kind":"skill","area":"Engineering","what":"Use for 'why does X work this way', 'why we picked Y', design rationale, regressions, postmortems, or data-backed thresholds. Discovers available MCPs and queries each evidence category (source control, issue tracker, long-form docs, real-time chat, infrastructure observability, error tracking, product analytics warehouse) in parallel, then returns a cited read on decisions and tradeoffs. Use how for runtime behavior.","why":"Find the evidence behind a choice before proposing to reverse it.","loading":"Invoke directly; a selected workflow may read it when relevant","related":["how","teach"]},
+    {"name":"principle-attack-the-premise","kind":"principle","area":"Engineering principles","what":"Apply when two or more fixes that share one premise have failed the same gate. Take a census of which actors hold the imbalance before the next fix, then question the premise instead of writing another fix that assumes it.","why":"Stop repeating fixes that assume the same broken premise.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-boundary-discipline","kind":"principle","area":"Engineering principles","what":"Apply when wiring validation, error handling, or framework adapters. Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions.","why":"Keep validation where outside data enters the system.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-build-the-lever","kind":"principle","area":"Engineering principles","what":"Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun.","why":"Make nontrivial work repeatable and easier to verify.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-encode-lessons-in-structure","kind":"principle","area":"Engineering principles","what":"Apply when you catch yourself writing the same instruction a second time, or notice a recurring correction. Encode the rule as a lint, metadata flag, runtime check, or script instead of more text.","why":"Turn repeated instructions into checks or code.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-exhaust-the-design-space","kind":"principle","area":"Engineering principles","what":"Apply when facing a novel UI interaction or architectural decision with no precedent in the codebase. Build 2-3 competing prototypes and compare side by side before committing.","why":"Compare novel options before committing to one.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-experience-first","kind":"principle","area":"Engineering principles","what":"Apply when product, UX, or feature-scope tradeoffs come up. Choose user delight over implementation convenience; ship fewer polished features over more rough ones.","why":"Make product tradeoffs serve the person using the result.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-fix-root-causes","kind":"principle","area":"Engineering principles","what":"Apply when debugging. Trace each symptom to its root cause and fix it there; reproduce first, ask why until you reach it, resist nil-check guards that silence crashes.","why":"Fix the defect instead of hiding its symptom.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-foundational-thinking","kind":"principle","area":"Engineering principles","what":"Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious.","why":"Get the underlying data shape right before adding logic.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-guard-the-context-window","kind":"principle","area":"Engineering principles","what":"Apply when context is filling up: large outputs, long files, repeated reads, fan-out planning. Route bulk to subagents; keep summaries in the main thread, not raw payloads.","why":"Keep only useful context in the main agent thread.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-laziness-protocol","kind":"principle","area":"Engineering principles","what":"Apply when refactoring, evaluating diff size, or tempted to add abstractions, layers, or signal threading. Bias toward deletion and the smallest change that solves the problem.","why":"Prefer the smallest effective change and delete extra structure.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-make-operations-idempotent","kind":"principle","area":"Engineering principles","what":"Apply when designing commands, lifecycle steps, or processing loops that run amid crashes, restarts, and retries. Converge to the same end state regardless of partial prior runs.","why":"Let retries converge safely after partial runs.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-migrate-callers-then-delete-legacy-apis","kind":"principle","area":"Engineering principles","what":"Apply when introducing a new internal API while old callers still exist. Migrate callers and delete the old API in the same wave instead of preserving compatibility layers.","why":"Finish an internal API change without leaving duplicate paths.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-minimize-reader-load","kind":"principle","area":"Engineering principles","what":"Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope.","why":"Reduce the state and layers a reader must hold in mind.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-model-the-domain","kind":"principle","area":"Engineering principles","what":"Apply when writing stateful logic, or when code branches a lot or repeats a shape assumption across files. Encode the domain in a structure instead of scattered conditionals.","why":"Put state and rules in an explicit model instead of scattered branches.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-never-block-on-the-human","kind":"principle","area":"Engineering principles","what":"Apply when tempted to ask 'should I do X?' on reversible work. Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions.","why":"Keep reversible work moving while reserving real decisions for people.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-outcome-oriented-execution","kind":"principle","area":"Engineering principles","what":"Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code.","why":"Reach the intended architecture without preserving throwaway stages.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-prove-it-works","kind":"principle","area":"Engineering principles","what":"Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'","why":"Check the real outcome before reporting success.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-redesign-from-first-principles","kind":"principle","area":"Engineering principles","what":"Apply when integrating a new requirement into an existing design. Redesign as if the requirement had been a foundational assumption from day one, instead of bolting it on.","why":"Test whether a new requirement changes the right implementation shape.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-separate-before-serializing-shared-state","kind":"principle","area":"Engineering principles","what":"Apply when concurrent actors might write to the same file, branch, key, or state object. Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant.","why":"Remove avoidable write contention before adding coordination.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-sequence-verifiable-units","kind":"principle","area":"Engineering principles","what":"Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer.","why":"Make each stage checkable before moving to the next.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-subtract-before-you-add","kind":"principle","area":"Engineering principles","what":"Apply when sequencing an addition, refactor, or rewrite. Remove dead code, redundant validators, and stub references first, then build on the simpler base.","why":"Remove dead weight before building on top of it.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-test-behavior-not-implementation","kind":"principle","area":"Engineering principles","what":"Apply when you write, change, or keep a test. Call the code the way its users do and assert the result they observe against a literal expected value. If the test would still pass when every imported function returns undefined, rewrite the assertion or delete the test.","why":"Keep tests tied to outcomes rather than code structure.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"principle-type-system-discipline","kind":"principle","area":"Engineering principles","what":"Apply when designing types, reviewing a function signature, or writing code in any statically-typed language. Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, refuse to lie to the compiler, exhaust variants, derive from authoritative schemas.","why":"Use types to prevent invalid states and hidden assumptions.","loading":"Loaded by Poteto Mode when its condition applies; no direct slash command","related":[]},
+    {"name":"authoring-a-skill","kind":"playbook","area":"Engineering playbooks","what":"Write or revise an agent skill with a clear trigger and checkable result.","why":"Use when the deliverable is a skill, not application code.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"autonomous-run","kind":"playbook","area":"Engineering playbooks","what":"Drive one authorized task to a completion condition without repeated prompting.","why":"Use for an unattended, bounded run.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"autopilot-full","kind":"playbook","area":"Engineering playbooks","what":"Coordinate independent PR owners through the full approved lifecycle.","why":"Use for an explicitly autonomous PR queue.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"autopilot-stack","kind":"playbook","area":"Engineering playbooks","what":"Build a verified, ordered stack of dependent PRs.","why":"Use when changes must be reviewed or landed in sequence.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"babysit","kind":"playbook","area":"Engineering playbooks","what":"Track an open PR through checks, comments, and conflicts.","why":"Use when the job is getting a PR merge-ready, not merging it.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"bug-fix","kind":"playbook","area":"Engineering playbooks","what":"Reproduce a defect, find its cause, fix it, and verify the behavior.","why":"Use for a reported bug with code changes in scope.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"eval","kind":"playbook","area":"Engineering playbooks","what":"Measure whether a prompt, skill, or workflow change improves agent behavior.","why":"Use before promoting a change based on model behavior.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"feature","kind":"playbook","area":"Engineering playbooks","what":"Shape and implement a new behavior through design, code review, and proof.","why":"Use for a clear feature request in engineering scope.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"hillclimb","kind":"playbook","area":"Engineering playbooks","what":"Iterate on one measurable target with evidence after each attempt.","why":"Use for sustained improvement of a metric.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"investigation","kind":"playbook","area":"Engineering playbooks","what":"Answer a read-only code or system question from evidence.","why":"Use when the answer is the deliverable.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"multi-phase-plan","kind":"playbook","area":"Engineering playbooks","what":"Produce a checkable plan for phases or stacked changes.","why":"Use when planning is requested but execution is not.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"opening-a-pr","kind":"playbook","area":"Engineering playbooks","what":"Prepare an authorized PR through BStack's to-pr workflow.","why":"Use when PR delivery is part of the task.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":["to-pr"]},
+    {"name":"orchestrate","kind":"playbook","area":"Engineering playbooks","what":"Coordinate a standing program across many tasks and agents.","why":"Use for a true multi-day program, not an ordinary feature.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"pause-safely","kind":"playbook","area":"Engineering playbooks","what":"Leave a durable state for later pickup.","why":"Use when an in-flight task needs to stop cleanly.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"perf-issue","kind":"playbook","area":"Engineering playbooks","what":"Trace measured slowness and verify a targeted improvement.","why":"Use for a specific performance defect.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"prototype","kind":"playbook","area":"Engineering playbooks","what":"Compare disposable options through BStack's prototype workflow.","why":"Use when seeing a working sketch will settle a design question.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":["prototype"]},
+    {"name":"refactoring","kind":"playbook","area":"Engineering playbooks","what":"Change code structure while preserving its behavior.","why":"Use when the implementation shape needs work but product behavior does not.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"runtime-forensics","kind":"playbook","area":"Engineering playbooks","what":"Diagnose a live runtime symptom from instrumentation.","why":"Use when a diagnosis, rather than a fix, is requested.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"session-pickup","kind":"playbook","area":"Engineering playbooks","what":"Reconstruct in-flight work from a prior session or branch.","why":"Use to resume without restarting the investigation.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"shipping","kind":"playbook","area":"Engineering playbooks","what":"Verify a merge-ready PR or stack and land authorized work.","why":"Use only when merging is in scope.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"trace-forensics","kind":"playbook","area":"Engineering playbooks","what":"Read a captured profile or trace to explain a runtime problem.","why":"Use when the evidence already exists.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"visual-parity","kind":"playbook","area":"Engineering playbooks","what":"Match an existing UI against a captured visual baseline.","why":"Use when the task is equivalence, not new design.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"worktree-cleanup","kind":"playbook","area":"Engineering playbooks","what":"Inspect and prune stale worktrees or simulators.","why":"Use when reclaiming local disk safely.","loading":"Selected by Poteto Mode for a matching task; no direct slash command","related":[]},
+    {"name":"bstack-router","kind":"internal","area":"Internal and aliases","what":"Apply BStack's policy over selected PStack and SDLC workflows.","why":"Keep routing and host behavior consistent.","loading":"Loaded by project instructions or the optional routing hook","related":["poteto-mode"]},
+    {"name":"setup-pstack","kind":"internal","area":"Internal and aliases","what":"Compatibility name for setup-bstack.","why":"Keep older references working without a second setup process.","loading":"Internal reference; use setup-bstack for setup","related":["setup-bstack"]},
+    {"name":"setup-matt-pocock-skills","kind":"internal","area":"Internal and aliases","what":"Compatibility name for setup-bstack.","why":"Keep older references working without a second setup process.","loading":"Internal reference; use setup-bstack for setup","related":["setup-bstack"]}
+  ]
+}
+  </script>
+  <script>
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+    function selectTab(tab, focus = false) {
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach(panel => { panel.hidden = panel.id !== tab.getAttribute('aria-controls'); });
+      if (focus) tab.focus();
+    }
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectTab(tab));
+      tab.addEventListener('keydown', event => {
+        const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length : event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length : event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : -1;
+        if (next < 0) return;
+        event.preventDefault();
+        selectTab(tabs[next], true);
+      });
+    });
+
+    const themeToggle = document.getElementById('theme-toggle');
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('bstack-guide-theme'); } catch (_) {}
+    if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
+    function currentTheme() {
+      return document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    }
+    function updateThemeButton() {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      themeToggle.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+      themeToggle.setAttribute('aria-label', `Switch to ${next} mode`);
+    }
+    themeToggle.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('bstack-guide-theme', next); } catch (_) {}
+      updateThemeButton();
+    });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeButton);
+    updateThemeButton();
+    const sidebarLinks = [...document.querySelectorAll('.sidebar a[href^="#"]')];
+    function updateCurrentSection() {
+      const current = location.hash || '#top';
+      sidebarLinks.forEach(link => {
+        if (link.getAttribute('href') === current) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }
+    addEventListener('hashchange', updateCurrentSection);
+    updateCurrentSection();
+
+    const catalog = JSON.parse(document.getElementById('catalog-data').textContent);
+    const catalogSearch = document.getElementById('catalog-search');
+    const catalogResults = document.getElementById('catalog-results');
+    const catalogCount = document.getElementById('catalog-count');
+    const catalogMore = document.getElementById('catalog-more');
+    const filters = [...document.querySelectorAll('.catalog-filter')];
+    const palette = document.getElementById('palette');
+    const paletteSearch = document.getElementById('palette-search');
+    const paletteResults = document.getElementById('palette-results');
+    const detail = document.getElementById('catalog-detail');
+    let selectedKind = 'all';
+    let showAll = false;
+
+    function matches(item, query) {
+      const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const text = [item.name, item.area, item.what, item.why, item.loading, ...item.related].join(' ').toLowerCase();
+      return terms.every(term => text.includes(term));
+    }
+
+    function kindLabel(kind) {
+      return {skill: 'Direct skill', principle: 'Principle', playbook: 'Playbook', internal: 'Internal'}[kind];
+    }
+
+    function itemButton(item) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'catalog-item';
+      button.setAttribute('aria-label', `${item.name}, ${kindLabel(item.kind)}. Open details`);
+      const top = document.createElement('span');
+      top.className = 'catalog-item-top';
+      const name = document.createElement('strong');
+      name.textContent = item.name;
+      const kind = document.createElement('span');
+      kind.className = 'catalog-kind';
+      kind.textContent = kindLabel(item.kind);
+      top.append(name, kind);
+      const area = document.createElement('small');
+      area.textContent = item.area;
+      const reason = document.createElement('span');
+      reason.className = 'reason';
+      reason.textContent = item.why;
+      button.append(top, area, reason);
+      button.addEventListener('click', () => showDetail(item));
+      return button;
+    }
+
+    function renderCatalog() {
+      const items = catalog.items.filter(item => (selectedKind === 'all' || item.kind === selectedKind) && matches(item, catalogSearch.value));
+      const shown = selectedKind === 'all' && !catalogSearch.value.trim() && !showAll ? items.slice(0, 16) : items;
+      catalogResults.replaceChildren(...shown.map(itemButton));
+      if (!items.length) {
+        const empty = document.createElement('p');
+        empty.className = 'catalog-empty';
+        empty.textContent = 'No match. Try a task, skill name, or another filter.';
+        catalogResults.append(empty);
+      }
+      catalogCount.textContent = `Showing ${shown.length} of ${items.length} matching entries. ${catalog.counts.skills} directly invocable skills, ${catalog.counts.principles} routed principles, ${catalog.counts.playbooks} playbooks, and ${catalog.counts.internal} internal entries.`;
+      catalogMore.hidden = shown.length === items.length;
+    }
+
+    const guideSections = [
+      ['Overview', '#top', 'What bstack gives you'],
+      ['Common use cases', '#routes', 'Bug fixes, features, PRs, and code understanding'],
+      ['Routing and modes', '#routing', 'Manual skills, Poteto Mode, and auto routing'],
+      ['Skill catalog', '#catalog', 'The full inventory'],
+      ['Context and memory', '#continuity', 'Baseline, ADRs, handoffs, and memory'],
+      ['Local workspace', '#workspace', 'App and CLI operations'],
+      ['Install and update', '#setup', 'Setup and upgrades']
+    ];
+    function sectionButton(section) {
+      const button = document.createElement('button');
+      button.className = 'catalog-item';
+      button.type = 'button';
+      const heading = document.createElement('span');
+      heading.className = 'catalog-item-top';
+      const name = document.createElement('strong');
+      name.textContent = section[0];
+      const kind = document.createElement('span');
+      kind.className = 'catalog-kind';
+      kind.textContent = 'Guide section';
+      heading.append(name, kind);
+      const description = document.createElement('span');
+      description.className = 'reason';
+      description.textContent = section[2];
+      button.append(heading, description);
+      button.addEventListener('click', () => {
+        palette.close();
+        location.hash = section[1];
+        document.querySelector(section[1]).scrollIntoView();
+      });
+      return button;
+    }
+    function renderPalette() {
+      const query = paletteSearch.value.toLowerCase().trim();
+      const sections = guideSections.filter(section => !query || section.join(' ').toLowerCase().includes(query));
+      const items = catalog.items.filter(item => matches(item, paletteSearch.value)).slice(0, query ? 12 : 5);
+      paletteResults.replaceChildren(...sections.map(sectionButton), ...items.map(itemButton));
+      if (!sections.length && !items.length) {
+        const empty = document.createElement('p');
+        empty.className = 'catalog-empty';
+        empty.textContent = 'No match. Try another name or task.';
+        paletteResults.append(empty);
+      }
+    }
+
+    function showDetail(item) {
+      if (palette.open) palette.close();
+      document.getElementById('detail-title').textContent = item.name;
+      document.getElementById('detail-what').textContent = item.what;
+      document.getElementById('detail-why').textContent = item.why;
+      document.getElementById('detail-loading').textContent = item.loading;
+      const meta = document.getElementById('detail-meta');
+      meta.replaceChildren();
+      for (const label of [kindLabel(item.kind), item.area]) {
+        const badge = document.createElement('span');
+        badge.textContent = label;
+        meta.append(badge);
+      }
+      const related = document.getElementById('detail-related');
+      related.replaceChildren();
+      document.getElementById('detail-related-wrap').hidden = !item.related.length;
+      for (const name of item.related) {
+        const linked = catalog.items.find(entry => entry.name === name);
+        if (!linked) continue;
+        const button = document.createElement('button');
+        button.className = 'related-button';
+        button.type = 'button';
+        button.textContent = name;
+        button.addEventListener('click', () => showDetail(linked));
+        related.append(button);
+      }
+      if (detail.open) detail.close();
+      detail.showModal();
+    }
+
+    function openPalette() {
+      if (!palette.showModal) {
+        document.getElementById('catalog').scrollIntoView();
+        catalogSearch.focus();
+        return;
+      }
+      if (!palette.open) palette.showModal();
+      paletteSearch.value = '';
+      renderPalette();
+      paletteSearch.focus();
+    }
+
+    filters.forEach(button => button.addEventListener('click', () => {
+      selectedKind = button.dataset.kind;
+      showAll = false;
+      filters.forEach(filter => filter.setAttribute('aria-pressed', String(filter === button)));
+      renderCatalog();
+    }));
+    catalogSearch.addEventListener('input', renderCatalog);
+    catalogMore.addEventListener('click', () => { showAll = true; renderCatalog(); });
+    paletteSearch.addEventListener('input', renderPalette);
+    document.getElementById('top-palette').addEventListener('click', openPalette);
+    document.getElementById('catalog-palette').addEventListener('click', openPalette);
+    document.getElementById('palette-close').addEventListener('click', () => palette.close());
+    document.getElementById('detail-close').addEventListener('click', () => detail.close());
+    document.addEventListener('keydown', event => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        openPalette();
+      }
+    });
+    paletteSearch.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        paletteResults.querySelector('button')?.focus();
+      }
+    });
+    paletteResults.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+      const buttons = [...paletteResults.querySelectorAll('button')];
+      const index = buttons.indexOf(document.activeElement);
+      const next = index + (event.key === 'ArrowDown' ? 1 : -1);
+      event.preventDefault();
+      if (next < 0) paletteSearch.focus();
+      else buttons[Math.min(next, buttons.length - 1)]?.focus();
+    });
+    for (const dialog of [palette, detail]) {
+      dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    }
+    renderCatalog();
+  </script>
+</body>
+</html>

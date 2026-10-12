@@ -21,6 +21,7 @@ PUBLIC_SKILLS = {
     "how": "engineering/how/SKILL.md",
     "architect": "engineering/architect/SKILL.md",
     "unslop": "shared/unslop/SKILL.md",
+    "bstack-guide": "shared/bstack-guide/SKILL.md",
     "bstack-auto": "shared/bstack-auto/SKILL.md",
     "setup-bstack": "shared/setup-bstack/SKILL.md",
     "verify-bstack": "shared/verify-bstack/SKILL.md",
@@ -71,7 +72,7 @@ class RuntimeTests(unittest.TestCase):
                             "unslop": PUBLIC_SKILLS["unslop"], "controller": "scripts/bstack.py",
                             "reminder": "runtime/reminder.py", "index": "index.json",
                             "setup": PUBLIC_SKILLS["setup-bstack"], "verification": PUBLIC_SKILLS["verify-bstack"]},
-            "public_skills": {name: {"path": relative, "description": f"Run the {name} skill.", "implicit": name == "unslop"}
+            "public_skills": {name: {"path": relative, "description": f"Run the {name} skill.", "implicit": name in ("unslop", "bstack-guide")}
                               for name, relative in PUBLIC_SKILLS.items()},
         }
         (root / "manifest.json").write_text(json.dumps(manifest))
@@ -744,9 +745,9 @@ class RuntimeTests(unittest.TestCase):
                 self.assertIn(str(self.project / ".bstack/package" / relative), body)
                 self.assertIn("Keep that scope", body)
                 self.assertIn("does not authorize implementation", body)
-                self.assertIn(f"disable-model-invocation: {str(name != 'unslop').lower()}", body)
+                self.assertIn(f"disable-model-invocation: {str(name not in ('unslop', 'bstack-guide')).lower()}", body)
                 policy = (entry / "agents/openai.yaml").read_text()
-                self.assertIn(f"allow_implicit_invocation: {str(name == 'unslop').lower()}", policy)
+                self.assertIn(f"allow_implicit_invocation: {str(name in ('unslop', 'bstack-guide')).lower()}", policy)
                 self.assertFalse((entry / "content").exists())
                 for host in ("claude", "cursor", "grok"):
                     link = self.project / f".{host}/skills/{name}"

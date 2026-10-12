@@ -36,7 +36,9 @@ Keep published notes tied to what shipped. Record later work under **Unreleased*
 This stages a release in Git for review. It does not create or publish a GitHub Release. Use the chosen version in the output path; `0.4.3` below is an example.
 
 ```sh
+python3 -B bstack/scripts/guide_catalog.py
 python3 -B bstack/scripts/package.py build
+python3 -B bstack/scripts/guide_catalog.py --check
 python3 -B bstack/scripts/layers.py check
 python3 -B bstack/scripts/package.py check
 python3 -B bstack/scripts/test_layers.py

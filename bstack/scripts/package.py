@@ -420,7 +420,7 @@ def assemble(root=ROOT):
     public_names = [name for name in selection["skills"] if not name.startswith("principle-")]
     for name in public_names + list(selection["owned_skills"]) + ["unslop", "setup-bstack", "bstack-auto", "verify-bstack"]:
         path = skills[name]
-        implicit = name == "unslop"
+        implicit = name in ("unslop", "bstack-guide")
         assets[path], description = public_skill(assets[path], name, implicit)
         public[name] = {"path": path, "description": description, "implicit": implicit}
         metadata = str(PurePosixPath(path).parent / "agents/openai.yaml")

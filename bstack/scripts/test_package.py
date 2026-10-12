@@ -31,7 +31,7 @@ class PackageTests(unittest.TestCase):
                     "reflect", "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
                     "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
                     "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
-                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr", "resolve-pr"}
+                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr", "resolve-pr", "bstack-guide"}
         self.assertEqual(set(manifest["public_skills"]), expected)
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}
@@ -39,10 +39,10 @@ class PackageTests(unittest.TestCase):
         for name, record in manifest["public_skills"].items():
             entry = self.assets["bstack/" + record["path"]].data.decode()
             self.assertIn("name: " + name + "\n", entry)
-            self.assertEqual(record["implicit"], name == "unslop")
-            self.assertIn("disable-model-invocation: " + str(name != "unslop").lower(), entry)
+            self.assertEqual(record["implicit"], name in ("unslop", "bstack-guide"))
+            self.assertIn("disable-model-invocation: " + str(name not in ("unslop", "bstack-guide")).lower(), entry)
             metadata = str(Path("bstack") / Path(record["path"]).parent / "agents/openai.yaml")
-            self.assertIn("allow_implicit_invocation: " + str(name == "unslop").lower(), self.assets[metadata].data.decode())
+            self.assertIn("allow_implicit_invocation: " + str(name in ("unslop", "bstack-guide")).lower(), self.assets[metadata].data.decode())
         self.assertFalse(any("automations/" in path or "benny" in path for path in self.assets))
         self.assertFalse(any("/content/" in path or "engineering/skills/" in path for path in self.assets))
         self.assertFalse(any("principles/" in path for path in public_files))

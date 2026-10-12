@@ -59,7 +59,7 @@ python3 install.py --project /path/to/my-project
 
 No Git, npm, skills.sh, or network access is needed during installation. A clone works too; use its bundled installer as described in [installation](INSTALL.md#from-a-download-or-clone).
 
-After setup, start a fresh agent session to discover the skills. The agent offers automatic routing if it is off; enabling it is opt-in. Upgrades preserve your existing mode and selected tools. Neither route fetches upstream latest.
+After setup, start a fresh agent session to discover the skills. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [offline reference guide](shared/skills/bstack-guide/assets/overview.html) has common use cases, routing and setup examples, workspace commands, and the full searchable catalog. Cmd/Ctrl+K searches the guide and its skill entries. The agent offers automatic routing if it is off; enabling it is opt-in. Upgrades preserve your existing mode and selected tools. Neither route fetches upstream latest.
 
 See [installation and updates](INSTALL.md). The supported installation path is the project-local CLI bundle. Desktop discovery has [separate checks](INSTALL.md#claude-desktop-discovery); native plugin-manager installation is not part of this package.
 
@@ -69,8 +69,9 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 
 | When you want to... | Start with... |
 | --- | --- |
+| Learn how the pieces fit or choose a starting point | `bstack-guide` |
 | Understand existing code or why it works that way | `how` or `why` |
-| Get direct engineering help or select a full workflow | `bro` or `poteto-mode` |
+| Restate an answer plainly or select an engineering workflow | `bro` for a plain-language restatement; `poteto-mode` for workflow selection |
 | Work through an idea with questions | `grill-me`, or `wayfinder` when decisions need to survive across sessions |
 | Compare a design before building it | `prototype` |
 | Turn accepted decisions into work | `to-spec`, then `to-tickets` if tickets help |
