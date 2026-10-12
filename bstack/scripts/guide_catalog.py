@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Build the offline guide catalog from the packaged workflow index."""
 import argparse
 import json
 from pathlib import Path
