@@ -1,0 +1,157 @@
+bstack/release/bstack/scripts/bstack.py
+  s_822e08e34bda62::t_9f21e0d7cfaea0 132-133
+bstack/package/templates/install.md
+  s_822e08e34bda62::t_28080464301f66 12,22
+  s_ea42c1e23306da::t_fbe5ac1df6e892 23
+bstack/INSTALL.md
+  s_822e08e34bda62::t_41f6586ce03105 63-72
+bstack/release/bstack/shared/setup-bstack/SKILL.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 13,21-22,27
+  s_822e08e34bda62::t_eac718161ed893 28
+bstack/package/runtime.py
+  s_822e08e34bda62::t_f069639ac2f38b 132-133
+bstack/release/bstack/engineering/review-pr/scripts/host.py
+  s_822e08e34bda62::t_9f21e0d7cfaea0 132-148,244
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_5fea57ed69c064 237
+  s_822e08e34bda62::t_06251e669e1487 205-236,238-247
+  s_822e08e34bda62::t_a476e08c5d45a2 248-260
+  s_822e08e34bda62::t_8b5ddb76c49bf9 14-15,65-68
+bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_7f91dea113e8ca 22-23
+bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_0f149e1b8c16cf 44-45,85-86,90-92
+bstack/release/bstack/index.json
+  s_822e08e34bda62::t_9f21e0d7cfaea0 57
+bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_72693876be3b6c 6,37,41,47,52,54-57,63-65,78-85,96,122
+bstack/release/README.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 3
+bstack/release/bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 18-19
+bstack/release/bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 5-6
+bstack/shared/skills/verify-bstack/features/installation.md
+  s_822e08e34bda62::t_28080464301f66 55-57
+bstack/release-notes/1.0.0.md
+  s_822e08e34bda62::t_04a459d8603834 21
+  s_822e08e34bda62::t_9c65699ab16199 1-20,22-31
+bstack/release/bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 22-23
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 12,22
+  s_822e08e34bda62::t_83ea948aa04416 23
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_8d6735813ee2cd 16,18,26,77-78,80,82-83,184,229-231,234-235,283,289,298,320-321,398,401
+  s_822e08e34bda62::t_7ab01b9810d631 79,81,185-186,236-237,281,284-285,399-400
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_d9fd45275de6e3 88-89
+  s_822e08e34bda62::t_41f6586ce03105 46-47
+bstack/release/bstack/shared/pr_policy.py
+  s_822e08e34bda62::t_9f21e0d7cfaea0 1-158
+bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_7f91dea113e8ca 5-6
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_9f21e0d7cfaea0 44-45,85-86,90-92
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_9f21e0d7cfaea0 16,18,26,77-83,184-186,229-231,234-237,281,283-285,289,298,320-321,398-401
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_7d10ce53d581d6 2543,2545
+  s_822e08e34bda62::t_9f21e0d7cfaea0 83,134,155,176,197,218,239,260,312,333,354,395,416,477,498,519,552,1235,1272,1293,1354,1362,1364,1375,1412,1436,1438,1470,1472,1486,1488,1494,1496,1502,1504,1523,1560,1581,1602,1623,1631,1633,1644,1681,1713,1859,1861,1869,1895,1897,1935,1956,1977,1999,2021,2043,2065,2103,2125,2154,2174,2182,2184,2203-2224,2242,2353-2360,2389-2396,2400,2402,2434,2436,2456,2458,2469,2490,2511,2736-2740,2941
+  s_822e08e34bda62::t_a35d318615d756 40,42
+bstack/audit/pr-policy-flow.svg
+  s_822e08e34bda62::t_4ae3c247b88474 1-11,15-20,24-25,28-37
+  s_822e08e34bda62::t_a1837adb78247f 12-14,21-23,26-27
+bstack/shared/references/pr-standards.md
+  s_822e08e34bda62::t_7f91dea113e8ca 5-6
+bstack/package/selection.json
+  s_822e08e34bda62::t_157086aa749700 72,97,101
+  s_822e08e34bda62::t_ac348db9835539 4
+bstack/release/bstack/layers.json
+  s_822e08e34bda62::t_9f21e0d7cfaea0 7
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_a93374f2745673 308-309,318,348
+bstack/shared/skills/bstack-router/SKILL.md
+  s_822e08e34bda62::t_157086aa749700 44
+bstack/github/tests/test_pr_policy.py
+  s_822e08e34bda62::t_6c0dd1eda88ebb 1-38
+bstack/README.md
+  s_822e08e34bda62::t_d9fd45275de6e3 16,81
+bstack/audit/claude-parent-setup.md
+  s_822e08e34bda62::t_e5a6d99c072156 1-17
+bstack/release/bstack/shared/verify-bstack/scripts/installation.py
+  s_822e08e34bda62::t_7d10ce53d581d6 88
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_ac348db9835539 7
+bstack/shared/skills/configure-pr/SKILL.md
+  s_822e08e34bda62::t_157086aa749700 1-19
+bstack/release/bstack/shared/references/pr-policy-template.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 1-9
+bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_7f91dea113e8ca 18-19
+bstack/scripts/package.py
+  s_822e08e34bda62::t_157086aa749700 423
+bstack/release/bstack/shared/configure-pr/agents/openai.yaml
+  s_822e08e34bda62::t_9f21e0d7cfaea0 1-2
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 44
+bstack/shared/pr_policy.py
+  s_822e08e34bda62::t_d4ea6f56d09d34 1-128,130-158
+  s_822e08e34bda62::t_da30f9524bc4cf 129
+bstack/engineering/review-pr/scripts/host.py
+  s_822e08e34bda62::t_1d548cfa3d97d3 132-148
+  s_822e08e34bda62::t_da30f9524bc4cf 244
+bstack/scripts/test_package.py
+  s_822e08e34bda62::t_f83f5a382ec94d 112-114,116,118
+  s_822e08e34bda62::t_350d01f322312d 110,115
+  s_822e08e34bda62::t_0bb2abf7a4520c 34,42-43,45,91-109,111,117,119
+  s_822e08e34bda62::t_5dfb162cfbe092 120
+bstack/release/bstack/shared/configure-pr/SKILL.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 1-20
+bstack/shared/skills/verify-bstack/scripts/installation.py
+  s_822e08e34bda62::t_469827f624dd82 88
+bstack-pr-policy.md
+  s_822e08e34bda62::t_2d2259e9fbae4a 1-22
+bstack/shared/references/pr-policy-template.md
+  s_822e08e34bda62::t_2d2259e9fbae4a 1-9
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_a35d318615d756 88-89
+  s_822e08e34bda62::t_9f21e0d7cfaea0 3,46
+  s_822e08e34bda62::t_48ddfb84c08d23 47
+bstack/release/bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_9f21e0d7cfaea0 6,37,41,47,52,54-57,63-65,78-85,96,122
+bstack/package/templates/setup.md
+  s_822e08e34bda62::t_28080464301f66 13,21
+  s_822e08e34bda62::t_157086aa749700 27-28
+  s_ea42c1e23306da::t_77e14fe235f7e4 22
+bstack/release/bstack/shared/references/pr-standards.md
+  s_822e08e34bda62::t_9f21e0d7cfaea0 5-6
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_9f21e0d7cfaea0 308-309,318,348
+bstack/scripts/guide_catalog.py
+  s_822e08e34bda62::t_ff7bf5d26d2177 24,125,127,151,178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dfc721e736aaa50a889998648f68ce7a80f713ed",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_ea42c1e23306da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "48a80ad9-6a2a-48dc-a9a4-fdcf6aca9f6c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
