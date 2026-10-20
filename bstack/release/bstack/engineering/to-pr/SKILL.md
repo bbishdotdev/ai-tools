@@ -45,6 +45,8 @@ For a generated explanation, prefer a headless Codex CLI session with image gene
 
 Match every label, arrow, and state to the code. Label generated visuals as illustrations. Keep screenshots separate as evidence of an observed run, with its state and relevant viewport or environment. Never generate a screenshot to imply a test passed. Use short captions and alt text. A local file path is not a usable image link in a published PR.
 
+Keep PR-only visuals in the ignored `.bstack/pr/` directory and upload them as PR attachments through the [publishing procedure](references/publishing.md). Commit a visual only when the project itself needs that file; do not add one solely to give the PR body an image URL. Check the published body because an upload can append the image instead of placing it in this section.
+
 Use the repository's title convention. Otherwise use `type(scope): short imperative subject`, with a real changed area as the scope. Keep the briefing focused on the final change; include explored alternatives only to explain the chosen solution. Apply the sentence-level guidance from [technical-writing](../technical-writing/SKILL.md), then unslop. Its shorter PR-body target does not override this workflow's three-minute limit.
 
 ## Check overlap and deliver

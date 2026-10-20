@@ -1628,9 +1628,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "24f0dae7222612bf8e0fbc12336cba9087df6389b06f71f6184494d49e5d9e8c",
+      "sha256": "6c18b139aae4dfd04df1f9af270bdaef3d6fa734711aeeb86db153caca08d238",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "20cc39a1b91d55dea831798f480904495e060f3317216d7ba8ac2867e12c098e",
+      "source_sha256": "dc171e859e35ac45829239c3f0477b8bf27269d71a47a650ab63fe6eccc557ca",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
