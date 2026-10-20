@@ -1,0 +1,32 @@
+bstack/shared/pr_policy.py
+  s_822e08e34bda62::t_63487890757307 129
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_de5620438f5b9b 46-47
+bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_63487890757307 46-47
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_f401a43eca1fc1 13-14,159-173
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_de5620438f5b9b 1486,1488,2356,2358
+bstack/release/bstack/shared/pr_policy.py
+  s_822e08e34bda62::t_de5620438f5b9b 129
+bstack/github/tests/test_pr_policy.py
+  s_822e08e34bda62::t_aef2520be58b11 22,28,33-34
+  s_822e08e34bda62::t_c325f1407a9f14 29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d528afd1de33cc4428a049e0095d705300b937c5",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
