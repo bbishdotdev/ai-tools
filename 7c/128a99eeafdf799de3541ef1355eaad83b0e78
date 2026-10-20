@@ -1,0 +1,21 @@
+bstack/release-notes/0.8.1.md
+  s_822e08e34bda62::t_700cba7033efc2 3-4
+bstack/release-notes/0.9.0.md
+  s_822e08e34bda62::t_700cba7033efc2 3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7c128a99eeafdf799de3541ef1355eaad83b0e78",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
