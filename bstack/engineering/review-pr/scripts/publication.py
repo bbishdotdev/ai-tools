@@ -43,6 +43,8 @@ def desired_event(result):
         return "COMMENT"
     if categories & {"blocker", "human-decision"}:
         return None
+    if result.get("human_review_required"):
+        return "COMMENT"
     if result["status"] != "complete" or not result.get("coverage", {"complete": True})["complete"]:
         return "COMMENT"
     return "APPROVE"
@@ -80,9 +82,14 @@ def summary_body(result, event, self_review):
         text = ["🛑 These changes need attention before merging."]
     elif result["status"] == "partial":
         text = ["⚠️ Here's what I could verify. A few gaps still need checking."]
+    elif result.get("human_review_required"):
+        text = ["👤 This change needs a human reviewer under the project PR policy."]
     else:
         text = ["❓ There's a decision to make before merging."]
     text.extend(assessment_details(result))
+    if result.get("human_review_required"):
+        paths = sorted({path for rule in result["human_review_required"] for path in rule["changed"]})
+        text.append("Human review required for " + ", ".join(f"`{path}`" for path in paths) + ".")
     if result["scope"]["mode"] != "full":
         text.append("Checked the follow-up and the behavior it affects.")
     text.append(signature(result))

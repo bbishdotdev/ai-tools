@@ -10,8 +10,12 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "engineering/review-pr/scripts/review.py"
+sys.path.insert(0, str(RUNNER.parent))
+from publication import plan_actions
+from contracts import ReviewError, consolidate
 
-FAKE_HOST = r'''import json
+FAKE_HOST = r'''import base64
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -61,6 +65,10 @@ if name == "gh":
         print(json.dumps({"total_count": 1, "check_runs": [{"name": "behavior", "status": "completed", "conclusion": "success", "details_url": "https://example.test"}]}))
     elif "/status?" in endpoint:
         print(json.dumps({"total_count": 0, "statuses": []}))
+    elif "/contents/bstack-pr-policy.md?ref=" in endpoint:
+        commit = endpoint.rsplit("?ref=", 1)[1]
+        source = subprocess.run([os.environ["REVIEW_REAL_GIT"], "-C", str(home / "repository"), "show", commit + ":bstack-pr-policy.md"], capture_output=True)
+        print(json.dumps({"type": "file", "encoding": "base64", "content": base64.b64encode(source.stdout).decode()} if source.returncode == 0 else {"message": "Not Found"}))
     else:
         raise RuntimeError(endpoint)
     raise SystemExit(0)
@@ -149,6 +157,34 @@ if judge and state.get("shift_on_judge", 0):
 
 
 class ReviewLifecycleTests(unittest.TestCase):
+    def test_resolved_feedback_can_reference_closed_findings(self):
+        evidence = {"path": "service.py", "line": 1, "side": "head", "reason": "The changed handler checks ownership."}
+        finding = {"id": "prior", "category": "blocker", "title": "Missing ownership check", "explanation": "Another user can read a record.", "evidence": [evidence], "action": "Check the owner."}
+        judgment = {"coverage": {"complete": True, "limits": []}, "decisions": [{"id": "prior", "disposition": "resolved", "reason": "The handler checks ownership now.", "duplicate_of": None}],
+                    "findings": [], "feedback": [{"kind": "reviews", "id": 10, "relation": "resolved", "finding_ids": ["prior"], "body": "I rechecked this; the ownership check is in place.", "evidence": [evidence]}],
+                    "new_findings": [], "artifact_assessments": []}
+        trees = {"head": {"service.py": {"lines": 1}}}
+        discussion = {"reviews": [{"id": 10}]}
+        self.assertIs(consolidate(judgment, [finding], trees, discussion), judgment)
+        judgment["decisions"][0]["disposition"] = "dismissed"
+        with self.assertRaisesRegex(ReviewError, "matching disposition"):
+            consolidate(judgment, [finding], trees, discussion)
+
+    def test_existing_blocker_with_human_gate_does_not_post_new_review(self):
+        result = {
+            "findings": [{"id": "older", "category": "blocker"}],
+            "new_findings": [],
+            "human_review_required": [{"path": "bstack-pr-policy.md", "changed": ["bstack-pr-policy.md"]}],
+            "status": "complete",
+            "coverage": {"complete": True},
+            "snapshot": {"discussion": {"reviews": [], "comments": [], "inline": []}, "pr": {"author": "author"}, "target": {"number": 1}},
+            "feedback": [],
+            "scope": {"mode": "delta"},
+        }
+        actions, event = plan_actions(result, "reviewer")
+        self.assertIsNone(event)
+        self.assertEqual(actions, [])
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
@@ -196,6 +232,62 @@ class ReviewLifecycleTests(unittest.TestCase):
 
     def run_review(self, success=True, *args):
         return self.cli("run", "--pr", "https://github.com/example/project/pull/1", *args, success=success)
+
+    def accept_policy(self, text):
+        (self.repo / "bstack-pr-policy.md").write_text(text)
+        self.git("add", "bstack-pr-policy.md")
+        self.git("commit", "-qm", "accept project review policy")
+        self.base = self.git("rev-parse", "HEAD").strip()
+
+    def advance_pr(self):
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.git("update-ref", "refs/pull/1/head", self.head)
+        self.state["pr"] = self.pr()
+        self.save()
+
+    def test_target_policy_requires_human_even_when_pr_edits_its_own_rules(self):
+        self.accept_policy("# Project PR policy\n\n## Human review required\n\n- `service.py`: A person reviews record access.\n")
+        (self.repo / "service.py").write_text("def read_record(user):\n    return record if record.owner == user else None\n")
+        (self.repo / "bstack-pr-policy.md").write_text("# Project PR policy\n\n## Review focus\n\n- Keep code clear.\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "change service and review rules")
+        self.advance_pr()
+        report = self.run_review()
+        self.assertEqual(report["verdict"], "COMMENT")
+        self.assertEqual(report["status"], "complete")
+        required = report["human_review_required"]
+        self.assertEqual({path for rule in required for path in rule["changed"]}, {"service.py", "bstack-pr-policy.md"})
+        reviewer = json.loads((self.home / "codex-context.json").read_text())
+        self.assertEqual(reviewer["project_pr_policy"]["human_review"][0]["path"], "service.py")
+        preview = self.cli("publish", "--run", report["run"])
+        self.assertEqual(preview["event"], "COMMENT")
+        self.assertIn("needs a human reviewer", preview["body"])
+
+    def test_missing_accepted_standard_keeps_findings_but_cannot_approve(self):
+        self.accept_policy("# Project PR policy\n\n## Relevant standards\n\n- `docs/security.md`: Required security rules.\n")
+        (self.repo / "service.py").write_text("def read_record(user):\n    return record or fallback\n")
+        self.git("commit", "-qam", "change record access")
+        self.advance_pr()
+        self.state["scenario"] = "bug"
+        self.save()
+        report = self.run_review()
+        self.assertEqual(report["status"], "partial")
+        self.assertEqual(report["verdict"], "REQUEST_CHANGES")
+        self.assertEqual(report["findings"], 1)
+        self.assertIn("docs/security.md", report["coverage"]["limits"][0])
+
+    def test_invalid_accepted_policy_preserves_findings_as_partial_review(self):
+        self.accept_policy("# Project PR policy\n\n## Human review required\n\n- auth/**\n")
+        (self.repo / "service.py").write_text("def read_record(user):\n    return record or fallback\n")
+        self.git("commit", "-qam", "change record access")
+        self.advance_pr()
+        self.state["scenario"] = "bug"
+        self.save()
+        report = self.run_review()
+        self.assertEqual(report["status"], "partial")
+        self.assertEqual(report["findings"], 1)
+        self.assertEqual(report["verdict"], "REQUEST_CHANGES")
+        self.assertIn("could not be applied", report["coverage"]["limits"][0])
 
     def test_clean_review_dismisses_neededness_false_positive_and_reuses_unchanged_inputs(self):
         self.state["scenario"] = "false_positive"

@@ -9,7 +9,7 @@ metadata:
 
 This skill transports the reviewed bstack release. Its [archive](assets/bstack.zip) contains the package, dependencies, customizations, source manifest, and license notices. Do not fetch upstream skills or modify this distributor-owned archive.
 
-Use the current project unless the user names another target. Resolve [install.py](install.py) to its absolute path, then run:
+Target the Git repository containing the work, even when this installer skill or another bstack package lives in a parent folder or the user's home directory. Resolve the active repository with `git rev-parse --show-toplevel`; use that path for `--project`. If the session starts above several repositories and the intended one is unclear, identify it before installing. Resolve [install.py](install.py) to its absolute path, then run:
 
 ```sh
 python3 <installed-install-bstack>/install.py --project <project-root>
@@ -18,6 +18,8 @@ python3 <installed-install-bstack>/install.py --project <project-root>
 For a new installation, select the requested hosts or detect available tools, including the current host, and pass `--hosts` with the relevant names: `codex`, `claude`, `cursor`, `grok`. Without that flag, a new installation configures all four. For upgrades, omit `--hosts` to preserve the existing selection unless the user requests a change.
 
 The installer validates and copies the package to `.bstack/package/`, creates direct skill entries under `.agents/skills/`, and connects the selected hosts. It preserves the existing automatic routing preference; a new installation starts with routing off. Respect ownership conflicts rather than overwriting them. The installed package is independent of this transport skill and the development checkout. Keep this skill intact so its distributor can update or remove it normally.
+
+A package installed only in a parent directory is not setup for a child repository. Parent `CLAUDE.md` instructions may appear in Claude Code while the child's skills and auto hook are absent. Install into the child repository, run its `doctor`, then enable auto there if requested. In Claude Code desktop, start a Code chat rooted in that repository and open a fresh chat after setup. Do not report parent `doctor` success as proof for the child.
 
 Setup adds the seven-rule baseline inside managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`. It creates missing files, preserves surrounding project instructions, and follows existing links within the project without duplicating a shared block. The baseline applies with automatic routing off. Do not rewrite these blocks by hand or run a host's `/init` automatically.
 

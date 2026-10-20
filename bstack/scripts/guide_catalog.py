@@ -21,6 +21,7 @@ SKILL_WHY = {
     "bstack-guide": "Find a useful starting point without reading the whole package.",
     "control-cli": "Prove interactive terminal behavior by driving the actual program.",
     "control-ui": "Prove UI behavior in a real browser or app surface.",
+    "configure-pr": "Add a project's own PR priorities without editing shared BStack workflows.",
     "create-verification-skill": "Give a project a repeatable way to verify user-visible behavior.",
     "deslop": "Remove code patterns that look plausible but add noise or fragility.",
     "domain-modeling": "Give a team shared terms and capture only consequential design choices.",
@@ -121,8 +122,9 @@ RELATED = {
     "to-tickets": ["triage", "implement"],
     "implement": ["poteto-mode", "handoff", "to-pr"],
     "poteto-mode": ["how", "architect", "to-pr"],
-    "to-pr": ["review-pr", "resolve-pr"],
+    "to-pr": ["review-pr", "resolve-pr", "configure-pr"],
     "review-pr": ["resolve-pr"],
+    "configure-pr": ["to-pr", "review-pr", "resolve-pr"],
     "how": ["why", "architect", "teach"],
     "why": ["how", "teach"],
     "domain-modeling": ["grill-with-docs", "to-spec"],
@@ -146,7 +148,7 @@ def description(data):
 
 
 def area(path, name):
-    if name in ("to-pr", "review-pr", "resolve-pr"):
+    if name in ("to-pr", "review-pr", "resolve-pr", "configure-pr"):
         return "PR work"
     if path.startswith("sdlc/"):
         return "Planning"
@@ -173,6 +175,7 @@ def catalog():
                       "what": description(files[path]), "why": SKILL_WHY[name],
                       "loading": "Always available for prose" if name == "unslop" else
                                  "Discoverable for guide questions" if name == "bstack-guide" else
+                                 "Discoverable when setting project PR priorities" if name == "configure-pr" else
                                  "Invoke directly; a selected workflow may read it when relevant",
                       "related": RELATED.get(name, [])})
     for name in sorted(principles):

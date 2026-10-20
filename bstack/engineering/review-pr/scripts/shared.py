@@ -3,7 +3,7 @@ import re
 
 from contracts import COVERAGE, FINDING, ReviewError, canonical, digest, unique, validate, verdict
 
-PREFIX = "<!-- bstack-review-v1:"
+PREFIXES = {1: "<!-- bstack-review-v1:", 2: "<!-- bstack-review-v2:"}
 MAX_RECEIPT = 40000
 VOLATILE = {"created_at", "updated_at", "submitted_at", "reactions", "node_id", "mergeable", "mergeable_state"}
 
@@ -34,29 +34,35 @@ def context_digest(state, checks, ignored=()):
 
 def public_receipt(result, visible_body):
     pr = result["snapshot"]["pr"]
-    value = {"version": 1, "run_id": result["run_id"], "target": result["snapshot"]["target"],
+    value = {"version": 2, "run_id": result["run_id"], "target": result["snapshot"]["target"],
              "head": pr["head"]["sha"], "base": pr["base"]["sha"], "config_digest": result["config_digest"],
              "policy_digest": result["policy_digest"], "context_digest": result["context_digest"], "input_digest": result["input_digest"],
              "coverage": result["coverage"], "verdict": result["verdict"], "findings": result["findings"],
+             "human_review_required": result.get("human_review_required", []),
              "resolved_ids": [item["id"] for item in result.get("resolved_findings", [])],
              "body_digest": digest(visible_body.rstrip()), "echoes": result.get("publication_echoes", [])}
     body = canonical(value).replace("<", "\\u003c").replace(">", "\\u003e")
     if len(body.encode()) > MAX_RECEIPT:
         return ""
-    return PREFIX + body + " -->"
+    return PREFIXES[2] + body + " -->"
 
 
 def decoded_receipt(item, target):
     body = item.get("body") or ""
-    if not isinstance(body, str) or body.count(PREFIX) != 1 or not body.rstrip().endswith(" -->"):
+    if not isinstance(body, str) or not body.rstrip().endswith(" -->"):
         return None
-    visible, encoded = body.rsplit(PREFIX, 1)
+    prefix = next((value for value in PREFIXES.values() if body.count(value) == 1), None)
+    if prefix is None:
+        return None
+    visible, encoded = body.rsplit(prefix, 1)
     if len(encoded.encode()) > MAX_RECEIPT + 4:
         return None
     try:
         value = json.loads(encoded.rstrip()[:-4])
         required = {"version", "run_id", "target", "head", "base", "config_digest", "policy_digest", "context_digest", "input_digest", "coverage", "verdict", "findings", "resolved_ids", "body_digest", "echoes"}
-        if not isinstance(value, dict) or set(value) != required or type(value["version"]) is not int or value["version"] != 1 or value["target"] != target:
+        if not isinstance(value, dict) or type(value.get("version")) is not int or value["version"] not in PREFIXES or prefix != PREFIXES[value["version"]] or value.get("target") != target:
+            return None
+        if set(value) != required | ({"human_review_required"} if value["version"] == 2 else set()):
             return None
         if value["body_digest"] != digest(visible.rstrip()) or item.get("commit_id") != value["head"]:
             return None
@@ -69,6 +75,14 @@ def decoded_receipt(item, target):
             if not re.fullmatch(r"[a-f0-9]{64}", value[key]):
                 return None
         validate(value["coverage"], COVERAGE)
+        human = value.get("human_review_required", [])
+        if not isinstance(human, list) or len(human) > 100 or any(
+                not isinstance(rule, dict) or set(rule) != {"path", "reason", "changed"} or
+                not isinstance(rule["path"], str) or not isinstance(rule["reason"], str) or
+                not isinstance(rule["changed"], list) or not rule["changed"] or
+                any(not isinstance(path, str) or path.startswith("/") or ".." in path.split("/") for path in rule["changed"])
+                for rule in human):
+            return None
         if not isinstance(value["findings"], list) or len(value["findings"]) > 30:
             return None
         unique(value["findings"])
@@ -79,7 +93,7 @@ def decoded_receipt(item, target):
                 if path != "@pr" and (path.startswith("/") or ".." in path.split("/") or ".bstack" in path.split("/") or "\\" in path):
                     return None
         expected = verdict(value["findings"])
-        if not value["coverage"]["complete"] and expected == "APPROVE":
+        if (not value["coverage"]["complete"] or human) and expected == "APPROVE":
             expected = "COMMENT"
         if value["verdict"] != expected:
             return None
@@ -105,7 +119,7 @@ def model_state(state):
     copied = json.loads(canonical(state))
     for item in copied["discussion"]["reviews"]:
         if decoded_receipt({**item, "state": "COMMENTED"}, copied["target"]):
-            item["body"] = item["body"].split(PREFIX, 1)[0].rstrip()
+            item["body"] = item["body"].split(next(prefix for prefix in PREFIXES.values() if prefix in item["body"]), 1)[0].rstrip()
     return copied
 
 

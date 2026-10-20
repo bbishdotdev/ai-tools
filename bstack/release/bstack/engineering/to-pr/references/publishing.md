@@ -23,7 +23,7 @@ Create `body.md` using the [template](../../../github/pull_request_template.md).
 ]
 ```
 
-Media paths resolve relative to the media manifest. The example describes an illustration, not a test result. Follow [the visual procedure](visuals.md) for generated explanations. Use a real visual and labels supported by the actual diff. Keep the Mermaid fallback useful by itself. Inspect the rendered image and verify screenshot provenance before publication. If upload is unsupported, retain the diagram fallback and report the missing attachment. Do not add an external image service or commit evidence files just to obtain a URL without authorization.
+Media paths resolve relative to the media manifest. The example describes an illustration, not a test result. Follow [the visual procedure](visuals.md) for generated explanations. Use a real visual and labels supported by the actual diff. Keep the Mermaid fallback useful by itself. Inspect the rendered image and verify screenshot provenance before publication. For a PR-only image on GitHub, the first publication attempt is the helper's `gh pr edit --attach` path; when editing an existing PR directly, use that flag and verify the uploaded URL appears in the visual section. If upload is unsupported or fails, retain the diagram fallback and report the missing attachment. Do not add an external image service. Ask the user before committing a PR-only image to obtain a URL.
 
 ## Read all open work
 

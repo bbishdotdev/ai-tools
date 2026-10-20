@@ -60,6 +60,16 @@ Claude also documents [`/reload-skills`](https://code.claude.com/docs/en/skills#
 
 Claude's [Code tab supports project skills and slash invocation](https://code.claude.com/docs/en/desktop#use-skills). If skills are still missing, check that the session runs in the same checkout where bstack was installed, with `claude` included in its configured hosts. The installer creates `.claude/skills/<name>` links to the project's shared skill entries. `doctor` validates those files; it does not verify the desktop command menu.
 
+If BStack is installed in a home folder or parent workspace, that does not configure every Git repo beneath it. Claude can read a parent `CLAUDE.md` while the child repo has no BStack skills or auto hook, which looks like partial routing. Run the installer for the **child Git repo root** and check that repo's `doctor`. A globally installed `install-bstack` skill can do this from a Code chat opened in the repo; it copies its bundled package there. From an already installed parent package, the equivalent commands are:
+
+```sh
+python3 /path/to/parent/.bstack/package/scripts/bstack.py setup --project /path/to/repo --hosts claude
+python3 /path/to/repo/.bstack/package/scripts/bstack.py auto on --project /path/to/repo
+python3 /path/to/repo/.bstack/package/scripts/bstack.py doctor --project /path/to/repo
+```
+
+Enable auto only if you want it. Start a fresh Code chat rooted in that repo afterward. The parent can serve as a package source, but the child keeps its own copy and bindings. This is also the supported path when several repos share one parent workspace.
+
 A separate worktree, cloud session, or SSH host can have a different filesystem. Install bstack in that session's checkout. Copying `.bstack/config.json` from another checkout is not a substitute: ownership records and generated bindings contain paths to their original project. Regular Chat and Cowork are separate environments and are not covered by this project installer.
 
 ## From a download or clone
