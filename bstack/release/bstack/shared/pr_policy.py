@@ -126,7 +126,7 @@ def check(project, base, head):
     commit, policy = from_git(root, base)
     tip = git(root, "rev-parse", "--verify", head + "^{commit}").strip()
     ancestor = git(root, "merge-base", commit, tip).strip()
-    changed = [path for path in git(root, "diff", "--name-only", "--no-renames", "--no-ext-diff", ancestor, tip).splitlines() if path]
+    changed = [path for path in git(root, "diff", "-z", "--name-only", "--no-renames", "--no-ext-diff", ancestor, tip).split("\0") if path]
     return {"project": str(root), "policy_base": commit, "changed_paths": changed,
             "human_review_required": human_review(policy, changed), "policy": policy}
 

@@ -10,6 +10,8 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "engineering/review-pr/scripts/review.py"
+sys.path.insert(0, str(RUNNER.parent))
+from publication import plan_actions
 
 FAKE_HOST = r'''import base64
 import json
@@ -154,6 +156,21 @@ if judge and state.get("shift_on_judge", 0):
 
 
 class ReviewLifecycleTests(unittest.TestCase):
+    def test_existing_blocker_with_human_gate_does_not_post_new_review(self):
+        result = {
+            "findings": [{"id": "older", "category": "blocker"}],
+            "new_findings": [],
+            "human_review_required": [{"path": "bstack-pr-policy.md", "changed": ["bstack-pr-policy.md"]}],
+            "status": "complete",
+            "coverage": {"complete": True},
+            "snapshot": {"discussion": {"reviews": [], "comments": [], "inline": []}, "pr": {"author": "author"}, "target": {"number": 1}},
+            "feedback": [],
+            "scope": {"mode": "delta"},
+        }
+        actions, event = plan_actions(result, "reviewer")
+        self.assertIsNone(event)
+        self.assertEqual(actions, [])
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

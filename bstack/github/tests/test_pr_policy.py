@@ -19,19 +19,19 @@ class ProjectPolicyTests(unittest.TestCase):
                 return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
 
             (root / "src/auth").mkdir(parents=True)
-            (root / "src/auth/token.py").write_text("TOKEN = 1\n")
+            (root / "src/auth/entrée.py").write_text("TOKEN = 1\n")
             (root / "bstack-pr-policy.md").write_text("# Project PR policy\n\n## Human review required\n\n- `src/auth/**`: Human review protects authentication changes.\n")
             git("add", ".")
             git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "base")
             base = git("rev-parse", "HEAD")
             (root / "src/public").mkdir()
-            git("mv", "src/auth/token.py", "src/public/token.py")
-            git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qam", "move token")
+            git("mv", "src/auth/entrée.py", "src/public/entrée.py")
+            git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qam", "move auth file")
             result = subprocess.run([sys.executable, "-B", str(CHECKER), "check", "--project", str(root), "--base", base],
                                     text=True, capture_output=True, check=True)
             report = json.loads(result.stdout)
-            self.assertIn("src/auth/token.py", report["changed_paths"])
-            self.assertEqual(report["human_review_required"][0]["changed"], ["src/auth/token.py"])
+            self.assertIn("src/auth/entrée.py", report["changed_paths"])
+            self.assertEqual(report["human_review_required"][0]["changed"], ["src/auth/entrée.py"])
 
 
 if __name__ == "__main__":

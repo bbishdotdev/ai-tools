@@ -41,10 +41,10 @@ def desired_event(result):
         return "REQUEST_CHANGES"
     if "human-decision" in new_categories:
         return "COMMENT"
-    if result.get("human_review_required"):
-        return "COMMENT"
     if categories & {"blocker", "human-decision"}:
         return None
+    if result.get("human_review_required"):
+        return "COMMENT"
     if result["status"] != "complete" or not result.get("coverage", {"complete": True})["complete"]:
         return "COMMENT"
     return "APPROVE"
