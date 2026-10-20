@@ -1459,9 +1459,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/contracts.py",
-      "sha256": "a1e1d05bdefa3f77b8f47d2a17ef39cd6c627ac184e88bc91575118af8ee0185",
+      "sha256": "5cfa50a75f19f7b9c551341b49255621ad08ac84110519c4456555ae35c2d3ac",
       "source": "bstack/engineering/review-pr/scripts/contracts.py",
-      "source_sha256": "a1e1d05bdefa3f77b8f47d2a17ef39cd6c627ac184e88bc91575118af8ee0185",
+      "source_sha256": "5cfa50a75f19f7b9c551341b49255621ad08ac84110519c4456555ae35c2d3ac",
       "transforms": []
     },
     {

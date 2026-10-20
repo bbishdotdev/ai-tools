@@ -116,6 +116,7 @@ def consolidate(judgment, candidates, trees, discussion=None, artifacts=()):
     if unique(judgment["decisions"]) != expected:
         raise ReviewError("Adjudicator must address every candidate and previous final finding exactly once")
     kept = {item["id"] for item in judgment["decisions"] if item["disposition"] == "kept"}
+    resolved = {item["id"] for item in judgment["decisions"] if item["disposition"] == "resolved"}
     if unique(judgment["findings"]) != kept:
         raise ReviewError("Final findings must match kept decisions exactly")
     for item in judgment["decisions"]:
@@ -131,8 +132,9 @@ def consolidate(judgment, candidates, trees, discussion=None, artifacts=()):
             raise ReviewError("Feedback must reference unique existing discussion targets")
         targets.add(target)
         identifiers = item["finding_ids"]
-        if len(set(identifiers)) != len(identifiers) or not set(identifiers) <= kept:
-            raise ReviewError("Feedback must reference retained findings")
+        allowed = resolved if item["relation"] == "resolved" else kept
+        if len(set(identifiers)) != len(identifiers) or not set(identifiers) <= allowed:
+            raise ReviewError("Feedback must reference findings with a matching disposition")
         if item["relation"] in {"agree", "extend"}:
             if matched & set(identifiers):
                 raise ReviewError("An existing finding must have one discussion match")

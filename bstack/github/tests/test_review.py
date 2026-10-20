@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "engineering/review-pr/scripts/review.py"
 sys.path.insert(0, str(RUNNER.parent))
 from publication import plan_actions
+from contracts import ReviewError, consolidate
 
 FAKE_HOST = r'''import base64
 import json
@@ -156,6 +157,19 @@ if judge and state.get("shift_on_judge", 0):
 
 
 class ReviewLifecycleTests(unittest.TestCase):
+    def test_resolved_feedback_can_reference_closed_findings(self):
+        evidence = {"path": "service.py", "line": 1, "side": "head", "reason": "The changed handler checks ownership."}
+        finding = {"id": "prior", "category": "blocker", "title": "Missing ownership check", "explanation": "Another user can read a record.", "evidence": [evidence], "action": "Check the owner."}
+        judgment = {"coverage": {"complete": True, "limits": []}, "decisions": [{"id": "prior", "disposition": "resolved", "reason": "The handler checks ownership now.", "duplicate_of": None}],
+                    "findings": [], "feedback": [{"kind": "reviews", "id": 10, "relation": "resolved", "finding_ids": ["prior"], "body": "I rechecked this; the ownership check is in place.", "evidence": [evidence]}],
+                    "new_findings": [], "artifact_assessments": []}
+        trees = {"head": {"service.py": {"lines": 1}}}
+        discussion = {"reviews": [{"id": 10}]}
+        self.assertIs(consolidate(judgment, [finding], trees, discussion), judgment)
+        judgment["decisions"][0]["disposition"] = "dismissed"
+        with self.assertRaisesRegex(ReviewError, "matching disposition"):
+            consolidate(judgment, [finding], trees, discussion)
+
     def test_existing_blocker_with_human_gate_does_not_post_new_review(self):
         result = {
             "findings": [{"id": "older", "category": "blocker"}],
