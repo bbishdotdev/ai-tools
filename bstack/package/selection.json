@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "skills": [
     "architect",
     "arena",
@@ -69,6 +69,7 @@
   },
   "owned_skills": {
     "bstack-guide": "shared/skills/bstack-guide",
+    "configure-pr": "shared/skills/configure-pr",
     "grilling": "sdlc/skills/grilling",
     "grill-me": "sdlc/skills/grill-me",
     "grill-with-docs": "sdlc/skills/grill-with-docs",
@@ -93,9 +94,11 @@
     "shared/references/decision-authority.md",
     "shared/references/architecture-decisions.md",
     "shared/references/pr-standards.md",
+    "shared/references/pr-policy-template.md",
     "shared/references/work-adapters.md",
     "shared/workflow.py",
     "shared/adr.py",
+    "shared/pr_policy.py",
     "workspace/cli.py",
     "workspace/README.md",
     "workspace/OPERATIONS.md",

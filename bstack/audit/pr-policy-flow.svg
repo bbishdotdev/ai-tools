@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="420" viewBox="0 0 1080 420" role="img" aria-labelledby="title desc">
+  <title id="title">How BStack applies project PR policy</title>
+  <desc id="desc">The target branch policy and BStack standards combine with the proposed diff. BStack checks protected paths, then prepares, reviews, or resolves the PR. Protected paths require human review and cannot receive AI approval.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7a7a7a"/></marker>
+  </defs>
+  <rect width="1080" height="420" rx="20" fill="#f7f7f7"/>
+  <text x="36" y="51" fill="#171717" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">One shared PR judgment, with room for project priorities</text>
+  <text x="36" y="78" fill="#656565" font-family="Arial, Helvetica, sans-serif" font-size="15">The target branch sets the rules. The proposed PR cannot change its own review policy.</text>
+  <rect x="36" y="116" width="278" height="106" rx="14" fill="#fff" stroke="#d0d0d0"/>
+  <text x="56" y="147" fill="#171717" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Accepted project policy</text>
+  <text x="56" y="173" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Human-review paths</text>
+  <text x="56" y="195" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Critical behavior · review focus</text>
+  <text x="56" y="216" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Linked standards</text>
+  <rect x="36" y="238" width="278" height="100" rx="14" fill="#fff" stroke="#d0d0d0"/>
+  <text x="56" y="269" fill="#171717" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">BStack standards</text>
+  <text x="56" y="299" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Purpose · evidence · root cause</text>
+  <text x="56" y="322" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Scope · engineering principles</text>
+  <rect x="377" y="155" width="280" height="145" rx="14" fill="#171717"/>
+  <text x="401" y="191" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700">Proposed PR diff</text>
+  <text x="401" y="224" fill="#e3e3e3" font-family="Arial, Helvetica, sans-serif" font-size="15">Compare changed paths and</text>
+  <text x="401" y="249" fill="#e3e3e3" font-family="Arial, Helvetica, sans-serif" font-size="15">behavior with the accepted</text>
+  <text x="401" y="274" fill="#e3e3e3" font-family="Arial, Helvetica, sans-serif" font-size="15">policy and shared standards.</text>
+  <path d="M 314 169 H 362" stroke="#7a7a7a" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 314 288 H 347 V 227 H 362" stroke="#7a7a7a" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 657 227 H 680 V 169 H 695" stroke="#7a7a7a" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 657 227 H 680 V 288 H 695" stroke="#7a7a7a" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <rect x="710" y="116" width="334" height="106" rx="14" fill="#fff" stroke="#d0d0d0"/>
+  <text x="732" y="149" fill="#171717" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Protected path matches</text>
+  <text x="732" y="179" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Human review required</text>
+  <text x="732" y="201" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">AI approval withheld</text>
+  <rect x="710" y="238" width="334" height="100" rx="14" fill="#fff" stroke="#d0d0d0"/>
+  <text x="732" y="269" fill="#171717" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">No protected path</text>
+  <text x="732" y="299" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">Evidence-backed PR briefing, review</text>
+  <text x="732" y="322" fill="#515151" font-family="Arial, Helvetica, sans-serif" font-size="15">or feedback response</text>
+  <text x="36" y="388" fill="#656565" font-family="Arial, Helvetica, sans-serif" font-size="14">A human-review rule is a reviewer requirement, not a claim that the code is defective.</text>
+</svg>

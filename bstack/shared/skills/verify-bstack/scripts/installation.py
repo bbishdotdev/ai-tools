@@ -85,7 +85,7 @@ def inspect_bindings(project, bundle, hosts):
                  and f"allow_implicit_invocation: {str(implicit).lower()}" in policy.read_text())
         entries[name] = {"path": str(wrapper), "target": str(bundle / entry["path"]), "valid": valid,
                          "implicit": implicit}
-        if not valid or implicit != (name == "unslop"):
+        if not valid or implicit != (name in {"unslop", "bstack-guide", "configure-pr"}):
             failures.append(f"invalid public binding: {name}")
         for host in hosts:
             folder = {"claude": ".claude", "cursor": ".cursor", "grok": ".grok"}.get(host)

@@ -19,6 +19,8 @@ Use the accepted ticket or spec, relevant ADRs, prior review, and the final diff
 
 Read and apply the shared [PR standards](../../shared/references/pr-standards.md) to the full diff before writing the briefing. Check need, scope, evidence, decisions, and material risk. If a materially mixed PR remains, call it out and keep it draft for review.
 
+Run the [project PR policy checker](../../shared/pr_policy.py) against the actual target ref before publishing. Include any human-review requirement in Reviewer attention and use applicable critical behavior, focus areas, and committed standards when assessing the diff. A human-review rule does not by itself require a draft PR. Do not let a policy change on this PR set its own review rules.
+
 When this workflow starts before implementation, capture a useful baseline early. Use a real screenshot, command output, or measurement with enough context to compare it later. If the earlier state is gone, say that. A reconstruction or a generated illustration cannot count as observed baseline evidence.
 
 Keep unrelated work intact. Use an isolated checkout if needed. Inspect the final diff for unintended changes and sensitive data. Run [deslop](../deslop/SKILL.md) before committing and [no-comments](../no-comments/SKILL.md) before review. Complete the selected workflow's required tests and independent review. Reuse review of unchanged code; refresh checks affected by later edits. If a delegate opens the PR, retain the [interrogate](../interrogate/SKILL.md) step through the router's capability contract. Record missing checks honestly.

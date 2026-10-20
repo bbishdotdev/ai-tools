@@ -31,7 +31,7 @@ class PackageTests(unittest.TestCase):
                     "reflect", "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
                     "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
                     "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
-                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr", "resolve-pr", "bstack-guide"}
+                    "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr", "resolve-pr", "bstack-guide", "configure-pr"}
         self.assertEqual(set(manifest["public_skills"]), expected)
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}
@@ -39,10 +39,10 @@ class PackageTests(unittest.TestCase):
         for name, record in manifest["public_skills"].items():
             entry = self.assets["bstack/" + record["path"]].data.decode()
             self.assertIn("name: " + name + "\n", entry)
-            self.assertEqual(record["implicit"], name in ("unslop", "bstack-guide"))
-            self.assertIn("disable-model-invocation: " + str(name not in ("unslop", "bstack-guide")).lower(), entry)
+            self.assertEqual(record["implicit"], name in ("unslop", "bstack-guide", "configure-pr"))
+            self.assertIn("disable-model-invocation: " + str(name not in ("unslop", "bstack-guide", "configure-pr")).lower(), entry)
             metadata = str(Path("bstack") / Path(record["path"]).parent / "agents/openai.yaml")
-            self.assertIn("allow_implicit_invocation: " + str(name in ("unslop", "bstack-guide")).lower(), self.assets[metadata].data.decode())
+            self.assertIn("allow_implicit_invocation: " + str(name in ("unslop", "bstack-guide", "configure-pr")).lower(), self.assets[metadata].data.decode())
         self.assertFalse(any("automations/" in path or "benny" in path for path in self.assets))
         self.assertFalse(any("/content/" in path or "engineering/skills/" in path for path in self.assets))
         self.assertFalse(any("principles/" in path for path in public_files))
@@ -87,6 +87,36 @@ class PackageTests(unittest.TestCase):
                     self.assertEqual(health["package_integrity"], "passed")
                     self.assertFalse((consumer / ".cursor/skills").exists())
                     self.assertFalse((consumer / ".grok/skills").exists())
+
+    def test_shared_parent_package_needs_child_bindings_for_claude_auto(self):
+        with tempfile.TemporaryDirectory(prefix="bstack parent workspace ") as directory:
+            root = Path(directory)
+            release, parent, child = root / "release", root / "workspace", root / "workspace/code-maverick"
+            package.build(release)
+            child.mkdir(parents=True)
+            subprocess.run(["git", "init", "-q", str(child)], check=True)
+            source = release / "bstack/scripts/bstack.py"
+
+            def run(script, *args, payload=None):
+                result = subprocess.run([sys.executable, "-B", str(script), *args], input=payload,
+                                        text=True, capture_output=True, cwd=child)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                return json.loads(result.stdout)
+
+            run(source, "install", "--project", str(parent), "--hosts", "claude")
+            controller = parent / ".bstack/package/scripts/bstack.py"
+            run(controller, "auto", "on", "--project", str(parent))
+            self.assertEqual(run(controller, "doctor", "--project", str(child))["bindings"], "not_configured")
+            self.assertFalse((child / ".claude/skills/poteto-mode/SKILL.md").exists())
+            run(controller, "setup", "--project", str(child), "--hosts", "claude")
+            child_controller = child / ".bstack/package/scripts/bstack.py"
+            run(child_controller, "auto", "on", "--project", str(child))
+            self.assertEqual(run(child_controller, "doctor", "--project", str(child))["bindings"], "passed")
+            self.assertTrue((child / ".claude/skills/poteto-mode/SKILL.md").is_file())
+            hook = run(child_controller, "hook", "--host", "claude", "--project", str(child),
+                       payload=json.dumps({"hook_event_name": "UserPromptSubmit", "session_id": "child-session"}))
+            self.assertIn(str(child / ".bstack/package/shared/router/WORKFLOW.md"),
+                          hook["hookSpecificOutput"]["additionalContext"])
 
     def test_custom_unslop_and_local_setup_are_indexed(self):
         index = json.loads(self.assets["bstack/index.json"].data)

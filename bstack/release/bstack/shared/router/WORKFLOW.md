@@ -41,6 +41,7 @@ Use bstack's owned entries for selected SDLC workflows, including references fro
 | Prepare or publish an authorized PR | [to-pr](../../engineering/to-pr/SKILL.md) |
 | Review a PR or recheck its revisions | [review-pr](../../engineering/review-pr/SKILL.md) |
 | Respond to feedback on your PR | [resolve-pr](../../engineering/resolve-pr/SKILL.md) |
+| Configure project PR review priorities | [configure-pr](../configure-pr/SKILL.md) |
 | Transfer work to a fresh context | [handoff](../handoff/SKILL.md) |
 
 Named invocation selects that entry. Within opted-in automatic routing, propose or select the matching phase from the user's task. A sufficient spec or small known task can skip Wayfinder. Planning completion does not authorize implementation. Triage is intake coordination, not a mandatory step between planning and tickets.

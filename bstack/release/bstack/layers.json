@@ -4,6 +4,7 @@
   "policy": "shared/router/WORKFLOW.md",
   "replacements": {
     "bstack-guide": "shared/bstack-guide/SKILL.md",
+    "configure-pr": "shared/configure-pr/SKILL.md",
     "domain-modeling": "sdlc/domain-modeling/SKILL.md",
     "grill-me": "sdlc/grill-me/SKILL.md",
     "grill-with-docs": "sdlc/grill-with-docs/SKILL.md",

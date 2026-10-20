@@ -129,6 +129,23 @@ class GitHub:
             return [item for page in result for item in page]
         return result
 
+    def file_at(self, commit, path):
+        try:
+            value = self.api(f"contents/{path}?ref={commit}")
+        except ReviewError as error:
+            if re.search(r"\b(?:HTTP )?404\b", str(error)):
+                return None
+            raise
+        if isinstance(value, dict) and value.get("message") == "Not Found":
+            return None
+        if not isinstance(value, dict) or value.get("type") != "file" or value.get("encoding") != "base64" or not isinstance(value.get("content"), str):
+            raise ReviewError(f"Cannot read {path} from the pinned target revision")
+        try:
+            data = base64.b64decode("".join(value["content"].split()), validate=True)
+            return data.decode("utf-8")
+        except (ValueError, UnicodeError) as error:
+            raise ReviewError(f"Invalid text in {path} at the pinned target revision") from error
+
     def state(self):
         number = self.target["number"]
         pr = pr_metadata(self.api(f"pulls/{number}"))
@@ -224,7 +241,7 @@ def diff(repository, base, head):
 
 
 def changed_paths(repository, base, head):
-    return [name.decode("utf-8") for name in git(repository, "diff", "--no-ext-diff", "--name-only", "-z", base, head).split(b"\0") if name]
+    return [name.decode("utf-8") for name in git(repository, "diff", "--no-ext-diff", "--no-renames", "--name-only", "-z", base, head).split(b"\0") if name]
 
 
 def is_ancestor(repository, base, head):

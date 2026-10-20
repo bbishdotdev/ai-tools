@@ -43,6 +43,8 @@ python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <proje
 
 Installation creates `.bstack/package/` and direct public entries in `.agents/skills/`, with links for the selected hosts. The original source can be removed afterward.
 
+Install into each Git repo where the agent will work. A BStack install in a parent workspace does not automatically bind child repos. For Claude Code, parent instructions may load without the child's skill links or auto hook. A globally available `install-bstack` skill can install this exact bundled package into each repo; then run that repo's `doctor` and start a fresh Code chat. To use a parent package as the source, run its controller's `setup --project <child-repo>` and then use the child package's controller for `auto` and `doctor`.
+
 A skills.sh distributor uses the separate `install-bstack` transport skill, whose archive contains this same package. Run that skill's installer after distribution. skills.sh does not run setup automatically.
 
 ## Choose a workflow
@@ -82,6 +84,8 @@ Manual planning needs no model setup. Explicit autonomous grilling requires two 
 Use [to-pr](engineering/to-pr/SKILL.md) for authorized PR delivery. It reuses the completed implementation and review, produces a short visual briefing, and checks all open work for duplicate or conflicting intent. Flagged or incomplete reviews publish as drafts with linked notices.
 
 Use [review-pr](engineering/review-pr/SKILL.md) for an independent assessment. Use [resolve-pr](engineering/resolve-pr/SKILL.md) on the author's side to check feedback before fixing or replying. It limits changes to the PR's purpose and keeps unrelated suggestions separate.
+
+For project-specific priorities, invoke [configure-pr](shared/configure-pr/SKILL.md). It maintains an optional committed `bstack-pr-policy.md` at the Git repo root. All three PR workflows use its human-review paths, critical behavior, focus areas and linked standards alongside the shared [PR standards](shared/references/pr-standards.md). Setup does not create an empty policy in consuming projects.
 
 The [template](github/pull_request_template.md) and [Python helper](github/pr.py) ship here. Setup copies the template to `.github/pull_request_template.md` when the project has no PR template. That copy belongs to the project: edit it freely, and upgrades or uninstall will leave it alone. Existing templates in the root, `docs`, or `.github` take precedence. Setup reports every existing location and leaves those files untouched. To switch, compare the bundled template with the existing file, save the old contents, and replace the specific file you choose. For a multi-template directory, choose a file to replace or add BStack as a named option. Commit the chosen template to the default branch for GitHub to show it in the PR form. The helper uses authenticated `gh` for pushed branches within the same GitHub repository. It prepares locally, checks freshness, and writes only with explicit `publish --write`. Media upload falls back to the authored Mermaid, table, or text explanation. Other forges need a supported adapter; GitHub PR publishing does not implement the planning or ticket tracker adapters.
 

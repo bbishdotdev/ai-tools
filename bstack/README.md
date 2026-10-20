@@ -13,6 +13,7 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 - Optional [shared personal memory](shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.
 - Custom [prototyping](engineering/prototype/SKILL.md), [writing rules](shared/skills/unslop/SKILL.md), and [visual PR briefings](engineering/to-pr/SKILL.md), shaped around how I work.
 - [PR feedback resolution](engineering/resolve-pr/SKILL.md) that checks reviewer claims before editing and keeps unrelated work out of the PR.
+- An optional [project PR policy](shared/references/pr-policy-template.md) for human-review paths, critical behavior, and team priorities that `to-pr`, `review-pr`, and `resolve-pr` share.
 - A complete, pinned package that installs offline and preserves your selected tools and routing preferences when you upgrade.
 
 Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. The [verification skill](shared/skills/verify-bstack/SKILL.md) explains what to check for a given change; dated results live in [audit](audit/).
@@ -77,6 +78,7 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 | Turn accepted decisions into work | `to-spec`, then `to-tickets` if tickets help |
 | Build from an approved plan or a clear request | `implement`; automatic routing can also select the engineering workflow for an ordinary prompt |
 | Prepare, review, or respond to a PR | `to-pr`, `review-pr`, or `resolve-pr` |
+| Set this repo's PR review priorities | `configure-pr` |
 
 Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
 

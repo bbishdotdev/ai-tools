@@ -13,7 +13,9 @@ import tempfile
 import uuid
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared"))
 
+from pr_policy import NAME as PROJECT_POLICY_NAME, PolicyError, human_review, parse as parse_project_policy
 from contracts import JUDGMENT, REVIEW, ReviewError, canonical, consolidate, digest, scrub, unique, validate_review, verdict
 from artifacts import coverage
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
@@ -21,7 +23,7 @@ from models import configuration, doctor, invoke, rendered
 from shared import compatible_receipt, config_digest, context_digest, matching_context, model_state, receipts
 
 ROOT = Path(__file__).resolve().parent.parent
-ANALYSIS_VERSION = 2
+ANALYSIS_VERSION = 3
 MAX_REVIEW_PASSES = 3
 
 
@@ -70,6 +72,13 @@ def policy():
     prompts = {name: rendered(ROOT / "references" / (name + ".md")) for name in ("rubric", "reviewer", "adjudicator")}
     prompts["rubric"] += "\n\n" + (ROOT.parent.parent / "shared/references/pr-standards.md").read_text()
     return fingerprint, prompts
+
+
+def project_policy(github, base):
+    try:
+        return parse_project_policy(github.file_at(base, PROJECT_POLICY_NAME)), None
+    except PolicyError as error:
+        return parse_project_policy(None), str(error)
 
 
 def last_assessment(directory, pointer="last-complete.json"):
@@ -172,7 +181,9 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 write_json(output / "preflight.json", outcome)
                 return outcome
             checks = github.checks(state["pr"]["head"]["sha"])
-            policy_id, prompts = policy()
+            core_policy_id, prompts = policy()
+            accepted_policy, policy_error = project_policy(github, state["pr"]["base"]["sha"])
+            policy_id = digest({"core": core_policy_id, "project": accepted_policy, "project_error": policy_error})
             config_id, context_id = config_digest(config), context_digest(state, checks)
             fingerprint = digest({"context": context_id, "config": config_id, "policy": policy_id})
             previous = prior_run if force else last_assessment(directory)
@@ -215,9 +226,15 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     trees[side], _ = materialize(repository, commit, snapshots[side])
                 full_changes = changed_paths(repository, merge_base, head)
                 changes = changed_paths(repository, scope["from"], head)
+                human_required = human_review(accepted_policy, full_changes)
+                missing_standards = [item["path"] for item in accepted_policy["standards"]
+                                     if item["path"] not in trees["target"] or trees["target"][item["path"]]["lines"] is None]
                 limits, verified_archives = coverage(sorted(set(full_changes) | set(changes)), {side: trees[side] for side in ("base", "head")}, snapshots, commits, config["zip_trees"])
                 context = context_for(state, checks, scope, trees, changes, diff(repository, scope["from"], head), previous)
-                context.update({"evidence_commits": commits, "full_pr_changed_paths": full_changes, "coverage_limits": limits, "verified_archives": verified_archives})
+                context.update({"evidence_commits": commits, "full_pr_changed_paths": full_changes, "coverage_limits": limits,
+                                "verified_archives": verified_archives, "project_pr_policy": accepted_policy,
+                                "human_review_required": human_required, "missing_project_standards": missing_standards,
+                                "project_pr_policy_error": policy_error})
                 write_json(output / "snapshot.json", context)
                 context = {key: value for key, value in context.items() if key != "tree_index"}
                 previous_dir = directory / previous["run_id"] if previous and not previous.get("shared_source") else None
@@ -261,13 +278,15 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 mandatory = [item["reason"] for item in limits if item["mandatory"]]
                 material = [item["reason"] for item in judgment["artifact_assessments"] if item["material"]]
                 report_limits = [limit for report in [*reports.values(), judgment] for limit in report["coverage"]["limits"] if not report["coverage"]["complete"]]
-                complete = not mandatory and not material and all(item["coverage"]["complete"] for item in [*reports.values(), judgment])
+                complete = not mandatory and not material and not missing_standards and not policy_error and all(item["coverage"]["complete"] for item in [*reports.values(), judgment])
                 stale = context_digest(github.state(), github.checks(head)) != context_id
-                coverage_result = {"complete": complete, "limits": list(dict.fromkeys(mandatory + material + report_limits))}
+                coverage_result = {"complete": complete, "limits": list(dict.fromkeys(mandatory + material + report_limits +
+                                   [f"Project PR standard missing from the accepted target: {path}" for path in missing_standards] +
+                                   ([f"Project PR policy could not be applied: {policy_error}"] if policy_error else [])))}
                 if not complete and not coverage_result["limits"]:
                     coverage_result["limits"] = ["The reviewers could not finish assessing the supplied evidence"]
                 result_verdict = verdict(findings)
-                if (not complete or stale) and result_verdict == "APPROVE":
+                if (not complete or stale or human_required) and result_verdict == "APPROVE":
                     result_verdict = "COMMENT"
                 complete_pointer = directory / "last-complete.json"
                 previous_complete = read_json(complete_pointer)["run_id"] if complete_pointer.exists() else None
@@ -276,6 +295,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                           "previous_complete_run_id": previous_complete,
                           "input_digest": fingerprint, "context_digest": context_id, "config_digest": config_id, "policy_digest": policy_id, "config": config, "scope": scope,
                           "findings": findings, "decisions": decisions, "verdict": result_verdict, "evidence_commits": commits, "coverage": coverage_result,
+                          "human_review_required": human_required,
                           "artifact_assessments": judgment["artifact_assessments"],
                           "feedback": [{**item, "finding_ids": [aliases[name]["stable_id"] for name in item["finding_ids"]]} for item in judgment["feedback"]],
                           "new_findings": [aliases[name]["stable_id"] for name in judgment["new_findings"]]}
@@ -297,7 +317,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 write_json(directory / "last-assessment.json", {"run_id": run_id})
                 if result["status"] == "complete":
                     write_json(directory / "last-complete.json", {"run_id": run_id})
-                return {"status": result["status"], "run": str(output), "verdict": result["verdict"], "findings": len(findings), "scope": scope, "coverage": coverage_result, "stale": stale}
+                return {"status": result["status"], "run": str(output), "verdict": result["verdict"], "findings": len(findings), "scope": scope,
+                        "coverage": coverage_result, "human_review_required": human_required, "stale": stale}
         except Exception as exc:
             write_json(output / "failure.json", {"status": "incomplete", "error": str(exc), "finished_at": now()})
             raise ReviewError(f"{exc} Evidence: {output}")
@@ -369,14 +390,15 @@ def publish(project, run_path, write):
         if recent and result["run_id"] in recent.get("review_chain", []) and recent.get("review_passes", 1) > result.get("review_passes", 1):
             directory = directory.parent / recent["run_id"]
             result = recent
-    current_policy, _ = policy()
-    if current_policy != result["policy_digest"]:
-        raise ReviewError("Review policy changed; run a follow-up review")
     target = result["snapshot"]["target"]
     pr_url = f"https://{target['host']}/{target['repo']}/pull/{target['number']}"
     while True:
         github = GitHub(target)
         state = github.state()
+        core_policy, _ = policy()
+        accepted_policy, policy_error = project_policy(github, state["pr"]["base"]["sha"])
+        if digest({"core": core_policy, "project": accepted_policy, "project_error": policy_error}) != result["policy_digest"]:
+            raise ReviewError("Review policy changed; run a follow-up review")
         checks = github.checks(state["pr"]["head"]["sha"])
         if not publication_started(directory) and not result.get("stale_exhausted") and (result.get("stale") or not matching_context(result, state, checks)):
             if result.get("review_passes", 1) >= MAX_REVIEW_PASSES:

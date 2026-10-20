@@ -10,7 +10,7 @@ metadata:
 
 If the request is only to enable, update, or check personal memory, go directly to **Optional personal memory** below. Do not reconfigure project bindings or initialize or serve the workspace for that request.
 
-Resolve the installed package from the [controller](../../scripts/bstack.py). Run it with the requested project and hosts:
+Resolve the installed package from the [controller](../../scripts/bstack.py). Target the Git repository containing the work, even if this skill was discovered from a parent workspace. A parent-only setup does not bind a child repo's Claude skills or auto hook. Run the controller with the requested project and hosts:
 
 ```sh
 python3 <absolute-package-path>/scripts/bstack.py setup --project <project-root> --hosts codex claude cursor grok
@@ -18,9 +18,13 @@ python3 <absolute-package-path>/scripts/bstack.py setup --project <project-root>
 
 Setup creates direct public skill entries and project instructions. It preserves an existing auto preference and defaults to manual routing for a new installation. Do not enable auto mode without the user's request. Run `doctor --project <project-root>` to check the resulting package and bindings.
 
+When the source controller belongs to a parent BStack install, `setup` copies that exact package into the child repo. Use the child's own `.bstack/package/scripts/bstack.py` for subsequent `auto` and `doctor` commands. Start a fresh Claude Code desktop Code chat rooted in the child after changing bindings.
+
 When project setup and `doctor` succeed, recommend `bstack-guide` as a short introduction. If the user asked for a walkthrough as part of setup, read the installed `shared/bstack-guide/SKILL.md` and give it. If new bindings require a fresh session, recommend invoking the guide there. Skip this recommendation for a memory-only request.
 
 The seven-rule [baseline](../references/baseline-agents.md) is written into managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`, including new files. Existing project text and shared symlinks are preserved. Baseline rules apply independently of auto mode. Do not run a host's `/init` automatically. Offer optional project-specific guidance outside the blocks after setup; installation does not depend on it. If the user requests that guidance or a native init, preserve the blocks and run `doctor` afterward. A changed or missing block must be restored from its exact record in `.bstack/config.json` while preserving new project text; setup refuses to overwrite that conflict.
+
+If the user wants project-specific PR priorities or human-review paths, offer [configure-pr](../configure-pr/SKILL.md). Its committed policy is optional. Setup does not create an empty policy file or copy one from the package without a request.
 
 For local planning and tickets, initialize the project's workspace before creating optional role or adapter configuration:
 

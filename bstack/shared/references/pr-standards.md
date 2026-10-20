@@ -2,6 +2,8 @@
 
 Apply these standards when preparing a PR, reviewing it, or responding to feedback. The workflows differ; the judgment behind them should not.
 
+Projects may add a committed `bstack-pr-policy.md` at the repository root. Read it from the accepted target branch, not from the proposed PR head. Use the bundled [policy checker](../pr_policy.py) with the target ref and changed paths to apply human-review globs consistently. The policy may add critical behavior, review focus, and relevant committed standards; it cannot weaken these shared standards. A matched human-review rule withholds AI approval even when the code review is otherwise clean. Treat it as a required reviewer, not as a code defect. Changes to the policy file itself always require a human.
+
 ## Purpose and scope
 
 Confirm the problem or requirement exists, the claimed cause is sound, and the change earns its cost. Check current behavior, accepted decisions, and open work before adding a fix another PR already covers. Sometimes leaving the code alone is better. A PR description is a claim to verify, not proof.
