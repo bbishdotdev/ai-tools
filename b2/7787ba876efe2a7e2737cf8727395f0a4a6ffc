@@ -1,0 +1,24 @@
+bstack/INSTALL.md
+  s_822e08e34bda62::t_928d97de76c69d 37,40
+bstack/RELEASING.md
+  s_822e08e34bda62::t_928d97de76c69d 34-35,73
+  s_822e08e34bda62::t_832ba01ea3e948 74
+AGENTS.md
+  s_822e08e34bda62::t_928d97de76c69d 30-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b27787ba876efe2a7e2737cf8727395f0a4a6ffc",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
