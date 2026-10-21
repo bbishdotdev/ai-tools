@@ -27,3 +27,5 @@ When compacting, preserve the router path, active workflow, and next step. A sum
 The hook adds a short reminder, not the router body. Its optional verification receipt is test instrumentation. Do not fetch receipts from log files. Use the receipt in the current hook context, or report it unavailable.
 
 For router verification, use `bstack/shared/skills/verify-bstack/SKILL.md`. Runtime evidence and private local work records belong in the gitignored `.bstack/` directory. Keep pinned upstream sources unchanged. Track bstack policies and skill replacements separately according to `bstack/UPSTREAM.md`.
+
+For each bstack release, follow `bstack/RELEASING.md`. Check user-facing documentation against the shipped package and sync the BStack guide and skill catalog in the `bsquared` portfolio project before calling the release fully updated. If that project is unavailable, report the site update as pending.
