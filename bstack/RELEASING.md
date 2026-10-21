@@ -31,7 +31,8 @@ Keep published notes tied to what shipped. Record later work under **Unreleased*
 1. Start a release-preparation branch from current `main`, choose its scope, and update `version` in [package/selection.json](package/selection.json).
 2. Create `release-notes/<version>.md` from the template. Review it against the actual changes since the previous tag.
 3. Add the version, release date, and notes link to the changelog. Remove only the Unreleased entries included in this release.
-4. Rebuild the committed package and run the checks below from the repository root. Run any additional checks required by the changed workflows.
+4. Review the README, installation guide, offline guide, and examples against the package being released. Update stale version references and commands. In the `bsquared` portfolio project, sync `data/bstack-catalog.json` with the generated catalog and review `apps/web/src/app/bstack/page.tsx` for new capabilities and changed setup steps. Keep that site update in its own repository.
+5. Rebuild the committed package and run the checks below from the repository root. Run any additional checks required by the changed workflows.
 
 This stages a release in Git for review. It does not create or publish a GitHub Release. Use the chosen version in the output path; `0.4.3` below is an example.
 
@@ -68,6 +69,8 @@ The [release workflow](../.github/workflows/release.yml) checks the tag against 
 The draft is a temporary upload step, not a second approval checkpoint. Pushing the tag starts publication automatically. Ordinary commits and `main` pushes do not trigger this workflow.
 
 Check the Actions result and the release's two attached assets before announcing it. GitHub also shows automatic source archives. Link users to `bstack-<version>.zip` for installation.
+
+Check the published BStack portfolio page too. Confirm its catalog version and entries match the release and that any changed guidance is live. If the portfolio project or deployment is unavailable, say the site update is still pending rather than treating it as part of the verified release.
 
 ## Publish without Actions
 
