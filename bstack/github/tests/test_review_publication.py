@@ -180,7 +180,7 @@ class ReviewPublicationTests(unittest.TestCase):
                 preview = publish_result(result, directory, github, False)
                 self.assertEqual(preview["event"], expected)
                 self.assertNotIn("bstack-review-v1", preview["body"])
-                self.assertIn("Independently reviewed by model-one and model-two. Finalized by model-three.", preview["body"])
+                self.assertIn("<sub>Review provenance · Independent: model-one + model-two · Final check: model-three</sub>", preview["body"])
                 if partial:
                     self.assertIn("Still unverified", preview["body"])
                 if user == "author":
