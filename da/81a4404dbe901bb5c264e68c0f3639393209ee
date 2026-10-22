@@ -1,0 +1,45 @@
+bstack/engineering/review-pr/references/reviewer.md
+  s_822e08e34bda62::t_99fc1a5d42fde9 15
+bstack/engineering/review-pr/scripts/contracts.py
+  s_822e08e34bda62::t_9585cf4018ccdb 102,105-107,109
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_d7d10d8eda8b79 246-247
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_69d3ba3b4e5797 15,171-184
+bstack/release/bstack/engineering/review-pr/references/reviewer.md
+  s_822e08e34bda62::t_5401356bd5cc2d 15
+bstack/release/bstack/engineering/review-pr/scripts/contracts.py
+  s_822e08e34bda62::t_8ff39d09161464 102,105-107,109
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_5652abb36f5f2f 246-247
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_6a70595172f510 1259,1261,1293,1295,1325,1327,2195,2197,2438,2440,2518,2520
+bstack/release/bstack/shared/model_cli.py
+  s_822e08e34bda62::t_cd2ed77f7ef005 16,36-37
+bstack/release/bstack/shared/workflow.py
+  s_822e08e34bda62::t_014b53873e5c17 15,34-35
+bstack/release/bstack/workspace/wayfinder/core.py
+  s_822e08e34bda62::t_129e5b28dd77f1 139-163,230-232
+bstack/shared/model_cli.py
+  s_822e08e34bda62::t_ae3893984fc2af 16,36-37
+bstack/shared/workflow.py
+  s_822e08e34bda62::t_0dda8f29d2869b 15,34-35
+bstack/workspace/wayfinder/core.py
+  s_822e08e34bda62::t_ec89f2aad3af1f 139-163,230-232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "da81a4404dbe901bb5c264e68c0f3639393209ee",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
