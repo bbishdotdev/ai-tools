@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Keep PR briefings short and place useful visuals beside the explanation they support.
 - Use the shared configured CLI launcher for PR reviews and Codex PR visuals, including wrapper commands.
 - Make automatic engineering routing the new-install default. Existing projects keep their saved setting; `bstack-auto off` restores manual routing.
 - Add `off`, `ask`, and `auto` project-verification settings. New installs use `ask`; feature work can now create or update only the affected `verify-<app>` path.

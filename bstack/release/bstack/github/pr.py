@@ -22,6 +22,7 @@ from urllib.parse import quote
 VERSION = 1
 MAX_PRS = 500
 MAX_BYTES = 50 * 1024 * 1024
+MAX_BRIEF_WORDS = 650
 VISUAL = re.compile(r"<!--\s*bstack-visual:([A-Za-z0-9_-]+)\s*-->")
 IMAGE = re.compile(r"!\[[^\]\n]+\]\(https://[^\)\n]+\)")
 MERMAID = re.compile(r"(?im)^[ \t]*(?:`{3,}|~{3,})[ \t]*mermaid\b")
@@ -305,9 +306,8 @@ def review_notices(scan, review, assessment):
             coverage += f"\n- {len(issues) - 20} more coverage gaps are recorded in the saved scan."
         details.append(f"<details>\n<summary>Scan coverage ({len(issues)} gaps)</summary>\n\n{coverage}\n\n</details>")
     for row in review["reviews"]:
-        if row["disposition"] != "clear":
-            details.append(f"[#{row['number']}]({prs[row['number']]['url']}) ({row['disposition']}): {row['reason']}\n" +
-                           "\n".join("- " + item for item in row["evidence"]))
+        if row["disposition"] in WARNINGS:
+            details.append(f"- [#{row['number']}]({prs[row['number']]['url']}) ({row['disposition']}): {row['reason']}")
     return "\n".join(lines), "\n\n".join(details)
 
 
@@ -335,16 +335,45 @@ def micro_change(scan):
 def validate_visual(scan, body):
     section = visual_section(body)
     if section is not None and not has_visual(section):
-        fail("invalid_visual", "For visual nerds needs an image or Mermaid diagram; omit the section only for a self-explanatory micro change")
+        fail("invalid_visual", "A legacy For visual nerds section needs an image or Mermaid diagram; remove an empty section")
     if micro_change(scan):
         return
-    if section is None and "## What changes and why" in body and "## Before and after" in body:
-        fail("visual_required", "This PR uses the bstack template but has no For visual nerds section")
-    if not (has_visual(section) if section is not None else has_visual(body)):
+    if not has_visual(body):
         fail("visual_required", "A multi-file or multi-hunk PR needs an image or Mermaid diagram")
 
 
-def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False):
+def prose_word_count(body):
+    body = re.sub(r"(?s)<!--.*?-->", "", body)
+    lines = []
+    fence = None
+    for line in body.splitlines():
+        marker = re.match(r"^[ \t]*(`{3,}|~{3,})", line)
+        if fence is not None:
+            if marker and marker[1][0] == fence[0] and len(marker[1]) >= len(fence):
+                fence = None
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        lines.append(line)
+    text = "\n".join(lines)
+    text = re.sub(r"!?\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    return len(re.findall(r"[\w]+(?:[’'/-][\w]+)*", text, re.UNICODE))
+
+
+def validate_brief(body, length_exception=None):
+    words = prose_word_count(body)
+    if words > MAX_BRIEF_WORDS and length_exception is None:
+        fail("body_too_long", f"PR briefing is {words} words; shorten it below {MAX_BRIEF_WORDS} or record a required-template or material-risk exception", words=words)
+    if length_exception is not None:
+        if not isinstance(length_exception, str) or not 12 <= len(length_exception.strip()) <= 200:
+            fail("invalid_length_exception", "Give a concrete length exception between 12 and 200 characters")
+    return words
+
+
+def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False, length_exception=None):
     scan = validate_scan(read_json(scan_path))
     review = read_json(review_path)
     assessment = review_scan(scan, review)
@@ -381,18 +410,13 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
     directory = Path(out).resolve()
     if directory.exists():
         fail("output_exists", "Bundle output already exists; choose a new directory")
-    directory.mkdir(parents=True, mode=0o700)
     marker = "<!-- bstack-pr:" + uuid.uuid4().hex + " -->"
     media_records = []
-    if entries:
-        (directory / "assets").mkdir(mode=0o700)
     for media_id, item in entries.items():
         extension = item["source"].suffix.lower()
         if not re.fullmatch(r"\.[a-z0-9]{1,10}", extension):
             extension = ".bin"
         relative = f"assets/{media_id}{extension}"
-        shutil.copyfile(item["source"], directory / relative)
-        os.chmod(directory / relative, 0o600)
         media_records.append({"id": media_id, "file": relative, "alt": item["alt"], "fallback": item["fallback"]})
     mapping = {item["id"]: item for item in media_records}
     warning, attention = review_notices(scan, review, assessment)
@@ -415,21 +439,34 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
         if len(rendered) > 65000:
             fail("body_too_large", "Rendered PR body exceeds 65,000 characters; shorten body, findings, or visual fallbacks")
         return rendered
+    media_body = render(True)
+    fallback_body = render(False)
+    words = validate_brief(body, length_exception)
+    directory.mkdir(parents=True, mode=0o700)
+    if entries:
+        (directory / "assets").mkdir(mode=0o700)
+    for item in media_records:
+        source = entries[item["id"]]["source"]
+        target = directory / item["file"]
+        shutil.copyfile(source, target)
+        os.chmod(target, 0o600)
     write_json(directory / "scan.json", scan, True)
     write_json(directory / "review.json", review, True)
     write_file(directory / "body.source.md", body, True)
-    write_file(directory / "body.fallback.md", render(False), True)
-    write_file(directory / "body.media.md", render(True), True)
+    write_file(directory / "body.fallback.md", fallback_body, True)
+    write_file(directory / "body.media.md", media_body, True)
     write_json(directory / "media.json", media_records, True)
     bundle = {"version": VERSION, "createdAt": now(), "repo": scan["repo"], "host": scan["host"],
               "base": scan["base"], "head": scan["head"], "scanId": scan["scanId"], "title": title,
               "marker": marker, "requestedDraft": draft, "retainDraft": draft or bool(assessment["findings"]) or not assessment["complete"],
-              "assessment": assessment, "files": {str(path.relative_to(directory)): hashlib.sha256(path.read_bytes()).hexdigest()
+              "assessment": assessment, "bodyWords": words, "lengthException": length_exception,
+              "files": {str(path.relative_to(directory)): hashlib.sha256(path.read_bytes()).hexdigest()
                                                     for path in directory.rglob("*") if path.is_file()}}
     write_json(directory / "bundle.json", bundle, True)
     save_state(directory, {"version": VERSION, "status": "prepared", "attempted": False, "pr": None, "events": []})
     return {"status": "prepared", "bundle": str(directory), "scanId": scan["scanId"],
-            "retainDraft": bundle["retainDraft"], "assessment": assessment, "media": len(media_records)}
+            "retainDraft": bundle["retainDraft"], "assessment": assessment, "media": len(media_records),
+            "bodyWords": words, "lengthException": length_exception}
 
 
 def load_bundle(directory):
@@ -692,6 +729,7 @@ def main(argv=None):
         prepare.add_argument("--title", required=True)
         prepare.add_argument("--media", type=Path)
         prepare.add_argument("--draft", action="store_true")
+        prepare.add_argument("--length-exception")
         publish = commands.add_parser("publish", help="Plan, or explicitly publish, a saved bundle")
         publish.add_argument("--bundle", type=Path, required=True)
         publish.add_argument("--write", action="store_true")
@@ -712,7 +750,8 @@ def main(argv=None):
             else:
                 result = scan_summary(value, args.scan)
         elif args.command == "prepare":
-            result = prepare_bundle(args.scan, args.review, args.title, args.body, args.out, args.media, args.draft)
+            result = prepare_bundle(args.scan, args.review, args.title, args.body, args.out, args.media, args.draft,
+                                    args.length_exception)
         else:
             result = publish_bundle(args.bundle, args.write)
         print(canonical({"ok": True, "value": result}))

@@ -10,7 +10,7 @@ Confirm the selected remote, host, base, and head. The helper handles a pushed h
 
 Use the final diff against the intended base, including the parent branch for a stacked PR. Check local and required CI results relevant to this revision. Resolve required review findings or keep the PR draft with the remaining work visible. Preserve the consumer's required template fields.
 
-Create `body.md` using the [template](../../../github/pull_request_template.md). Keep the state comparison in Before and after and the implementation visual in For visual nerds. Use a body file so shell substitutions cannot alter prose or expose data. For an image managed by the helper, put `<!-- bstack-visual:flow -->` in the visual section and add a media manifest:
+Create `body.md` using the [template](../../../github/pull_request_template.md). Put before/after screenshots beside the state comparison and implementation visuals beside the explanation they support. Use a body file so shell substitutions cannot alter prose or expose data. For an image managed by the helper, put `<!-- bstack-visual:flow -->` at its intended position and add a media manifest:
 
 ```json
 [
@@ -23,7 +23,7 @@ Create `body.md` using the [template](../../../github/pull_request_template.md).
 ]
 ```
 
-Media paths resolve relative to the media manifest. The example describes an illustration, not a test result. Follow [the visual procedure](visuals.md) for generated explanations. Use a real visual and labels supported by the actual diff. Keep the Mermaid fallback useful by itself. Inspect the rendered image and verify screenshot provenance before publication. For a PR-only image on GitHub, the first publication attempt is the helper's `gh pr edit --attach` path; when editing an existing PR directly, use that flag and verify the uploaded URL appears in the visual section. If upload is unsupported or fails, retain the diagram fallback and report the missing attachment. Do not add an external image service. Ask the user before committing a PR-only image to obtain a URL.
+Media paths resolve relative to the media manifest. Use a different ID and marker for each image; the helper can attach several in one command and keeps them at their marker positions. The example describes an illustration, not a test result. Follow [the visual procedure](visuals.md) for generated explanations. Use a real visual and labels supported by the actual diff. Keep each Mermaid fallback useful by itself. Inspect rendered images and verify screenshot provenance before publication. For PR-only images on GitHub, the first publication attempt is the helper's `gh pr edit --attach` path; when editing an existing PR directly, use that flag and verify the uploaded URLs appear beside their explanations. If upload is unsupported or fails, retain the diagram fallbacks and report the missing attachments. Do not add an external image service. Ask the user before committing PR-only images to obtain URLs.
 
 ## Read all open work
 
@@ -79,7 +79,7 @@ python3 "$PR_HELPER" prepare --scan .bstack/pr/scan.json --review .bstack/pr/rev
 python3 "$PR_HELPER" publish --bundle .bstack/pr/bundle
 ```
 
-Add `--media .bstack/pr/media.json` when the body contains media markers. Add `--draft` to `prepare` for draft-only authorization, missing required checks, or unfinished work. Inspect the prepared body and the read-only publication plan. Confirm the helper's linked overlap notice describes the evidence accurately and that its Reviewer attention gives a concrete next step. Keep other genuine reviewer actions from the authored body.
+Add `--media .bstack/pr/media.json` when the body contains media markers. Add `--draft` to `prepare` for draft-only authorization, missing required checks, or unfinished work. `prepare` checks the rendered visible prose after helper notices; if it exceeds 650 words, shorten it. Use `--length-exception 'reason'` only for a required project template or material risk that truly needs more detail. Inspect the prepared body and the read-only publication plan. Confirm the helper's linked overlap notice describes the evidence accurately and that its Reviewer attention gives a concrete next step. Keep other genuine reviewer actions from the authored body.
 
 The helper must complete its final freshness check immediately before creation. If the head, base, or open-PR evidence changed before creation, refresh the scan and affected substantive reviews, then prepare again. Do not reuse a stale classification to make a PR ready. Failed or incomplete coverage stays explicit and draft. When the user has already authorized publication to this destination, proceed without asking again:
 
