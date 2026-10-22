@@ -455,13 +455,87 @@ class PRTests(unittest.TestCase):
         result = pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.bundle)
         self.assertEqual(result["status"], "prepared")
 
-    def test_bstack_template_keeps_visual_section(self):
+    def test_bstack_template_accepts_visual_beside_explanation(self):
         gh = FakeGitHub()
         gh.compare_files = [FILE, {**FILE, "filename": "other.py"}]
         self.body_path.write_text("## What changes and why\n\nChange.\n\n## Before and after\n\n![Before](https://example.com/before.png)\n\n## How it works and why\n\nReason.\n")
+        self.prepare(gh)
+        self.assertNotIn("For visual nerds", (self.bundle / "body.fallback.md").read_text())
+
+    def test_helper_notices_do_not_consume_author_brief_budget(self):
+        gh = FakeGitHub([raw_pr()])
+        self.scan(gh)
+        scan = pr.read_json(self.scan_path)
+        pr.write_json(self.review_path, {"version": 1, "scanId": scan["scanId"], "reviews": [
+            {"number": 7, "disposition": "duplicate", "reason": "Duplicate " * 700,
+             "evidence": ["The same behavior appears in the other PR"]}]})
+        result = pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.bundle)
+        self.assertLess(result["bodyWords"], pr.MAX_BRIEF_WORDS)
+        self.assertIn("Duplicate", (self.bundle / "body.fallback.md").read_text())
+        self.body_path.write_text("## What changes and why\n\n" + "Change " * 700 +
+                                  "\n\n```mermaid\nflowchart LR\n A --> B\n```\n")
         with self.assertRaises(pr.Error) as raised:
-            self.prepare(gh)
-        self.assertEqual(raised.exception.code, "visual_required")
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.root / "too-long")
+        self.assertEqual(raised.exception.code, "body_too_long")
+        result = pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path,
+                                   self.root / "exception", length_exception="Required project risk needs the full explanation")
+        self.assertGreater(result["bodyWords"], pr.MAX_BRIEF_WORDS)
+
+    def test_visual_fallback_prose_counts_toward_brief_budget(self):
+        self.prepare(media=True)
+        media = self.root / "media.json"
+        entries = pr.read_json(media)
+        entries[0]["fallback"] = "Context " * 80 + "\n\n```mermaid\nflowchart LR\n A --> B\n```"
+        pr.write_json(media, entries)
+        self.body_path.write_text("## What changes and why\n\n" + "Change " * 590 +
+                                  "\n\n<!-- bstack-visual:flow -->\n")
+        with self.assertRaises(pr.Error) as raised:
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path,
+                              self.root / "fallback-too-long", media)
+        self.assertEqual(raised.exception.code, "body_too_long")
+
+    def test_related_overlap_without_action_does_not_fill_reviewer_attention(self):
+        self.prepare(disposition="related", evidence=["Compared both file patches"])
+        body = (self.bundle / "body.fallback.md").read_text()
+        self.assertNotIn("## Reviewer attention", body)
+        self.assertNotIn("Compared both file patches", body)
+
+    def test_pr_signature_reports_model_without_accepting_markup(self):
+        self.prepare()
+        self.assertIn("<sub><i>🤖 BStack PR · Model not reported by host</i></sub>",
+                      (self.bundle / "body.fallback.md").read_text())
+        signed = self.root / "signed"
+        pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, signed,
+                          author_model="gpt-6-astra")
+        body = (signed / "body.fallback.md").read_text()
+        self.assertIn("<sub><i>🤖 BStack PR · Prepared with gpt-6-astra</i></sub>", body)
+        self.assertLess(body.index("## Validation"), body.index("🤖 BStack PR"))
+        with self.assertRaises(pr.Error) as raised:
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path,
+                              self.root / "invalid", author_model="<script>alert(1)</script>")
+        self.assertEqual(raised.exception.code, "invalid_model")
+
+    def test_two_visuals_attach_beside_their_explanations(self):
+        self.body_path.write_text("## What changes and why\n\nChange.\n\n## Before and after\n\n<!-- bstack-visual:before -->\n\n## How it works and why\n\nReason.\n\n<!-- bstack-visual:logic -->\n")
+        for name in ("before", "logic"):
+            (self.root / f"{name}.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
+        media = self.root / "media.json"
+        pr.write_json(media, [{"id": name, "file": f"{name}.svg", "alt": f"{name} visual",
+                               "fallback": "```mermaid\nflowchart LR\n A --> B\n```"}
+                              for name in ("before", "logic")])
+        gh = FakeGitHub()
+        self.scan(gh)
+        scan = pr.read_json(self.scan_path)
+        pr.write_json(self.review_path, {"version": 1, "scanId": scan["scanId"], "reviews": []})
+        result = pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, self.bundle, media)
+        self.assertEqual(result["media"], 2)
+        with mock.patch.object(pr, "GitHub", return_value=gh):
+            pr.publish_bundle(self.bundle, write=True)
+        body = gh.raw[99]["body"]
+        self.assertEqual(body.count("https://github.com/user-attachments/assets/fixture"), 2)
+        self.assertLess(body.index("before visual"), body.index("## How it works and why"))
+        self.assertGreater(body.index("logic visual"), body.index("## How it works and why"))
+        self.assertEqual(sum("--attach" in args for args, _ in gh.calls), 1)
 
     def test_attached_visual_needs_a_diagram_fallback(self):
         self.prepare(media=True)

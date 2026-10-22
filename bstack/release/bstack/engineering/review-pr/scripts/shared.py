@@ -134,17 +134,12 @@ def receipts(state, github):
         return []
     if not isinstance(actor, str):
         return []
-    trusted, records = {}, []
+    records = []
     for item, value in candidates:
         author = item.get("author")
         if not isinstance(author, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]*", author):
             continue
-        if author not in trusted:
-            try:
-                trusted[author] = author.casefold() == actor.casefold() or github.api(f"collaborators/{author}/permission").get("permission") in {"write", "maintain", "admin"}
-            except (ReviewError, AttributeError, TypeError):
-                trusted[author] = False
-        if trusted[author]:
+        if author.casefold() == actor.casefold():
             records.append({"receipt": value, "source": {**source_record("reviews", item), "url": item.get("html_url"), "node_id": item.get("node_id"), "body": item.get("body")}})
     return records
 
