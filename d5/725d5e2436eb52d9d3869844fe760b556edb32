@@ -1,0 +1,53 @@
+bstack/engineering/review-pr/scripts/worker_canary.py
+  s_822e08e34bda62::t_574115435435c1 1,12-14
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_69766425655abc 23,25,51
+bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_6e09310081637f 7,60,63,65,93,149
+bstack/github/tests/test_review_publication.py
+  s_822e08e34bda62::t_a4a5df11321897 150,154-158,167-168
+  s_822e08e34bda62::t_aa0cdd3b9be12a 151,159
+bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_54fbc4e234c123 24
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_61c0710bfa0ef1 288,294-297
+  s_822e08e34bda62::t_a8aa6f28684913 285
+bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_ef72974a4aa6d1 9,128-135
+  s_822e08e34bda62::t_1553c752e4a501 1,109
+  s_822e08e34bda62::t_093ed231256e0c 136-137
+  s_822e08e34bda62::t_69766425655abc 113
+  s_822e08e34bda62::t_e6414aca42e4fd 100-108,114
+bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_69766425655abc 11-12,17
+bstack/release/bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_a24c1ae73cc342 24
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_8f43f809083b36 23,25,51
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_7b688b4e598632 11-12,17
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_c644cd08cca7d0 7,60,63,65,93,149
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_3d0dd411b88faa 1,9,100-109,113-114,128-137
+bstack/release/bstack/engineering/review-pr/scripts/worker_canary.py
+  s_822e08e34bda62::t_2ad49d876d9e88 1,12-14
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_a6cf5318c5bd34 1267,1269,1277,1279,1285,1287,1333,1335,1349,1351,1365,1367
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d5725d5e2436eb52d9d3869844fe760b556edb32",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
