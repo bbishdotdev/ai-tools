@@ -75,11 +75,11 @@ The helper saves a partial scan when comparison, detail, or final consistency re
 ## Prepare, inspect, and publish
 
 ```bash
-python3 "$PR_HELPER" prepare --scan .bstack/pr/scan.json --review .bstack/pr/review.json --title 'fix(workspace): preserve the current ticket owner' --body .bstack/pr/body.md --out .bstack/pr/bundle
+python3 "$PR_HELPER" prepare --scan .bstack/pr/scan.json --review .bstack/pr/review.json --title 'fix(workspace): preserve the current ticket owner' --body .bstack/pr/body.md --out .bstack/pr/bundle --author-model gpt-6-astra
 python3 "$PR_HELPER" publish --bundle .bstack/pr/bundle
 ```
 
-Add `--media .bstack/pr/media.json` when the body contains media markers. Add `--draft` to `prepare` for draft-only authorization, missing required checks, or unfinished work. `prepare` counts the authored prose with visual fallbacks expanded, excluding generated helper notices; if it exceeds 650 words, shorten it. Use `--length-exception 'reason'` only for a required project template or material risk that truly needs more detail. Inspect the prepared body and the read-only publication plan. Confirm the helper's linked overlap notice describes the evidence accurately and that its Reviewer attention gives a concrete next step. Keep other genuine reviewer actions from the authored body.
+The model in the example is illustrative. Replace it with the exact model ID shown by the current host; omit `--author-model` if the host does not expose one. The helper signs the PR in small text either way. Add `--media .bstack/pr/media.json` when the body contains media markers. Add `--draft` to `prepare` for draft-only authorization, missing required checks, or unfinished work. `prepare` counts the authored prose with visual fallbacks expanded, excluding generated helper notices and signature; if it exceeds 650 words, shorten it. Use `--length-exception 'reason'` only for a required project template or material risk that truly needs more detail. Inspect the prepared body and the read-only publication plan. Confirm the helper's linked overlap notice describes the evidence accurately and that its Reviewer attention gives a concrete next step. Keep other genuine reviewer actions from the authored body.
 
 The helper must complete its final freshness check immediately before creation. If the head, base, or open-PR evidence changed before creation, refresh the scan and affected substantive reviews, then prepare again. Do not reuse a stale classification to make a PR ready. Failed or incomplete coverage stays explicit and draft. When the user has already authorized publication to this destination, proceed without asking again:
 

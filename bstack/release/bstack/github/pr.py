@@ -373,12 +373,21 @@ def validate_brief(body, length_exception=None):
     return words
 
 
-def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False, length_exception=None):
+def model_signature(model):
+    if model is None:
+        return "<sub><i>🤖 BStack PR · Model not reported by host</i></sub>"
+    if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/+-]{0,79}", model):
+        fail("invalid_model", "Use the exact model ID reported by the host, without prose or markup")
+    return f"<sub><i>🤖 BStack PR · Prepared with {model}</i></sub>"
+
+
+def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False, length_exception=None, author_model=None):
     scan = validate_scan(read_json(scan_path))
     review = read_json(review_path)
     assessment = review_scan(scan, review)
     text_value(title, "Title")
     body = text_value(Path(body_path).read_text(), "Body")
+    signature = model_signature(author_model)
     validate_visual(scan, body)
     media = read_json(media_path) if media_path else []
     if not isinstance(media, list):
@@ -435,7 +444,7 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
                 result = result[:heading.end()] + "\n\n" + attention + "\n" + result[heading.end():]
             else:
                 result = result.rstrip() + "\n\n## Reviewer attention\n\n" + attention
-        rendered = ((warning + "\n\n") if warning else "") + result.rstrip() + "\n\n" + marker + "\n"
+        rendered = ((warning + "\n\n") if warning else "") + result.rstrip() + "\n\n" + signature + "\n\n" + marker + "\n"
         if len(rendered) > 65000:
             fail("body_too_large", "Rendered PR body exceeds 65,000 characters; shorten body, findings, or visual fallbacks")
         return rendered
@@ -461,6 +470,7 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
               "base": scan["base"], "head": scan["head"], "scanId": scan["scanId"], "title": title,
               "marker": marker, "requestedDraft": draft, "retainDraft": draft or bool(assessment["findings"]) or not assessment["complete"],
               "assessment": assessment, "bodyWords": words, "lengthException": length_exception,
+              "authorModel": author_model,
               "files": {str(path.relative_to(directory)): hashlib.sha256(path.read_bytes()).hexdigest()
                                                     for path in directory.rglob("*") if path.is_file()}}
     write_json(directory / "bundle.json", bundle, True)
@@ -731,6 +741,7 @@ def main(argv=None):
         prepare.add_argument("--media", type=Path)
         prepare.add_argument("--draft", action="store_true")
         prepare.add_argument("--length-exception")
+        prepare.add_argument("--author-model")
         publish = commands.add_parser("publish", help="Plan, or explicitly publish, a saved bundle")
         publish.add_argument("--bundle", type=Path, required=True)
         publish.add_argument("--write", action="store_true")
@@ -752,7 +763,7 @@ def main(argv=None):
                 result = scan_summary(value, args.scan)
         elif args.command == "prepare":
             result = prepare_bundle(args.scan, args.review, args.title, args.body, args.out, args.media, args.draft,
-                                    args.length_exception)
+                                    args.length_exception, args.author_model)
         else:
             result = publish_bundle(args.bundle, args.write)
         print(canonical({"ok": True, "value": result}))

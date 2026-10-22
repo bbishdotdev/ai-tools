@@ -500,6 +500,21 @@ class PRTests(unittest.TestCase):
         self.assertNotIn("## Reviewer attention", body)
         self.assertNotIn("Compared both file patches", body)
 
+    def test_pr_signature_reports_model_without_accepting_markup(self):
+        self.prepare()
+        self.assertIn("<sub><i>🤖 BStack PR · Model not reported by host</i></sub>",
+                      (self.bundle / "body.fallback.md").read_text())
+        signed = self.root / "signed"
+        pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, signed,
+                          author_model="gpt-6-astra")
+        body = (signed / "body.fallback.md").read_text()
+        self.assertIn("<sub><i>🤖 BStack PR · Prepared with gpt-6-astra</i></sub>", body)
+        self.assertLess(body.index("## Validation"), body.index("🤖 BStack PR"))
+        with self.assertRaises(pr.Error) as raised:
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path,
+                              self.root / "invalid", author_model="<script>alert(1)</script>")
+        self.assertEqual(raised.exception.code, "invalid_model")
+
     def test_two_visuals_attach_beside_their_explanations(self):
         self.body_path.write_text("## What changes and why\n\nChange.\n\n## Before and after\n\n<!-- bstack-visual:before -->\n\n## How it works and why\n\nReason.\n\n<!-- bstack-visual:logic -->\n")
         for name in ("before", "logic"):

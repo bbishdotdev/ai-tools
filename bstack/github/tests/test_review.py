@@ -684,7 +684,7 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertEqual(complete["status"], "complete")
         self.assertEqual(complete["verdict"], "APPROVE")
 
-    def test_public_receipt_reuse_across_developers_and_independent_model_choices(self):
+    def test_other_developers_receipts_are_context_not_review_proof(self):
         first = self.run_review()
         self.cli("publish", "--run", first["run"], "--write")
         self.project = self.home / "second-project"
@@ -692,9 +692,9 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.state["viewer"] = "second-reviewer"
         self.save()
         reuse = self.run_review()
-        self.assertEqual(reuse["status"], "reused_shared")
-        self.assertEqual(reuse["author"], "reviewer")
-        self.assertEqual((self.home / "claude-calls.txt").read_text(), "1")
+        self.assertEqual(reuse["status"], "complete")
+        self.assertEqual(reuse["scope"]["mode"], "full")
+        self.assertEqual((self.home / "claude-calls.txt").read_text(), "2")
         independent = self.run_review(True, "--fresh")
         self.assertEqual(independent["scope"]["mode"], "full")
         reviewer = json.loads((self.home / "codex-context.json").read_text())
@@ -704,7 +704,7 @@ class ReviewLifecycleTests(unittest.TestCase):
         (self.project / ".bstack/review.json").write_text(json.dumps({"roles": {"reviewer_b": {"model": "gpt-6-sol"}}}))
         changed = self.run_review()
         self.assertEqual(changed["scope"]["mode"], "full")
-        self.assertEqual((self.home / "claude-calls.txt").read_text(), "3")
+        self.assertEqual((self.home / "claude-calls.txt").read_text(), "4")
         reviews = json.loads((self.home / "published.json").read_text())
         reviews[0]["body"] = reviews[0]["body"].replace("✅", "Edited ✅", 1)
         (self.home / "published.json").write_text(json.dumps(reviews))
@@ -720,7 +720,7 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.save()
         self.assertEqual(self.run_review()["status"], "complete")
 
-    def test_shared_baseline_supports_delta_without_private_role_reports(self):
+    def test_other_developers_receipts_do_not_supply_private_baseline(self):
         self.state["scenario"] = "bug"
         self.save()
         initial = self.run_review()
@@ -735,13 +735,14 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.state.update({"pr": self.pr(), "fixed": True})
         self.save()
         followup = self.run_review()
-        self.assertEqual(followup["scope"]["mode"], "delta")
+        self.assertEqual(followup["scope"]["mode"], "full")
         self.assertEqual(followup["verdict"], "APPROVE")
         reviewer = json.loads((self.home / "codex-context.json").read_text())
         self.assertIsNone(reviewer["own_prior_report"])
-        self.assertEqual(len(reviewer["prior_findings"]), 1)
+        self.assertEqual(len(reviewer["snapshot"]["discussion"]["reviews"]), 1)
+        self.assertEqual(reviewer["prior_findings"], [])
         result = json.loads((Path(followup["run"]) / "result.json").read_text())
-        self.assertEqual(len(result["resolved_findings"]), 1)
+        self.assertEqual(result["resolved_findings"], [])
 
 
 if __name__ == "__main__":

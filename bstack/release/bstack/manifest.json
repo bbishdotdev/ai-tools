@@ -1227,9 +1227,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/SKILL.md",
-      "sha256": "7b0d477cbca693b9b08bcef01392c201bf8d2bd35a85bd718fecb88efe624318",
+      "sha256": "d6b099a2b4ed9d49bcdf63b0acb46992d2e0610c1c79701b03d3a937cb071abd",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "b03430c9e059c003b0e6db85ad402c2597dbff8ba3504a0b4a704c827f4cb32e",
+      "source_sha256": "4800fc23de653c017d4104f304c09f8a7565dac15b3fd64a0b21a1147e91524c",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1274,9 +1274,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "a79ef493da4430d46d63dc52e66bb5a16823359b3ce166bc7975ec3c9bdc91cb",
+      "sha256": "c43cb189caff6ad5671ff4c445fe8e98f7346dcb0d35e380e626ebc285c1c626",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "a79ef493da4430d46d63dc52e66bb5a16823359b3ce166bc7975ec3c9bdc91cb",
+      "source_sha256": "c43cb189caff6ad5671ff4c445fe8e98f7346dcb0d35e380e626ebc285c1c626",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/review-pr/references/security.md",
+      "sha256": "b68d25e4c782a969684c0f9bedb1ae593cdde885b6bc13ef862d25f90444c049",
+      "source": "bstack/engineering/review-pr/references/security.md",
+      "source_sha256": "b68d25e4c782a969684c0f9bedb1ae593cdde885b6bc13ef862d25f90444c049",
       "transforms": []
     },
     {
@@ -1314,9 +1322,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/publication.py",
-      "sha256": "f65d0a8b74b9ad191217b24cadcd713032fc25dbb0da703350980177fd9f158a",
+      "sha256": "e0a03536ec79ea368b1d38f4ce4c54b995a82625eba7e076ff2769e557b7608a",
       "source": "bstack/engineering/review-pr/scripts/publication.py",
-      "source_sha256": "f65d0a8b74b9ad191217b24cadcd713032fc25dbb0da703350980177fd9f158a",
+      "source_sha256": "e0a03536ec79ea368b1d38f4ce4c54b995a82625eba7e076ff2769e557b7608a",
       "transforms": []
     },
     {
@@ -1330,9 +1338,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/shared.py",
-      "sha256": "52d94fb08ae1c5e67ef2b51a1a5ae057fd3f4c38ebd1048fb6b1b85a2b803f3b",
+      "sha256": "c65cf3abc61f237e4c92b2a6cd3c3c5ad1f0b9e432f499476f9c13b7924ad2f4",
       "source": "bstack/engineering/review-pr/scripts/shared.py",
-      "source_sha256": "52d94fb08ae1c5e67ef2b51a1a5ae057fd3f4c38ebd1048fb6b1b85a2b803f3b",
+      "source_sha256": "c65cf3abc61f237e4c92b2a6cd3c3c5ad1f0b9e432f499476f9c13b7924ad2f4",
       "transforms": []
     },
     {
@@ -1459,9 +1467,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "d0d95e1d7bc306d7e4b07ff75452e6e8cf1d42ce131f1b06a0a657381b6c0640",
+      "sha256": "c057ebbf3bd82639e7545e091b37c74e6f1b21bd338351ea22878daa0fd61f9d",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "e838554074f33c3c5819a26d1fe8567b2404321381d37731e5401b509c2fd511",
+      "source_sha256": "7f47df97c6e29532faabee8bedba5fff79234d1a1d1e5d4cef350ae1510d0b8d",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1480,9 +1488,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "cbac38b5575fd10762adc0885d5334caf91d40961d7fe2ea0d0dbadcbce3f6f8",
+      "sha256": "73de64d9eef8b513459cbb035029005a6e83b1042eefd6869dc06739f1afea27",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "cbac38b5575fd10762adc0885d5334caf91d40961d7fe2ea0d0dbadcbce3f6f8",
+      "source_sha256": "73de64d9eef8b513459cbb035029005a6e83b1042eefd6869dc06739f1afea27",
       "transforms": []
     },
     {
@@ -1671,9 +1679,9 @@
     {
       "mode": 493,
       "path": "github/pr.py",
-      "sha256": "e3bb5a7548952d2c7a67bb34e42cbdbcd48004f347466d443f9834c284502f7a",
+      "sha256": "cea03c19cb016d58d5fc626d8335967f583415970abdf7f63d232176f04eacf8",
       "source": "bstack/github/pr.py",
-      "source_sha256": "e3bb5a7548952d2c7a67bb34e42cbdbcd48004f347466d443f9834c284502f7a",
+      "source_sha256": "cea03c19cb016d58d5fc626d8335967f583415970abdf7f63d232176f04eacf8",
       "transforms": []
     },
     {

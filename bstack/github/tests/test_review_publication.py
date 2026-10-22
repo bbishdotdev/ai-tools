@@ -180,7 +180,7 @@ class ReviewPublicationTests(unittest.TestCase):
                 preview = publish_result(result, directory, github, False)
                 self.assertEqual(preview["event"], expected)
                 self.assertNotIn("bstack-review-v1", preview["body"])
-                self.assertIn("<sub>Review provenance · Independent: model-one + model-two · Final check: model-three</sub>", preview["body"])
+                self.assertIn("<sub><i>🤖 BStack review · Independent: model-one + model-two · Final check: model-three</i></sub>", preview["body"])
                 if partial:
                     self.assertIn("Still unverified", preview["body"])
                 if user == "author":
@@ -215,16 +215,15 @@ class ReviewPublicationTests(unittest.TestCase):
             publish_result(result, self.directory, github, True)
         self.assertEqual(len(github.writes), 1)
 
-    def test_concurrent_equivalent_review_is_reused_but_new_claim_requires_reassessment(self):
+    def test_other_developers_equivalent_receipt_requires_reassessment(self):
         result = self.result()
         github = FakeGitHub(self.snapshot)
         prior = {**result, "run_id": "e" * 32}
         visible = "✅ Looks good."
         body = visible + "\n\n" + public_receipt(prior, visible)
         github.current["discussion"]["reviews"].append({"id": 90, "author": "teammate", "body": body, "commit_id": "a" * 40, "state": "APPROVED", "html_url": "https://github.com/owner/repo/pull/4#90"})
-        reused = publish_result(result, self.directory, github, True)
-        self.assertEqual(reused["status"], "already_reviewed")
-        self.assertIsNone(reused["event"])
+        with self.assertRaisesRegex(ReviewError, "stale"):
+            publish_result(result, self.directory, github, True)
         self.assertEqual(github.writes, [])
         changed = self.result([self.finding], new=["F-one"])
         changed["run_id"] = "f" * 32

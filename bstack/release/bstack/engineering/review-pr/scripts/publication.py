@@ -16,8 +16,8 @@ def now():
 
 def signature(result):
     roles = result["config"]["roles"]
-    return (f"<sub>Review provenance · Independent: {roles['reviewer_a']['model']} + "
-            f"{roles['reviewer_b']['model']} · Final check: {roles['adjudicator']['model']}</sub>")
+    return (f"<sub><i>🤖 BStack review · Independent: {roles['reviewer_a']['model']} + "
+            f"{roles['reviewer_b']['model']} · Final check: {roles['adjudicator']['model']}</i></sub>")
 
 
 def evidence_link(result, evidence):
