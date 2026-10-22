@@ -1,0 +1,25 @@
+bstack/package/test_runtime.py
+  s_822e08e34bda62::t_3fc5a328e5f8ef 120-126
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_aa55e1963298f4 2195,2197
+bstack/release/bstack/shared/model_cli.py
+  s_822e08e34bda62::t_73120b25b3cbb9 15
+bstack/shared/model_cli.py
+  s_822e08e34bda62::t_a24851f845bb33 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0b673ec85f0e73ec0714addd810c9ba7f41fb356",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
