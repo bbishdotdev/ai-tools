@@ -4,6 +4,7 @@ from urllib.parse import quote
 
 from contracts import ReviewError, digest
 from host import read_json, write_json
+from security import public_text, validate_public_report
 from shared import compatible_receipt, matching_context, public_receipt, receipts, source_record
 
 
@@ -56,12 +57,12 @@ def assessment_details(result):
     for item in result["findings"]:
         if item["id"] not in new_ids:
             continue
-        text.append(f"{LABELS[item['category']]} **{item['title']}**\n\n{item['explanation']} {item['action']} {evidence_links(result, item['evidence'])}")
+        text.append(f"{LABELS[item['category']]} **{public_text(item['title'])}**\n\n{public_text(item['explanation'])} {public_text(item['action'])} {evidence_links(result, item['evidence'])}")
     limits = result.get("coverage", {}).get("limits", [])
     if limits:
-        text.append("**Still unverified**\n\n" + "\n".join("- " + limit for limit in dict.fromkeys(limits)))
+        text.append("**Still unverified**\n\n" + "\n".join("- " + public_text(limit) for limit in dict.fromkeys(limits)))
     replied = {name for item in result.get("feedback", []) if item["relation"] == "resolved" for name in item["finding_ids"]}
-    resolved = [item["title"] for item in result.get("resolved_findings", []) if item["id"] not in replied]
+    resolved = [public_text(item["title"]) for item in result.get("resolved_findings", []) if item["id"] not in replied]
     if resolved:
         text.append("✅ Fixed: " + "; ".join(resolved) + ".")
     return text
@@ -89,7 +90,7 @@ def summary_body(result, event, self_review):
     text.extend(assessment_details(result))
     if result.get("human_review_required"):
         paths = sorted({path for rule in result["human_review_required"] for path in rule["changed"]})
-        text.append("Human review required for " + ", ".join(f"`{path}`" for path in paths) + ".")
+        text.append("Human review required for " + ", ".join(public_text(path) for path in paths) + ".")
     if result["scope"]["mode"] != "full":
         text.append("Checked the follow-up and the behavior it affects.")
     text.append(signature(result))
@@ -145,7 +146,7 @@ def plan_actions(result, user):
         target = root["id"] if kind == "inline" else identity
         prefix = {"extend": "⚠️", "disagree": "💬", "resolved": "✅"}[feedback["relation"]]
         mention = "@" + source["author"] + " " if source.get("author") and source["author"].casefold() != user.casefold() else ""
-        body = f"{prefix} {mention}{feedback['body'].strip()}"
+        body = f"{prefix} {mention}{public_text(feedback['body'].strip())}"
         if feedback["relation"] == "resolved":
             references = []
             if kind != "inline":
@@ -293,6 +294,7 @@ def completed_response(journal, stale=False, repeated=False):
 
 def publish_result(result, directory, github, write):
     directory = directory.resolve()
+    validate_public_report({key: result.get(key, []) for key in ("findings", "feedback", "coverage", "resolved_findings")})
     if result.get("stale") and not result.get("stale_exhausted"):
         raise ReviewError("Review is stale; run a follow-up before publishing")
     saved = directory / "publication.json"

@@ -82,7 +82,7 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 
 Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
 
-Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models when you need them and supports local wrapper commands.
+Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models and supports local wrapper commands. Reviewing untrusted PRs also requires an isolated worker; the review runner checks its boundary before starting models.
 
 ### What loads into context
 
