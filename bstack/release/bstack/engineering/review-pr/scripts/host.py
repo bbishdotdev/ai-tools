@@ -37,11 +37,11 @@ def command_failure(output, error):
     return detail[-2000:] or "No error text was returned"
 
 
-def command(args, cwd=None, data=None, timeout=120, env=None, capture=None):
+def command(args, cwd=None, data=None, timeout=120, env=None, capture=None, inherit_env=True):
     timed_out = False
     try:
         process = subprocess.Popen(args, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   start_new_session=True, env={**os.environ, **(env or {})})
+                                   start_new_session=True, env={**(os.environ if inherit_env else {}), **(env or {})})
         try:
             output, error = process.communicate(data.encode() if isinstance(data, str) else data, timeout=timeout)
         except subprocess.TimeoutExpired:
@@ -86,7 +86,7 @@ def read_json(path):
 def parse_pr(url):
     parts = urlparse(url)
     match = re.fullmatch(r"/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)/pull/([1-9][0-9]*)/?", parts.path)
-    if parts.scheme != "https" or not parts.hostname or parts.username or parts.password or parts.port or not match:
+    if parts.scheme != "https" or not parts.hostname or parts.username or parts.password or parts.port or parts.query or parts.fragment or not match:
         raise ReviewError("Use an HTTPS GitHub pull request URL")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]*", parts.hostname):
         raise ReviewError("Invalid GitHub hostname")
