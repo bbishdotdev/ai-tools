@@ -98,14 +98,18 @@ def verify_worker(config, work, project):
         port = 0
     hosts = {"github.com", *(item.split("/", 1)[0] for item in config.get("targets", []))}
     package = Path(__file__).resolve().parents[3]
-    policies = [package / path for path in (
-        "engineering/review-pr/references/rubric.md",
-        "shared/references/baseline-agents.md",
-        "shared/references/architecture-decisions.md",
-        "shared/references/pr-standards.md",
-        "shared/skills/unslop/SKILL.md",
-        "upstream/pstack/skills/principle-boundary-discipline/SKILL.md",
-    )]
+    policy_locations = (
+        ("engineering/review-pr/references/rubric.md",),
+        ("shared/references/baseline-agents.md",),
+        ("shared/references/architecture-decisions.md",),
+        ("shared/references/pr-standards.md",),
+        ("shared/skills/unslop/SKILL.md", "shared/unslop/SKILL.md"),
+        ("upstream/pstack/skills/principle-boundary-discipline/SKILL.md",
+         "engineering/principles/principle-boundary-discipline/WORKFLOW.md"),
+    )
+    policies = [next((package / path for path in options if (package / path).is_file()), None) for options in policy_locations]
+    if any(path is None for path in policies):
+        raise ReviewError("The BStack review package is missing a required policy file")
     probe = ["python3", str(script), str(port), ",".join(sorted(hosts)), json.dumps([str(path) for path in policies]), *private]
     try:
         result = subprocess.run(worker_argv(config, probe), cwd=work, env=worker_environment(), capture_output=True, timeout=30)

@@ -22,7 +22,7 @@ from budget import reserve
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
 from security import allowed_target, validate_public_report
-from shared import config_digest, context_digest, matching_context, model_state
+from shared import config_digest, context_digest, matching_context, model_state, normalized
 
 ROOT = Path(__file__).resolve().parent.parent
 ANALYSIS_VERSION = 3
@@ -31,6 +31,10 @@ MAX_REVIEW_PASSES = 3
 
 def now():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def trusted_input_digest(state):
+    return digest(normalized({key: state[key] for key in ("pr", "discussion", "open_prs")}))
 
 
 def private_root(project):
@@ -173,6 +177,14 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
         try:
             github = GitHub(target)
             state = github.state()
+            if config.get("trusted_pr") and not config.get("worker"):
+                head = state["pr"]["head"]["sha"]
+                input_id = trusted_input_digest(state)
+                if config_override and (config.get("trusted_head") != head or config.get("trusted_input_digest") != input_id):
+                    raise ReviewError("The PR code or discussion changed after --trusted-pr was granted. Run a new review with --trusted-pr for these inputs, or configure an isolated worker")
+                config["trusted_head"] = head
+                config["trusted_input_digest"] = input_id
+                write_json(output / "run.json", {"run_id": run_id, "started_at": now(), "target": target, "config": config, "fresh": fresh})
             if (state["pr"]["base"]["repo"] or "").lower() != target["repo"].lower():
                 raise ReviewError("GitHub returned a PR whose base repository differs from the allowed target")
             if state["pr"]["state"] != "open" or state["pr"].get("merged"):
