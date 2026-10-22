@@ -18,9 +18,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared"))
 from pr_policy import NAME as PROJECT_POLICY_NAME, PolicyError, human_review, parse as parse_project_policy
 from contracts import JUDGMENT, REVIEW, ReviewError, canonical, consolidate, digest, scrub, unique, validate_review, verdict
 from artifacts import coverage
+from budget import reserve
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
-from shared import compatible_receipt, config_digest, context_digest, matching_context, model_state, receipts
+from security import allowed_target, validate_public_report
+from shared import config_digest, context_digest, matching_context, model_state
 
 ROOT = Path(__file__).resolve().parent.parent
 ANALYSIS_VERSION = 3
@@ -36,6 +38,7 @@ def private_root(project):
     if (project / ".bstack").is_symlink() or root.is_symlink():
         raise ReviewError("Private review directories must not be symlinks")
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    root.chmod(0o700)
     return root
 
 
@@ -113,13 +116,6 @@ def publication_echoes(directory, result, state):
     return echoes
 
 
-def shared_baseline(record, state):
-    value = record["receipt"]
-    snapshot = {**state, "pr": {**state["pr"], "head": {**state["pr"]["head"], "sha": value["head"]}}}
-    return {"run_id": value["run_id"], "snapshot": snapshot, "config_digest": value["config_digest"], "policy_digest": value["policy_digest"],
-            "findings": value["findings"], "decisions": [], "settled_findings": [], "shared_source": record["source"]}
-
-
 def context_for(state, checks, scope, trees, changes, patch, previous):
     return {"snapshot": model_state(state), "checks": checks, "scope": scope, "changed_paths": changes, "diff": patch,
             "tree_index": trees, "prior_findings": previous["findings"] if previous else [],
@@ -160,9 +156,14 @@ def anonymous_reports(reports, previous, config):
     return anonymous, scrub(candidates, models), aliases
 
 
-def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_number=1, chain=(), config_override=None, force=False):
+def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_number=1, chain=(), config_override=None, force=False, trusted_pr=False):
     config = config_override or configuration(project, config_path)
+    if not config_override:
+        config["trusted_pr"] = trusted_pr
     target = parse_pr(pr_url)
+    allowed_target(project, target, config)
+    if not config.get("worker") and not config.get("trusted_pr"):
+        raise ReviewError("No isolated model worker is configured. Add one in .bstack/review.json, or explicitly pass --trusted-pr for source you trust")
     root = private_root(project)
     with locked(root, target) as directory:
         run_id = uuid.uuid4().hex
@@ -172,6 +173,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
         try:
             github = GitHub(target)
             state = github.state()
+            if (state["pr"]["base"]["repo"] or "").lower() != target["repo"].lower():
+                raise ReviewError("GitHub returned a PR whose base repository differs from the allowed target")
             if state["pr"]["state"] != "open" or state["pr"].get("merged"):
                 outcome = {"status": "skipped", "reason": "The pull request is closed or merged"}
                 write_json(output / "preflight.json", outcome)
@@ -191,21 +194,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
             if not fresh and recent and not recent.get("stale") and recent.get("config_digest") == config_id and recent["policy_digest"] == policy_id and matching_context(recent, state, checks, publication_echoes(directory, recent, state)):
                 write_json(output / "reuse.json", {"run_id": run_id, "reused_run": recent["run_id"], "reason": "Review inputs are unchanged"})
                 return {"status": "reused", "run": str(directory / recent["run_id"]), "verdict": recent["verdict"], "assessment_status": recent["status"]}
-            public = receipts(state, github)
-            if not fresh and not force:
-                for record in reversed(public):
-                    if compatible_receipt(record, state, checks, config_id, policy_id):
-                        outcome = {"status": "reused_shared", "url": record["source"]["url"], "author": record["source"]["author"],
-                                   "verdict": record["receipt"]["verdict"], "reason": "This published assessment already covers these inputs; no new approval was submitted"}
-                        write_json(output / "reuse.json", outcome)
-                        return outcome
             if fresh or (previous and (previous.get("config_digest") != config_id or previous["policy_digest"] != policy_id)):
                 previous = None
-            if previous is None and not fresh and not force:
-                compatible = [record for record in public if record["receipt"]["config_digest"] == config_id and record["receipt"]["policy_digest"] == policy_id and record["receipt"]["base"] == state["pr"]["base"]["sha"]]
-                if compatible:
-                    previous = shared_baseline(compatible[-1], state)
-            write_json(output / "doctor.json", doctor(config, project, live=True))
             with tempfile.TemporaryDirectory(prefix="bstack-review-snapshot-") as temporary:
                 scratch = Path(temporary)
                 repository, prior_head = fetch_snapshot(scratch, state, previous["snapshot"]["pr"]["head"]["sha"] if previous else None)
@@ -226,15 +216,22 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     trees[side], _ = materialize(repository, commit, snapshots[side])
                 full_changes = changed_paths(repository, merge_base, head)
                 changes = changed_paths(repository, scope["from"], head)
+                patch = diff(repository, scope["from"], head)
+                if len(changes) > 1000 or len(patch.encode()) > 512 * 1024:
+                    raise ReviewError("PR diff exceeds the review limit of 1000 paths or 512 KiB; split or narrow it before running models")
                 human_required = human_review(accepted_policy, full_changes)
                 missing_standards = [item["path"] for item in accepted_policy["standards"]
                                      if item["path"] not in trees["target"] or trees["target"][item["path"]]["lines"] is None]
                 limits, verified_archives = coverage(sorted(set(full_changes) | set(changes)), {side: trees[side] for side in ("base", "head")}, snapshots, commits, config["zip_trees"])
-                context = context_for(state, checks, scope, trees, changes, diff(repository, scope["from"], head), previous)
+                context = context_for(state, checks, scope, trees, changes, patch, previous)
                 context.update({"evidence_commits": commits, "full_pr_changed_paths": full_changes, "coverage_limits": limits,
                                 "verified_archives": verified_archives, "project_pr_policy": accepted_policy,
                                 "human_review_required": human_required, "missing_project_standards": missing_standards,
                                 "project_pr_policy_error": policy_error})
+                if len(canonical({key: value for key, value in context.items() if key != "tree_index"}).encode()) > 768 * 1024:
+                    raise ReviewError("Review prompt context exceeds 768 KiB; narrow the PR before running models")
+                write_json(output / "budget.json", reserve(root, target, config.get("max_model_calls_24h", 60)))
+                write_json(output / "doctor.json", doctor(config, project, live=True))
                 write_json(output / "snapshot.json", context)
                 context = {key: value for key, value in context.items() if key != "tree_index"}
                 previous_dir = directory / previous["run_id"] if previous and not previous.get("shared_source") else None
@@ -245,6 +242,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     report = invoke(config["roles"][role], REVIEW, prompts["rubric"] + "\n\n" + prompts["reviewer"], own, snapshots, config, output / (role + ".json"), project)
                     validate_review(report, [item["id"] for item in context["prior_findings"]], trees,
                                     [item["id"] for item in context["prior_decisions"]])
+                    validate_public_report(report)
                     write_json(output / (role + ".json"), report)
                     return report
                 with ThreadPoolExecutor(max_workers=2) as pool:
@@ -270,6 +268,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 write_json(output / "provenance.json", aliases)
                 judgment = invoke(config["roles"]["adjudicator"], JUDGMENT, prompts["rubric"] + "\n\n" + prompts["adjudicator"], judge_context, snapshots, config, output / "adjudicator.json", project)
                 consolidate(judgment, candidates, trees, state["discussion"], limits)
+                validate_public_report(judgment)
                 write_json(output / "adjudicator.json", judgment)
                 findings = [{**item, "id": aliases[item["id"]]["stable_id"]} for item in judgment["findings"]]
                 unique(findings)
@@ -325,8 +324,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
             raise ReviewError(f"{exc} Evidence: {output}")
 
 
-def review_cycle(project, pr_url, config_path=None, fresh=False, initial=None):
-    outcome = initial or perform_run(project, pr_url, config_path, fresh)
+def review_cycle(project, pr_url, config_path=None, fresh=False, initial=None, trusted_pr=False):
+    outcome = initial or perform_run(project, pr_url, config_path, fresh, trusted_pr=trusted_pr)
     while outcome.get("stale"):
         previous = read_json(Path(outcome["run"]) / "result.json")
         if previous["review_passes"] >= MAX_REVIEW_PASSES:
@@ -392,6 +391,7 @@ def publish(project, run_path, write):
             directory = directory.parent / recent["run_id"]
             result = recent
     target = result["snapshot"]["target"]
+    allowed_target(project, target, result["config"])
     pr_url = f"https://{target['host']}/{target['repo']}/pull/{target['number']}"
     while True:
         github = GitHub(target)
@@ -434,6 +434,7 @@ def main():
     run_parser.add_argument("--pr", required=True)
     run_parser.add_argument("--config", type=Path)
     run_parser.add_argument("--fresh", action="store_true")
+    run_parser.add_argument("--trusted-pr", action="store_true")
     publish_parser = sub.add_parser("publish")
     publish_parser.add_argument("--run", type=Path, required=True)
     publish_parser.add_argument("--write", action="store_true")
@@ -448,7 +449,7 @@ def main():
         if args.command == "doctor":
             result = doctor(configuration(project, args.config), project, args.live)
         elif args.command == "run":
-            result = review_cycle(project, args.pr, args.config, args.fresh)
+            result = review_cycle(project, args.pr, args.config, args.fresh, trusted_pr=args.trusted_pr)
         else:
             result = publish(project, args.run, args.write)
         print(json.dumps(result, indent=2))

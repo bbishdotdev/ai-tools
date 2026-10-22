@@ -1,0 +1,25 @@
+name: BStack checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -B bstack/scripts/package.py check
+      - run: python3 -B bstack/scripts/layers.py check
+      - run: python3 -B bstack/scripts/test_package.py
+      - run: python3 -B -m unittest discover -s bstack/shared/tests
+      - run: python3 -B -m unittest discover -s bstack/github/tests

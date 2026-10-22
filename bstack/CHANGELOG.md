@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Require an isolated worker for untrusted PR reviews, validate targets before contacting GitHub, limit repeated model calls, reject unsafe model-written publication text, and stop reusing public receipts as proof of another checkout's review. Trusted PRs can explicitly use host access. Run package and reviewer checks on every PR.
 - Keep PR briefings short and place useful visuals beside the explanation they support.
 - Use the shared configured CLI launcher for PR reviews and Codex PR visuals, including wrapper commands.
 - Make automatic engineering routing the new-install default. Existing projects keep their saved setting; `bstack-auto off` restores manual routing.

@@ -123,6 +123,7 @@ class ReviewPublicationTests(unittest.TestCase):
         self.assertEqual([kind for kind, _ in github.writes], ["reaction", "reaction"])
         self.assertEqual(publish_result(result, self.directory, github, True)["status"], "already_published")
         self.assertEqual(len(github.writes), 2)
+
         improvement = {**self.finding, "id": "F-two", "category": "moderate", "title": "Export repeats the same expensive query", "explanation": "Each row repeats the query, slowing large exports.", "action": "Fetch the shared records once."}
         for name, partial, additions in (("new", False, [improvement]), ("partial-new", True, [improvement]), ("partial", True, [])):
             with self.subTest(name=name):
@@ -145,6 +146,14 @@ class ReviewPublicationTests(unittest.TestCase):
                     self.assertIn("Still unverified", body)
                 self.assertEqual(publish_result(assessment, directory, host, True)["status"], "already_published")
                 self.assertEqual(len(host.writes), 2)
+
+    def test_legacy_assessment_cannot_publish_model_written_link(self):
+        malicious = {**self.finding, "explanation": "See https://attacker.example/collect?data=host-secret"}
+        result = self.result([malicious], new=[malicious["id"]])
+        github = FakeGitHub(self.snapshot)
+        with self.assertRaisesRegex(ReviewError, "Model-written review text"):
+            publish_result(result, self.directory, github, True)
+        self.assertEqual(github.writes, [])
 
     def test_new_blocker_and_disagreement_reconcile_lost_reply_before_requesting_changes(self):
         self.source("inline", 10, "This is safely public.")

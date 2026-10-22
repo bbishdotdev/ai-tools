@@ -4,6 +4,7 @@ from urllib.parse import quote
 
 from contracts import ReviewError, digest
 from host import read_json, write_json
+from security import validate_public_report
 from shared import compatible_receipt, matching_context, public_receipt, receipts, source_record
 
 
@@ -293,6 +294,7 @@ def completed_response(journal, stale=False, repeated=False):
 
 def publish_result(result, directory, github, write):
     directory = directory.resolve()
+    validate_public_report({key: result.get(key, []) for key in ("findings", "feedback", "coverage", "resolved_findings")})
     if result.get("stale") and not result.get("stale_exhausted"):
         raise ReviewError("Review is stale; run a follow-up before publishing")
     saved = directory / "publication.json"
