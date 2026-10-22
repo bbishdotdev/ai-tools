@@ -481,6 +481,19 @@ class PRTests(unittest.TestCase):
                                    self.root / "exception", length_exception="Required project risk needs the full explanation")
         self.assertGreater(result["bodyWords"], pr.MAX_BRIEF_WORDS)
 
+    def test_visual_fallback_prose_counts_toward_brief_budget(self):
+        self.prepare(media=True)
+        media = self.root / "media.json"
+        entries = pr.read_json(media)
+        entries[0]["fallback"] = "Context " * 80 + "\n\n```mermaid\nflowchart LR\n A --> B\n```"
+        pr.write_json(media, entries)
+        self.body_path.write_text("## What changes and why\n\n" + "Change " * 590 +
+                                  "\n\n<!-- bstack-visual:flow -->\n")
+        with self.assertRaises(pr.Error) as raised:
+            pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path,
+                              self.root / "fallback-too-long", media)
+        self.assertEqual(raised.exception.code, "body_too_long")
+
     def test_related_overlap_without_action_does_not_fill_reviewer_attention(self):
         self.prepare(disposition="related", evidence=["Compared both file patches"])
         body = (self.bundle / "body.fallback.md").read_text()

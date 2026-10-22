@@ -1459,9 +1459,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "e8318cfb434e0a83564f425e88793f2d41d43d9f8610ef83630c40998060070c",
+      "sha256": "d0d95e1d7bc306d7e4b07ff75452e6e8cf1d42ce131f1b06a0a657381b6c0640",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "389fea66e9232dea439b948a24ef6787585584091beaa47f14b78825e690be61",
+      "source_sha256": "e838554074f33c3c5819a26d1fe8567b2404321381d37731e5401b509c2fd511",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1480,9 +1480,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "8c2cd3ff08492a7650166e411d18526f1749e594463e58358ba76c493abb190b",
+      "sha256": "cbac38b5575fd10762adc0885d5334caf91d40961d7fe2ea0d0dbadcbce3f6f8",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "8c2cd3ff08492a7650166e411d18526f1749e594463e58358ba76c493abb190b",
+      "source_sha256": "cbac38b5575fd10762adc0885d5334caf91d40961d7fe2ea0d0dbadcbce3f6f8",
       "transforms": []
     },
     {
@@ -1671,9 +1671,9 @@
     {
       "mode": 493,
       "path": "github/pr.py",
-      "sha256": "a1b56403b6a160f62c697bff777b63058a42565bc941ba9948337c1747366b74",
+      "sha256": "e3bb5a7548952d2c7a67bb34e42cbdbcd48004f347466d443f9834c284502f7a",
       "source": "bstack/github/pr.py",
-      "source_sha256": "a1b56403b6a160f62c697bff777b63058a42565bc941ba9948337c1747366b74",
+      "source_sha256": "e3bb5a7548952d2c7a67bb34e42cbdbcd48004f347466d443f9834c284502f7a",
       "transforms": []
     },
     {

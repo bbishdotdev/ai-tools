@@ -441,7 +441,8 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
         return rendered
     media_body = render(True)
     fallback_body = render(False)
-    words = validate_brief(body, length_exception)
+    authored_body = VISUAL.sub(lambda match: mapping[match[1]]["fallback"], body)
+    words = validate_brief(authored_body, length_exception)
     directory.mkdir(parents=True, mode=0o700)
     if entries:
         (directory / "assets").mkdir(mode=0o700)

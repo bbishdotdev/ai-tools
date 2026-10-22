@@ -9,7 +9,7 @@ metadata:
 
 # PR
 
-Give the reviewer enough context to judge the change in five minutes or less. Aim for 300–500 words for substantial work; small changes need much less. The helper checks the final visible prose and stops above 650 words unless a required project template or material risk justifies a recorded exception. A larger diff needs a tighter briefing and links to detail, not a longer narration.
+Give the reviewer enough context to judge the change in five minutes or less. Aim for 300–500 words for substantial work; small changes need much less. The helper counts authored prose, including visual fallbacks but excluding generated overlap notices, and stops above 650 words unless a required project template or material risk justifies a recorded exception. A larger diff needs a tighter briefing and links to detail, not a longer narration.
 
 Read [bstack's router](../../shared/router/WORKFLOW.md) and apply [bstack's unslop](../../shared/unslop/SKILL.md) to the title, body, captions, and commit prose. This entry replaces PStack's Opening a PR workflow. Do not run both.
 
