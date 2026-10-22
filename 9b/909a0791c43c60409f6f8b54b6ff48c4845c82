@@ -1,0 +1,124 @@
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_d39ab926314cfa 26-27,30
+bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_d39ab926314cfa 11-13,17
+bstack/engineering/review-pr/scripts/host.py
+  s_822e08e34bda62::t_2074d8b21b5373 40,44,89
+bstack/INSTALL.md
+  s_822e08e34bda62::t_95fd242dd48a79 149-150
+bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_c9c3bea68c80e2 12-13
+bstack/github/tests/test_review_publication.py
+  s_822e08e34bda62::t_9534a617319208 150-156
+  s_822e08e34bda62::t_d83c06eb70b8fd 126
+  s_ea42c1e23306da::t_b2df03f1ec029f 157
+.github/workflows/ci.yml
+  s_822e08e34bda62::t_46174b94d826c7 1-25
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_b7457df357862f 53
+  s_822e08e34bda62::t_45e507e71ace2e 25
+  s_822e08e34bda62::t_0337058f32704b 39
+  s_822e08e34bda62::t_d39ab926314cfa 16-19,23-24,26,29,47,51
+  s_822e08e34bda62::t_23abca95f4a110 52
+bstack/engineering/review-pr/scripts/worker_canary.py
+  s_822e08e34bda62::t_4d4ef8bfa288ff 1-7
+  s_822e08e34bda62::t_7b5e86abd98fc0 8-36
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_9534a617319208 758
+  s_822e08e34bda62::t_c9c3bea68c80e2 225-226,264
+  s_822e08e34bda62::t_9e87a1155da7a9 137
+  s_822e08e34bda62::t_77d83e7a368ba8 266-270,595,733,753,777
+  s_822e08e34bda62::t_00d32e17a6cf67 107-108,271-287,289-304
+  s_822e08e34bda62::t_16072b04d6a000 288
+  s_822e08e34bda62::t_d83c06eb70b8fd 763-770
+  s_ea42c1e23306da::t_64a65a2830b5a6 265,771
+bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_6557f1cdae9776 7,297
+bstack/engineering/review-pr/scripts/budget.py
+  s_822e08e34bda62::t_81713b538494fe 1-10,15-34
+  s_822e08e34bda62::t_9ba85b21c3cf03 11-14
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_ea62b27857635e 53-54,60-68,125,156-158,167-170,176,178-179,207
+  s_822e08e34bda62::t_32ffbb51570efd 115
+  s_822e08e34bda62::t_66c8c71768285f 11,85-86,102-103,159-160
+  s_822e08e34bda62::t_3f9e41edf0431e 118-122,126
+  s_822e08e34bda62::t_15c2ec78ca1106 161
+  s_822e08e34bda62::t_695d22e8dd095c 39-40,43-44,55,58-59
+  s_822e08e34bda62::t_d8389ac13d5a4c 162-166
+  s_822e08e34bda62::t_f5fa556aced5ac 107,109-113,124
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_695d22e8dd095c 21,24-25,159,161-162,164,166,219,226,245,271,327-328,394,437,452
+  s_822e08e34bda62::t_b7457df357862f 176-177
+  s_822e08e34bda62::t_f68157eb51ad89 220-221,231-232
+  s_822e08e34bda62::t_9ba85b21c3cf03 41
+  s_822e08e34bda62::t_c9c3bea68c80e2 165,233-234
+bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_95fd242dd48a79 11
+bstack/README.md
+  s_822e08e34bda62::t_95fd242dd48a79 85
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_716eeb5eb36cf7 7
+bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_8253ce348687be 65,84,86
+  s_822e08e34bda62::t_4d4ef8bfa288ff 88
+  s_822e08e34bda62::t_f16daa69e37dcf 92-96,99
+  s_822e08e34bda62::t_8902d2b00154b1 97-98,102-103
+  s_822e08e34bda62::t_15c2ec78ca1106 7,69,82-83,85,111
+  s_822e08e34bda62::t_66c8c71768285f 4,13-21,23
+  s_822e08e34bda62::t_e51328c3b8b238 75-79,81
+  s_822e08e34bda62::t_db9dad689bac3c 1-3,6,8-12,22,24-47,50-64,66-68,70-74,90,100-101,104-106,110,112-132
+  s_822e08e34bda62::t_abd968976c196f 80
+  s_822e08e34bda62::t_ef6c187aed1001 5,87,109
+  s_822e08e34bda62::t_e9d16edf315742 89,91,107-108
+  s_822e08e34bda62::t_f984a7063249e6 48-49
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_81fc5d4acdcb3f 26-27,30
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_c7765ed81b4e51 16-19,23-26,29,39,47,51-53
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_0d174d5ffa3294 11-13,17
+bstack/release/bstack/engineering/review-pr/scripts/budget.py
+  s_822e08e34bda62::t_dbccbb8c9c0a79 1-34
+bstack/release/bstack/engineering/review-pr/scripts/host.py
+  s_822e08e34bda62::t_2b7b7c13cf17ab 40,44,89
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_80c65faa1936f9 11,39-40,43-44,53-55,58-68,85-86,102-103,107,109-113,115,118-122,124-126,156-170,176,178-179,207
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_614cda7b50c36d 7,297
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_777247d8cfed5a 21,24-25,41,159,161-162,164-166,176-177,219-221,226,231-234,245,271,327-328,394,437,452
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_4046cb8ff75265 1-132
+bstack/release/bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_70606c6986136e 12-13
+bstack/release/bstack/engineering/review-pr/scripts/worker_canary.py
+  s_822e08e34bda62::t_52a6792a172414 1-36
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_569a93262752b5 1230,1232,1277,1279,1285,1287,1298-1305,1317,1319,1325,1327,1333,1335,1341,1343-1351,1357,1359-1367,2289,2291
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_2e0e44be4affaf 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9b909a0791c43c60409f6f8b54b6ff48c4845c82",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_ea42c1e23306da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "48a80ad9-6a2a-48dc-a9a4-fdcf6aca9f6c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
