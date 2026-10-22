@@ -82,7 +82,7 @@ def checked_bundle(archive):
     return manifest, contents, modes
 
 
-def install(archive, project, hosts=None):
+def install(archive, project, hosts=None, auto=None, verification=None):
     manifest, contents, modes = checked_bundle(archive)
     with tempfile.TemporaryDirectory(prefix="bstack-transport-") as scratch:
         staged = Path(scratch)
@@ -95,6 +95,10 @@ def install(archive, project, hosts=None):
                    "install", "--project", str(project.resolve())]
         if hosts is not None:
             command.extend(["--hosts", *hosts])
+        if auto is not None:
+            command.extend(["--auto", auto])
+        if verification is not None:
+            command.extend(["--verification", verification])
         return subprocess.run(command, check=False).returncode
 
 
@@ -103,11 +107,14 @@ def main(argv=None):
     parser.add_argument("--project", type=Path, default=Path.cwd())
     parser.add_argument("--hosts", nargs="+", choices=HOSTS,
                         help="Configure these hosts; otherwise preserve existing hosts or use all on first install")
+    parser.add_argument("--auto", choices=("on", "off"), help="Override automatic routing; new projects default on")
+    parser.add_argument("--verification", choices=("off", "ask", "auto"),
+                        help="Project verifier lifecycle; new projects default ask")
     args = parser.parse_args(argv)
     archive = Path(__file__).resolve().parents[1] / "assets/bstack.zip"
     try:
         hosts = list(dict.fromkeys(args.hosts)) if args.hosts is not None else None
-        return install(archive, args.project, hosts)
+        return install(archive, args.project, hosts, args.auto, args.verification)
     except (InvalidBundle, OSError, zipfile.BadZipFile, RuntimeError) as error:
         print(f"bstack installation failed: {error}", file=sys.stderr)
         return 1

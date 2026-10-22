@@ -1,6 +1,6 @@
 # bstack release
 
-Version 1.0.0. The [bstack package](bstack/README.md) contains the engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.
+Version 2.0.0-dev.1. The [bstack package](bstack/README.md) contains the engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.
 
 ## Quick start from GitHub
 
@@ -16,7 +16,7 @@ Choose your agent and project scope if prompted. Then open your agent in that pr
 
 Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor. If the skill does not appear, start a fresh session in the same project.
 
-skills.sh downloads the [installer skill](skills-sh/install-bstack/SKILL.md); your agent runs it to install the full bundled package. Keep both the repository name and `--skill install-bstack` in the command. After installation and `doctor` succeed, the agent offers automatic routing if it is off. Enabling it requires your opt-in; upgrades preserve your existing preference. Python 3.11+ on POSIX is required.
+skills.sh downloads the [installer skill](skills-sh/install-bstack/SKILL.md); your agent runs it to install the full bundled package. Keep both the repository name and `--skill install-bstack` in the command. New installs enable automatic routing; upgrades keep the saved choice. After `doctor` succeeds, the agent explains how to turn routing off or back on. Python 3.11+ on POSIX is required.
 
 For reuse across projects, add `-g` to install only the installer skill at user scope. Invoke it from each target project; the full bstack package remains project-local.
 

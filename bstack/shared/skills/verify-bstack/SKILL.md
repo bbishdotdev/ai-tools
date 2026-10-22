@@ -30,9 +30,11 @@ For imported source or layer changes, run `python3 bstack/scripts/layers.py chec
 
 For packaging changes, build with `python3 bstack/scripts/package.py build`, check with `python3 bstack/scripts/package.py check`, and run `python3 bstack/shared/skills/verify-bstack/scripts/installation.py`. The installation verifier defaults to the bundled Python installer and requires no skills.sh download. Add `--methods offline symlink copy` to compare all three paths; `--skills-cli /path/to/skills/bin/cli.mjs` uses an already available skills@1.7.0 CLI. Otherwise the explicitly selected skills.sh methods invoke pinned `npx skills@1.7.0`.
 
+For the new project-verifier setting, follow [project verifier lifecycle](features/project-verification.md). For shell PR interception, follow [PR creation guard](features/pr-guard.md). Binding tests are necessary but do not establish that a live host invoked the hook or that an agent maintained the right feature path.
+
 For optional user-memory packaging, follow [portable memory](features/portable-memory.md). Exercise setup and the note lifecycle in disposable homes, then remove the project and distribution to prove runtime independence. Preserve the separate claims for installation, physical readback, and live recall.
 
-Add `--live` for authorized provider-backed checks. The verifier installs into isolated projects, compares exact manifests, deletes its staged source, and drives direct skills, manual Poteto Mode, fresh default-off, automatic routing across resumed turns, and fresh opt-out. `--phases` limits a retest; `--live-method` selects which installed project to drive. Native discovery metadata is reported when a CLI emits it. Native plugin registration, desktop behavior, and native compaction of this installed bundle are not covered by this test. Read [the consumer installation contract](features/installation.md).
+Add `--live` for authorized provider-backed checks. The verifier installs into isolated projects, compares exact manifests, deletes its staged source, and drives direct skills, manual Poteto Mode, explicit auto-off, automatic routing across resumed turns, and fresh opt-out. `--phases` limits a retest; `--live-method` selects which installed project to drive. Native discovery metadata is reported when a CLI emits it. Native plugin registration, desktop behavior, and native compaction of this installed bundle are not covered by this test. Read [the consumer installation contract](features/installation.md).
 
 For PR workflow changes, follow [pull requests](features/pull-requests.md). Run the helper fault tests and package checks. Use a fresh agent for semantic overlap cases. A fake forge proves state handling, not a real GitHub upload or publication; live checks need existing publication authorization.
 
@@ -66,4 +68,4 @@ Each CLI invocation is bounded by a timeout. The harness terminates only its own
 - `python3 bstack/scripts/layers.py check`
 - `python3 bstack/shared/skills/verify-bstack/scripts/compact.py --tool claude --report .bstack/verification/<run>/claude/report.json` exercises native compaction on an existing test session. Substitute `codex` in both positions for the Codex app-server compaction path. Use a report produced by the live command, not an unrelated user session.
 
-Use the imported `maintain-verification-skill` workflow when expanding the feature map. Preserve explicit unverified results for desktop surfaces and compaction until those exact paths have run.
+Use the owned `maintain-verification-skill` workflow when expanding the feature map. Preserve explicit unverified results for desktop surfaces and compaction until those exact paths have run.

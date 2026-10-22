@@ -16,6 +16,7 @@ SOURCE = Path(__file__).resolve().parent
 BSTACK = SOURCE.parent
 BASELINE_PATH = "shared/references/baseline-agents.md"
 BASELINE = "# Fixture baseline\n\nUse the agreed project behavior.\n"
+V1_BLOCK = (SOURCE / "fixtures/v1-baseline-block.md").read_text()
 PUBLIC_SKILLS = {
     "poteto-mode": "engineering/poteto-mode/SKILL.md",
     "how": "engineering/how/SKILL.md",
@@ -45,11 +46,13 @@ class RuntimeTests(unittest.TestCase):
         self.make_capsule(self.capsule)
 
     def make_capsule(self, root):
-        for directory in ("scripts", "runtime", "shared/router", "shared/references", "github"):
+        for directory in ("scripts", "runtime", "shared/router", "shared/references", "shared/github", "github"):
             (root / directory).mkdir(parents=True, exist_ok=True)
         shutil.copyfile(SOURCE / "runtime.py", root / "scripts/bstack.py")
         shutil.copyfile(BSTACK / "shared/router/hook.py", root / "runtime/reminder.py")
         shutil.copyfile(BSTACK / "shared/router/reminder.txt", root / "runtime/reminder.txt")
+        shutil.copyfile(BSTACK / "shared/github/pr_guard.py", root / "shared/github/pr_guard.py")
+        shutil.copyfile(BSTACK / "shared/references/verification-policy.md", root / "shared/references/verification-policy.md")
         (root / "shared/router/WORKFLOW.md").write_text("# Fixture router\n")
         (root / BASELINE_PATH).write_text(BASELINE)
         (root / "github/pull_request_template.md").write_text("# Fixture PR template\n")
@@ -100,6 +103,30 @@ class RuntimeTests(unittest.TestCase):
     def files(self):
         return {str(p.relative_to(self.project)): ("link", p.readlink().as_posix()) if p.is_symlink() else ("file", p.read_bytes())
                 for p in self.project.rglob("*") if p.is_file() or p.is_symlink()}
+
+    def test_doctor_with_model_helper_can_run_twice_without_mutating_installed_package(self):
+        shutil.copyfile(BSTACK / "shared/model_cli.py", self.capsule / "shared/model_cli.py")
+        wayfinder = self.capsule / "workspace/wayfinder"
+        wayfinder.mkdir(parents=True)
+        shutil.copyfile(BSTACK / "workspace/wayfinder/__init__.py", wayfinder / "__init__.py")
+        shutil.copyfile(BSTACK / "workspace/wayfinder/core.py", wayfinder / "core.py")
+        self.refresh_manifest(self.capsule)
+        self.run_cli("install", "--hosts", "codex")
+        first = self.run_cli("doctor")
+        second = self.run_cli("doctor")
+        self.assertEqual(first["models"]["live"], False)
+        self.assertEqual(second["package_integrity"], "passed")
+        self.assertFalse(list((self.project / ".bstack/package").rglob("*.pyc")))
+        helper = self.project / ".bstack/package/shared/model_cli.py"
+        direct = subprocess.run([sys.executable, str(helper), "--project", str(self.project),
+                                 "configure", "--cli", "claude", "--command", "claude {args}"],
+                                capture_output=True, text=True)
+        self.assertEqual(direct.returncode, 0, direct.stderr)
+        self.assertFalse(list((self.project / ".bstack/package").rglob("*.pyc")))
+        self.assertEqual(self.run_cli("doctor")["package_integrity"], "passed")
+        self.write(".bstack/model-clis.json", "not JSON")
+        self.assertEqual(self.run_cli("doctor")["models"]["status"], "needs_setup")
+        self.assertEqual(self.run_cli("doctor", "--live", "--workflow", "review-pr", success=False).returncode, 1)
 
     def make_legacy_install(self, auto=False, external=False):
         legacy = self.project / ".agents/skills/poteto-mode"
@@ -152,35 +179,90 @@ class RuntimeTests(unittest.TestCase):
         self.write(".bstack/config.json", json.dumps(state))
         return legacy
 
-    def test_initial_manual_setup_is_idempotent_and_doctor_checks(self):
+    def test_initial_automatic_setup_is_idempotent_and_doctor_checks(self):
         result = self.run_cli("setup")
-        self.assertFalse(result["auto"])
+        self.assertTrue(result["auto"])
         self.assertTrue(result["fresh_session_required"])
-        self.assertEqual(result["native_hook_trust"], "not_applicable")
+        self.assertEqual(result["native_hook_trust"], "not_checked")
         self.assertEqual(result["hosts"], ["codex", "claude", "cursor", "grok"])
         instructions = (self.project / ".bstack/instructions.md").read_text()
         for name in ("AGENTS.md", "CLAUDE.md"):
             self.assertEqual((self.project / name).read_text().count(BASELINE), 1)
         self.assertIn("unslop/SKILL.md", instructions)
-        self.assertNotIn("router/WORKFLOW.md", instructions)
-        self.assertIn("Engineering routing is manual", instructions)
-        self.assertIn("only when the user explicitly invokes that bstack skill", instructions)
-        self.assertFalse((self.project / ".codex/hooks.json").exists())
+        self.assertIn("router/WORKFLOW.md", instructions)
+        self.assertNotIn("Engineering routing is manual", instructions)
+        self.assertTrue((self.project / ".codex/hooks.json").exists())
         self.assertTrue((self.project / ".bstack/package").is_dir())
         self.assertTrue((self.project / ".claude/skills/unslop/SKILL.md").is_file())
         unchanged = self.run_cli("setup")
         self.assertEqual(unchanged["changes"], [])
         self.assertFalse(unchanged["fresh_session_required"])
-        self.assertEqual(unchanged["notice"], "")
+        self.assertIn("Codex hook trust was not checked", unchanged["notice"])
         before = self.files()
         for args in (("doctor",), ("auto", "status")):
             result = self.run_cli(*args)
             self.assertFalse(result["fresh_session_required"])
-            self.assertEqual(result["native_hook_trust"], "not_applicable")
-            self.assertEqual(result["notice"], "")
+            self.assertEqual(result["native_hook_trust"], "not_checked")
+            self.assertIn("Codex hook trust was not checked", result["notice"])
             if args == ("doctor",):
                 self.assertEqual(result["bindings"], "passed")
         self.assertEqual(self.files(), before)
+
+    def test_explicit_manual_install_and_upgrade_preference(self):
+        installed = self.run_cli("install", "--auto", "off")
+        self.assertFalse(installed["auto"])
+        hooks = json.loads((self.project / ".codex/hooks.json").read_text())["hooks"]
+        self.assertEqual(set(hooks), {"PreToolUse"})
+        self.assertEqual(hooks["PreToolUse"][0]["matcher"], "Bash")
+        self.assertIn("pr_guard.py", hooks["PreToolUse"][0]["hooks"][0]["command"])
+        self.assertIn("Engineering routing is manual", (self.project / ".bstack/instructions.md").read_text())
+        self.assertFalse(self.run_cli("install")["auto"])
+        self.assertTrue(self.run_cli("install", "--auto", "on")["auto"])
+        self.assertTrue(self.run_cli("install")["auto"])
+
+    def test_pr_guard_stays_bound_across_manual_and_automatic_routing(self):
+        self.run_cli("install", "--auto", "off")
+        paths = {"codex": ".codex/hooks.json", "claude": ".claude/settings.json",
+                 "cursor": ".cursor/hooks.json", "grok": ".grok/hooks/bstack.json"}
+        expected_events = {"codex": "PreToolUse", "claude": "PreToolUse",
+                           "cursor": "beforeShellExecution", "grok": "PreToolUse"}
+        for host, relative in paths.items():
+            value = json.loads((self.project / relative).read_text())
+            self.assertEqual(set(value["hooks"]), {expected_events[host]})
+            entry = value["hooks"][expected_events[host]][0]
+            command = entry["command"] if host == "cursor" else entry["hooks"][0]["command"]
+            self.assertIn(f"pr_guard.py' --host {host}", command)
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.run_cli("auto", "on")
+        self.run_cli("auto", "off")
+        for host, relative in paths.items():
+            value = json.loads((self.project / relative).read_text())
+            self.assertEqual(set(value["hooks"]), {expected_events[host]})
+
+    def test_verification_setting_defaults_ask_and_survives_upgrade(self):
+        installed = self.run_cli("install")
+        self.assertEqual(installed["verification"], "ask")
+        instruction = (self.project / ".bstack/instructions.md").read_text()
+        self.assertIn("Project verification mode: ask", instruction)
+        self.assertIn("verification-policy.md", instruction)
+        changed = self.run_cli("verification", "auto")
+        self.assertEqual(changed["verification"], "auto")
+        self.assertTrue(changed["fresh_session_required"])
+        self.assertEqual(self.run_cli("verification", "status")["verification"], "auto")
+        self.assertEqual(self.run_cli("install")["verification"], "auto")
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.assertEqual(self.run_cli("verification", "off")["verification"], "off")
+        self.assertEqual(self.run_cli("setup", "--verification", "ask")["verification"], "ask")
+
+    def test_older_state_without_verification_field_adopts_default(self):
+        self.run_cli("install")
+        state_path = self.project / ".bstack/config.json"
+        state = json.loads(state_path.read_text())
+        state.pop("verification")
+        state_path.write_text(json.dumps(state))
+        self.assertEqual(self.run_cli("verification", "status")["verification"], "ask")
+        self.assertEqual(self.run_cli("setup")["verification"], "ask")
+        self.assertEqual(json.loads(state_path.read_text())["verification"], "ask")
 
     def test_install_seeds_project_owned_pr_template_and_preserves_edits(self):
         installed = self.run_cli("install")
@@ -244,6 +326,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_mode_guidance_distinguishes_transitions_noops_and_read_only_checks(self):
         self.run_cli("setup")
+        self.assertTrue(self.run_cli("auto", "off")["fresh_session_required"])
         enabled = self.run_cli("auto", "on")
         self.assertTrue(enabled["fresh_session_required"])
         self.assertEqual(enabled["native_hook_trust"], "not_checked")
@@ -264,12 +347,12 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.files(), before)
         disabled = self.run_cli("auto", "off")
         self.assertTrue(disabled["fresh_session_required"])
-        self.assertEqual(disabled["native_hook_trust"], "not_applicable")
-        self.assertNotIn("/hooks", disabled["notice"])
+        self.assertEqual(disabled["native_hook_trust"], "not_checked")
+        self.assertIn("/hooks", disabled["notice"])
         unchanged = self.run_cli("auto", "off")
         self.assertFalse(unchanged["fresh_session_required"])
         self.assertEqual(unchanged["changes"], [])
-        self.assertEqual(unchanged["notice"], "")
+        self.assertIn("/hooks", unchanged["notice"])
 
     def test_unconfigured_status_and_repeated_uninstall_need_no_session_or_trust_review(self):
         for args in (("auto", "status"), ("doctor",), ("uninstall",)):
@@ -312,14 +395,14 @@ class RuntimeTests(unittest.TestCase):
         self.assertIn("router/WORKFLOW.md", (self.project / ".bstack/instructions.md").read_text())
         self.assertNotIn("Engineering routing is manual", (self.project / ".bstack/instructions.md").read_text())
         codex = json.loads((self.project / ".codex/hooks.json").read_text())
-        self.assertEqual(set(codex["hooks"]), {"SessionStart", "UserPromptSubmit", "SubagentStart"})
+        self.assertEqual(set(codex["hooks"]), {"SessionStart", "UserPromptSubmit", "SubagentStart", "PreToolUse"})
         self.assertIn("hook --host codex", codex["hooks"]["SessionStart"][0]["hooks"][0]["command"])
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
         self.run_cli("auto", "off")
         self.assertEqual(self.run_cli("auto", "off")["changes"], [])
         self.assertIn("unslop/SKILL.md", (self.project / ".bstack/instructions.md").read_text())
         self.assertNotIn("router/WORKFLOW.md", (self.project / ".bstack/instructions.md").read_text())
-        self.assertFalse((self.project / ".codex/hooks.json").exists())
+        self.assertEqual(set(json.loads((self.project / ".codex/hooks.json").read_text())["hooks"]), {"PreToolUse"})
 
     def test_uninstall_preserves_existing_text_config_and_private_work(self):
         before_agents = "User instructions without final newline"
@@ -397,6 +480,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_malformed_host_config_preflights_without_partial_mutation(self):
         self.run_cli("setup")
+        self.run_cli("auto", "off")
         self.write(".grok/hooks/bstack.json", "{not json")
         before = self.files()
         self.run_cli("auto", "on", success=False)
@@ -428,10 +512,19 @@ class RuntimeTests(unittest.TestCase):
 
     def test_existing_codex_explicit_disable_is_not_overridden(self):
         self.write(".codex/config.toml", "[features]\nhooks = false\n")
-        self.run_cli("setup")
         before = self.files()
-        result = self.run_cli("auto", "on", success=False)
-        self.assertIn("explicitly disables", result.stderr)
+        result = self.run_cli("setup", success=False)
+        self.assertIn("--auto off", result.stderr)
+        self.assertEqual(self.files(), before)
+        manual = self.run_cli("setup", "--auto", "off")
+        self.assertFalse(manual["auto"])
+        self.assertEqual(manual["native_hook_trust"], "unavailable")
+        self.assertIn("PR creation guard cannot run", manual["notice"])
+        self.assertEqual((self.project / ".codex/config.toml").read_text(), "[features]\nhooks = false\n")
+        self.assertIn("PreToolUse", json.loads((self.project / ".codex/hooks.json").read_text())["hooks"])
+        self.assertEqual(self.run_cli("doctor")["native_hook_trust"], "unavailable")
+        before = self.files()
+        self.run_cli("auto", "on", success=False)
         self.assertEqual(self.files(), before)
 
     def test_setup_rebinds_updated_capsule_preserving_auto(self):
@@ -453,7 +546,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.run_cli("hook", "--host", "codex", capsule=self.capsule, payload={"hook_event_name": "UserPromptSubmit"}), {})
 
     def test_off_hook_is_silent_and_on_hook_uses_installed_router(self):
-        self.run_cli("setup")
+        self.run_cli("setup", "--auto", "off")
         event = {"hook_event_name": "UserPromptSubmit", "session_id": "fixture", "turn_id": "one"}
         self.assertEqual(self.run_cli("hook", "--host", "codex", payload=event), {})
         self.run_cli("auto", "on")
@@ -466,8 +559,7 @@ class RuntimeTests(unittest.TestCase):
         other = self.root / "another project"
         other.mkdir()
         self.run_cli("setup")
-        self.run_cli("setup", project=other)
-        self.run_cli("auto", "on")
+        self.run_cli("setup", "--auto", "off", project=other)
         self.assertFalse(self.run_cli("auto", "status", project=other)["auto"])
         self.assertNotIn("router/WORKFLOW.md", (other / ".bstack/instructions.md").read_text())
 
@@ -488,7 +580,10 @@ class RuntimeTests(unittest.TestCase):
         value["hooks"]["sessionStart"].append(own)
         path.write_text(json.dumps(value))
         self.run_cli("auto", "off")
-        self.assertEqual(json.loads(path.read_text()), {"version": 1, "hooks": {"sessionStart": [own]}})
+        remaining = json.loads(path.read_text())
+        self.assertEqual(remaining["version"], 1)
+        self.assertEqual(remaining["hooks"]["sessionStart"], [own])
+        self.assertEqual(len(remaining["hooks"]["beforeShellExecution"]), 1)
 
     def test_empty_existing_hook_configuration_is_retained(self):
         self.write(".claude/settings.json", "{}")
@@ -535,7 +630,7 @@ class RuntimeTests(unittest.TestCase):
         result = self.run_cli("install")
         installed = self.project / ".bstack/package"
         self.assertEqual(result["source"], "bundled-files-only")
-        self.assertFalse(result["auto"])
+        self.assertTrue(result["auto"])
         self.assertTrue(result["fresh_session_required"])
         self.assertEqual((installed / "manifest.json").read_bytes(), original_manifest)
         self.assertTrue((self.project / ".claude/skills/poteto-mode/SKILL.md").is_file())
@@ -604,6 +699,17 @@ class RuntimeTests(unittest.TestCase):
         self.run_cli("uninstall")
         self.assertEqual(path.read_text(), existing + guidance)
 
+    def test_upgrade_accepts_an_older_schema_two_package_without_new_runtime_files(self):
+        self.run_cli("install")
+        installed = self.project / ".bstack/package"
+        for relative in ("shared/github/pr_guard.py", "shared/references/verification-policy.md"):
+            (installed / relative).unlink()
+        self.refresh_manifest(installed)
+        result = self.run_cli("install")
+        self.assertTrue(result["installed"])
+        self.assertTrue((installed / "shared/github/pr_guard.py").is_file())
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+
     def test_upgrade_recreates_missing_instruction_files_without_hiding_lost_guidance(self):
         self.write("AGENTS.md", "Project-only guidance\n")
         self.run_cli("install", "--hosts", "codex", "claude")
@@ -669,6 +775,7 @@ class RuntimeTests(unittest.TestCase):
         self.write("AGENTS.md", "Shared project instructions\n")
         self.write(".gitignore", "node_modules/\n")
         self.run_cli("setup")
+        self.run_cli("auto", "off")
         other = self.root / "second clone"
         other.mkdir()
         for name in ("AGENTS.md", ".gitignore"):
@@ -680,7 +787,6 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual((other / "AGENTS.md").read_text(), original)
         self.assertTrue((other / ".bstack/config.json").is_file())
         self.assertEqual(self.run_cli("setup", project=other)["changes"], [])
-        self.run_cli("auto", "on", project=other)
         self.assertTrue(self.run_cli("auto", "status", project=other)["auto"])
         self.assertFalse(self.run_cli("auto", "status")["auto"])
         self.run_cli("uninstall", project=other)
@@ -700,6 +806,27 @@ class RuntimeTests(unittest.TestCase):
         self.run_cli("uninstall")
         for name in ("AGENTS.md", "CLAUDE.md"):
             self.assertEqual((self.project / name).read_text(), "Shared project instructions\n")
+
+    def test_fresh_clone_upgrades_a_known_older_baseline_without_replacing_project_text(self):
+        self.write("AGENTS.md", "Before\n" + V1_BLOCK + "After\n")
+        self.write("CLAUDE.md", "Claude notes\n" + V1_BLOCK)
+        result = self.run_cli("setup")
+        self.assertTrue(result["auto"])
+        for name, before, after in (("AGENTS.md", "Before\n", "After\n"),
+                                    ("CLAUDE.md", "Claude notes\n", "")):
+            text = (self.project / name).read_text()
+            self.assertTrue(text.startswith(before))
+            self.assertTrue(text.endswith(after or "<!-- bstack:end -->\n"))
+            self.assertIn(BASELINE, text)
+            self.assertNotIn(V1_BLOCK, text)
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+
+    def test_fresh_clone_refuses_modified_older_baseline(self):
+        self.write("AGENTS.md", "Before\n" + V1_BLOCK.replace("Respect scope.", "Skip scope."))
+        before = self.files()
+        result = self.run_cli("setup", success=False)
+        self.assertIn("Unowned or malformed bstack block", result.stderr)
+        self.assertEqual(self.files(), before)
 
     def test_fresh_clone_refuses_changed_portable_pointer_block(self):
         self.run_cli("setup")
@@ -721,7 +848,7 @@ class RuntimeTests(unittest.TestCase):
     def test_host_subset_does_not_install_other_host_configuration(self):
         self.run_cli("setup", "--hosts", "claude")
         result = self.run_cli("auto", "on")
-        self.assertTrue(result["fresh_session_required"])
+        self.assertFalse(result["fresh_session_required"])
         self.assertEqual(result["native_hook_trust"], "not_applicable")
         self.assertNotIn("/hooks", result["notice"])
         for args in (("auto", "status"), ("doctor",)):
@@ -838,7 +965,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(result["package_removed"])
         self.assertFalse((self.project / ".bstack/package").exists())
         self.assertEqual((self.project / ".agents/skills/install-bstack/SKILL.md").read_text(), "User-installed distributor entry\n")
-        self.assertFalse(self.run_cli("setup")["auto"])
+        self.assertTrue(self.run_cli("setup")["auto"])
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
 
     def test_uninstall_refuses_modified_owned_package(self):
@@ -892,7 +1019,7 @@ class RuntimeTests(unittest.TestCase):
                 if case == "traversal":
                     manifest["public_skills"]["../escape"] = manifest["public_skills"].pop("how")
                 elif case == "implicit":
-                    manifest["public_skills"]["how"]["implicit"] = True
+                    manifest["public_skills"]["how"]["implicit"] = "true"
                 elif case == "unlisted":
                     manifest["public_skills"]["how"]["path"] = "engineering/missing/SKILL.md"
                 else:
@@ -901,6 +1028,17 @@ class RuntimeTests(unittest.TestCase):
                 before = self.files()
                 self.run_cli("install", success=False)
                 self.assertEqual(self.files(), before)
+
+    def test_manifest_controls_public_skill_discoverability(self):
+        path = self.capsule / "manifest.json"
+        manifest = json.loads(path.read_text())
+        manifest["public_skills"]["how"]["implicit"] = True
+        path.write_text(json.dumps(manifest))
+        self.run_cli("install")
+        wrapper = (self.project / ".agents/skills/how/SKILL.md").read_text()
+        policy = (self.project / ".agents/skills/how/agents/openai.yaml").read_text()
+        self.assertIn("disable-model-invocation: false", wrapper)
+        self.assertIn("allow_implicit_invocation: true", policy)
 
 
 if __name__ == "__main__":

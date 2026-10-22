@@ -43,6 +43,13 @@ class TransportTests(unittest.TestCase):
                          ["install", "--project", str(self.root), "--hosts", "codex", "grok"])
         self.assertEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(), digest)
 
+    def test_install_forwards_routing_and_verification_choices(self):
+        self.write_archive()
+        self.assertEqual(transport.install(self.archive, self.root, ["claude"], "off", "auto"), 0)
+        self.assertEqual(json.loads((self.root / "installed.json").read_text()),
+                         ["install", "--project", str(self.root), "--hosts", "claude",
+                          "--auto", "off", "--verification", "auto"])
+
     def test_unsafe_paths_rejected_before_controller_runs(self):
         for name in ("../escape", "/absolute", "a/../escape", "a//b", "./file", "C:/file", "a\\b", "directory/"):
             with self.subTest(name=name):

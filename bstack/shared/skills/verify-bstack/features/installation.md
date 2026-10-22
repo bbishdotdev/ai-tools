@@ -33,12 +33,12 @@ The packaged installation driver also runs from a transferred canonical package 
 
 Add `--live` only when model usage is authorized. The verifier discovers installed Codex, Claude Code, Cursor, and Grok CLIs. An explicit missing client is an error; otherwise unavailable clients are not selected. `--live-method offline` uses the offline-installed project; choose `symlink` or `copy` to drive another selected method.
 
-Use `--phases direct manual` for focused entry checks; the full suite also exercises `default-off auto-1 auto-2 after-off`. Native discovery metadata, when emitted by a CLI, is reported separately from filesystem checks.
+Use `--phases direct manual` for focused entry checks; the full suite also exercises `default-off auto-1 auto-2 after-off`. The driver explicitly turns routing off before `default-off`, because fresh installs now start with it on. Native discovery metadata, when emitted by a CLI, is reported separately from filesystem checks.
 
 The probes are read-only. They classify example tasks, read per-turn fixture values, and report a router-specific policy. They do not implement the examples or execute full engineering workflows.
 
 1. Run setup and doctor for every installed project after removing the staged release. Verify all public bindings and host links.
-2. Invoke `how` directly and observe successful reads of the packaged skill and bstack policy without loading the upstream router or delegating. Separately invoke manual Poteto Mode and observe its installed-router read. Check a fresh ordinary engineering prompt with auto off: no router read or hook receipt.
+2. Invoke `how` directly and observe successful reads of the packaged skill and bstack policy without loading the upstream router or delegating. Separately invoke manual Poteto Mode and observe its installed-router read. Explicitly turn auto off, then check a fresh ordinary engineering prompt: no router read or routing-hook receipt.
 3. Enable automatic mode twice. Run a fresh turn and a resumed turn with different routing cases and unique file values. Require session continuity, successful current fixture reads, the correct bstack policy, and a current native hook receipt when supported and trusted.
 4. Disable twice and run another fresh engineering prompt. Check that automatic bindings and receipts are absent while normal advice remains available.
 
@@ -48,9 +48,9 @@ Codex native hook trust is inspected separately without changing it. Untrusted o
 
 ## Lifecycle and limits
 
-Runtime tests cover collisions, preservation of unrelated configuration, exact safe block adoption after cloning, opt-in persistence, package upgrades, rollback, symlink boundaries, private-work retention, legacy offline migration, unowned distributor conflicts, and removal of the verified package and its owned bindings. Archive tests reject malformed paths, types, hashes, modes, and file sets before controller execution. Builder tests cover deterministic files/modes, dependency rewrites, custom overrides, complete source records, and stale or altered release detection.
+Runtime tests cover collisions, preservation of unrelated configuration, exact safe block adoption after cloning, mode persistence, package upgrades, rollback, symlink boundaries, private-work retention, legacy offline migration, unowned distributor conflicts, and removal of the verified package and its owned bindings. Archive tests reject malformed paths, types, hashes, modes, and file sets before controller execution. Builder tests cover deterministic files/modes, dependency rewrites, custom overrides, complete source records, and stale or altered release detection.
 
-The baseline lifecycle is exercised through the installed CLI: new and existing instruction files receive the bundled rules with auto off, upgrades replace only the owned block, and uninstall preserves surrounding project guidance. Exact older pointer-only blocks migrate without ownership state. Project text can be added outside the block; changing or removing the block itself must fail `doctor` and setup without mutation. These checks simulate instruction edits, not a live host's native init or model adherence to the rules.
+The baseline lifecycle is exercised through the installed CLI: new and existing instruction files receive the bundled rules regardless of auto mode, upgrades replace only the owned block, and uninstall preserves surrounding project guidance. Exact older pointer-only blocks migrate without ownership state. Project text can be added outside the block; changing or removing the block itself must fail `doctor` and setup without mutation. These checks simulate instruction edits, not a live host's native init or model adherence to the rules.
 
 The parent-workspace case is separate: install BStack in a parent, enable auto there, and confirm a child Git repo still reports `not_configured`. Run the parent package's `setup --project <child-repo>` to copy and bind that exact package in the child, then use the child's controller for `auto on` and `doctor`. Assert Claude's child skill binding and hook reminder point to the child package. This verifies installation and hook output, not whether Claude desktop follows the reminder in a live conversation.
 

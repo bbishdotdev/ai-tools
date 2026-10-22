@@ -14,7 +14,6 @@ DATA = re.compile(r'(<script id="catalog-data" type="application/json">)(.*?)(</
 SKILL_WHY = {
     "architect": "Settle risky interfaces and ownership before code locks in the wrong shape.",
     "arena": "Compare real alternatives when one attempt would be too easy to accept.",
-    "automate-me": "Turn a recurring personal working pattern into reusable agent instructions.",
     "blast-radius": "Find effects outside the diff before a change ships.",
     "bro": "Get the last answer in language you would use with another developer.",
     "bstack-auto": "Choose whether ordinary engineering requests enter Poteto Mode automatically.",
@@ -22,7 +21,7 @@ SKILL_WHY = {
     "control-cli": "Prove interactive terminal behavior by driving the actual program.",
     "control-ui": "Prove UI behavior in a real browser or app surface.",
     "configure-pr": "Add a project's own PR priorities without editing shared BStack workflows.",
-    "create-verification-skill": "Give a project a repeatable way to verify user-visible behavior.",
+    "create-verification-skill": "Give a new feature a repeatable user-facing check when the project verification setting calls for it.",
     "deslop": "Remove code patterns that look plausible but add noise or fragility.",
     "domain-modeling": "Give a team shared terms and capture only consequential design choices.",
     "figure-it-out": "Shape a one-off, complex job into a checkable execution plan.",
@@ -33,13 +32,10 @@ SKILL_WHY = {
     "how": "Ground a change in what the code actually does and where it belongs.",
     "implement": "Start building from accepted scope without recreating the planning process.",
     "interrogate": "Let independent reviewers challenge a change from different angles.",
-    "maintain-verification-skill": "Keep an existing verification skill aligned with the real product.",
-    "make-bot-ui": "Connect a purpose-built local UI to a Grok Bot webhook when that host is available.",
-    "no-comments": "Check whether comments hide code that should explain itself.",
+    "maintain-verification-skill": "Reconcile the whole verifier when requested; routine feature work updates only the affected path.",
+    "no-comments": "Make the code explain itself without a Cursor-only named agent.",
     "poteto-mode": "Choose a full PStack engineering playbook for the current task.",
     "prototype": "Make a design or behavior choice with a cheap, disposable example.",
-    "recall": "Recover enough recent context to resume the right work.",
-    "reflect": "Find improvements to agent instructions from an actual work session.",
     "research": "Answer a bounded question from evidence before a decision depends on it.",
     "resolve-pr": "Judge review feedback before replying or changing code.",
     "review-pr": "Challenge a PR independently and filter out weak findings.",
@@ -90,27 +86,20 @@ PRINCIPLE_WHY = {
 PLAYBOOKS = {
     "authoring-a-skill": ("Write or revise an agent skill with a clear trigger and checkable result.", "Use when the deliverable is a skill, not application code."),
     "autonomous-run": ("Drive one authorized task to a completion condition without repeated prompting.", "Use for an unattended, bounded run."),
-    "autopilot-full": ("Coordinate independent PR owners through the full approved lifecycle.", "Use for an explicitly autonomous PR queue."),
-    "autopilot-stack": ("Build a verified, ordered stack of dependent PRs.", "Use when changes must be reviewed or landed in sequence."),
-    "babysit": ("Track an open PR through checks, comments, and conflicts.", "Use when the job is getting a PR merge-ready, not merging it."),
     "bug-fix": ("Reproduce a defect, find its cause, fix it, and verify the behavior.", "Use for a reported bug with code changes in scope."),
     "eval": ("Measure whether a prompt, skill, or workflow change improves agent behavior.", "Use before promoting a change based on model behavior."),
     "feature": ("Shape and implement a new behavior through design, code review, and proof.", "Use for a clear feature request in engineering scope."),
     "hillclimb": ("Iterate on one measurable target with evidence after each attempt.", "Use for sustained improvement of a metric."),
     "investigation": ("Answer a read-only code or system question from evidence.", "Use when the answer is the deliverable."),
-    "multi-phase-plan": ("Produce a checkable plan for phases or stacked changes.", "Use when planning is requested but execution is not."),
     "opening-a-pr": ("Prepare an authorized PR through BStack's to-pr workflow.", "Use when PR delivery is part of the task."),
-    "orchestrate": ("Coordinate a standing program across many tasks and agents.", "Use for a true multi-day program, not an ordinary feature."),
     "pause-safely": ("Leave a durable state for later pickup.", "Use when an in-flight task needs to stop cleanly."),
     "perf-issue": ("Trace measured slowness and verify a targeted improvement.", "Use for a specific performance defect."),
     "prototype": ("Compare disposable options through BStack's prototype workflow.", "Use when seeing a working sketch will settle a design question."),
     "refactoring": ("Change code structure while preserving its behavior.", "Use when the implementation shape needs work but product behavior does not."),
     "runtime-forensics": ("Diagnose a live runtime symptom from instrumentation.", "Use when a diagnosis, rather than a fix, is requested."),
     "session-pickup": ("Reconstruct in-flight work from a prior session or branch.", "Use to resume without restarting the investigation."),
-    "shipping": ("Verify a merge-ready PR or stack and land authorized work.", "Use only when merging is in scope."),
     "trace-forensics": ("Read a captured profile or trace to explain a runtime problem.", "Use when the evidence already exists."),
     "visual-parity": ("Match an existing UI against a captured visual baseline.", "Use when the task is equivalence, not new design."),
-    "worktree-cleanup": ("Inspect and prune stale worktrees or simulators.", "Use when reclaiming local disk safely."),
 }
 
 RELATED = {
@@ -154,7 +143,7 @@ def area(path, name):
         return "Planning"
     if name in ("bstack-auto", "bstack-guide", "setup-bstack", "poteto-mode"):
         return "Setup and routing"
-    if name in ("handoff", "recall", "unslop", "verify-bstack"):
+    if name in ("handoff", "unslop", "verify-bstack"):
         return "Continuity"
     return "Engineering"
 
@@ -174,8 +163,7 @@ def catalog():
         items.append({"name": name, "kind": "skill", "area": area(path, name),
                       "what": description(files[path]), "why": SKILL_WHY[name],
                       "loading": "Always available for prose" if name == "unslop" else
-                                 "Discoverable for guide questions" if name == "bstack-guide" else
-                                 "Discoverable when setting project PR priorities" if name == "configure-pr" else
+                                 "Available from ordinary requests; you can also invoke it directly" if manifest["public_skills"][name]["implicit"] else
                                  "Invoke directly; a selected workflow may read it when relevant",
                       "related": RELATED.get(name, [])})
     for name in sorted(principles):
@@ -197,7 +185,7 @@ def catalog():
         items.append({"name": name, "kind": "internal", "area": "Internal and aliases",
                       "what": what, "why": why,
                       "loading": "Internal reference; use setup-bstack for setup" if name != "bstack-router" else
-                                 "Loaded by project instructions or the optional routing hook",
+                                 "Loaded by project instructions or the automatic routing hook when enabled",
                       "related": ["setup-bstack"] if name != "bstack-router" else ["poteto-mode"]})
     assert len(items) == len(index["skills"]) + len(index["playbooks"])
     return {"version": manifest["version"], "counts": {"skills": len(public), "principles": len(principles),

@@ -25,10 +25,10 @@ class PackageTests(unittest.TestCase):
 
     def test_public_skills_are_direct_and_internal_principles_are_not_discoverable(self):
         manifest = json.loads(self.assets["bstack/manifest.json"].data)
-        expected = {"architect", "arena", "automate-me", "blast-radius", "bro", "control-cli", "control-ui",
+        expected = {"architect", "arena", "blast-radius", "bro", "control-cli", "control-ui",
                     "create-verification-skill", "deslop", "figure-it-out", "how", "interrogate",
-                    "maintain-verification-skill", "make-bot-ui", "no-comments", "poteto-mode", "recall",
-                    "reflect", "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
+                    "maintain-verification-skill", "no-comments", "poteto-mode",
+                    "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
                     "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
                     "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
                     "to-tickets", "triage", "to-questionnaire", "handoff", "research", "prototype", "implement", "to-pr", "review-pr", "resolve-pr", "bstack-guide", "configure-pr"}
@@ -36,13 +36,14 @@ class PackageTests(unittest.TestCase):
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}
         self.assertEqual(public_files, paths | {"skills-sh/install-bstack/SKILL.md"})
+        implicit = set(json.loads((package.ROOT / "package/selection.json").read_text())["implicit_skills"])
         for name, record in manifest["public_skills"].items():
             entry = self.assets["bstack/" + record["path"]].data.decode()
             self.assertIn("name: " + name + "\n", entry)
-            self.assertEqual(record["implicit"], name in ("unslop", "bstack-guide", "configure-pr"))
-            self.assertIn("disable-model-invocation: " + str(name not in ("unslop", "bstack-guide", "configure-pr")).lower(), entry)
+            self.assertEqual(record["implicit"], name in implicit)
+            self.assertIn("disable-model-invocation: " + str(name not in implicit).lower(), entry)
             metadata = str(Path("bstack") / Path(record["path"]).parent / "agents/openai.yaml")
-            self.assertIn("allow_implicit_invocation: " + str(name in ("unslop", "bstack-guide", "configure-pr")).lower(), self.assets[metadata].data.decode())
+            self.assertIn("allow_implicit_invocation: " + str(name in implicit).lower(), self.assets[metadata].data.decode())
         self.assertFalse(any("automations/" in path or "benny" in path for path in self.assets))
         self.assertFalse(any("/content/" in path or "engineering/skills/" in path for path in self.assets))
         self.assertFalse(any("principles/" in path for path in public_files))
@@ -73,12 +74,11 @@ class PackageTests(unittest.TestCase):
 
             first = run(installer, "--hosts", "claude")
             self.assertEqual(first["hosts"], ["claude"])
-            self.assertFalse(first["auto"])
+            self.assertTrue(first["auto"])
             self.assertTrue((consumer / ".claude/skills/wayfinder/SKILL.md").is_file())
             for enabled in (False, True):
                 with self.subTest(auto=enabled):
-                    if enabled:
-                        run(controller, "auto", "on", "--project", str(consumer))
+                    run(controller, "auto", "on" if enabled else "off", "--project", str(consumer))
                     upgraded = run(installer)
                     self.assertEqual(upgraded["hosts"], ["claude"])
                     self.assertEqual(upgraded["auto"], enabled)
@@ -137,7 +137,8 @@ class PackageTests(unittest.TestCase):
         authoring = self.assets[prefix + "poteto-mode/playbooks/authoring-a-skill.md"].data.decode()
         self.assertIn("authoring SKILL.md files", authoring)
         creator = self.assets[prefix + "create-verification-skill/SKILL.md"].data.decode()
-        self.assertIn(".cursor/skills/verify-<app>/SKILL.md", creator)
+        self.assertIn(".agents/skills/verify-<app>/SKILL.md", creator)
+        self.assertNotIn(".cursor/skills/verify-<app>/SKILL.md", creator)
         plan = self.assets[prefix + "poteto-mode/playbooks/multi-phase-plan.md"].data.decode()
         self.assertIn("node ../scripts/check-plan.mjs", plan)
         self.assertIn("cat ../../swarm/SKILL.md", plan)
@@ -484,7 +485,7 @@ class DownloadTests(unittest.TestCase):
         first = json.loads(installed.stdout)
         self.assertEqual(first["status"], "installed")
         self.assertEqual(first["hosts"], ["claude"])
-        self.assertFalse(first["auto"])
+        self.assertTrue(first["auto"])
         self.assertTrue(first["fresh_session_required"])
         self.assertIn("new Code chat", first["notice"])
         self.assertFalse(first["doctor"]["fresh_session_required"])
@@ -498,10 +499,9 @@ class DownloadTests(unittest.TestCase):
                 self.assertIn(str(self.consumer / ".bstack/package" / record["path"]), skill.read_text())
                 self.assertEqual(skill.resolve(), self.consumer / ".agents/skills" / name / "SKILL.md")
         for enabled in (False, True):
-            if enabled:
-                mode = subprocess.run([sys.executable, "-B", str(self.consumer / ".bstack/package/scripts/bstack.py"),
-                                       "auto", "on", "--project", str(self.consumer)], text=True, capture_output=True)
-                self.assertEqual(mode.returncode, 0, mode.stdout + mode.stderr)
+            mode = subprocess.run([sys.executable, "-B", str(self.consumer / ".bstack/package/scripts/bstack.py"),
+                                   "auto", "on" if enabled else "off", "--project", str(self.consumer)], text=True, capture_output=True)
+            self.assertEqual(mode.returncode, 0, mode.stdout + mode.stderr)
             result = self.install()
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             current = json.loads(result.stdout)

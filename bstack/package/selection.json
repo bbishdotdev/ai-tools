@@ -1,23 +1,18 @@
 {
   "schema_version": 1,
   "name": "bstack",
-  "version": "1.0.0",
+  "version": "2.0.0-dev.1",
   "skills": [
     "architect",
     "arena",
-    "automate-me",
     "blast-radius",
     "bro",
     "control-cli",
     "control-ui",
-    "create-verification-skill",
     "deslop",
     "figure-it-out",
     "how",
     "interrogate",
-    "maintain-verification-skill",
-    "make-bot-ui",
-    "no-comments",
     "poteto-mode",
     "principle-attack-the-premise",
     "principle-boundary-discipline",
@@ -42,8 +37,6 @@
     "principle-subtract-before-you-add",
     "principle-test-behavior-not-implementation",
     "principle-type-system-discipline",
-    "recall",
-    "reflect",
     "show-me-your-work",
     "swarm",
     "tdd",
@@ -52,10 +45,7 @@
     "typescript-best-practices",
     "why"
   ],
-  "agents": [
-    "comment-sicko.md",
-    "poteto-agent.md"
-  ],
+  "agents": [],
   "excluded": {
     "upstream/pstack/skills/unslop": "Replaced by shared/skills/unslop.",
     "upstream/pstack/skills/setup-pstack": "Replaced by package-local setup guidance.",
@@ -65,11 +55,29 @@
     "upstream/pstack/assets": "Upstream branding is not bstack release branding.",
     "upstream/pstack/skills/poteto-mode/playbooks/prototype.md": "Replaced by engineering/prototype/WORKFLOW.md.",
     "upstream/matt-pocock": "Owned SDLC and engineering adapters replace the pinned source snapshots.",
-    "upstream/pstack/skills/poteto-mode/playbooks/opening-a-pr.md": "Replaced by engineering/to-pr/SKILL.md."
+    "upstream/pstack/skills/poteto-mode/playbooks/opening-a-pr.md": "Replaced by engineering/to-pr/SKILL.md.",
+    "upstream/pstack/skills/make-bot-ui": "Cursor routine and webhook setup is not a portable BStack workflow.",
+    "upstream/pstack/skills/automate-me": "Cursor-only skill creation and transcript workflow; not bundled until adapted.",
+    "upstream/pstack/skills/recall": "Cursor transcript recall is not bundled; BStack uses portable memory and handoffs.",
+    "upstream/pstack/skills/reflect": "Cursor transcript and model defaults are not bundled until adapted.",
+    "upstream/pstack/skills/no-comments": "Replaced by a host-agnostic code clarity pass without the named Cursor agent.",
+    "upstream/pstack/agents": "Cursor agent definitions are not a portable delegation interface."
+  },
+  "quarantined_playbooks": {
+    "orchestrate": "Requires a Cursor-specific long-running agent store, Task lifecycle, Bun and Graphite.",
+    "multi-phase-plan": "Generates plans that require /goal, /loop and fixed cloud model lanes.",
+    "autopilot-full": "Requires Cursor cloud agent and merge lifecycle support.",
+    "autopilot-stack": "Requires Cursor cloud agent and stacked-branch lifecycle support.",
+    "shipping": "Requires an unported PR watcher and host-specific background loop.",
+    "babysit": "Requires an unported PR watcher and host-specific background loop.",
+    "worktree-cleanup": "Its audit helper makes unsafe assumptions about branch names, transcripts and platform date tools."
   },
   "owned_skills": {
+    "no-comments": "engineering/no-comments",
     "bstack-guide": "shared/skills/bstack-guide",
     "configure-pr": "shared/skills/configure-pr",
+    "create-verification-skill": "engineering/create-verification-skill",
+    "maintain-verification-skill": "engineering/maintain-verification-skill",
     "grilling": "sdlc/skills/grilling",
     "grill-me": "sdlc/skills/grill-me",
     "grill-with-docs": "sdlc/skills/grill-with-docs",
@@ -95,14 +103,31 @@
     "shared/references/architecture-decisions.md",
     "shared/references/pr-standards.md",
     "shared/references/pr-policy-template.md",
+    "shared/references/verification-policy.md",
+    "shared/references/setup-requirements.md",
     "shared/references/work-adapters.md",
     "shared/workflow.py",
+    "shared/model_cli.py",
     "shared/adr.py",
     "shared/pr_policy.py",
+    "shared/github/pr_guard.py",
     "workspace/cli.py",
     "workspace/README.md",
     "workspace/OPERATIONS.md",
     "github/pr.py",
     "github/pull_request_template.md"
+  ],
+  "implicit_skills": [
+    "unslop",
+    "bstack-guide",
+    "configure-pr",
+    "to-pr",
+    "review-pr",
+    "resolve-pr",
+    "how",
+    "why",
+    "prototype",
+    "triage",
+    "create-verification-skill"
   ]
 }

@@ -18,10 +18,11 @@ report its absolute generated-image path. Do not edit project source. If image
 generation is unavailable, say why.
 ```
 
-Ask a headless Codex CLI session to inspect the diff and use its image-generation tool. Run it from the consumer project, with a private output path inside `.bstack/pr/`:
+Ask a headless Codex CLI session to inspect the diff and use its image-generation tool. First run `bstack.py doctor --live --workflow to-pr --project "$PROJECT"` to check the configured launcher. Run the visual attempt from the consumer project, with a private output path inside `.bstack/pr/`:
 
 ```sh
-codex exec --ephemeral --cd "$PROJECT" --sandbox read-only \
+python3 "$PROJECT/.bstack/package/shared/model_cli.py" --project "$PROJECT" run --cli codex -- \
+  exec --ephemeral --cd "$PROJECT" --sandbox read-only \
   --output-last-message "$PROJECT/.bstack/pr/visual-result.txt" - \
   < "$PROJECT/.bstack/pr/visual-brief.md"
 ```

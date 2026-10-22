@@ -18,6 +18,8 @@ import subprocess
 import tempfile
 import tomllib
 
+sys.dont_write_bytecode = True
+
 SCHEMA = 1
 HOSTS = ("codex", "claude", "cursor", "grok")
 STATE = ".bstack/config.json"
@@ -25,9 +27,15 @@ PACKAGE = ".bstack/package"
 BASELINE = "shared/references/baseline-agents.md"
 PR_TEMPLATE = "github/pull_request_template.md"
 PR_TEMPLATE_DESTINATION = ".github/pull_request_template.md"
+PR_GUARD = "shared/github/pr_guard.py"
+VERIFICATION_POLICY = "shared/references/verification-policy.md"
+VERIFICATION_MODES = ("off", "ask", "auto")
 POINTER = "Read and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n"
 BEGIN = "<!-- bstack:begin -->"
 END = "<!-- bstack:end -->"
+HISTORICAL_BASELINE_BLOCK_HASHES = {
+    "7d4146f18a9eabe12f1f01c64c8e624b829a2162fcaaf514c8365acaeab928a8",
+}
 RELOAD = "Start a fresh agent session after these bstack binding or package changes. Existing conversation context is not erased."
 
 
@@ -35,8 +43,9 @@ class Conflict(ValueError):
     pass
 
 
-def session_guidance(auto, hosts, changed=False):
-    codex_hooks = auto and "codex" in hosts
+def session_guidance(auto, hosts, changed=False, codex_disabled=False):
+    codex_hooks = "codex" in hosts and not codex_disabled
+    hook_trust = "unavailable" if "codex" in hosts and codex_disabled else "not_checked" if codex_hooks else "not_applicable"
     notices = [RELOAD] if changed else []
     if changed and "claude" in hosts:
         notices.append("In Claude desktop, start a new Code chat in this project so the installed skills appear in `/`. "
@@ -45,9 +54,25 @@ def session_guidance(auto, hosts, changed=False):
         notices.append("Codex hook trust was not checked. To review it, open `codex` in a terminal in this project, "
                        "then run `/hooks` inside the Codex terminal CLI. `/hooks` in desktop chat is not the same command. "
                        "Setup does not grant trust, and configuration does not prove live hook delivery.")
+    elif "codex" in hosts:
+        notices.append("Codex hooks are disabled in `.codex/config.toml`; the PR creation guard cannot run there. "
+                       "Enable hooks and rerun setup when you want Codex hook delivery.")
     return {"fresh_session_required": changed,
-            "native_hook_trust": "not_checked" if codex_hooks else "not_applicable",
+            "native_hook_trust": hook_trust,
             "notice": " ".join(notices)}
+
+
+def codex_hooks_disabled(project, hosts):
+    if "codex" not in hosts:
+        return False
+    path = safe_path(project, ".codex/config.toml")
+    content = text_snapshot(snapshot(path), path)
+    try:
+        parsed = tomllib.loads(content)
+    except tomllib.TOMLDecodeError:
+        return False
+    features = parsed.get("features", {})
+    return isinstance(features, dict) and features.get("hooks") is False
 
 
 def capsule_root():
@@ -129,8 +154,8 @@ def package_check(capsule, legacy=False):
                     paths.add(relative)
                 if not isinstance(skill.get("description"), str) or not skill["description"].strip():
                     errors.append(f"Public skill needs a description: {name}")
-                if not isinstance(skill.get("implicit"), bool) or skill["implicit"] != (name in ("unslop", "bstack-guide", "configure-pr")):
-                    errors.append(f"Unexpected implicit skill setting: {name}")
+                if not isinstance(skill.get("implicit"), bool):
+                    errors.append(f"Public skill needs a boolean implicit setting: {name}")
             for name, entrypoint in (("poteto-mode", "mode"), ("unslop", "unslop"), ("setup-bstack", "setup"), ("verify-bstack", "verification")):
                 if not isinstance(public.get(name), dict) or public[name].get("path") != entrypoints.get(entrypoint):
                     errors.append(f"Public skill does not match its entrypoint: {name}")
@@ -163,6 +188,9 @@ def state_read(project):
         raise Conflict(f"Unsupported or malformed bstack state: {path}")
     if not isinstance(state.get("auto"), bool) or not isinstance(state.get("hosts"), list) or any(h not in HOSTS for h in state["hosts"]):
         raise Conflict(f"Malformed bstack mode or host settings: {path}")
+    if state.get("verification", "ask") not in VERIFICATION_MODES:
+        raise Conflict(f"Malformed bstack verification setting: {path}")
+    state.setdefault("verification", "ask")
     return state
 
 
@@ -190,6 +218,15 @@ def text_snapshot(value, path):
 def marker_block(body, style="markdown"):
     begin, end = (BEGIN, END) if style == "markdown" else ("# bstack:begin", "# bstack:end")
     return f"{begin}\n{body.rstrip()}\n{end}\n"
+
+
+def historical_baseline_block(text):
+    if text.count(BEGIN) != 1 or text.count(END) != 1:
+        return None
+    match = re.search(r"(?ms)^<!-- bstack:begin -->\n.*?^<!-- bstack:end -->\n?", text)
+    if match and hashlib.sha256(match.group().encode()).hexdigest() in HISTORICAL_BASELINE_BLOCK_HASHES:
+        return match.group()
+    return None
 
 
 def without_block(text, record, path):
@@ -254,8 +291,12 @@ def existing_pr_templates(project):
     return sorted(found)
 
 
-def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None):
+def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None, verification="ask"):
     manifest = manifest or package_check(capsule)
+    included = {entry["path"] for entry in manifest["files"]}
+    for relative in (PR_GUARD, VERIFICATION_POLICY):
+        if relative not in included:
+            raise Conflict(f"Package lacks required setup file: {relative}")
     baseline = read_baseline(capsule, manifest) if baseline is None else baseline
     router = capsule / manifest["entrypoints"]["router"]
     unslop = capsule / manifest["entrypoints"]["unslop"]
@@ -299,6 +340,8 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
                         "other entries select their named workflow within the user's requested scope. Continue an "
                         "explicitly invoked workflow across turns. Otherwise follow ordinary project guidance without "
                         "activating bstack engineering workflows.\n")
+    instruction += (f"Project verification mode: {verification}. Read `{capsule / VERIFICATION_POLICY}` "
+                    "when changing a feature or fixing a bug.\n")
     add(".bstack/instructions.md", {"kind": "file", "text": "# bstack project instructions\n\n" + instruction})
     body = baseline + "\n\n" + POINTER if baseline else POINTER
     instruction_record = {"kind": "block", "text": marker_block(body), "adopt": True}
@@ -316,42 +359,54 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
     if ignore_key in old or "bstack:begin" in ignore_text or "bstack:end" in ignore_text or not re.search(r"(?m)^/?\.bstack/$", ignore_text):
         add(".gitignore", {"kind": "block", "text": marker_block(".bstack/", "shell"), "adopt": True}, instructions=True)
 
-    if auto:
-        for host in hosts:
-            command = f"{invocation} hook --host {host} {project_arg}"
-            if host in ("codex", "claude"):
-                events = ("SessionStart", "UserPromptSubmit", "SubagentStart")
+    for host in hosts:
+        command = f"{invocation} hook --host {host} {project_arg}"
+        guard = f"python3 {shlex.quote(str(capsule / PR_GUARD))} --host {host}"
+        if host in ("codex", "claude"):
+            guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
+            entries = {"PreToolUse": [guard_handler]}
+            if auto:
                 handler = {"hooks": [{"type": "command", "command": command, "timeout": 5}]}
-                target = ".codex/hooks.json" if host == "codex" else ".claude/settings.json"
-                add(target, {"kind": "json", "entries": {e: [handler] for e in events}, "defaults": {}})
-            elif host == "cursor":
-                events = ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")
+                entries.update({e: [handler] for e in ("SessionStart", "UserPromptSubmit", "SubagentStart")})
+            target = ".codex/hooks.json" if host == "codex" else ".claude/settings.json"
+            add(target, {"kind": "json", "entries": entries, "defaults": {}})
+        elif host == "cursor":
+            entries = {"beforeShellExecution": [{"command": guard, "timeout": 5}]}
+            if auto:
                 handler = {"command": command, "timeout": 5}
-                add(".cursor/hooks.json", {"kind": "json", "entries": {e: [handler] for e in events}, "defaults": {"version": 1}})
-            else:
+                entries.update({e: [handler] for e in ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")})
+            add(".cursor/hooks.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
+        else:
+            guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
+            entries = {"PreToolUse": [guard_handler]}
+            if auto:
                 handler = {"hooks": [{"type": "command", "command": command, "timeout": 5}]}
-                add(".grok/hooks/bstack.json", {"kind": "json", "entries": {e: [handler] for e in ("UserPromptSubmit", "PostToolUse")}, "defaults": {}})
-        if "codex" in hosts:
-            relative = ".codex/config.toml"
-            path = safe_path(project, relative)
-            content = text_snapshot(snapshot(path), path)
-            previous = old.get(relative)
-            if previous:
-                content = without_block(content, previous, path)
-            try:
-                parsed = tomllib.loads(content)
-            except tomllib.TOMLDecodeError as error:
-                raise Conflict(f"Malformed Codex TOML: {error}") from error
-            features = parsed.get("features", {})
-            if not isinstance(features, dict):
-                raise Conflict("Codex features must be a TOML table")
-            if features.get("hooks") is False:
-                raise Conflict("Codex configuration explicitly disables hooks; enable that setting before opting in")
-            if features.get("hooks") is not True:
-                if "features" in parsed:
-                    add(relative, {"kind": "block", "text": marker_block("hooks = true", "shell"), "anchor": "[features]"})
-                else:
-                    add(relative, {"kind": "block", "text": marker_block("[features]\nhooks = true", "shell")})
+                entries.update({e: [handler] for e in ("UserPromptSubmit", "PostToolUse")})
+            add(".grok/hooks/bstack.json", {"kind": "json", "entries": entries, "defaults": {}})
+    if "codex" in hosts:
+        relative = ".codex/config.toml"
+        path = safe_path(project, relative)
+        content = text_snapshot(snapshot(path), path)
+        previous = old.get(relative)
+        if previous:
+            content = without_block(content, previous, path)
+        try:
+            parsed = tomllib.loads(content)
+        except tomllib.TOMLDecodeError as error:
+            raise Conflict(f"Malformed Codex TOML: {error}") from error
+        features = parsed.get("features", {})
+        if not isinstance(features, dict):
+            raise Conflict("Codex features must be a TOML table")
+        if features.get("hooks") is False:
+            if auto:
+                raise Conflict("Codex hooks are disabled. Enable them for automatic routing, or install with --auto off; "
+                               "the PR guard cannot run while hooks remain disabled")
+            return records
+        if features.get("hooks") is not True:
+            if "features" in parsed:
+                add(relative, {"kind": "block", "text": marker_block("hooks = true", "shell"), "anchor": "[features]"})
+            else:
+                add(relative, {"kind": "block", "text": marker_block("[features]\nhooks = true", "shell")})
     return records
 
 
@@ -435,6 +490,8 @@ def reconcile(project, previous, desired, restore_missing=()):
                         if text.count(block) == 1:
                             previous_block = block
                             break
+                    if previous_block is None and relative in ("AGENTS.md", "CLAUDE.md"):
+                        previous_block = historical_baseline_block(text)
                 if previous_block is not None:
                     surrounding = without_block(text, {"text": previous_block}, path)
                     if new:
@@ -509,16 +566,16 @@ def project_lock(project):
         os.close(descriptor)
 
 
-def configure(project, capsule, action, hosts=None, mode=None, installation=None, locked=False):
+def configure(project, capsule, action, hosts=None, mode=None, verification=None, installation=None, locked=False):
     with nullcontext() if locked else project_lock(project):
         current = state_read(project)
         if action != "setup" and not current:
             if action == "uninstall":
-                return {"installed": False, "auto": False, "hosts": [], "changes": [],
+                return {"installed": False, "auto": False, "verification": "ask", "hosts": [], "changes": [],
                         **session_guidance(False, [])}
             raise Conflict("bstack is not configured in this project; run setup first")
-        if action == "auto" and current["capsule"] != str(capsule):
-            raise Conflict("Run auto from the configured installed package")
+        if action in ("auto", "verification") and current["capsule"] != str(capsule):
+            raise Conflict("Run configuration commands from the installed package")
         old = current["managed"] if current else {}
         if action == "uninstall":
             desired = {}
@@ -526,10 +583,13 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
         else:
             manifest = package_check(capsule)
             chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else HOSTS))
-            enabled = mode if mode is not None else current["auto"] if current else False
+            enabled = mode if mode is not None else current["auto"] if current else True
+            verification_mode = verification if verification is not None else current["verification"] if current else "ask"
             install_kind = installation or (current.get("installation", "external") if current else "external")
-            desired = build_records(project, capsule, chosen_hosts, enabled, old, manifest=manifest)
-            state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled, "managed": desired, "installation": install_kind}
+            desired = build_records(project, capsule, chosen_hosts, enabled, old, manifest=manifest,
+                                    verification=verification_mode)
+            state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled,
+                     "verification": verification_mode, "managed": desired, "installation": install_kind}
         restored = missing_instruction_blocks(project, old, desired) if action == "setup" else []
         changes = reconcile(project, old, desired, restore_missing=restored)
         template_status = None
@@ -567,8 +627,10 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
             changes[STATE] = (before, after)
         apply(project, changes)
         result = {"installed": state is not None, "auto": state["auto"] if state else False,
+                "verification": state["verification"] if state else "ask",
                 "hosts": state["hosts"] if state else [], "changes": list(changes),
-                **session_guidance(state["auto"] if state else False, state["hosts"] if state else [], bindings_changed)}
+                **session_guidance(state["auto"] if state else False, state["hosts"] if state else [], bindings_changed,
+                                   codex_hooks_disabled(project, state["hosts"]) if state else False)}
         if restored:
             result["recreated_instruction_files"] = restored
             result["recovery_warning"] = ("Recreated the missing instruction file(s) with only bstack's managed block: "
@@ -579,7 +641,7 @@ def configure(project, capsule, action, hosts=None, mode=None, installation=None
         return result
 
 
-def install_offline(project, capsule, hosts=None):
+def install_offline(project, capsule, hosts=None, mode=None, verification=None):
     manifest = package_check(capsule)
     target = safe_path(project, PACKAGE)
     with project_lock(project):
@@ -603,10 +665,11 @@ def install_offline(project, capsule, hosts=None):
                                "Remove it using its distributor before setup; its files will not be adopted or deleted")
             legacy = None
         chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else HOSTS))
-        enabled = current["auto"] if current else False
+        enabled = mode if mode is not None else current["auto"] if current else True
+        verification_mode = verification if verification is not None else current["verification"] if current else "ask"
         previous = current["managed"] if current else {}
         desired = build_records(project, target, chosen_hosts, enabled, previous, manifest=manifest,
-                                baseline=read_baseline(capsule, manifest))
+                                baseline=read_baseline(capsule, manifest), verification=verification_mode)
         preflight = dict(previous)
         if legacy:
             for relative in desired:
@@ -618,7 +681,8 @@ def install_offline(project, capsule, hosts=None):
         reconcile(project, preflight, desired,
                   restore_missing=missing_instruction_blocks(project, preflight, desired))
         if target == capsule:
-            result = configure(project, target, "setup", hosts=chosen_hosts, installation="offline", locked=True)
+            result = configure(project, target, "setup", hosts=chosen_hosts, mode=enabled,
+                               verification=verification_mode, installation="offline", locked=True)
             result["installation"] = "offline"
             result["package"] = str(target)
             return result
@@ -641,7 +705,8 @@ def install_offline(project, capsule, hosts=None):
                 if legacy:
                     os.replace(legacy, old_legacy)
                 os.replace(staging, target)
-                result = configure(project, target, "setup", hosts=chosen_hosts, installation="offline", locked=True)
+                result = configure(project, target, "setup", hosts=chosen_hosts, mode=enabled,
+                                   verification=verification_mode, installation="offline", locked=True)
             except Exception:
                 if not staging.exists() and target.exists():
                     shutil.rmtree(target)
@@ -655,7 +720,8 @@ def install_offline(project, capsule, hosts=None):
         result["installation"] = "offline"
         result["package"] = str(target)
         result["source"] = "bundled-files-only"
-        result.update(session_guidance(result["auto"], result["hosts"], result["fresh_session_required"] or package_changed))
+        result.update(session_guidance(result["auto"], result["hosts"], result["fresh_session_required"] or package_changed,
+                                       codex_hooks_disabled(project, result["hosts"])))
         return result
 
 
@@ -689,15 +755,18 @@ def uninstall_package(project, capsule):
 def status(project, capsule, check=False):
     current = state_read(project)
     result = {"installed": current is not None, "auto": current["auto"] if current else False,
+              "verification": current["verification"] if current else "ask",
               "project": str(project), "hosts": current["hosts"] if current else [],
               "package": current["capsule"] if current else str(capsule),
-              **session_guidance(current["auto"] if current else False, current["hosts"] if current else [])}
+              **session_guidance(current["auto"] if current else False, current["hosts"] if current else [],
+                                 codex_disabled=codex_hooks_disabled(project, current["hosts"]) if current else False)}
     if check:
         manifest = package_check(capsule)
         if current:
             if current["capsule"] != str(capsule):
                 raise Conflict("This command is from another package location; run the installed package command")
-            expected = build_records(project, capsule, current["hosts"], current["auto"], current["managed"], manifest=manifest)
+            expected = build_records(project, capsule, current["hosts"], current["auto"], current["managed"],
+                                     manifest=manifest, verification=current["verification"])
             changes = reconcile(project, current["managed"], expected)
             if changes:
                 raise Conflict("Bindings need setup reconciliation: " + ", ".join(changes))
@@ -742,14 +811,21 @@ def main():
     for name in ("install", "setup"):
         setup = commands.add_parser(name)
         setup.add_argument("--hosts", nargs="+", choices=HOSTS)
+        setup.add_argument("--auto", choices=("on", "off"), help="Override automatic routing; new projects default on")
+        setup.add_argument("--verification", choices=VERIFICATION_MODES,
+                           help="Project verifier lifecycle; new projects default ask")
     auto = commands.add_parser("auto")
     auto.add_argument("mode", choices=("on", "off", "status"))
+    verification = commands.add_parser("verification")
+    verification.add_argument("mode", choices=(*VERIFICATION_MODES, "status"))
     memory = commands.add_parser("memory", help="Set up or inspect optional user-wide memory")
     memory.add_argument("mode", choices=("setup", "status"))
     memory.add_argument("--home", type=Path, help="Disposable test home; ignores native app directory overrides")
     memory.add_argument("--apply-plan", help="Apply the unchanged reviewed memory setup plan")
-    for name in ("doctor", "uninstall"):
-        commands.add_parser(name)
+    doctor = commands.add_parser("doctor")
+    doctor.add_argument("--live", action="store_true", help="Run short inference checks for the selected workflow")
+    doctor.add_argument("--workflow", choices=("review-pr", "grilling", "to-pr"))
+    commands.add_parser("uninstall")
     hook = commands.add_parser("hook")
     hook.add_argument("--host", required=True, choices=HOSTS)
     for command in commands.choices.values():
@@ -776,17 +852,31 @@ def main():
         if args.command == "hook":
             return run_hook(project, capsule, args.host)
         if args.command in ("install", "setup"):
-            result = install_offline(project, capsule, hosts=args.hosts)
+            result = install_offline(project, capsule, hosts=args.hosts,
+                                     mode=None if args.auto is None else args.auto == "on",
+                                     verification=args.verification)
         elif args.command == "uninstall":
             result = uninstall_package(project, capsule)
         elif args.command == "doctor":
             result = status(project, capsule, check=True)
+            helper = capsule / "shared/model_cli.py"
+            if helper.is_file():
+                spec = importlib.util.spec_from_file_location("bstack_model_cli", helper)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                try:
+                    result["models"] = module.diagnose(project, args.workflow, args.live)
+                except module.ModelCLIError as error:
+                    result["models"] = {"status": "needs_setup", "reason": str(error), "live": args.live}
+            else:
+                result["models"] = {"status": "needs_setup", "reason": "This package has no model CLI doctor; upgrade BStack.", "live": args.live}
         elif args.mode == "status":
             result = status(project, capsule)
         else:
-            result = configure(project, capsule, "auto", mode=args.mode == "on")
+            result = (configure(project, capsule, "auto", mode=args.mode == "on") if args.command == "auto"
+                      else configure(project, capsule, "verification", verification=args.mode))
         print(json.dumps(result, indent=2))
-        return 0
+        return 1 if args.command == "doctor" and args.live and result["models"]["status"] != "passed" else 0
     except (Conflict, OSError, ValueError) as error:
         print(json.dumps({"error": str(error)}), file=sys.stderr)
         return 1

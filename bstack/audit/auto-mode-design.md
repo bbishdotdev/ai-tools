@@ -1,4 +1,6 @@
-# Manual entry and opt-in auto mode
+# Manual entry and opt-in auto mode (historical)
+
+This records the earlier opt-in design. The current decision is to enable automatic routing on new installs, keep existing projects' saved choices, and let developers turn it off. See `bstack/INSTALL.md` for current behavior.
 
 Decision recorded 18 September 2026 and implemented in the consumer release's project controller. See [installation](../INSTALL.md). This development repository's earlier POC still has its previously authorized automatic routing enabled.
 

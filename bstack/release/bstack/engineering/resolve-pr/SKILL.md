@@ -1,7 +1,7 @@
 ---
 name: resolve-pr
 description: Assess and resolve feedback on an open PR without blindly accepting suggestions or expanding its purpose. Use for author-side PR follow-up, not an independent review.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Brenden Bishop
   attribution: ../../ATTRIBUTION.md

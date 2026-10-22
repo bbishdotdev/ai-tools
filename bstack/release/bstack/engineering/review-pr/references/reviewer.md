@@ -12,7 +12,7 @@ Read the existing public reviews and replies, including assessments made with di
 
 A shared baseline may contain only the earlier public findings. When own_prior_report is null, don't claim to have read private prior reasoning. New independent passes still consider the public discussion and can disagree with it.
 
-Every finding must earn its place through evidence and consequence. Use stable supplied IDs for prior findings. Tie a proposed unnecessary-change finding to the relevant source and competing work evidence. Needlessness is not established just because the PR is small or you prefer the old implementation.
+Every finding must earn its place through evidence and consequence. In the `prior` field, address exactly the IDs in `prior_findings` once each. Do not include IDs from `prior_decisions`, `settled_findings`, or your earlier private report. Use stable supplied IDs for prior findings. Tie a proposed unnecessary-change finding to the relevant source and competing work evidence. Needlessness is not established just because the PR is small or you prefer the old implementation.
 
 Separate facts from unverified claims. If a material missing artifact prevents a conclusion, mark coverage incomplete with a concrete limit. A failed check or unknown model result is never a clean review. Do not claim tests or reproduction you did not observe.
 

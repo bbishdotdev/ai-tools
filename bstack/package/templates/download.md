@@ -18,7 +18,7 @@ The target project must already exist. Add `--hosts codex claude cursor grok` to
 
 The installer verifies the package, installs it into your project's `.bstack/package/`, registers its skills, and runs `doctor`. Follow the resulting fresh-session guidance. In Claude desktop, start a new Code chat so the skills appear.
 
-Automatic routing starts off. After a successful install, ask your agent to enable it if you want bstack workflows applied to ordinary engineering prompts. Shared memory setup is also optional and separate.
+Automatic engineering routing starts on for a new installation. Add `--auto off` if you prefer to invoke engineering skills manually. The project verifier setting starts at `ask`: BStack proposes a verifier change and waits for your answer before editing it. Add `--verification off` or `--verification auto` to choose another mode. Upgrades keep your existing choices. Shared memory setup is optional and separate.
 
 ## Update
 
