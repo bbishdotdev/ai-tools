@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import shlex
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -83,6 +84,34 @@ class ModelCommandTests(unittest.TestCase):
         self.set_client("claude", "claude-no-version")
         self.assertEqual(model_cli.availability(self.project, "claude")["status"], "version_unavailable")
         self.assertEqual(model_cli.probe(self.project, "claude", "model-a")["status"], "passed")
+
+    def test_linked_worktree_uses_owner_roles_and_wrapper_commands(self):
+        def git(*args):
+            result = subprocess.run(["git", "-C", str(self.project), *args], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+        git("init")
+        git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.com",
+            "commit", "--allow-empty", "-m", "init")
+        metadata = {"id": "w_fixture", "root": str(self.project), "schemaVersion": 1}
+        workspace = self.project / ".bstack/workspace"
+        workspace.mkdir(parents=True)
+        (workspace / "metadata.json").write_text(json.dumps(metadata))
+        (self.project / ".git/bstack-wayfinder.json").write_text(json.dumps(metadata))
+        (workspace / "roles.json").write_text(json.dumps({"version": 1, "grilling": {
+            "interviewer": {"adapter": "codex", "model": "model-a"},
+            "respondent": {"adapter": "claude", "model": "model-b"},
+        }}))
+        linked = self.project / "linked"
+        git("worktree", "add", "--detach", str(linked))
+        for client in ("codex", "claude"):
+            parts = [sys.executable, str(self.fake), str(self.log), client, "--", "{args}"]
+            model_cli.configure(linked, client, shlex.join(parts))
+        self.assertTrue((self.project / ".bstack/model-clis.json").is_file())
+        self.assertFalse((linked / ".bstack/model-clis.json").exists())
+        result = model_cli.diagnose(linked, "grilling", live=True)
+        self.assertEqual(result["status"], "passed", result)
+        self.assertEqual(set(result["workflows"]["grilling"]["roles"]), {"interviewer", "respondent"})
 
     def test_project_relative_wrapper_runs_from_isolated_probe_directory(self):
         launcher = self.project / "launch"

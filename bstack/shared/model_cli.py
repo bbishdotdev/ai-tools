@@ -12,6 +12,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "workspace"))
+from wayfinder.core import DomainError, _git_location, _read_metadata
+
 
 CLIENTS = {"codex": "codex", "claude": "claude", "cursor": "cursor-agent", "grok": "grok"}
 REVIEW_DEFAULTS = {
@@ -28,8 +31,32 @@ class ModelCLIError(ValueError):
     pass
 
 
+def config_root(project):
+    project = Path(project).resolve()
+    try:
+        git = _git_location(project)
+        if git is None:
+            return project
+        checkout, common = git
+        binding = common / "bstack-wayfinder.json"
+        if not binding.exists():
+            if (checkout / ".bstack/workspace/metadata.json").exists():
+                raise ModelCLIError("Workspace metadata has no Git binding; explicit recovery is required")
+            return checkout
+        metadata = _read_metadata(binding)
+        owner = Path(metadata["root"])
+        owner_git = _git_location(owner)
+        if owner.resolve() != owner or owner_git is None or owner_git[1] != common:
+            raise ModelCLIError("Workspace root does not match its Git binding")
+        if _read_metadata(owner / ".bstack/workspace/metadata.json") != metadata:
+            raise ModelCLIError("Workspace metadata does not match its Git binding")
+        return owner
+    except DomainError as error:
+        raise ModelCLIError(str(error)) from error
+
+
 def config_path(project):
-    return Path(project).resolve() / CONFIG
+    return config_root(project) / CONFIG
 
 
 def validate_template(parts):
@@ -82,7 +109,7 @@ def argv(project, client, arguments):
     for part in template(project, client):
         result.extend(arguments if part == "{args}" else [part])
     if "/" in result[0] and not Path(result[0]).is_absolute():
-        result[0] = str((Path(project).resolve() / result[0]).resolve())
+        result[0] = str((config_root(project) / result[0]).resolve())
     return result
 
 
@@ -222,7 +249,7 @@ def workflow_roles(project, workflow):
                 raise ModelCLIError("Cannot read review roles from .bstack/review.json") from error
         return roles
     if workflow == "grilling":
-        path = project / ".bstack/workspace/roles.json"
+        path = config_root(project) / ".bstack/workspace/roles.json"
         if not path.exists():
             return {}
         try:

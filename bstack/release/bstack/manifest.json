@@ -2192,9 +2192,9 @@
     {
       "mode": 420,
       "path": "shared/model_cli.py",
-      "sha256": "a590d46bb5bdceb518c45610ef561a424118eab46b2dfafca786cc9dab35161e",
+      "sha256": "664965fd6079176bce23e1648e47d45e0fbf3f1185b6666434837aff36aa532e",
       "source": "bstack/shared/model_cli.py",
-      "source_sha256": "a590d46bb5bdceb518c45610ef561a424118eab46b2dfafca786cc9dab35161e",
+      "source_sha256": "664965fd6079176bce23e1648e47d45e0fbf3f1185b6666434837aff36aa532e",
       "transforms": []
     },
     {

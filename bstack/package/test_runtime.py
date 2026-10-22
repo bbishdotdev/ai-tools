@@ -106,6 +106,10 @@ class RuntimeTests(unittest.TestCase):
 
     def test_doctor_with_model_helper_can_run_twice_without_mutating_installed_package(self):
         shutil.copyfile(BSTACK / "shared/model_cli.py", self.capsule / "shared/model_cli.py")
+        wayfinder = self.capsule / "workspace/wayfinder"
+        wayfinder.mkdir(parents=True)
+        shutil.copyfile(BSTACK / "workspace/wayfinder/__init__.py", wayfinder / "__init__.py")
+        shutil.copyfile(BSTACK / "workspace/wayfinder/core.py", wayfinder / "core.py")
         self.refresh_manifest(self.capsule)
         self.run_cli("install", "--hosts", "codex")
         first = self.run_cli("doctor")
