@@ -205,7 +205,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 compatible = [record for record in public if record["receipt"]["config_digest"] == config_id and record["receipt"]["policy_digest"] == policy_id and record["receipt"]["base"] == state["pr"]["base"]["sha"]]
                 if compatible:
                     previous = shared_baseline(compatible[-1], state)
-            write_json(output / "doctor.json", doctor(config))
+            write_json(output / "doctor.json", doctor(config, project, live=True))
             with tempfile.TemporaryDirectory(prefix="bstack-review-snapshot-") as temporary:
                 scratch = Path(temporary)
                 repository, prior_head = fetch_snapshot(scratch, state, previous["snapshot"]["pr"]["head"]["sha"] if previous else None)
@@ -242,7 +242,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 def review_role(role):
                     own = dict(context)
                     own["own_prior_report"] = read_json(previous_dir / (role + ".json")) if previous_dir else None
-                    report = invoke(config["roles"][role], REVIEW, prompts["rubric"] + "\n\n" + prompts["reviewer"], own, snapshots, config, output / (role + ".json"))
+                    report = invoke(config["roles"][role], REVIEW, prompts["rubric"] + "\n\n" + prompts["reviewer"], own, snapshots, config, output / (role + ".json"), project)
                     validate_review(report, [item["id"] for item in context["prior_findings"]], trees)
                     write_json(output / (role + ".json"), report)
                     return report
@@ -267,7 +267,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 prior_aliases = {value["source_id"]: alias for alias, value in aliases.items() if value["role"] == "prior"}
                 judge_context["prior_decisions"] = [{**item, "id": prior_aliases[item["id"]], "duplicate_of": prior_aliases.get(item["duplicate_of"])} for item in context["prior_decisions"] if item["id"] in prior_aliases]
                 write_json(output / "provenance.json", aliases)
-                judgment = invoke(config["roles"]["adjudicator"], JUDGMENT, prompts["rubric"] + "\n\n" + prompts["adjudicator"], judge_context, snapshots, config, output / "adjudicator.json")
+                judgment = invoke(config["roles"]["adjudicator"], JUDGMENT, prompts["rubric"] + "\n\n" + prompts["adjudicator"], judge_context, snapshots, config, output / "adjudicator.json", project)
                 consolidate(judgment, candidates, trees, state["discussion"], limits)
                 write_json(output / "adjudicator.json", judgment)
                 findings = [{**item, "id": aliases[item["id"]]["stable_id"]} for item in judgment["findings"]]
@@ -277,8 +277,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 decisions = list({item["id"]: item for item in sorted(decisions, key=lambda item: dispositions[item["disposition"]])}.values())
                 mandatory = [item["reason"] for item in limits if item["mandatory"]]
                 material = [item["reason"] for item in judgment["artifact_assessments"] if item["material"]]
-                report_limits = [limit for report in [*reports.values(), judgment] for limit in report["coverage"]["limits"] if not report["coverage"]["complete"]]
-                complete = not mandatory and not material and not missing_standards and not policy_error and all(item["coverage"]["complete"] for item in [*reports.values(), judgment])
+                report_limits = judgment["coverage"]["limits"] if not judgment["coverage"]["complete"] else []
+                complete = not mandatory and not material and not missing_standards and not policy_error and judgment["coverage"]["complete"]
                 stale = context_digest(github.state(), github.checks(head)) != context_id
                 coverage_result = {"complete": complete, "limits": list(dict.fromkeys(mandatory + material + report_limits +
                                    [f"Project PR standard missing from the accepted target: {path}" for path in missing_standards] +
@@ -428,6 +428,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     doctor_parser = sub.add_parser("doctor")
     doctor_parser.add_argument("--config", type=Path)
+    doctor_parser.add_argument("--live", action="store_true")
     run_parser = sub.add_parser("run")
     run_parser.add_argument("--pr", required=True)
     run_parser.add_argument("--config", type=Path)
@@ -444,7 +445,7 @@ def main():
         if not project.is_dir():
             raise ReviewError("Project directory does not exist")
         if args.command == "doctor":
-            result = doctor(configuration(project, args.config))
+            result = doctor(configuration(project, args.config), project, args.live)
         elif args.command == "run":
             result = review_cycle(project, args.pr, args.config, args.fresh)
         else:

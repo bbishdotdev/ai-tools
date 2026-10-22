@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Use the shared configured CLI launcher for PR reviews and Codex PR visuals, including wrapper commands.
 - Make automatic engineering routing the new-install default. Existing projects keep their saved setting; `bstack-auto off` restores manual routing.
 - Add `off`, `ask`, and `auto` project-verification settings. New installs use `ask`; feature work can now create or update only the affected `verify-<app>` path.
 - Add a cross-host shell PR creation guard, a clearer first-use setup map, and an exact-block path for upgrading cloned v1 installs that lost local state.

@@ -19,7 +19,9 @@ Defaults are Opus 5.5 at medium effort, Codex Astra at medium effort, and a fres
 
 Two reviewers must use distinct model identities. Prefer different families for independent perspectives. The adjudicator may use either family in a fresh session. Supported effort values are `low`, `medium`, and `high`; the configured model must support the requested value. Model IDs depend on the authenticated deployment. The runner does not substitute another model when one fails.
 
-`doctor` checks configuration, executable availability, versions, and required CLI options. It does not make inference calls or certify model entitlement, authentication, or effective reasoning effort. `run` exposes execution failures as incomplete reviews. Don't interpret an installed binary as a working model.
+`doctor` checks configuration, executable availability, versions, and required CLI options. Add `--live` to send one short prompt to each selected role before starting a review. `run` does this live check itself before fetching source or paying for the full three-model review. A failed role stops the run and names the role; BStack does not silently substitute a provider. A successful probe proves the CLI answered with the requested settings at that moment. It cannot guarantee the login will remain valid or, for every CLI, independently prove the exact effective model.
+
+If the CLI runs through a local wrapper, configure its argument prefix once in the project's private `.bstack/model-clis.json` through the bundled helper. For example, `python3 .bstack/package/shared/model_cli.py --project "$PWD" configure --cli claude --command 'launch claude -- {args}'`. BStack expands `{args}` as an argument list, never as shell text. Then run `python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr`. The same command map is used by the PR review runner. Ask the developer for the actual wrapper command when the normal invocation fails; do not guess flags or bypass the wrapper.
 
 The roles are separate from autonomous grilling configuration. Changing review roles does not enable automatic routing or grant product/ADR decision authority.
 

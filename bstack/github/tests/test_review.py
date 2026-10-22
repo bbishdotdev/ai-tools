@@ -72,8 +72,20 @@ if name == "gh":
     else:
         raise RuntimeError(endpoint)
     raise SystemExit(0)
-context = json.loads(Path("context.json").read_text())
+if name in {"codex", "claude"} and "--output-schema" not in args and "--json-schema" not in args:
+    if name == "codex":
+        Path(args[args.index("--output-last-message") + 1]).write_text("BSTACK_MODEL_READY")
+    else:
+        print(json.dumps({"result": "BSTACK_MODEL_READY", "modelUsage": {args[args.index("--model") + 1]: {}}}))
+    raise SystemExit(0)
 schema = json.loads(Path(args[args.index("--output-schema") + 1]).read_text()) if name == "codex" else json.loads(args[args.index("--json-schema") + 1])
+if "ready" in schema["properties"]:
+    if name == "codex":
+        Path(args[args.index("--output-last-message") + 1]).write_text(json.dumps({"ready": "BSTACK_MODEL_READY"}))
+    else:
+        print(json.dumps({"structured_output": {"ready": "BSTACK_MODEL_READY"}, "modelUsage": {args[args.index("--model") + 1]: {}}}))
+    raise SystemExit(0)
+context = json.loads(Path("context.json").read_text())
 judge = "decisions" in schema["properties"]
 role = "judge" if judge else name
 count = home / (role + "-calls.txt")
@@ -583,6 +595,23 @@ class ReviewLifecycleTests(unittest.TestCase):
             self.save()
             self.assertEqual(self.run_review()["status"], status)
         self.assertFalse((self.home / "claude-calls.txt").exists())
+
+    def test_doctor_reports_invalid_launcher_configuration(self):
+        settings = self.project / ".bstack/model-clis.json"
+        settings.parent.mkdir(parents=True)
+        settings.write_text("{broken")
+        result = self.cli("doctor", success=False)
+        self.assertEqual(result["status"], "incomplete")
+        self.assertIn("launcher configuration", result["error"])
+
+    def test_live_review_works_when_wrapper_does_not_support_version(self):
+        self.state["doctor_failure"] = True
+        self.save()
+        result = self.run_review()
+        self.assertEqual(result["status"], "complete")
+        checked = json.loads((Path(result["run"]) / "doctor.json").read_text())
+        self.assertTrue(checked["runtime_checked"])
+        self.assertEqual(checked["executables"]["claude"]["version"], "unavailable")
 
     def test_rebuttal_preserves_evidenced_blocker_and_target_decisions_are_available(self):
         self.state["scenario"] = "bug"

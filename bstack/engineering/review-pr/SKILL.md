@@ -19,10 +19,11 @@ Resolve [the runner](scripts/review.py) from this skill's real location, includi
 
 ```sh
 python3 /absolute/skill-directory/scripts/review.py doctor --project /path/to/project
+python3 /absolute/skill-directory/scripts/review.py doctor --project /path/to/project --live
 python3 /absolute/skill-directory/scripts/review.py run --project /path/to/project --pr https://github.com/owner/repo/pull/123
 ```
 
-Confirm the target PR and local project. The first draft uses authenticated GitHub CLI for the forge and Claude Code/Codex CLIs for model execution. The calling agent can run in any host with those dependencies. Missing clients, unsupported flags, unavailable models, and failed responses are incomplete reviews, never permission to substitute a model or approve.
+Confirm the target PR and local project. The first draft uses authenticated GitHub CLI for the forge and Claude Code/Codex CLIs for model execution. The calling agent can run in any host with those dependencies. The runner probes the chosen roles before starting a new paid review. If a CLI requires a wrapper, configure it through the shared [model launcher](../../shared/model_cli.py) and retry doctor; do not assemble a one-off shell workaround. Missing clients, unsupported flags, unavailable models, and failed responses are incomplete reviews, never permission to substitute a model or approve.
 
 The runner checks whether review work is needed before starting models. Closed PRs are skipped; confirmed merge conflicts defer review. Unchanged compatible assessments can be reused locally or from a trusted published review. Different models or `run --fresh` start an independent pass, with earlier public feedback available as evidence. Reusing someone else's assessment never submits an approval as the current developer.
 
