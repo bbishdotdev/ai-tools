@@ -1,0 +1,44 @@
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_4175bc1ac0db95 41,75
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_4175bc1ac0db95 26,32
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_ec977e38130943 266-279,623,638,658
+  s_822e08e34bda62::t_7b5e1ce2ff10f5 302-317,325
+  s_822e08e34bda62::t_e736781493f473 318-324,600
+bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_4175bc1ac0db95 11
+bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_b15ad3a2ae186e 101-112
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_fd069075e0a8d5 25,36-39,182-184,186
+  s_822e08e34bda62::t_0f8cf01768f7e7 180-181,185,187
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_c8f9f81224d73e 26,32
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_08ee998ff90f79 41,75
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_fa7a1381bc2925 11
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_ba369ebd870ebe 25,36-39,180-187
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_a35efa08c6ef07 101-112
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_6b997fa29759eb 1230,1232,1277,1279,1285,1287,1341,1343,1349,1351
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "37227cff70b24e9559963232ef503e367b2c52dd",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
