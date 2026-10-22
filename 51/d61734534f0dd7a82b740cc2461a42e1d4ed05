@@ -1,0 +1,193 @@
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_325eb93d65333b 7-13
+bstack/INSTALL.md
+  s_822e08e34bda62::t_0586c7eca9c462 27,70,88,90,137-163,230,241,253-254
+bstack/README.md
+  s_822e08e34bda62::t_a2b92f2e9dde9a 63,85,91,95
+bstack/UPSTREAM.md
+  s_822e08e34bda62::t_d577c8099fcac3 25-26
+bstack/docs/PORTABILITY-AUDIT.md
+  s_822e08e34bda62::t_5a7581b27817dd 1-38
+bstack/engineering/create-verification-skill/SKILL.md
+  s_822e08e34bda62::t_e7977d23e2df5a 1-50
+bstack/engineering/create-verification-skill/scripts/bind.py
+  s_822e08e34bda62::t_05e2e2e1ee17ba 1-89
+bstack/engineering/maintain-verification-skill/SKILL.md
+  s_822e08e34bda62::t_3ae8958f40680f 1-28
+bstack/engineering/no-comments/SKILL.md
+  s_822e08e34bda62::t_2bd40eb8489a04 1-20
+bstack/layers.json
+  s_822e08e34bda62::t_9ec6846fb87528 215-271
+bstack/package/download.py
+  s_822e08e34bda62::t_e5aab093d716c5 15-18,25-28
+bstack/package/fixtures/v1-baseline-block.md
+  s_822e08e34bda62::t_0007d2d33a7645 1-2,4,6,8,10,12,14,16,18-19
+bstack/package/runtime.py
+  s_822e08e34bda62::t_518db823611a2b 21-22,30-32,36-38,46-48,57-59,61,65-77,157-158,191-193,223-231,294,296-299,343-344,362-368,370-375,377-382,384-409,493-494,569,574,577-578,586-587,589-592,630,632-633,644,668-669,672,684-685,708-709,723-724,758,761-762,768-769,814-816,819-820,825-828,855-857,862-872,876-877,879
+bstack/package/selection.json
+  s_822e08e34bda62::t_27c033571ac4d8 4,48,58-73,76,79-80,106-107,110,113,119-131
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_b357cf0a7dc09f 25,58,67,80-91
+bstack/package/templates/auto.md
+  s_822e08e34bda62::t_7c6d682fd562b6 29
+bstack/package/templates/download.md
+  s_822e08e34bda62::t_25360557e1a03a 21
+bstack/package/templates/install.md
+  s_822e08e34bda62::t_33d85a9ad52af3 20-22,34-35,40,45-46
+bstack/package/templates/setup.md
+  s_822e08e34bda62::t_ad10ed1d15a808 19-21,40-42
+bstack/package/test_runtime.py
+  s_822e08e34bda62::t_b29c3fc44129b9 19,49,54-55,107-119,171,173,175,181-183,189,194-195,200-255,318,339-340,344,387,394,472,505-516,538,551,572-575,622,691-701,767,799-819,840,957,1011,1021-1031
+bstack/package/test_transport.py
+  s_822e08e34bda62::t_e92158e644dc03 46-52
+bstack/package/transport.py
+  s_822e08e34bda62::t_1514678608fd2c 85,98-101,110-112,117
+bstack/release/README.md
+  s_822e08e34bda62::t_b189c31b794fbd 3
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_bc0d6270487e3f 3,25,58,67,80-91
+bstack/release/bstack/engineering/create-verification-skill/SKILL.md
+  s_822e08e34bda62::t_7bdb9308e251a4 3-7,12-18,20,22,24,26-30,32,34,36,38,40-43,45,47,49,51
+bstack/release/bstack/engineering/create-verification-skill/agents/openai.yaml
+  s_822e08e34bda62::t_03e856fe646f20 2
+bstack/release/bstack/engineering/create-verification-skill/scripts/bind.py
+  s_822e08e34bda62::t_d96a9181c9ade1 1-89
+bstack/release/bstack/engineering/how/SKILL.md
+  s_822e08e34bda62::t_7ef5b9a11c94aa 4
+bstack/release/bstack/engineering/how/agents/openai.yaml
+  s_822e08e34bda62::t_ac2fa00f699006 2
+bstack/release/bstack/engineering/maintain-verification-skill/SKILL.md
+  s_822e08e34bda62::t_235812ba814b00 3,5-7,12,14,16,18,20,22-26,28
+bstack/release/bstack/engineering/no-comments/SKILL.md
+  s_822e08e34bda62::t_31b6255fbe9a31 3,5-7,12,14,16,18,20
+bstack/release/bstack/engineering/prototype/SKILL.md
+  s_822e08e34bda62::t_b70e3e6c15852f 4
+bstack/release/bstack/engineering/prototype/agents/openai.yaml
+  s_822e08e34bda62::t_67bab37421ef8b 2
+bstack/release/bstack/engineering/resolve-pr/SKILL.md
+  s_822e08e34bda62::t_779b3cd1d91afb 4
+bstack/release/bstack/engineering/resolve-pr/agents/openai.yaml
+  s_822e08e34bda62::t_e25fdacaf046b6 2
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_5b827d2d2fd9ac 4
+bstack/release/bstack/engineering/review-pr/agents/openai.yaml
+  s_822e08e34bda62::t_e6673fffc3eca9 2
+bstack/release/bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_c9f4bdded9b5c8 4
+bstack/release/bstack/engineering/to-pr/agents/openai.yaml
+  s_822e08e34bda62::t_8716ed67d2d374 2
+bstack/release/bstack/engineering/why/SKILL.md
+  s_822e08e34bda62::t_d5cf41307baa14 4
+bstack/release/bstack/engineering/why/agents/openai.yaml
+  s_822e08e34bda62::t_ab2cecf510559f 2
+bstack/release/bstack/index.json
+  s_822e08e34bda62::t_ed7ad17b208e6b 2,24,37-45
+bstack/release/bstack/layers.json
+  s_822e08e34bda62::t_068f51c786511e 8,15-16,198-242
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_8e1acccec9d1eb 7,41,43,64,115,136,157,178,199,207-209,217,219,226-230,248,269,277,288,290,331,352,400-402,412,420-422,432,465,1127,1146,1148,1185,1193,1204,1206,1230,1241,1243,1354,1391,1412,1433,1454,1462,1473,1475,1512,1531,1542,1544,1690,1692,1700,1702,1726,1728,1766,1787,1808,1816,1818,1830,1852,1874,1896,1920,1932,1934,1956,1972,1974,1985,2005,2013,2015,2051,2056-2063,2081,2192-2199,2229,2231,2254-2269,2297,2299,2319,2321,2332,2353,2374,2406,2408,2438,2440,2610-2611,2651,2665,2670,2681,2691,2696,2731,2751,2776,2784
+bstack/release/bstack/scripts/bstack.py
+  s_822e08e34bda62::t_1d92f8d0c7b26b 21-22,30-32,36-38,46-48,57-59,61,65-77,157-158,191-193,223-231,294,296-299,343-344,362-368,370-375,377-382,384-409,493-494,569,574,577-578,586-587,589-592,630,632-633,644,668-669,672,684-685,708-709,723-724,758,761-762,768-769,814-816,819-820,825-828,855-857,862-872,876-877,879
+bstack/release/bstack/sdlc/grilling/SKILL.md
+  s_822e08e34bda62::t_50be2702a3b423 18
+bstack/release/bstack/sdlc/triage/SKILL.md
+  s_822e08e34bda62::t_ef857b4cd17f54 4
+bstack/release/bstack/sdlc/triage/agents/openai.yaml
+  s_822e08e34bda62::t_af571abdb9cbfb 2
+bstack/release/bstack/shared/bstack-auto/SKILL.md
+  s_822e08e34bda62::t_e7ac1d254ec006 29
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_21ea7512d645c9 252,256,294,297-301,311-312,319-320,323,331,334-335,337,339-340,347,351,356,396
+bstack/release/bstack/shared/github/pr_guard.py
+  s_822e08e34bda62::t_a142fe92df5d4d 1-7,10,13-28,31-44,47-66,69-76,79-99
+bstack/release/bstack/shared/model_cli.py
+  s_822e08e34bda62::t_79e385a802d274 1-324
+bstack/release/bstack/shared/references/decision-authority.md
+  s_822e08e34bda62::t_4d75109b58dc4b 13-26,29,31
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_e4baaa6cf4e320 1-22
+bstack/release/bstack/shared/references/verification-policy.md
+  s_822e08e34bda62::t_d63a29079b9017 1-19
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_822e08e34bda62::t_6b0104c438f6b1 21-22,24,47,52,70-71,76-77
+bstack/release/bstack/shared/setup-bstack/SKILL.md
+  s_822e08e34bda62::t_a6dacc21dea1a6 19-21,40-42
+bstack/release/bstack/shared/verify-bstack/scripts/installation.py
+  s_822e08e34bda62::t_c31a1fa18d337e 88,282-288,577,579-584
+bstack/release/bstack/shared/workflow.py
+  s_822e08e34bda62::t_2579f213babab5 6,10,16,22,73,100,102-103,118-178,200,207-208,225-231,235-237,241,248
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_822e08e34bda62::t_cd4999958e66c0 20-22,34-35,40,45-46
+bstack/release/skills-sh/install-bstack/install.py
+  s_822e08e34bda62::t_ccee6e36678112 15-18,25-28
+bstack/release/skills-sh/install-bstack/scripts/install.py
+  s_822e08e34bda62::t_7eb1bdb17367d5 85,98-101,110-112,117
+bstack/scripts/guide_catalog.py
+  s_822e08e34bda62::t_6d1ce452261d58 24,35-36,146,166,188
+bstack/scripts/package.py
+  s_822e08e34bda62::t_69f4077c9c2c1a 40,365-369,427-431,433,441-448,451
+bstack/scripts/test_package.py
+  s_822e08e34bda62::t_cd8cf408941a12 28,30-31,39,43-44,46,77,81,140-141,488,502-504
+bstack/scripts/test_pr_guard.py
+  s_822e08e34bda62::t_caebf3b89196e7 1-49
+bstack/scripts/test_verification_bind.py
+  s_822e08e34bda62::t_5e03ac0bebe2a3 1-57
+bstack/sdlc/README.md
+  s_822e08e34bda62::t_59a8ac495970a3 27,31
+bstack/sdlc/skills/grilling/SKILL.md
+  s_822e08e34bda62::t_fccf690b8dc36a 18
+bstack/shared/github/pr_guard.py
+  s_822e08e34bda62::t_dd0bf067706de7 1-99
+bstack/shared/model_cli.py
+  s_822e08e34bda62::t_40067cf1233638 1-324
+bstack/shared/references/decision-authority.md
+  s_822e08e34bda62::t_ea698d2e5169e5 13-26,29,31
+bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_e6ec922697ae5d 1-22
+bstack/shared/references/verification-policy.md
+  s_822e08e34bda62::t_1fda93b83273a8 1-19
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_ef62c7cf74b224 252,256,294,297-301,311-312,319-320,323,331,334-335,337,339-340,347,351,356,396
+bstack/shared/skills/bstack-router/SKILL.md
+  s_822e08e34bda62::t_6eba93849a7fc1 21-22,24,47,52,70-71,76-77
+bstack/shared/skills/verify-bstack/SKILL.md
+  s_822e08e34bda62::t_2935a1ccba17cc 33-34,37,71
+bstack/shared/skills/verify-bstack/features/README.md
+  s_822e08e34bda62::t_a9a6e9030067e9 11,13-14
+bstack/shared/skills/verify-bstack/features/installation.md
+  s_822e08e34bda62::t_bf7fc03ead6267 36,41,51,53
+bstack/shared/skills/verify-bstack/features/model-doctor.md
+  s_822e08e34bda62::t_9c9ba882292463 1-13
+bstack/shared/skills/verify-bstack/features/pr-guard.md
+  s_822e08e34bda62::t_bd67dc5eac31ec 1,3,5
+bstack/shared/skills/verify-bstack/features/project-verification.md
+  s_822e08e34bda62::t_7f9944a8986961 1-7
+bstack/shared/skills/verify-bstack/features/workspace-sdlc.md
+  s_822e08e34bda62::t_e68009c607bcde 40
+bstack/shared/skills/verify-bstack/scripts/installation.py
+  s_822e08e34bda62::t_b209fafe8221a1 88,282-288,577,579-584
+bstack/shared/tests/test_adr.py
+  s_822e08e34bda62::t_e8364aa60cff16 43-44
+bstack/shared/tests/test_model_cli.py
+  s_822e08e34bda62::t_650d453a15e391 1-98
+bstack/shared/tests/test_workflow.py
+  s_822e08e34bda62::t_e5cfde32ea1782 56-57,65-77,80-81,102-110,112-135,151-167,215-224,258
+bstack/shared/workflow.py
+  s_822e08e34bda62::t_8a229b76d7e268 6,10,16,22,73,100,102-103,118-178,200,207-208,225-231,235-237,241,248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "51d61734534f0dd7a82b740cc2461a42e1d4ed05",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
