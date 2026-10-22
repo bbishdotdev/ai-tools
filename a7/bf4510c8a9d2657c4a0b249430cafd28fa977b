@@ -1,0 +1,25 @@
+bstack/github/tests/test_review_publication.py
+  s_822e08e34bda62::t_e318e996c05131 158-165
+bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_041572fd09dad6 117-118
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_a048941ac53dd4 117-118
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_b7afaa8902f7a7 1349,1351
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a7bf4510c8a9d2657c4a0b249430cafd28fa977b",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
