@@ -1,0 +1,83 @@
+.github/workflows/ci.yml
+  s_822e08e34bda62::t_e1af46d397c0f8 1-25
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_dfe4fc46102d6b 7
+bstack/INSTALL.md
+  s_822e08e34bda62::t_ec5aa62efa9b05 149-150
+bstack/README.md
+  s_822e08e34bda62::t_8e897efbbd6eab 85
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_0b365042c3d263 26-27,30,32
+bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_707e06a1bb2c16 24
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_c18488004fbe8a 16-19,23-26,29,39,41,47,51-53,75
+bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_b4b199e262b0d5 11-13,17
+bstack/engineering/review-pr/scripts/budget.py
+  s_822e08e34bda62::t_de60ef0dcb880f 1-34
+bstack/engineering/review-pr/scripts/host.py
+  s_822e08e34bda62::t_e0d650add111dd 40,44,89
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_7318087cdf031f 11,39-40,43-44,53-55,58-68,85-86,102-103,107,109-113,115,118-122,124-126,156-170,176,178-179,207
+bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_3cff2219665106 7,60,63,65,93,149,297
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_c19dbe7c093754 21,24-25,36-39,45,163,165-166,168-170,180-189,231-233,238,243-246,257,283,339-340,406,449,464
+bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_7443a05ea32993 1-153
+bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_155ed491a60f4a 12-13
+bstack/engineering/review-pr/scripts/worker_canary.py
+  s_822e08e34bda62::t_c9359149b144b4 1-39
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_b416e12b5529a5 107-108,137,225-226,264-344,600,623,637-638,658,777,797,802,807-815,821
+bstack/github/tests/test_review_publication.py
+  s_822e08e34bda62::t_731caa994a27df 126,150-169
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_80c250f7161d80 26-27,30,32
+bstack/release/bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_ad92da83047bfd 24
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_f8b461c47ecadd 16-19,23-26,29,39,41,47,51-53,75
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_901462c15b3e40 11-13,17
+bstack/release/bstack/engineering/review-pr/scripts/budget.py
+  s_822e08e34bda62::t_6014a277605e34 1-34
+bstack/release/bstack/engineering/review-pr/scripts/host.py
+  s_822e08e34bda62::t_57169ec8756b34 40,44,89
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_51bc1c66987a6d 11,39-40,43-44,53-55,58-68,85-86,102-103,107,109-113,115,118-122,124-126,156-170,176,178-179,207
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_e7729f1b788656 7,60,63,65,93,149,297
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_95222106c9cf5a 21,24-25,36-39,45,163,165-166,168-170,180-189,231-233,238,243-246,257,283,339-340,406,449,464
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_1ddc940a0d07ed 1-153
+bstack/release/bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_5400480e4afe8a 12-13
+bstack/release/bstack/engineering/review-pr/scripts/worker_canary.py
+  s_822e08e34bda62::t_225887de491396 1-39
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_66b6034676f769 1230,1232,1267,1269,1277,1279,1285,1287,1298-1305,1317,1319,1325,1327,1333,1335,1341,1343-1351,1357,1359-1367,2289,2291
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_f1c2a7bcb9bc90 11
+bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_bcc6b20a2d8c94 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2c574b20d3ea58b9cd289a2bfe21a48f533bf90a",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
