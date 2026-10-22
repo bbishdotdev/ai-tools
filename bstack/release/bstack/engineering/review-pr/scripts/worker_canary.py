@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import os
 import socket
@@ -8,7 +9,9 @@ import sys
 def main():
     if not Path("context.json").is_file():
         return 2
-    if any(Path(path).exists() for path in sys.argv[3:]):
+    if any(not Path(path).is_file() or not Path(path).read_bytes() for path in json.loads(sys.argv[3])):
+        return 8
+    if any(Path(path).exists() for path in sys.argv[4:]):
         return 3
     if any(key.startswith(("GH_", "GITHUB_", "AWS_")) or key in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY") for key in os.environ):
         return 4

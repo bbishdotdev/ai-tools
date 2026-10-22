@@ -147,12 +147,16 @@ class ReviewPublicationTests(unittest.TestCase):
                 self.assertEqual(publish_result(assessment, directory, host, True)["status"], "already_published")
                 self.assertEqual(len(host.writes), 2)
 
-    def test_legacy_assessment_cannot_publish_model_written_link(self):
-        malicious = {**self.finding, "explanation": "See https://attacker.example/collect?data=host-secret"}
+    def test_legacy_assessment_renders_model_written_links_as_plain_text(self):
+        malicious = {**self.finding, "explanation": "See [proof][x] and ![fetch](https://attacker.example/collect).\n\n[x]: //attacker.example/collect\n<img src=//attacker.example/collect> @attacker"}
         result = self.result([malicious], new=[malicious["id"]])
         github = FakeGitHub(self.snapshot)
-        with self.assertRaisesRegex(ReviewError, "Model-written review text"):
-            publish_result(result, self.directory, github, True)
+        preview = publish_result(result, self.directory, github, False)
+        self.assertNotIn("[proof][x]", preview["body"])
+        self.assertNotIn("![fetch]", preview["body"])
+        self.assertNotIn("https://attacker.example", preview["body"])
+        self.assertNotIn("<img", preview["body"])
+        self.assertIn("&#64;attacker", preview["body"])
         self.assertEqual(github.writes, [])
 
     def test_review_can_explain_inert_code_syntax_without_becoming_a_link(self):
@@ -160,8 +164,8 @@ class ReviewPublicationTests(unittest.TestCase):
         result = self.result([finding], new=[finding["id"]])
         github = FakeGitHub(self.snapshot)
         preview = publish_result(result, self.directory, github, False)
-        self.assertIn("`Promise<void>`", preview["body"])
-        self.assertIn("`https://`", preview["body"])
+        self.assertIn("Promise&lt;void&gt;", preview["body"])
+        self.assertIn("https\\[:\\]//", preview["body"])
 
     def test_new_blocker_and_disagreement_reconcile_lost_reply_before_requesting_changes(self):
         self.source("inline", 10, "This is safely public.")

@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 import re
@@ -5,6 +6,7 @@ import shutil
 import socket
 import subprocess
 import tempfile
+import unicodedata
 from urllib.parse import urlparse
 
 from contracts import ReviewError
@@ -95,12 +97,21 @@ def verify_worker(config, work, project):
     except OSError:
         port = 0
     hosts = {"github.com", *(item.split("/", 1)[0] for item in config.get("targets", []))}
-    probe = ["python3", str(script), str(port), ",".join(sorted(hosts)), *private]
+    package = Path(__file__).resolve().parents[3]
+    policies = [package / path for path in (
+        "engineering/review-pr/references/rubric.md",
+        "shared/references/baseline-agents.md",
+        "shared/references/architecture-decisions.md",
+        "shared/references/pr-standards.md",
+        "shared/skills/unslop/SKILL.md",
+        "upstream/pstack/skills/principle-boundary-discipline/SKILL.md",
+    )]
+    probe = ["python3", str(script), str(port), ",".join(sorted(hosts)), json.dumps([str(path) for path in policies]), *private]
     try:
         result = subprocess.run(worker_argv(config, probe), cwd=work, env=worker_environment(), capture_output=True, timeout=30)
         if result.returncode:
-            raise ReviewError(f"The isolated worker failed its snapshot, outside-file, GitHub-credential, or local-network canary (exit {result.returncode})")
-        return {"outside_files_blocked": True, "github_credentials_blocked": True, "local_network_checked": bool(port)}
+            raise ReviewError(f"The isolated worker failed its snapshot, policy-file, outside-file, GitHub-credential, or local-network canary (exit {result.returncode})")
+        return {"outside_files_blocked": True, "github_credentials_blocked": True, "policy_files_readable": True, "local_network_checked": bool(port)}
     except (OSError, subprocess.TimeoutExpired) as error:
         raise ReviewError(f"The isolated worker canary failed: {error}") from error
     finally:
@@ -114,11 +125,16 @@ def verify_worker(config, work, project):
 def validate_public_text(value):
     if not isinstance(value, str):
         return
-    prose = re.sub(r"(?s)(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)", "", value)
-    if re.search(r"(?i)(?:https?://|www\.|(?<![\w])data:|<\s*/?\s*[a-z][^>]*>|\]\s*\(|!\s*\[)", prose):
-        raise ReviewError("Model-written review text contains a link, image, or HTML. Publication needs a fresh, plain-text assessment")
-    if any(ord(char) < 32 and char not in "\n\t" for char in value):
-        raise ReviewError("Model-written review text contains control characters")
+    if any((ord(char) < 32 and char not in "\n\t") or unicodedata.category(char) == "Cf" for char in value):
+        raise ReviewError("Model-written review text contains control or invisible formatting characters")
+
+
+def public_text(value):
+    validate_public_text(value)
+    value = re.sub(r"(?i)\bhttps?://", lambda match: match.group().replace("://", "[:]//"), value)
+    value = re.sub(r"(?i)\bwww\.", lambda match: match.group().replace(".", "[.]"), value)
+    value = value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return re.sub(r"([\\`*_{}\[\]()#+\-.!|~])", r"\\\1", value).replace("@", "&#64;")
 
 
 def validate_public_report(value):
