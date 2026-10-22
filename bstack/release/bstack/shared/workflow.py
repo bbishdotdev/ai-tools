@@ -12,7 +12,7 @@ import tempfile
 # Importing the bundled workspace must not create bytecode beside installed files.
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "workspace"))
-from wayfinder.core import DomainError, _git_location, _read_metadata, canonical
+from wayfinder.core import DomainError, canonical, workspace_binding
 import model_cli
 
 
@@ -31,27 +31,8 @@ def present(path):
 
 
 def workspace_root(project):
-    project = Path(project).resolve()
-    if not project.is_dir():
-        fail("workspace_missing", "Project directory does not exist")
-    git = _git_location(project)
-    root = git[0] if git else project
-    binding = git[1] / "bstack-wayfinder.json" if git else root / ".bstack/workspace/metadata.json"
-    if not present(binding):
-        if git and present(root / ".bstack/workspace/metadata.json"):
-            fail("workspace_missing", "Workspace metadata has no Git binding; explicit recovery is required")
-        return root, None
-    metadata = _read_metadata(binding)
-    root = Path(metadata["root"])
-    if root.resolve() != root or (not git and root != project):
-        fail("workspace_missing", "Workspace root does not match its binding")
-    if git:
-        root_git = _git_location(root)
-        if root_git is None or root_git[1] != git[1]:
-            fail("workspace_missing", "Workspace root no longer belongs to this Git repository")
-    if _read_metadata(root / ".bstack/workspace/metadata.json") != metadata:
-        fail("workspace_missing", "Workspace metadata does not match its Git binding")
-    return root, metadata["id"]
+    root, metadata = workspace_binding(project)
+    return root, metadata["id"] if metadata else None
 
 
 def unique_object(pairs):

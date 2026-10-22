@@ -13,7 +13,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "workspace"))
-from wayfinder.core import DomainError, _git_location, _read_metadata
+from wayfinder.core import DomainError, workspace_binding
 
 
 CLIENTS = {"codex": "codex", "claude": "claude", "cursor": "cursor-agent", "grok": "grok"}
@@ -32,25 +32,9 @@ class ModelCLIError(ValueError):
 
 
 def config_root(project):
-    project = Path(project).resolve()
     try:
-        git = _git_location(project)
-        if git is None:
-            return project
-        checkout, common = git
-        binding = common / "bstack-wayfinder.json"
-        if not binding.exists():
-            if (checkout / ".bstack/workspace/metadata.json").exists():
-                raise ModelCLIError("Workspace metadata has no Git binding; explicit recovery is required")
-            return checkout
-        metadata = _read_metadata(binding)
-        owner = Path(metadata["root"])
-        owner_git = _git_location(owner)
-        if owner.resolve() != owner or owner_git is None or owner_git[1] != common:
-            raise ModelCLIError("Workspace root does not match its Git binding")
-        if _read_metadata(owner / ".bstack/workspace/metadata.json") != metadata:
-            raise ModelCLIError("Workspace metadata does not match its Git binding")
-        return owner
+        root, _ = workspace_binding(project)
+        return root
     except DomainError as error:
         raise ModelCLIError(str(error)) from error
 

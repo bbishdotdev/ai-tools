@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "engineering/review-pr/scripts/review.py"
 sys.path.insert(0, str(RUNNER.parent))
 from publication import plan_actions
-from contracts import ReviewError, consolidate
+from contracts import ReviewError, consolidate, validate_review
 
 FAKE_HOST = r'''import base64
 import json
@@ -166,6 +166,20 @@ if judge and state.get("shift_on_judge", 0):
     state["shift_on_judge"] -= 1
     (home / "state.json").write_text(json.dumps(state))
 '''
+
+
+class ReviewContractTests(unittest.TestCase):
+    def test_followup_ignores_a_known_settled_decision_but_requires_all_final_findings(self):
+        report = {"coverage": {"complete": True, "limits": []},
+                  "neededness": {"assessment": "needed", "evidence": ["The changed path fixes the finding."]},
+                  "findings": [], "prior": [
+                      {"id": "F-final", "status": "resolved", "evidence": ["The code now shares the owner root."]},
+                      {"id": "F-settled", "status": "resolved", "evidence": ["The decision remains settled."]},
+                  ]}
+        validate_review(report, ["F-final"], {"base": {}, "head": {}, "target": {}}, ["F-settled"])
+        self.assertEqual([item["id"] for item in report["prior"]], ["F-final"])
+        with self.assertRaises(ReviewError):
+            validate_review({**report, "prior": []}, ["F-final"], {"base": {}, "head": {}, "target": {}}, ["F-settled"])
 
 
 class ReviewLifecycleTests(unittest.TestCase):

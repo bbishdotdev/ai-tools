@@ -136,6 +136,31 @@ def _read_metadata(path):
         fail("workspace_missing", "Workspace metadata is missing or invalid")
 
 
+def workspace_binding(project):
+    project = Path(project).resolve()
+    if not project.is_dir():
+        fail("workspace_missing", "Project directory does not exist")
+    git = _git_location(project)
+    checkout = git[0] if git else project
+    binding = git[1] / "bstack-wayfinder.json" if git else checkout / ".bstack/workspace/metadata.json"
+    if not binding.exists() and not binding.is_symlink():
+        metadata = checkout / ".bstack/workspace/metadata.json"
+        if git and (metadata.exists() or metadata.is_symlink()):
+            fail("workspace_missing", "Workspace metadata has no Git binding; explicit recovery is required")
+        return checkout, None
+    metadata = _read_metadata(binding)
+    root = Path(metadata["root"])
+    if root.resolve() != root or (not git and root != project):
+        fail("workspace_missing", "Workspace root does not match its binding")
+    if git:
+        root_git = _git_location(root)
+        if root_git is None or root_git[1] != git[1]:
+            fail("workspace_missing", "Workspace root no longer belongs to this Git repository")
+    if _read_metadata(root / ".bstack/workspace/metadata.json") != metadata:
+        fail("workspace_missing", "Workspace metadata does not match its Git binding")
+    return root, metadata
+
+
 def _publish(path, value):
     temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
     try:
@@ -197,22 +222,14 @@ class Workspace:
         if not project.is_dir():
             fail("workspace_missing", "Project directory does not exist")
         git = _git_location(project)
-        binding = git[1] / "bstack-wayfinder.json" if git else project / ".bstack/workspace/metadata.json"
         if not _locked:
             lock_path = git[1] / "bstack-wayfinder.lock" if git else project / ".bstack-wayfinder-init.lock"
             with lock_path.open("a+") as lock:
                 fcntl.flock(lock, fcntl.LOCK_EX)
                 return cls.discover(project, _locked=True)
-        metadata = _read_metadata(binding)
-        root = Path(metadata["root"])
-        if root.resolve() != root or (not git and root != project):
-            fail("workspace_missing", "Workspace root does not match its binding")
-        if git:
-            root_git = _git_location(root)
-            if root_git is None or root_git[1] != git[1]:
-                fail("workspace_missing", "Workspace root no longer belongs to this Git repository")
-        if _read_metadata(root / ".bstack/workspace/metadata.json") != metadata:
-            fail("workspace_missing", "Workspace metadata does not match its Git binding")
+        _, metadata = workspace_binding(project)
+        if metadata is None:
+            fail("workspace_missing", "Workspace metadata is missing or invalid")
         return cls(metadata, migrate=True)
 
     @classmethod

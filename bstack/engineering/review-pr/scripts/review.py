@@ -243,7 +243,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     own = dict(context)
                     own["own_prior_report"] = read_json(previous_dir / (role + ".json")) if previous_dir else None
                     report = invoke(config["roles"][role], REVIEW, prompts["rubric"] + "\n\n" + prompts["reviewer"], own, snapshots, config, output / (role + ".json"), project)
-                    validate_review(report, [item["id"] for item in context["prior_findings"]], trees)
+                    validate_review(report, [item["id"] for item in context["prior_findings"]], trees,
+                                    [item["id"] for item in context["prior_decisions"]])
                     write_json(output / (role + ".json"), report)
                     return report
                 with ThreadPoolExecutor(max_workers=2) as pool:

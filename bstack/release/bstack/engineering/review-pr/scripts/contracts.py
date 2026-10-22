@@ -99,11 +99,14 @@ def validate_findings(findings, trees):
                 raise ReviewError(f"Invalid evidence location: {side}:{name}:{evidence['line']}")
 
 
-def validate_review(report, prior_ids, trees):
+def validate_review(report, prior_ids, trees, prior_decision_ids=()):
     validate(report, REVIEW)
     validate_findings(report["findings"], trees)
-    if unique(report["prior"]) != set(prior_ids):
+    supplied = unique(report["prior"])
+    required = set(prior_ids)
+    if not required.issubset(supplied) or not supplied.issubset(required | set(prior_decision_ids)):
         raise ReviewError("Reviewer must address every previous final finding exactly once")
+    report["prior"] = [item for item in report["prior"] if item["id"] in required]
     if report["neededness"]["assessment"] == "unnecessary" and not report["findings"]:
         raise ReviewError("An unnecessary-change assessment needs an actionable evidenced finding")
     return report

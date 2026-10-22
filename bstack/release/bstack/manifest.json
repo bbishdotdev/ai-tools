@@ -1256,9 +1256,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/reviewer.md",
-      "sha256": "daa614f9a6692af31f61346205b07a0e21e904cb8449850927813c6ecd64e892",
+      "sha256": "8ae304cf5128e3979ed76c40d7dea79ef233c9a8b491c92eb5106e1e2a504d72",
       "source": "bstack/engineering/review-pr/references/reviewer.md",
-      "source_sha256": "daa614f9a6692af31f61346205b07a0e21e904cb8449850927813c6ecd64e892",
+      "source_sha256": "8ae304cf5128e3979ed76c40d7dea79ef233c9a8b491c92eb5106e1e2a504d72",
       "transforms": []
     },
     {
@@ -1290,9 +1290,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/contracts.py",
-      "sha256": "5cfa50a75f19f7b9c551341b49255621ad08ac84110519c4456555ae35c2d3ac",
+      "sha256": "f1356c3322252d9809a66e56289cf1e572c47423f402bb5f853f25ffa04b48f6",
       "source": "bstack/engineering/review-pr/scripts/contracts.py",
-      "source_sha256": "5cfa50a75f19f7b9c551341b49255621ad08ac84110519c4456555ae35c2d3ac",
+      "source_sha256": "f1356c3322252d9809a66e56289cf1e572c47423f402bb5f853f25ffa04b48f6",
       "transforms": []
     },
     {
@@ -1322,9 +1322,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/review.py",
-      "sha256": "5ec9aa1cb3bf7c16789d1637914b374720b39e7b5174ee5acc527e0de5e7fc25",
+      "sha256": "8793c1ccc4be367483d97d1a1d535fcf4d00a3fd5dbdef7e7b2198263546e9ce",
       "source": "bstack/engineering/review-pr/scripts/review.py",
-      "source_sha256": "5ec9aa1cb3bf7c16789d1637914b374720b39e7b5174ee5acc527e0de5e7fc25",
+      "source_sha256": "8793c1ccc4be367483d97d1a1d535fcf4d00a3fd5dbdef7e7b2198263546e9ce",
       "transforms": []
     },
     {
@@ -2192,9 +2192,9 @@
     {
       "mode": 420,
       "path": "shared/model_cli.py",
-      "sha256": "664965fd6079176bce23e1648e47d45e0fbf3f1185b6666434837aff36aa532e",
+      "sha256": "2ba53215c95b7b72dedea707dc21c1257d6a6fa307156e42e4b90903d4ca74c3",
       "source": "bstack/shared/model_cli.py",
-      "source_sha256": "664965fd6079176bce23e1648e47d45e0fbf3f1185b6666434837aff36aa532e",
+      "source_sha256": "2ba53215c95b7b72dedea707dc21c1257d6a6fa307156e42e4b90903d4ca74c3",
       "transforms": []
     },
     {
@@ -2435,9 +2435,9 @@
     {
       "mode": 420,
       "path": "shared/workflow.py",
-      "sha256": "9854076814265457adcbc48e2fbc92cba4847d76ba28689f43b50b11b6486a46",
+      "sha256": "d4a885f5509515cfb027ed6ca158f6575a30a6d1ca699ec2a33151b1379ab39e",
       "source": "bstack/shared/workflow.py",
-      "source_sha256": "9854076814265457adcbc48e2fbc92cba4847d76ba28689f43b50b11b6486a46",
+      "source_sha256": "d4a885f5509515cfb027ed6ca158f6575a30a6d1ca699ec2a33151b1379ab39e",
       "transforms": []
     },
     {
@@ -2515,9 +2515,9 @@
     {
       "mode": 420,
       "path": "workspace/wayfinder/core.py",
-      "sha256": "1914ac717302efec5be178483f97fd0999f5226f3b9663687575000bfc1c8cfe",
+      "sha256": "e189cd1b30599f183bdbd96b77e79bf4d8e72f141c95f228f0eaf9a291faa921",
       "source": "bstack/workspace/wayfinder/core.py",
-      "source_sha256": "1914ac717302efec5be178483f97fd0999f5226f3b9663687575000bfc1c8cfe",
+      "source_sha256": "e189cd1b30599f183bdbd96b77e79bf4d8e72f141c95f228f0eaf9a291faa921",
       "transforms": []
     },
     {
