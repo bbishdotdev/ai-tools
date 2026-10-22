@@ -117,6 +117,13 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(first["models"]["live"], False)
         self.assertEqual(second["package_integrity"], "passed")
         self.assertFalse(list((self.project / ".bstack/package").rglob("*.pyc")))
+        helper = self.project / ".bstack/package/shared/model_cli.py"
+        direct = subprocess.run([sys.executable, str(helper), "--project", str(self.project),
+                                 "configure", "--cli", "claude", "--command", "claude {args}"],
+                                capture_output=True, text=True)
+        self.assertEqual(direct.returncode, 0, direct.stderr)
+        self.assertFalse(list((self.project / ".bstack/package").rglob("*.pyc")))
+        self.assertEqual(self.run_cli("doctor")["package_integrity"], "passed")
         self.write(".bstack/model-clis.json", "not JSON")
         self.assertEqual(self.run_cli("doctor")["models"]["status"], "needs_setup")
         self.assertEqual(self.run_cli("doctor", "--live", "--workflow", "review-pr", success=False).returncode, 1)

@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 
+sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "workspace"))
 from wayfinder.core import DomainError, workspace_binding
 
