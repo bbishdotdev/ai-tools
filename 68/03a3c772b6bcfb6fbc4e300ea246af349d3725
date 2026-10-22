@@ -1,0 +1,53 @@
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_64ddb733edf2c3 7
+bstack/audit/auto-mode-design.md
+  s_822e08e34bda62::t_1f8bb2d288a445 1-3
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_857c7c3f0cd355 22,26
+bstack/engineering/review-pr/references/adjudicator.md
+  s_822e08e34bda62::t_82a9b005b7960c 25
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_00489074e5be77 22-24
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_dd3536c83c88cb 5,12-15,22-35,64-65,69-95,112,114,118-119,122-149,152,162
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_7db927e0052403 208,245,270,280-281,431,448
+bstack/engineering/to-pr/references/visuals.md
+  s_822e08e34bda62::t_d8b73192dfbb5c 21,24-25
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_0a7a9142fe50a1 75-80,82-88,599-615
+bstack/release/README.md
+  s_822e08e34bda62::t_c4409ea90c3b25 19
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_7447eeaa2da597 22,26
+bstack/release/bstack/engineering/review-pr/references/adjudicator.md
+  s_822e08e34bda62::t_01c3dd275e6c2d 25
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_6cafdd8a729ab7 22-24
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_4951104852a565 5,12-15,22-35,64-65,69-95,112,114,118-119,122-149,152,162
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_a76c56d2a3a4ea 208,245,270,280-281,431,448
+bstack/release/bstack/engineering/to-pr/references/visuals.md
+  s_822e08e34bda62::t_27afdf440e8b02 21,24-25
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_0ceb2803b08701 64,115,136,157,178,199,219,248,269,290,331,352,412,432,465,1148,1185,1206,1230,1232,1243,1251,1253,1277,1279,1309,1311,1325,1327,1354,1391,1412,1433,1454,1475,1491,1493,1512,1544,1766,1787,1808,1830,1852,1874,1896,1934,1956,1985,2005,2051,2081,2332,2353,2374
+bstack/scripts/package.py
+  s_822e08e34bda62::t_7d68136d184ae4 500-501
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6803a3c772b6bcfb6fbc4e300ea246af349d3725",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
