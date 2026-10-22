@@ -40,7 +40,8 @@ class AdrTests(unittest.TestCase):
     def snapshot(self):
         return {str(path.relative_to(self.base)): (path.lstat().st_mtime_ns,
                 path.read_bytes() if path.is_file() and not path.is_symlink() else None)
-                for path in [self.base, *self.base.rglob("*")]}
+                for path in [self.base, *self.base.rglob("*")]
+                if ".git" not in path.relative_to(self.base).parts or path.name == "bstack-wayfinder.json"}
 
     def codes(self, result):
         return {item["code"] for item in result["findings"]}

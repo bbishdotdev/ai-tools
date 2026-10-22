@@ -53,7 +53,8 @@ class WorkflowTests(unittest.TestCase):
         return metadata
 
     def run_check(self, *args, project=None, helper=HELPER, ok=True):
-        result = subprocess.run([sys.executable, str(helper), "--project", str(project or self.project), "preflight", *args],
+        options = (*args, "--structural") if "autonomous" in args and "--structural" not in args else args
+        result = subprocess.run([sys.executable, str(helper), "--project", str(project or self.project), "preflight", *options],
                                 capture_output=True, text=True)
         self.assertEqual(result.stderr, "")
         value = json.loads(result.stdout)
@@ -61,9 +62,23 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0 if ok else 1, value)
         return value["value"] if ok else value["error"]
 
+    def run_configure(self, *args, project=None, ok=True):
+        result = subprocess.run([sys.executable, str(HELPER), "--project", str(project or self.project),
+                                 "configure-grilling", *args], capture_output=True, text=True)
+        self.assertEqual(result.stderr, "")
+        value = json.loads(result.stdout)
+        self.assertEqual(value["ok"], ok, value)
+        self.assertEqual(result.returncode, 0 if ok else 1, value)
+        return value["value"] if ok else value["error"]
+
+    def role_args(self, second="model-b"):
+        return ("--interviewer-adapter", "native", "--interviewer-model", "model-a",
+                "--respondent-adapter", "claude", "--respondent-model", second)
+
     def snapshot(self, directory):
         return {str(path.relative_to(directory)): (path.stat().st_mtime_ns, path.read_bytes() if path.is_file() else None)
-                for path in [directory, *directory.rglob("*")]}
+                for path in [directory, *directory.rglob("*")]
+                if ".git" not in path.relative_to(directory).parts or path.name == "bstack-wayfinder.json"}
 
     def test_manual_defaults_without_workspace_creates_nothing(self):
         before = self.snapshot(self.project)
@@ -84,8 +99,40 @@ class WorkflowTests(unittest.TestCase):
 
     def test_autonomous_missing_roles_fails_without_writes(self):
         before = self.snapshot(self.project)
-        self.assertEqual(self.run_check("--mode", "autonomous", ok=False)["code"], "config_missing")
+        error = self.run_check("--mode", "autonomous", ok=False)
+        self.assertEqual(error["code"], "config_missing")
+        self.assertIn("two models this host can run", error["message"])
+        self.assertIn("Human-guided", error["message"])
         self.assertEqual(before, self.snapshot(self.project))
+
+    def test_configure_requires_workspace_then_saves_private_roles_without_runtime_claim(self):
+        before = self.snapshot(self.project)
+        self.assertEqual(self.run_configure(*self.role_args(), ok=False)["code"], "workspace_missing")
+        self.assertEqual(before, self.snapshot(self.project))
+        self.repository()
+        self.bind()
+        result = self.run_configure(*self.role_args())
+        self.assertFalse(result["grilling"]["runtimeChecked"])
+        self.assertIn("Run autonomous preflight", result["grilling"]["nextStep"])
+        path = self.project / ".bstack/workspace/roles.json"
+        self.assertEqual(json.loads(path.read_text()), self.roles())
+        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+        check = self.run_check("--mode", "autonomous")
+        self.assertEqual(check["grilling"]["status"], "configured")
+        self.assertFalse(check["runtimeChecked"])
+
+    def test_configure_preserves_existing_roles_until_explicit_replace(self):
+        self.repository()
+        self.bind()
+        self.run_configure(*self.role_args())
+        path = self.project / ".bstack/workspace/roles.json"
+        original = path.read_bytes()
+        self.assertEqual(self.run_configure(*self.role_args("model-c"), ok=False)["code"], "config_exists")
+        self.assertEqual(path.read_bytes(), original)
+        self.assertEqual(self.run_configure(*self.role_args(" MODEL-A "), "--replace", ok=False)["code"], "config_invalid")
+        self.assertEqual(path.read_bytes(), original)
+        self.run_configure(*self.role_args("model-c"), "--replace")
+        self.assertEqual(json.loads(path.read_text())["grilling"]["respondent"]["model"], "model-c")
 
     def test_same_model_across_adapters_and_efforts_is_not_two_models(self):
         self.write("roles.json", self.roles(" MODEL-A ", effort="high"))
@@ -100,6 +147,23 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(result["grilling"]["bindings"], self.roles(effort="high")["grilling"])
         self.assertFalse(result["grilling"]["runtimeChecked"])
         self.assertFalse(result["runtimeChecked"])
+
+    def test_autonomous_preflight_blocks_broken_cli_roles_before_planning(self):
+        self.write("roles.json", {"version": 1, "grilling": {
+            "interviewer": {"adapter": "codex", "model": "model-a"},
+            "respondent": {"adapter": "claude", "model": "model-b"},
+        }})
+        (self.project / ".bstack/model-clis.json").write_text(json.dumps({"version": 1, "commands": {
+            "codex": ["/missing/bstack-codex", "{args}"],
+            "claude": ["/missing/bstack-claude", "{args}"],
+        }}))
+        result = subprocess.run([sys.executable, str(HELPER), "--project", str(self.project),
+                                 "preflight", "--mode", "autonomous"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        failure = json.loads(result.stdout)["error"]
+        self.assertEqual(failure["code"], "model_unavailable")
+        self.assertIn("interviewer", failure["message"])
+        self.assertIn("respondent", failure["message"])
 
     def test_invalid_role_values_fail_with_no_secret_echo(self):
         cases = [self.roles(""), self.roles(adapter="unavailable"), self.roles(effort=[]), self.roles(apiKey="SECRET")]
@@ -148,6 +212,16 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(result["workspaceId"], "w_fixture")
         self.assertEqual(before, self.snapshot(self.base))
 
+    def test_configure_from_worktree_saves_to_owner(self):
+        self.repository()
+        self.bind()
+        linked = self.base / "linked"
+        self.git("worktree", "add", "--detach", str(linked))
+        result = self.run_configure(*self.role_args(), project=linked)
+        self.assertEqual(result["root"], str(self.project))
+        self.assertTrue((self.project / ".bstack/workspace/roles.json").is_file())
+        self.assertFalse((linked / ".bstack/workspace/roles.json").exists())
+
     def test_unbound_checkout_matches_workspace_initialization_root(self):
         self.repository()
         nested = self.project / "src"
@@ -181,6 +255,7 @@ class WorkflowTests(unittest.TestCase):
         bundle = self.base / "installed"
         (bundle / "shared").mkdir(parents=True)
         shutil.copyfile(HELPER, bundle / "shared/workflow.py")
+        shutil.copyfile(BSTACK / "shared/model_cli.py", bundle / "shared/model_cli.py")
         shutil.copytree(BSTACK / "workspace/wayfinder", bundle / "workspace/wayfinder", ignore=shutil.ignore_patterns("__pycache__"))
         before = self.snapshot(self.base)
         result = self.run_check(helper=bundle / "shared/workflow.py")

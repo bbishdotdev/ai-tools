@@ -24,10 +24,10 @@ The [local app](../workspace/README.md) and agent CLI share maps, accepted answe
 
 [Planning and ticket adapters](../shared/references/work-adapters.md) are independent. Each defaults to local; external provider implementations are future work. A configured but unsupported provider fails clearly instead of silently delivering somewhere else.
 
-Product and ADR decisions belong to the user unless explicitly delegated. Automatic skill routing does not grant decision authority. Autonomous grilling requires two configured models and verified execution capability before planning writes; manual sessions need neither role config nor an external service. [Decision authority](../shared/references/decision-authority.md) owns those rules.
+Product and ADR decisions belong to the user unless explicitly delegated. Automatic skill routing does not grant decision authority. Human-guided grilling needs no model setup. For an explicitly autonomous session, bstack explains why two different models are needed, checks that this host can run both, and saves the selected roles in the private workspace. Configuration alone does not launch an interview. [Decision authority](../shared/references/decision-authority.md) gives the first-use steps and stop conditions.
 
 ## Source and release
 
-All entries are explicit-only, with opt-in automatic routing through the bstack router. Consumer installation includes the owned skills, shared references, operations CLI and compiled browser app. Installed paths use `sdlc/<name>/`, without the source tree's `skills/` grouping.
+You can invoke each entry directly. New installs also enable automatic routing through the bstack router; upgrades keep the project's existing setting. Consumer installation includes the owned skills, shared references, operations CLI and compiled browser app. Installed paths use `sdlc/<name>/`, without the source tree's `skills/` grouping.
 
 [layers.json](../layers.json) records exact reviewed upstream bases. [Attribution](../ATTRIBUTION.md) holds the credits, source map and notices; [upstream updates](../UPSTREAM.md) explains selective adoption. Design history remains in [integration review](integration-review.md) and [Wayfinder design](wayfinder-design.md). Current executable behavior is defined by the owned skills and [operations](../workspace/OPERATIONS.md).

@@ -24,7 +24,7 @@ Choose your agent and project scope if prompted. Open your agent in that project
 
 Or invoke `$install-bstack` in Codex, `/install-bstack` in Claude Code or Cursor. The installer supports agent selection when you ask to install or upgrade bstack; you don't need to name a script or provide its flags.
 
-Your agent runs the bundled installer, connects the selected tools, and checks the installation with `doctor`. After a successful check, it offers automatic routing if it is off. It only enables routing when you opt in, including when you already requested it alongside installation. Upgrades preserve your existing mode and selected tools.
+Your agent runs the bundled installer, connects the selected tools, and checks the installation with `doctor`. New installs turn automatic engineering routing on and set project verification to `ask`. Use `--auto off` for manual routing, or `--verification off|ask|auto` to choose how verifiers are maintained. Upgrades preserve both settings and selected tools.
 
 Ask "How do I use bstack?" or invoke `$bstack-guide` in Codex or `/bstack-guide` in slash-command hosts for a short walkthrough. It is also available while automatic engineering routing is off. If setup says a fresh session is required, use the guide there.
 
@@ -64,11 +64,10 @@ If BStack is installed in a home folder or parent workspace, that does not confi
 
 ```sh
 python3 /path/to/parent/.bstack/package/scripts/bstack.py setup --project /path/to/repo --hosts claude
-python3 /path/to/repo/.bstack/package/scripts/bstack.py auto on --project /path/to/repo
 python3 /path/to/repo/.bstack/package/scripts/bstack.py doctor --project /path/to/repo
 ```
 
-Enable auto only if you want it. Start a fresh Code chat rooted in that repo afterward. The parent can serve as a package source, but the child keeps its own copy and bindings. This is also the supported path when several repos share one parent workspace.
+Start a fresh Code chat rooted in that repo afterward. The parent can serve as a package source, but the child keeps its own copy and bindings. This is also the supported path when several repos share one parent workspace.
 
 A separate worktree, cloud session, or SSH host can have a different filesystem. Install bstack in that session's checkout. Copying `.bstack/config.json` from another checkout is not a substitute: ownership records and generated bindings contain paths to their original project. Regular Chat and Cowork are separate environments and are not covered by this project installer.
 
@@ -86,9 +85,9 @@ Or, from that extracted folder, run:
 python3 install.py --project /path/to/my-project
 ```
 
-The project directory must already exist. Add `--hosts codex claude cursor grok`, with only the tools you want, to choose hosts. Without this flag, a new install configures all four; an upgrade preserves its existing selection.
+The project directory must already exist. Add `--hosts codex claude cursor grok`, with only the tools you want, to choose hosts. Without this flag, a new install configures all four; an upgrade preserves its existing selection. You can pass `--auto off` and `--verification off|ask|auto` at install time.
 
-The installer checks the bundled files, copies the package into `.bstack/package/`, creates the skill bindings, and runs `doctor`. Setup needs Python 3.11+ but no npm, skills.sh, Git, or network. You can remove the downloaded folder afterward. Start a fresh agent session when the result requests it. Automatic routing and shared memory remain optional.
+The installer checks the bundled files, copies the package into `.bstack/package/`, creates the skill bindings, and runs `doctor`. Setup needs Python 3.11+ but no npm, skills.sh, Git, or network. You can remove the downloaded folder afterward. Start a fresh agent session when the result requests it. Automatic routing is on for a new install and can be turned off; shared memory remains optional.
 
 To check a download before extracting it, save `SHA256SUMS` beside the ZIP and run `sha256sum -c SHA256SUMS` on Linux, or `shasum -a 256 -c SHA256SUMS` on macOS. Both assets come from the same release.
 
@@ -134,6 +133,33 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 ```
 
 If another tool changes or removes a managed block, `doctor` reports it and setup refuses to overwrite the conflict. Ask your agent to preserve the new project text, restore the exact block recorded in `.bstack/config.json`, and rerun setup. This checks the file contents; it cannot prevent another tool from editing them or prove that an agent followed the instructions.
+
+## Check optional model workflows
+
+Normal `doctor` checks the package and bindings, then lists which CLI launchers it can find. It doesn't spend model calls or block basic BStack use when an optional CLI is missing. Before a model-backed workflow, check the one you plan to use:
+
+```sh
+python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr
+python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow grilling
+python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow to-pr
+```
+
+The live check sends a short prompt to the configured model for each role. A failed role stops that workflow and tells you whether to fix login, choose another model, or correct the launcher. The PR review runner also checks its roles before a new full review. Autonomous grilling's normal preflight checks its CLI roles before planning writes. The `to-pr` check proves Codex can answer a text prompt; its image tool and the final picture still need a real visual attempt.
+
+If a tool is launched through a local wrapper, tell your agent the working terminal command. For example, a wrapper that runs `launch claude -- <arguments>` can be saved once:
+
+```sh
+python3 .bstack/package/shared/model_cli.py --project "$PWD" configure \
+  --cli claude --command 'launch claude -- {args}'
+python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr
+```
+
+`{args}` is one argument slot. BStack passes the normal CLI flags there as separate arguments; it never evaluates this setting as shell code. The private `.bstack/model-clis.json` file stays out of Git. You can configure Codex, Claude, Cursor, and Grok separately. Only the workflows that use a CLI need its launcher. If a first check fails, fix that launcher's command and rerun the live check. A project with no extra model workflow needs none of this setup.
+
+Keep credentials in the CLI's normal login or environment, not in the saved command template.
+If the wrapper executable lives in the project, a relative executable path is resolved from the project root. Use absolute paths for any separate script files passed to that executable.
+
+The current launcher adapters cover Codex, Claude Code, Cursor and Grok. AMP has not been added or verified yet.
 
 ## Installed layout
 
@@ -201,7 +227,7 @@ Memory setup is independent of auto routing. It can enable native memory use and
 
 Invoke `$how` in Codex or `/how` in slash-command hosts. This selects the how workflow and bstack's policy without first entering Poteto Mode. Other public skills work the same way. Invoke `poteto-mode` when you want its router to select a full engineering workflow.
 
-Engineering and SDLC entrypoints are manual by default. Invoke a named skill to load its instructions and relevant dependencies. Poteto Mode selects a full engineering workflow. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` for optional automatic routing. Invoking `bstack-auto` without an argument shows those choices without running a command. You can also use the controller directly:
+New installs enable automatic engineering routing. You can still invoke a named skill directly to load its instructions and relevant dependencies. Poteto Mode selects a full engineering workflow. Customized unslop stays active for prose. Use `bstack-auto on`, `off`, or `status` to control automatic routing. Invoking `bstack-auto` without an argument shows those choices without running a command. You can also use the controller directly:
 
 ```sh
 python3 .bstack/package/scripts/bstack.py auto on --project "$PWD"
@@ -212,7 +238,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 
 Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Auto hooks send a short router reminder; they do not add the full engineering corpus to every turn. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Checking status or repeating an unchanged mode does not require a fresh session.
 
-When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack has no automatic routing hooks to review. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
+When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack keeps its PR creation guard for selected hosts, so Codex hook trust may still need review. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
 
 Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 
@@ -223,6 +249,8 @@ Refresh the installer first, then run it again for the target project. If you us
 The [workspace app](workspace/README.md) runs from `.bstack/package/workspace/cli.py`. Initialize it once with `--project <project-root> init`, then use `serve` for the browser or `call` for agent operations. Private work survives package updates and removal. Stop old workspace servers and writers before upgrading the runtime; the new core backs up and migrates existing stores on discovery.
 
 Planning and tickets each default to local and have [independent provider settings](shared/references/work-adapters.md). External providers are not yet implemented. Manual work needs no role configuration; autonomous grilling follows the [decision-authority preflight](shared/references/decision-authority.md).
+
+Project verification has its own setting. `ask` proposes the affected `verify-<app>` change during feature or bug work, `auto` maintains that path as part of authorized work, and `off` leaves the verifier alone unless requested. New installs default to `ask`; upgrades preserve the prior choice. These settings do not change normal test expectations. Use `python3 .bstack/package/scripts/bstack.py verification status --project "$PWD"` to inspect it. The [verification policy](shared/references/verification-policy.md) describes when to create, update, or skip a verifier. The [setup map](shared/references/setup-requirements.md) explains optional tools only when a workflow needs them.
 
 The installer checks the owned package, preserves auto preference and selected hosts, runs `doctor`, and rolls back on installation errors. Modified or unowned files stop the update. Read the result before starting a new agent session; `doctor` checks files and bindings, not live skill selection or hook delivery. The installed version is in `.bstack/package/manifest.json`.
 

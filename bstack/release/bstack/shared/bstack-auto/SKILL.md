@@ -26,4 +26,4 @@ Replace `status` with the requested mode. Report the configured mode and the con
 
 `native_hook_trust: not_checked` means unknown, not untrusted. `auto: true` confirms configuration, not hook execution or router delivery. Do not claim those were verified by `auto status`. Follow the controller's Codex terminal CLI instructions when hook review applies; do not tell users to run `/hooks` in the desktop chat.
 
-Turning auto off preserves direct skill invocation and unslop. It cannot remove instructions already loaded in a conversation.
+Turning auto off preserves direct skill invocation, unslop, and the PR creation guard for selected hosts. It cannot remove instructions already loaded in a conversation.

@@ -60,7 +60,7 @@ python3 install.py --project /path/to/my-project
 
 No Git, npm, skills.sh, or network access is needed during installation. A clone works too; use its bundled installer as described in [installation](INSTALL.md#from-a-download-or-clone).
 
-After setup, start a fresh agent session to discover the skills. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [offline reference guide](shared/skills/bstack-guide/assets/overview.html) has common use cases, routing and setup examples, workspace commands, and the full searchable catalog. Cmd/Ctrl+K searches the guide and its skill entries. The agent offers automatic routing if it is off; enabling it is opt-in. Upgrades preserve your existing mode and selected tools. Neither route fetches upstream latest.
+After setup, start a fresh agent session to discover the skills. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [offline reference guide](shared/skills/bstack-guide/assets/overview.html) has common use cases, routing and setup examples, workspace commands, and the full searchable catalog. Cmd/Ctrl+K searches the guide and its skill entries. New installs enable automatic routing and set project verification to `ask`; upgrades preserve both settings and selected tools. You can turn routing off or set verification to `off` or `auto`. Neither route fetches upstream latest.
 
 See [installation and updates](INSTALL.md). The supported installation path is the project-local CLI bundle. Desktop discovery has [separate checks](INSTALL.md#claude-desktop-discovery); native plugin-manager installation is not part of this package.
 
@@ -82,17 +82,17 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 
 Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
 
-Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) currently calls authenticated GitHub, Codex, and Claude Code CLIs for its first model-backed implementation. Installing bstack does not sign in to those services.
+Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models when you need them and supports local wrapper commands.
 
 ### What loads into context
 
 Setup writes the seven-rule baseline and a short package pointer into the project's `AGENTS.md` and, for Claude, `CLAUDE.md`. Each public skill has a small discovery entry that points the agent to its bundled instructions. Those instructions call for only the dependencies the task needs; the whole collection is not inserted into every prompt. Customized `unslop` applies to prose.
 
-Manual invocation is the default. Turn on `bstack-auto` if you want ordinary engineering prompts to enter Poteto Mode without naming it. Its hooks carry a short reminder to load the router when needed; they do not inject the full skill corpus. The [installation guide](INSTALL.md#direct-skills-and-automatic-routing) covers the mode, session refresh, and host-specific limits.
+Automatic engineering routing is on for a new install; upgrades keep the project's existing choice. Use `bstack-auto off` for manual routing. Its hooks carry a short reminder to load the router when needed; they do not inject the full skill corpus. The [installation guide](INSTALL.md#direct-skills-and-automatic-routing) covers the mode, session refresh, and host-specific limits.
 
 Optional [shared memory setup](shared/memory.md) copies a user-wide runtime from the bundle for Codex, Claude, and Cursor's file bridge. Project installation leaves it inactive. It preserves existing notes and leaves legacy source-linked installations unchanged.
 
-Autonomous cross-model execution remains separate implementation work. Configuring an external provider does not implement its operations or provision its services.
+Review PR has a built-in Codex/Claude runner. Autonomous grilling still needs its calling host to coordinate the two participants; the live doctor checks CLI access before that exchange. Configuring an external tracker does not implement its operations or provision its services.
 
 ## Updates
 

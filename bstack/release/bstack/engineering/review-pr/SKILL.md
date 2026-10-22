@@ -1,7 +1,7 @@
 ---
 name: review-pr
 description: Review a pull request with two independent headless models and a fresh adjudicator that challenges their findings. Recheck follow-up changes without repeating settled review, then prepare or publish a concise verdict.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Brenden Bishop
   attribution: ../../ATTRIBUTION.md

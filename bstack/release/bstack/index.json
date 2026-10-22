@@ -1,8 +1,5 @@
 {
-  "agents": {
-    "comment-sicko": "engineering/agents/comment-sicko.md",
-    "poteto-agent": "engineering/agents/poteto-agent.md"
-  },
+  "agents": {},
   "memory": {
     "cli": "shared/memory/scripts/portable.py",
     "policy": "shared/memory/WORKFLOW.md"
@@ -11,27 +8,20 @@
   "playbooks": {
     "authoring-a-skill": "engineering/poteto-mode/playbooks/authoring-a-skill.md",
     "autonomous-run": "engineering/poteto-mode/playbooks/autonomous-run.md",
-    "autopilot-full": "engineering/poteto-mode/playbooks/autopilot-full.md",
-    "autopilot-stack": "engineering/poteto-mode/playbooks/autopilot-stack.md",
-    "babysit": "engineering/poteto-mode/playbooks/babysit.md",
     "bug-fix": "engineering/poteto-mode/playbooks/bug-fix.md",
     "eval": "engineering/poteto-mode/playbooks/eval.md",
     "feature": "engineering/poteto-mode/playbooks/feature.md",
     "hillclimb": "engineering/poteto-mode/playbooks/hillclimb.md",
     "investigation": "engineering/poteto-mode/playbooks/investigation.md",
-    "multi-phase-plan": "engineering/poteto-mode/playbooks/multi-phase-plan.md",
     "opening-a-pr": "engineering/to-pr/SKILL.md",
-    "orchestrate": "engineering/poteto-mode/playbooks/orchestrate.md",
     "pause-safely": "engineering/poteto-mode/playbooks/pause-safely.md",
     "perf-issue": "engineering/poteto-mode/playbooks/perf-issue.md",
     "prototype": "engineering/prototype/WORKFLOW.md",
     "refactoring": "engineering/poteto-mode/playbooks/refactoring.md",
     "runtime-forensics": "engineering/poteto-mode/playbooks/runtime-forensics.md",
     "session-pickup": "engineering/poteto-mode/playbooks/session-pickup.md",
-    "shipping": "engineering/poteto-mode/playbooks/shipping.md",
     "trace-forensics": "engineering/poteto-mode/playbooks/trace-forensics.md",
-    "visual-parity": "engineering/poteto-mode/playbooks/visual-parity.md",
-    "worktree-cleanup": "engineering/poteto-mode/playbooks/worktree-cleanup.md"
+    "visual-parity": "engineering/poteto-mode/playbooks/visual-parity.md"
   },
   "policy": "shared/router/WORKFLOW.md",
   "pull_request_resolutions": {
@@ -44,11 +34,19 @@
     "cli": "github/pr.py",
     "template": "github/pull_request_template.md"
   },
+  "quarantined_playbooks": {
+    "autopilot-full": "Requires Cursor cloud agent and merge lifecycle support.",
+    "autopilot-stack": "Requires Cursor cloud agent and stacked-branch lifecycle support.",
+    "babysit": "Requires an unported PR watcher and host-specific background loop.",
+    "multi-phase-plan": "Generates plans that require /goal, /loop and fixed cloud model lanes.",
+    "orchestrate": "Requires a Cursor-specific long-running agent store, Task lifecycle, Bun and Graphite.",
+    "shipping": "Requires an unported PR watcher and host-specific background loop.",
+    "worktree-cleanup": "Its audit helper makes unsafe assumptions about branch names, transcripts and platform date tools."
+  },
   "schema_version": 2,
   "skills": {
     "architect": "engineering/architect/SKILL.md",
     "arena": "engineering/arena/SKILL.md",
-    "automate-me": "engineering/automate-me/SKILL.md",
     "blast-radius": "engineering/blast-radius/SKILL.md",
     "bro": "engineering/bro/SKILL.md",
     "bstack-auto": "shared/bstack-auto/SKILL.md",
@@ -69,7 +67,6 @@
     "implement": "engineering/implement/SKILL.md",
     "interrogate": "engineering/interrogate/SKILL.md",
     "maintain-verification-skill": "engineering/maintain-verification-skill/SKILL.md",
-    "make-bot-ui": "engineering/make-bot-ui/SKILL.md",
     "no-comments": "engineering/no-comments/SKILL.md",
     "poteto-mode": "engineering/poteto-mode/SKILL.md",
     "principle-attack-the-premise": "engineering/principles/principle-attack-the-premise/WORKFLOW.md",
@@ -96,8 +93,6 @@
     "principle-test-behavior-not-implementation": "engineering/principles/principle-test-behavior-not-implementation/WORKFLOW.md",
     "principle-type-system-discipline": "engineering/principles/principle-type-system-discipline/WORKFLOW.md",
     "prototype": "engineering/prototype/SKILL.md",
-    "recall": "engineering/recall/SKILL.md",
-    "reflect": "engineering/reflect/SKILL.md",
     "research": "engineering/research/SKILL.md",
     "resolve-pr": "engineering/resolve-pr/SKILL.md",
     "review-pr": "engineering/review-pr/SKILL.md",

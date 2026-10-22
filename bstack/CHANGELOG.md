@@ -4,6 +4,13 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Make automatic engineering routing the new-install default. Existing projects keep their saved setting; `bstack-auto off` restores manual routing.
+- Add `off`, `ask`, and `auto` project-verification settings. New installs use `ask`; feature work can now create or update only the affected `verify-<app>` path.
+- Add a cross-host shell PR creation guard, a clearer first-use setup map, and an exact-block path for upgrading cloned v1 installs that lost local state.
+- Replace Cursor-bound verifier and comment-cleanup skills, remove four host-specific skills from the consumer catalog, and quarantine seven unported playbooks. The pinned upstream snapshots remain available for selective updates.
+- Clarify autonomous grilling's two-model requirement and distinguish saved role choices from a verified model run.
+- Add one configurable headless CLI launcher for Codex, Claude Code, Cursor and Grok, with live doctor checks for selected review, grilling and PR-visual roles. PR review and autonomous grilling stop before full work when a chosen CLI model fails its short probe.
+
 ## Published releases
 
 | Version | Date | Notes |

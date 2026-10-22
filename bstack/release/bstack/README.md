@@ -1,6 +1,6 @@
 # bstack
 
-Version 1.0.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
+Version 2.0.0-dev.1. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
 
 The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
@@ -22,7 +22,7 @@ Choose your agent and project scope if prompted. Then open your agent in that pr
 
 > Use install-bstack to set up this project for my installed tools.
 
-skills.sh downloads the installer skill; your agent runs it to install the full bundled package and check the result. Keep both the repository name and `--skill install-bstack` in the command. You don't need to select individual engineering or SDLC skills. Automatic routing stays opt-in.
+skills.sh downloads the installer skill; your agent runs it to install the full bundled package and check the result. Keep both the repository name and `--skill install-bstack` in the command. You don't need to select individual engineering or SDLC skills. New installs enable automatic engineering routing; upgrades preserve the project's existing setting.
 
 ### From a download or clone
 
@@ -55,7 +55,7 @@ Some workflows need more than the host running your chat. [review-pr](engineerin
 
 Invoke a public skill with the host's command prefix. Codex uses `$how`; slash-command hosts use `/how`. Use `poteto-mode` when you want the router to select a complete engineering workflow. The [index](index.json) resolves internal dependencies; the [manifest](manifest.json) lists public skills and exact installed files.
 
-The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. Engineering and SDLC skills are explicit-only by default. `bstack-guide` can answer questions about using the stack without enabling engineering routing. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control optional automatic routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
+The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. A small set of skills, including `triage`, `prototype`, and the PR entries, can be discovered from ordinary requests; the rest stay explicitly invoked or routed. `bstack-guide` can answer questions about using the stack. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control automatic engineering routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
 
 ```sh
 python3 <project-root>/.bstack/package/scripts/bstack.py auto on --project <project-root>
@@ -64,7 +64,7 @@ python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <proje
 
 Start a fresh session after bindings change. Checking status or repeating an unchanged mode does not require a new session. Turning auto off cannot erase existing conversation context.
 
-With automatic routing enabled for Codex, open `codex` in a terminal in the project directory and enter `/hooks` there to review hook trust. `/hooks` is not a desktop chat command. Setup does not grant or inspect trust, and `auto status` confirms configuration only. With auto off, no bstack routing hook review is needed. Cursor and Grok's after-tool reminders do not guarantee first-tool or tool-free delivery. CLI packaging does not establish desktop or native plugin-manager support.
+For Codex, open `codex` in a terminal in the project directory and enter `/hooks` there to review hook trust. `/hooks` is not a desktop chat command. Setup does not grant or inspect trust, and `auto status` confirms configuration only. A PR creation guard stays bound for selected hosts even when routing is manual. If Codex hooks are explicitly disabled, manual setup can complete but that guard cannot run there; automatic routing requires hooks. Cursor and Grok's after-tool reminders do not guarantee first-tool or tool-free delivery. CLI packaging does not establish desktop or native plugin-manager support.
 
 ## Local planning and tickets
 
@@ -77,7 +77,18 @@ Open the printed local URL. Work stays in the owning Git project's ignored `.bst
 
 Use `wayfinder` to organize unknowns, `to-spec` for accepted scope, and `to-tickets` for implementation slices. Known small work can start with a ticket. Planning does not start implementation. The `implement` entry revalidates approved work before entering the engineering process. `handoff` preserves current record revisions, authority and artifacts for a fresh session, including prototype-to-implementation transitions.
 
-Manual planning needs no model setup. Explicit autonomous grilling requires two configured models and evidence that the host can run them; see [decision authority](shared/references/decision-authority.md). Wayfinder and tickets have [independent provider selections](shared/references/work-adapters.md). Both default to local. Jira, GitHub and Linear adapters remain future work; unsupported configured providers are reported without silent fallback.
+Manual planning needs no model setup. Explicit autonomous grilling requires two distinct configured models and evidence that the host can run them; see [decision authority](shared/references/decision-authority.md). `review-pr` uses two independent model reviewers and a third adjudicator; its defaults require authenticated Claude Code and Codex CLIs. Neither optional workflow blocks setup. At first use, the agent should explain the roles, check available tools, and ask for model choices only when a default cannot run. Wayfinder and tickets have [independent provider selections](shared/references/work-adapters.md). Both default to local. Jira, GitHub and Linear adapters remain future work; unsupported configured providers are reported without silent fallback.
+
+## Project verification
+
+New installs use `verification ask`: for a feature or bug that changes a user path, BStack proposes a focused change to the project's `verify-<app>` skill and waits for your answer. `verification auto` maintains the affected path during authorized work; `verification off` leaves the verifier alone unless you request it. Normal tests still run in every mode. Read the [verification policy](shared/references/verification-policy.md), or change the mode with the installed controller:
+
+```sh
+python3 <project-root>/.bstack/package/scripts/bstack.py verification status --project <project-root>
+python3 <project-root>/.bstack/package/scripts/bstack.py verification auto --project <project-root>
+```
+
+Upgrades keep the existing setting. A full verifier audit is a separate explicit task, not something every code change triggers.
 
 ## Pull requests
 

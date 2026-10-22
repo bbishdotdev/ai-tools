@@ -8,7 +8,10 @@ The POC verifies real CLI sessions against bstack's policy entry and its pinned 
 - [After-tool reminder](after-tool-reminder.md): Cursor/Grok native fallback, once-per-turn emission, and tool-free limits.
 - [Context recovery](context-recovery.md): resume and actual compaction recovery.
 - [CLI discovery](cli-discovery.md): installed clients, versions, selection, missing tools, and capability gaps.
+- [Model launcher and doctor](model-doctor.md): wrapper argv, selected-role prompts, first-use gates, and image-tool limits.
 - [Consumer installation](installation.md): skills.sh file installation, selected overrides, dependencies, notices, and the boundary before native agent execution.
+- [Project verifier lifecycle](project-verification.md): saved off, ask, and auto choices; focused feature updates; and the separate full audit.
+- [PR creation guard](pr-guard.md): direct shell interception, host bindings, and live denial limits.
 - [Portable memory](portable-memory.md): optional user installation, independent runtime lifetime, preservation, and shared note operations in disposable homes.
 - [Local workspace and SDLC](workspace-sdlc.md): persistent planning/spec/ticket operations, Kanban interactions, independent adapters, owned skill execution and fresh-context handoffs.
 

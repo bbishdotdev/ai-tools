@@ -12,12 +12,20 @@ def main(argv=None):
     parser.add_argument("--project", type=Path, default=Path.cwd())
     parser.add_argument("--hosts", nargs="+",
                         help="Configure selected hosts; omit to preserve an existing installation")
+    parser.add_argument("--auto", choices=("on", "off"),
+                        help="Override automatic routing; new projects default on")
+    parser.add_argument("--verification", choices=("off", "ask", "auto"),
+                        help="Project verifier lifecycle; new projects default ask")
     args = parser.parse_args(argv)
     project = args.project.expanduser().resolve()
     installer = Path(__file__).resolve().parent / "scripts/install.py"
     command = [sys.executable, "-B", str(installer), "--project", str(project)]
     if args.hosts is not None:
         command.extend(["--hosts", *args.hosts])
+    if args.auto is not None:
+        command.extend(["--auto", args.auto])
+    if args.verification is not None:
+        command.extend(["--verification", args.verification])
     try:
         installed = subprocess.run(command, text=True, capture_output=True, check=False)
         if installed.returncode:

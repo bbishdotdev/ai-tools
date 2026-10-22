@@ -1,7 +1,7 @@
 ---
 name: triage
 description: Evaluate incoming bugs, enhancements, or proposed changes for duplication, accepted intent, evidence, and a usable implementation brief.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Brenden Bishop
   attribution: ../../ATTRIBUTION.md

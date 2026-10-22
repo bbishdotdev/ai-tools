@@ -1,7 +1,7 @@
 ---
 name: prototype
 description: Build and iterate on disposable prototypes for design or behavior questions, preserving the chosen reference for a clean implementation handoff.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Brenden Bishop
   attribution: ../../ATTRIBUTION.md

@@ -85,7 +85,7 @@ def inspect_bindings(project, bundle, hosts):
                  and f"allow_implicit_invocation: {str(implicit).lower()}" in policy.read_text())
         entries[name] = {"path": str(wrapper), "target": str(bundle / entry["path"]), "valid": valid,
                          "implicit": implicit}
-        if not valid or implicit != (name in {"unslop", "bstack-guide", "configure-pr"}):
+        if not valid:
             failures.append(f"invalid public binding: {name}")
         for host in hosts:
             folder = {"claude": ".claude", "cursor": ".cursor", "grok": ".grok"}.get(host)
@@ -279,8 +279,13 @@ def successful_read(stream, target, project, fragments):
         if event.get("type") == "tool_call" and event.get("subtype") == "completed":
             read = event.get("tool_call", {}).get("readToolCall", {})
             success = read.get("result", {}).get("success")
-            if matches(read.get("args", {}).get("path")) and success is not None and contains(success):
-                return True
+            if matches(read.get("args", {}).get("path")) and isinstance(success, dict):
+                if contains(success):
+                    return True
+                span = success.get("readRange", {})
+                if (success.get("contentBlobId") and success.get("fileSize") == target.stat().st_size
+                        and span.get("startLine") == 1 and span.get("endLine", 0) >= success.get("totalLines", 1)):
+                    return True
     return False
 
 
@@ -569,8 +574,14 @@ def main():
 
             controller = [sys.executable, str(bundle / "scripts/bstack.py")]
             if args.live:
-                for label in ("direct", "manual", "default-off"):
+                for label in ("direct", "manual"):
                     phase(label)
+            code, _ = run_command(controller + ["auto", "off", "--project", str(project)], project,
+                                  output / "state" / "manual-before-auto", env)
+            if code:
+                raise RuntimeError("Disabling automatic mode for the manual probe failed")
+            if args.live:
+                phase("default-off")
             for mode in ("on", "on"):
                 code, _ = run_command(controller + ["auto", mode, "--project", str(project)], project,
                                       output / "state" / (mode + "-" + uuid.uuid4().hex[:4]), env)

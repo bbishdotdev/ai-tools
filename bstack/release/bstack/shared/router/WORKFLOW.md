@@ -18,8 +18,10 @@ When the user explicitly invokes a named skill such as `how` or `architect`, app
 
 For Poteto Mode or automatic engineering routing, read the upstream router in full, then the selected playbook and relevant skill leaves. Preserve its principles and workflow steps except for the adjustments below. Reuse full instructions while they remain available. After compaction, reread any missing instructions; retain the active workflow, completed work, and next step instead of restarting.
 
+Only playbooks listed under `playbooks` in the installed package's `index.json` are active. The `quarantined_playbooks` names are not runnable BStack workflows yet; their pinned source remains for review. If a request matches one, explain the missing host or service capability and continue with a supported narrower task where possible. Do not run its bundled helper or promise an unattended loop. On first use of a conditional workflow, read the plain [setup map](../references/setup-requirements.md) and check only the prerequisites that workflow actually needs.
+
 - Use a matching playbook for ordinary engineering tasks. A reported defect routes to Bug fix, measured slowness to Perf issue, and a cited read-only explanation to Investigation. New behavior routes to Feature.
-- Use **figure-it-out** for engineering work needing a bespoke execution plan, including large or cross-cutting work whose coordination exceeds a narrower playbook. A one-time migration can need it. Repetition and creation of a reusable skill are not prerequisites. A standing multi-day coordinated program can instead need Orchestrate, as defined upstream.
+- Use **figure-it-out** for engineering work needing a bespoke execution plan, including large or cross-cutting work whose coordination exceeds a narrower playbook. A one-time migration can need it. Repetition and creation of a reusable skill are not prerequisites. The imported Orchestrate playbook is quarantined until its host lifecycle and helper dependencies are ported.
 - Ordinary writing, casual conversation, and other requests with no engineering workflow need a normal response. Select no engineering playbook. Apply [bstack's unslop](../unslop/SKILL.md) to prose without loading the upstream engineering corpus.
 - When the user asks how to use bstack or which entry fits their task, use [bstack-guide](../bstack-guide/SKILL.md) without starting an engineering playbook.
 - Respect explicit skill requests and the requested deliverable. Planning, discussing, classifying, or verifying a route does not authorize executing the described work. A plan-only figure-it-out request stops at the plan.
@@ -42,11 +44,12 @@ Use bstack's owned entries for selected SDLC workflows, including references fro
 | Review a PR or recheck its revisions | [review-pr](../../engineering/review-pr/SKILL.md) |
 | Respond to feedback on your PR | [resolve-pr](../../engineering/resolve-pr/SKILL.md) |
 | Configure project PR review priorities | [configure-pr](../configure-pr/SKILL.md) |
+| Create or fully audit a project verifier | [create-verification-skill](../../engineering/create-verification-skill/SKILL.md) or [maintain-verification-skill](../../engineering/maintain-verification-skill/SKILL.md) |
 | Transfer work to a fresh context | [handoff](../handoff/SKILL.md) |
 
 Named invocation selects that entry. Within opted-in automatic routing, propose or select the matching phase from the user's task. A sufficient spec or small known task can skip Wayfinder. Planning completion does not authorize implementation. Triage is intake coordination, not a mandatory step between planning and tickets.
 
-PR review selects the owned review entry before general investigation or PR-status routing. It evaluates necessity and implementation, then challenges anonymous findings. It does not run the complete Arena/Interrogate workflows, fix code, or merge. A status-only or CI-repair request remains Babysit; publishing a review needs its own applicable authorization.
+PR review selects the owned review entry before general investigation or PR-status routing. It evaluates necessity and implementation, then challenges anonymous findings. It does not run the complete Arena/Interrogate workflows, fix code, or merge. For a status-only or CI-repair request, use the host's supported checks directly; the imported Babysit playbook is quarantined. Publishing a review needs its own applicable authorization.
 
 Author-side review follow-up selects resolve-pr. Judge each concern against evidence and the PR's purpose; an evidence-backed reply may resolve it without changing code. Keep independent cleanup out of the PR, and do not treat an existing request-changes review as cleared by the author's reply.
 
@@ -64,9 +67,13 @@ Use **architect** when consequential design uncertainty or risk warrants competi
 
 Keep PStack's implementation and review separation, delegated steps, adversarial review, and relevant principle leaves. Adapt their tools through the capability contract below; this layer does not quietly turn mandatory independent review into self-review.
 
+For feature and bug work, follow the project's [verification setting](../references/verification-policy.md). Reuse an existing `verify-<app>` skill, update only recipes affected by changed behavior, and drive the relevant path when the app is available. In `auto` mode, create a verifier for a substantive new product feature when none exists. In `ask` mode, propose the specific change before editing the verifier. A throwaway prototype does not need one. The full `maintain-verification-skill` sweep remains an explicit audit, not a step on every implementation.
+
 ## Capabilities and authorization
 
 The default delegation model policy is **inherit-parent**, including the coding delegate. Omit an explicit model unless a supported role override is configured or the user requests one. Imported provider names, model identifiers, agent types, transcript paths, and external destinations are examples of upstream bindings, not requirements or authorization.
+
+Do not load `~/.cursor/rules/pstack-models.mdc` or select an imported default model slug. For a workflow that actually requires independent model families, verify two usable model bindings on this host before claiming that benefit; a same-model check is a narrower result. If a named agent type or background lifecycle is missing, delegate through the host's supported API or report that step unavailable. The retired upstream `poteto-agent` definition is not bundled.
 
 Before an imported instruction needs delegation, a service, a host-specific tool, or a helper script, read [the capability contract](references/capabilities.md). Resolve the operation against capabilities actually available in this environment. Pass this router's path and relevant policy to delegates. They must apply bstack's layer before following imported instructions.
 

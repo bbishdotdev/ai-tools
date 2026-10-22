@@ -5,12 +5,15 @@
   "replacements": {
     "bstack-guide": "shared/bstack-guide/SKILL.md",
     "configure-pr": "shared/configure-pr/SKILL.md",
+    "create-verification-skill": "engineering/create-verification-skill/SKILL.md",
     "domain-modeling": "sdlc/domain-modeling/SKILL.md",
     "grill-me": "sdlc/grill-me/SKILL.md",
     "grill-with-docs": "sdlc/grill-with-docs/SKILL.md",
     "grilling": "sdlc/grilling/SKILL.md",
     "handoff": "shared/handoff/SKILL.md",
     "implement": "engineering/implement/SKILL.md",
+    "maintain-verification-skill": "engineering/maintain-verification-skill/SKILL.md",
+    "no-comments": "engineering/no-comments/SKILL.md",
     "prototype": "engineering/prototype/SKILL.md",
     "research": "engineering/research/SKILL.md",
     "resolve-pr": "engineering/resolve-pr/SKILL.md",
@@ -189,6 +192,51 @@
         {
           "path": "skills/unslop/SKILL.md",
           "sha256": "c6d2572294d933a428211921069e9a248490e9b466ca59437cb4d9de248600ca"
+        }
+      ]
+    },
+    {
+      "id": "no-comments",
+      "kind": "whole-skill-override",
+      "source": "pstack",
+      "upstream_files": [
+        {
+          "path": "skills/no-comments/SKILL.md",
+          "sha256": "5c5b0882297d704c3a9720c52b7a793c68b013eaf717989f0945624efdfe2b05"
+        }
+      ]
+    },
+    {
+      "id": "create-verification-skill",
+      "kind": "whole-skill-override",
+      "source": "pstack",
+      "upstream_files": [
+        {
+          "path": "skills/create-verification-skill/SKILL.md",
+          "sha256": "644f2551403c1bca01a2855b34611b6e7be0ce0dc5b204514c376c0f6a6e6ac4"
+        },
+        {
+          "path": "skills/create-verification-skill/references/feature-map-example/README.md",
+          "sha256": "cb7bd782cf89968a4ba3d58a5151db837430db92d19a6f52a906973b77b516ba"
+        },
+        {
+          "path": "skills/create-verification-skill/references/feature-map-example/create-note.md",
+          "sha256": "644a44c74f35d38c2feb7cd05a0121fdebbb623e8dc376c185b565a581d1ccf7"
+        },
+        {
+          "path": "skills/create-verification-skill/references/feature-map-example/search.md",
+          "sha256": "6e87b9e7f2791a7776ba1bb83f371cd285c306c67f19d245cc4dd6ca3015c823"
+        }
+      ]
+    },
+    {
+      "id": "maintain-verification-skill",
+      "kind": "whole-skill-override",
+      "source": "pstack",
+      "upstream_files": [
+        {
+          "path": "skills/maintain-verification-skill/SKILL.md",
+          "sha256": "515c0eaa054b3f6be1b1fb06f2c2f173c80fddb58bbcac57576f89c479bc68e8"
         }
       ]
     },

@@ -1,7 +1,7 @@
 ---
 name: to-pr
 description: Prepare a short visual PR briefing, check open work for overlap, and publish to the authorized destination. Use for an explicit PR request or an authorized PR delivery step.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   author: Brenden Bishop
   attribution: ../../ATTRIBUTION.md

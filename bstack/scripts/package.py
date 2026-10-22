@@ -37,6 +37,7 @@ ENTRYPOINTS = {
     "verification": "shared/verify-bstack/SKILL.md",
     "workspace": "workspace/cli.py",
     "workflow": "shared/workflow.py",
+    "model_cli": "shared/model_cli.py",
     "pull_requests": "github/pr.py",
     "pr_review": "engineering/review-pr/scripts/review.py",
     "pr_resolution": "engineering/resolve-pr/scripts/feedback.py",
@@ -361,6 +362,11 @@ def assemble(root=ROOT):
     selected.extend("shared/skills/verify-bstack/scripts/" + path for path in sorted(layers.tree_files(verify_scripts))
                     if "__pycache__" not in PurePosixPath(path).parts and path.endswith(".py"))
     mapping = {source: package_path(source, upstream) for source in selected}
+    for name, source in selection["owned_skills"].items():
+        upstream_entry = upstream + "/skills/" + name + "/SKILL.md"
+        owned_entry = source + "/SKILL.md"
+        if upstream_entry not in mapping and (root / upstream_entry).is_file():
+            mapping[upstream_entry] = mapping[owned_entry]
     mapping.update({
         upstream + "/skills/unslop/SKILL.md": UNSLOP,
         upstream + "/skills/setup-pstack/SKILL.md": ENTRYPOINTS["setup"],
@@ -418,9 +424,13 @@ def assemble(root=ROOT):
                    "verify-bstack": ENTRYPOINTS["verification"]})
     public = {}
     public_names = [name for name in selection["skills"] if not name.startswith("principle-")]
-    for name in public_names + list(selection["owned_skills"]) + ["unslop", "setup-bstack", "bstack-auto", "verify-bstack"]:
+    available = public_names + list(selection["owned_skills"]) + ["unslop", "setup-bstack", "bstack-auto", "verify-bstack"]
+    implicit_skills = selection.get("implicit_skills", [])
+    if not isinstance(implicit_skills, list) or len(implicit_skills) != len(set(implicit_skills)) or not set(implicit_skills) <= set(available):
+        raise ValueError("implicit_skills must list unique public skill names")
+    for name in available:
         path = skills[name]
-        implicit = name in ("unslop", "bstack-guide", "configure-pr")
+        implicit = name in implicit_skills
         assets[path], description = public_skill(assets[path], name, implicit)
         public[name] = {"path": path, "description": description, "implicit": implicit}
         metadata = str(PurePosixPath(path).parent / "agents/openai.yaml")
@@ -428,10 +438,17 @@ def assemble(root=ROOT):
             "policy:\n  allow_implicit_invocation: " + str(implicit).lower() + "\n",
             root=root, transforms=("public-skill-invocation-policy",))
     agents = {Path(agent).stem: mapping[upstream + "/agents/" + agent] for agent in selection["agents"]}
-    playbooks = {PurePosixPath(source).stem: target for source, target in mapping.items()
-                 if source.startswith(upstream + "/skills/poteto-mode/playbooks/") and source.endswith(".md")}
+    all_playbooks = {PurePosixPath(source).stem: target for source, target in mapping.items()
+                     if source.startswith(upstream + "/skills/poteto-mode/playbooks/") and source.endswith(".md")}
+    quarantined = selection.get("quarantined_playbooks", {})
+    if not isinstance(quarantined, dict) or not set(quarantined) <= set(all_playbooks) or any(
+        not isinstance(reason, str) or not reason.strip() for reason in quarantined.values()
+    ):
+        raise ValueError("quarantined_playbooks must name bundled playbooks with reasons")
+    playbooks = {name: path for name, path in all_playbooks.items() if name not in quarantined}
     index = {"schema_version": 2, "paths_relative_to": "package", "policy": ROUTER,
              "skills": skills, "agents": agents, "playbooks": playbooks,
+             "quarantined_playbooks": quarantined,
              "workspace": {"cli": ENTRYPOINTS["workspace"], "operations": "workspace/OPERATIONS.md"},
              "workflow": ENTRYPOINTS["workflow"],
              "pull_requests": {"cli": ENTRYPOINTS["pull_requests"], "template": "github/pull_request_template.md"},
