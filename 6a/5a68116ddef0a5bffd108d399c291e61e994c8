@@ -1,0 +1,61 @@
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_374345a4ce3b7d 7-8
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_85331a4c2f5f61 22,26
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_f737e164068cbd 22-24
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_78a9d27801e7b9 5,12-15,50-51,55-81,98,100,104-105,108-135,138,148
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_ef2dfd40c6f156 208,245,270,431,448
+bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_5428f229b82d08 12,34,37-39,41,43,47,49
+bstack/engineering/to-pr/references/publishing.md
+  s_822e08e34bda62::t_07ef2a319f8ad9 13,26,82
+bstack/engineering/to-pr/references/visuals.md
+  s_822e08e34bda62::t_be59045a85c45b 3,9,14-16,22,25-26,31,33,35
+bstack/github/pr.py
+  s_822e08e34bda62::t_23e70901ddfddf 25,309-310,338,341,345-376,442-452,456-457,462-463,468-469,732,753-754
+bstack/github/pull_request_template.md
+  s_822e08e34bda62::t_f52678cd7968bd 3,5,14-16,20-27,31-32,37
+bstack/github/tests/test_pr.py
+  s_822e08e34bda62::t_f56980468778cc 458,462-471,473-508
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_c1e714feb4732b 75-80,82-88,599-607
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_aa53fe1f9d8f9a 22,26
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_09ea2881cedf70 22-24
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_5715c37bff641f 5,12-15,50-51,55-81,98,100,104-105,108-135,138,148
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_7487ab483da28b 208,245,270,431,448
+bstack/release/bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_0f19ef936a8ef7 12,34,37-39,41,43,47,49
+bstack/release/bstack/engineering/to-pr/references/publishing.md
+  s_822e08e34bda62::t_d6a4b15808f078 13,26,82
+bstack/release/bstack/engineering/to-pr/references/visuals.md
+  s_822e08e34bda62::t_e15805e319c4a5 3,9,14-16,22,25-26,31,33,35
+bstack/release/bstack/github/pr.py
+  s_822e08e34bda62::t_9254e774e2b784 25,309-310,338,341,345-376,442-452,456-457,462-463,468-469,732,753-754
+bstack/release/bstack/github/pull_request_template.md
+  s_822e08e34bda62::t_6b0e1c604e699d 3,5,14-16,20-27,31-32,37
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_dbb1236e813324 1230,1232,1277,1279,1309,1311,1325,1327,1462,1464,1483,1485,1491,1493,1674,1676,1682,1684
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6a5a68116ddef0a5bffd108d399c291e61e994c8",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
