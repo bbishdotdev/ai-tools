@@ -155,6 +155,14 @@ class ReviewPublicationTests(unittest.TestCase):
             publish_result(result, self.directory, github, True)
         self.assertEqual(github.writes, [])
 
+    def test_review_can_explain_inert_code_syntax_without_becoming_a_link(self):
+        finding = {**self.finding, "explanation": "The parser rejects `Promise<void>`, `metadata:`, and `https://` in code examples."}
+        result = self.result([finding], new=[finding["id"]])
+        github = FakeGitHub(self.snapshot)
+        preview = publish_result(result, self.directory, github, False)
+        self.assertIn("`Promise<void>`", preview["body"])
+        self.assertIn("`https://`", preview["body"])
+
     def test_new_blocker_and_disagreement_reconcile_lost_reply_before_requesting_changes(self):
         self.source("inline", 10, "This is safely public.")
         self.source("inline", 11, "Only trusted clients use it.", parent=10)

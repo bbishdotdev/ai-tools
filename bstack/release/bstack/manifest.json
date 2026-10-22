@@ -1346,9 +1346,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/security.py",
-      "sha256": "311a207d355a7b1daeacfe5378358b7981b74f2fa7fe1d205796e7e06a92f6a0",
+      "sha256": "f949438fb772a99e1e249aafd70e8654ab0888c8fe7224eaaa1dabff914f985b",
       "source": "bstack/engineering/review-pr/scripts/security.py",
-      "source_sha256": "311a207d355a7b1daeacfe5378358b7981b74f2fa7fe1d205796e7e06a92f6a0",
+      "source_sha256": "f949438fb772a99e1e249aafd70e8654ab0888c8fe7224eaaa1dabff914f985b",
       "transforms": []
     },
     {

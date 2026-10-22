@@ -114,7 +114,8 @@ def verify_worker(config, work, project):
 def validate_public_text(value):
     if not isinstance(value, str):
         return
-    if re.search(r"(?i)(?:https?://|www\.|data:|<\s*/?\s*[a-z][^>]*>|\]\s*\(|!\s*\[)", value):
+    prose = re.sub(r"(?s)(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)", "", value)
+    if re.search(r"(?i)(?:https?://|www\.|(?<![\w])data:|<\s*/?\s*[a-z][^>]*>|\]\s*\(|!\s*\[)", prose):
         raise ReviewError("Model-written review text contains a link, image, or HTML. Publication needs a fresh, plain-text assessment")
     if any(ord(char) < 32 and char not in "\n\t" for char in value):
         raise ReviewError("Model-written review text contains control characters")
