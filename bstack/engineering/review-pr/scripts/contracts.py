@@ -53,8 +53,12 @@ PREFLIGHT_CONCERN = object_schema({
     "path": text_schema(500),
     "line": {"type": "integer", "minimum": 1},
 })
+PREFLIGHT_SIGNAL = object_schema({"index": {"type": "integer", "minimum": 0},
+                                  "disposition": {"type": "string", "enum": ["clear", "hold"]},
+                                  "reason": text_schema(300)})
 PREFLIGHT = object_schema({"decision": {"type": "string", "enum": ["pass", "hold"]},
-                           "concerns": array_schema(PREFLIGHT_CONCERN, 20)})
+                           "concerns": array_schema(PREFLIGHT_CONCERN, 20),
+                           "signals": array_schema(PREFLIGHT_SIGNAL, 100)})
 
 
 def validate(value, schema, path="result"):

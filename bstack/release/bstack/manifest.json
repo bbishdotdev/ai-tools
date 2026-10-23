@@ -1282,9 +1282,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "b4a1bd7912a217d0ead9725afe3b4ae5940039e35fc6047ce1d4695243b626f7",
+      "sha256": "6d45ccba648250be798b75c484b273c13b53e5a0573b6fa1c836a1d80ed0b7cf",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "b4a1bd7912a217d0ead9725afe3b4ae5940039e35fc6047ce1d4695243b626f7",
+      "source_sha256": "6d45ccba648250be798b75c484b273c13b53e5a0573b6fa1c836a1d80ed0b7cf",
       "transforms": []
     },
     {
@@ -1306,9 +1306,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/contracts.py",
-      "sha256": "614d2df1d542ab7664b8b00f948ac26269588f861227966e78815885ab999b24",
+      "sha256": "29c439a6b1b09d16a37a347139bb191782c46b1ab4aa72080a061d92022d8a08",
       "source": "bstack/engineering/review-pr/scripts/contracts.py",
-      "source_sha256": "614d2df1d542ab7664b8b00f948ac26269588f861227966e78815885ab999b24",
+      "source_sha256": "29c439a6b1b09d16a37a347139bb191782c46b1ab4aa72080a061d92022d8a08",
       "transforms": []
     },
     {
@@ -1330,9 +1330,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/preflight.py",
-      "sha256": "3e6da5c31873b2fc8e5120dba1c29ee6be1b871c43ae6c9087ad99131ba36217",
+      "sha256": "9ccfeb5060e1769464a0bd87f44c2baae3bb766b2f60d02f70d050f4e487b6e6",
       "source": "bstack/engineering/review-pr/scripts/preflight.py",
-      "source_sha256": "3e6da5c31873b2fc8e5120dba1c29ee6be1b871c43ae6c9087ad99131ba36217",
+      "source_sha256": "9ccfeb5060e1769464a0bd87f44c2baae3bb766b2f60d02f70d050f4e487b6e6",
       "transforms": []
     },
     {
@@ -1370,9 +1370,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/security_eval.py",
-      "sha256": "def0e9205b598e1935b022859091b85e764472bea78e3df47959569d599b0212",
+      "sha256": "428e04f75cff7addf1a464c6c2a0d05a014589de3c7ba4b0aa646e1f234c12c7",
       "source": "bstack/engineering/review-pr/scripts/security_eval.py",
-      "source_sha256": "def0e9205b598e1935b022859091b85e764472bea78e3df47959569d599b0212",
+      "source_sha256": "428e04f75cff7addf1a464c6c2a0d05a014589de3c7ba4b0aa646e1f234c12c7",
       "transforms": []
     },
     {
