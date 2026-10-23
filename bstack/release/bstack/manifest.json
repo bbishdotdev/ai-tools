@@ -1282,9 +1282,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "6d45ccba648250be798b75c484b273c13b53e5a0573b6fa1c836a1d80ed0b7cf",
+      "sha256": "3f3c8e390e20201ac00bbad235d93e9414c079f95011bdaf581b26a1f8645ee1",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "6d45ccba648250be798b75c484b273c13b53e5a0573b6fa1c836a1d80ed0b7cf",
+      "source_sha256": "3f3c8e390e20201ac00bbad235d93e9414c079f95011bdaf581b26a1f8645ee1",
       "transforms": []
     },
     {
@@ -1330,9 +1330,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/preflight.py",
-      "sha256": "9ccfeb5060e1769464a0bd87f44c2baae3bb766b2f60d02f70d050f4e487b6e6",
+      "sha256": "ec5bef0ad73c3692a35c1a693586453ea16c2abf703b29851272d12896d0fc7a",
       "source": "bstack/engineering/review-pr/scripts/preflight.py",
-      "source_sha256": "9ccfeb5060e1769464a0bd87f44c2baae3bb766b2f60d02f70d050f4e487b6e6",
+      "source_sha256": "ec5bef0ad73c3692a35c1a693586453ea16c2abf703b29851272d12896d0fc7a",
       "transforms": []
     },
     {
@@ -1346,17 +1346,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/review.py",
-      "sha256": "8b71bb15179169a0b37fc904f449aa6fd41a9d4c16d365b8004d91738d18cbc6",
+      "sha256": "24515b889a8ce4de8d42d57435ab00d054ad127a2aed0b8775565ddcf00d6d93",
       "source": "bstack/engineering/review-pr/scripts/review.py",
-      "source_sha256": "8b71bb15179169a0b37fc904f449aa6fd41a9d4c16d365b8004d91738d18cbc6",
+      "source_sha256": "24515b889a8ce4de8d42d57435ab00d054ad127a2aed0b8775565ddcf00d6d93",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/runtime_verification.py",
-      "sha256": "ce6cccb75d76e8d93c54a5fe16812327f4b688cfc34504885d9fdb59e975f412",
+      "sha256": "e6c22c5fc310f943ddbc42ac9b5f9cc07ae56307bf0b4362d0e4e6dfaed23ead",
       "source": "bstack/engineering/review-pr/scripts/runtime_verification.py",
-      "source_sha256": "ce6cccb75d76e8d93c54a5fe16812327f4b688cfc34504885d9fdb59e975f412",
+      "source_sha256": "e6c22c5fc310f943ddbc42ac9b5f9cc07ae56307bf0b4362d0e4e6dfaed23ead",
       "transforms": []
     },
     {
@@ -1370,9 +1370,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/security_eval.py",
-      "sha256": "428e04f75cff7addf1a464c6c2a0d05a014589de3c7ba4b0aa646e1f234c12c7",
+      "sha256": "8f63e40ada2bb2016cb247abe45602adc4710ac5758637d5c76d16cabc3c512d",
       "source": "bstack/engineering/review-pr/scripts/security_eval.py",
-      "source_sha256": "428e04f75cff7addf1a464c6c2a0d05a014589de3c7ba4b0aa646e1f234c12c7",
+      "source_sha256": "8f63e40ada2bb2016cb247abe45602adc4710ac5758637d5c76d16cabc3c512d",
       "transforms": []
     },
     {
@@ -2310,9 +2310,9 @@
     {
       "mode": 420,
       "path": "shared/references/setup-requirements.md",
-      "sha256": "9400456a32d9f0479a8b028d612d630d8379beb0bbdf2028e5860f22fe40a2de",
+      "sha256": "ed0151d814e5302ee240d3d3bf486b129727ec1a6cde3ca3afa624bb9c10de15",
       "source": "bstack/shared/references/setup-requirements.md",
-      "source_sha256": "9400456a32d9f0479a8b028d612d630d8379beb0bbdf2028e5860f22fe40a2de",
+      "source_sha256": "ed0151d814e5302ee240d3d3bf486b129727ec1a6cde3ca3afa624bb9c10de15",
       "transforms": []
     },
     {

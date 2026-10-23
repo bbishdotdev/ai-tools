@@ -87,7 +87,7 @@ def validate_runtime_config(value, project):
     return {"command": command, "worker": worker, "timeout_seconds": timeout, "output_limit_bytes": output_limit}
 
 
-def _copy_snapshot(source, destination):
+def _copy_snapshot(source, destination, pinned_tree):
     source = Path(source).resolve(strict=True)
     if not source.is_dir():
         raise ReviewError("Pinned head snapshot is not a directory")
@@ -112,7 +112,11 @@ def _copy_snapshot(source, destination):
                 raise ReviewError("Pinned head snapshot exceeds 250 MiB")
             target = destination / relative / name
             shutil.copyfile(source_file, target, follow_symlinks=False)
-            target.chmod(0o700 if record.st_mode & 0o111 else 0o600)
+            entry = pinned_tree.get((relative / name).as_posix())
+            mode = entry.get("mode") if isinstance(entry, dict) else None
+            if mode not in {"100644", "100755"}:
+                raise ReviewError("Runtime snapshot mode does not match the pinned Git tree")
+            target.chmod(0o700 if mode == "100755" else 0o600)
 
 
 def _environment(work):
@@ -216,7 +220,7 @@ def _check_worker(config, work, project, outside, environment):
         listener = socket.socket()
         listener.bind(("127.0.0.1", 0))
         listener.listen(1)
-        arguments = ["python3", str(probe), nonce, str(listener.getsockname()[1]), str(marker),
+        arguments = ["python3", "-I", str(probe), nonce, str(listener.getsockname()[1]), str(marker),
                      json.dumps(_outside_paths(project, outside))]
         result = _run_bounded(_worker_command(config["worker"], arguments), work, environment,
                               WORKER_TIMEOUT_SECONDS, 256, 4096)
@@ -246,7 +250,7 @@ def probe_runtime_worker(value, project):
     return {"status": "passed", "scope": "selected file, credential, environment, and host-loopback checks"}
 
 
-def run_runtime_verification(value, project, pinned_head_dir):
+def run_runtime_verification(value, project, pinned_head_dir, pinned_tree):
     if value is None:
         return {"status": "skipped", "reason": "Runtime verification is not configured"}
     config = validate_runtime_config(value, project)
@@ -254,7 +258,7 @@ def run_runtime_verification(value, project, pinned_head_dir):
         root = Path(temporary)
         work = root / "head"
         work.mkdir(mode=0o700)
-        _copy_snapshot(pinned_head_dir, work)
+        _copy_snapshot(pinned_head_dir, work, pinned_tree)
         outside = root / "outside-canary"
         outside.write_text("bstack-runtime-outside-canary")
         outside.chmod(0o600)

@@ -246,7 +246,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     raise ReviewError("No isolated model worker is configured for the independent reviewers. Add one in .bstack/review.json")
                 write_json(output / "reviewer-budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=6))
                 write_json(output / "doctor.json", doctor(config, project, live=True))
-                runtime_result = run_runtime_verification(config.get("runtime_verification"), project, snapshots["head"])
+                runtime_result = run_runtime_verification(config.get("runtime_verification"), project, snapshots["head"], trees["head"])
                 write_json(output / "runtime-verification.json", runtime_result)
                 if context_digest(github.state(), github.checks(head)) != context_id:
                     raise ReviewError("PR code or discussion changed during runtime verification; rerun before reviewing")
