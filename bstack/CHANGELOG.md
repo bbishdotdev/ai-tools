@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Check the pinned diff and discussion in a tool-free safety preflight before independent PR review. Pause suspicious PRs for human inspection, including opaque executable changes. Require an isolated model worker for every review and a separate credential-free worker for optional app verification; remove the host-access bypass. Validate targets, limit model calls, sanitize published text, and keep other checkouts' receipts from standing in for a review. Run package and reviewer checks on every PR.
 - Keep PR briefings short and place useful visuals beside the explanation they support.
 - Use the shared configured CLI launcher for PR reviews and Codex PR visuals, including wrapper commands.
 - Make automatic engineering routing the new-install default. Existing projects keep their saved setting; `bstack-auto off` restores manual routing.

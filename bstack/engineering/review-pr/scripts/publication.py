@@ -4,10 +4,15 @@ from urllib.parse import quote
 
 from contracts import ReviewError, digest
 from host import read_json, write_json
+from security import public_text, validate_public_report
 from shared import compatible_receipt, matching_context, public_receipt, receipts, source_record
 
 
 LABELS = {"blocker": "🛑", "human-decision": "❓", "moderate": "⚠️", "low": "💡"}
+SAFETY_LABELS = {"agent-instruction": "Instructions aimed at the reviewer", "secret-exfiltration": "Possible secret access or transfer",
+                 "external-endpoint": "External destination needs inspection", "unsafe-execution": "Execution behavior needs inspection",
+                 "opaque-executable": "Executable content could not be inspected as text",
+                 "unverified-signal": "The safety check raised a concern without a verifiable line"}
 
 
 def now():
@@ -23,6 +28,9 @@ def signature(result):
 def evidence_link(result, evidence):
     if evidence["path"] == "@pr":
         return result["snapshot"]["pr"]["html_url"]
+    if evidence["path"].startswith("@pr/"):
+        target = result["snapshot"]["target"]
+        return f"https://{target['host']}/{target['repo']}/pull/{evidence['path'][4:]}"
     target = result["snapshot"]["target"]
     commit = result["evidence_commits"][evidence["side"]]
     return f"https://{target['host']}/{target['repo']}/blob/{commit}/{quote(evidence['path'], safe='/')}#L{evidence['line']}"
@@ -56,12 +64,12 @@ def assessment_details(result):
     for item in result["findings"]:
         if item["id"] not in new_ids:
             continue
-        text.append(f"{LABELS[item['category']]} **{item['title']}**\n\n{item['explanation']} {item['action']} {evidence_links(result, item['evidence'])}")
+        text.append(f"{LABELS[item['category']]} **{public_text(item['title'])}**\n\n{public_text(item['explanation'])} {public_text(item['action'])} {evidence_links(result, item['evidence'])}")
     limits = result.get("coverage", {}).get("limits", [])
     if limits:
-        text.append("**Still unverified**\n\n" + "\n".join("- " + limit for limit in dict.fromkeys(limits)))
+        text.append("**Still unverified**\n\n" + "\n".join("- " + public_text(limit) for limit in dict.fromkeys(limits)))
     replied = {name for item in result.get("feedback", []) if item["relation"] == "resolved" for name in item["finding_ids"]}
-    resolved = [item["title"] for item in result.get("resolved_findings", []) if item["id"] not in replied]
+    resolved = [public_text(item["title"]) for item in result.get("resolved_findings", []) if item["id"] not in replied]
     if resolved:
         text.append("✅ Fixed: " + "; ".join(resolved) + ".")
     return text
@@ -89,7 +97,7 @@ def summary_body(result, event, self_review):
     text.extend(assessment_details(result))
     if result.get("human_review_required"):
         paths = sorted({path for rule in result["human_review_required"] for path in rule["changed"]})
-        text.append("Human review required for " + ", ".join(f"`{path}`" for path in paths) + ".")
+        text.append("Human review required for " + ", ".join(public_text(path) for path in paths) + ".")
     if result["scope"]["mode"] != "full":
         text.append("Checked the follow-up and the behavior it affects.")
     text.append(signature(result))
@@ -119,6 +127,16 @@ def action(result, kind, destination, body=None, **values):
 
 
 def plan_actions(result, user):
+    if result.get("safety_hold"):
+        points = []
+        for item in result["safety_hold"]:
+            evidence = {"path": item["path"], "line": item["line"], "side": "head"}
+            label = "Related PR text" if item["source"] == "open-pr" else "PR text or discussion" if item["path"] == "@pr" else "Changed file" if item["source"] == "file" else "Added line"
+            points.append(f"- {SAFETY_LABELS[item['category']]}: [{label}]({evidence_link(result, evidence)})")
+        body = ("⚠️ I paused automated review so a person can inspect these security concerns first. "
+                "I did not run the independent reviewers or execute this PR.\n\n" + "\n".join(points) +
+                "\n\n<sub><i>🤖 BStack security preflight · No independent review performed</i></sub>")
+        return [action(result, "comment", {"kind": "comments", "pr": result["snapshot"]["target"]["number"]}, body)], None
     if result.get("stale_exhausted"):
         body = summary_body(result, "COMMENT", False)
         return [action(result, "review", {"kind": "reviews", "pr": result["snapshot"]["target"]["number"]}, body, event="COMMENT")], "COMMENT"
@@ -145,7 +163,7 @@ def plan_actions(result, user):
         target = root["id"] if kind == "inline" else identity
         prefix = {"extend": "⚠️", "disagree": "💬", "resolved": "✅"}[feedback["relation"]]
         mention = "@" + source["author"] + " " if source.get("author") and source["author"].casefold() != user.casefold() else ""
-        body = f"{prefix} {mention}{feedback['body'].strip()}"
+        body = f"{prefix} {mention}{public_text(feedback['body'].strip())}"
         if feedback["relation"] == "resolved":
             references = []
             if kind != "inline":
@@ -278,21 +296,31 @@ def assert_fresh(result, journal, state, checks):
         raise ReviewError("Review is stale: code, requirements, checks or discussion changed. Run a follow-up review before publishing.")
 
 
-def completed_response(journal, stale=False, repeated=False):
+def completed_response(journal, stale=False, repeated=False, safety_hold=False):
     review = next((item for item in journal["actions"] if item["kind"] == "review" and item.get("receipt")), None)
+    comment = next((item for item in journal["actions"] if item["kind"] == "comment" and item.get("receipt")), None)
     status = "already_published" if repeated else "published"
     if stale:
         status += "_stale" if repeated else "_but_stale"
     value = {"status": status, "event": journal.get("event"), "actions": len(journal["actions"])}
     if review:
         value.update({"url": review["receipt"].get("url"), "state": review["receipt"].get("state")})
+    elif comment:
+        value["url"] = comment["receipt"].get("url")
     if stale:
         value["warning"] = "The PR changed during publication. This review covers the earlier snapshot; run a follow-up review."
+    if safety_hold:
+        value["safety_hold"] = True
+        posted = "I already left a comment" if repeated else "I left a comment"
+        value["user_message"] = (f"I paused the automated review. {posted} on the PR with potential security concerns. "
+                                 "It isn't safe to continue automatically until a person checks them. "
+                                 "I didn't run the reviewers or project code.")
     return value
 
 
 def publish_result(result, directory, github, write):
     directory = directory.resolve()
+    validate_public_report({key: result.get(key, []) for key in ("findings", "feedback", "coverage", "resolved_findings")})
     if result.get("stale") and not result.get("stale_exhausted"):
         raise ReviewError("Review is stale; run a follow-up before publishing")
     saved = directory / "publication.json"
@@ -320,9 +348,9 @@ def publish_result(result, directory, github, write):
         write_json(saved, journal)
         if all(item["status"] == "done" for item in journal["actions"]):
             stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
-            return completed_response(journal, stale=stale, repeated=True)
+            return completed_response(journal, stale=stale, repeated=True, safety_hold=bool(result.get("safety_hold")))
     else:
-        if not result.get("stale_exhausted"):
+        if not result.get("stale_exhausted") and not result.get("safety_hold"):
             for record in receipts(state, github):
                 if compatible_receipt(record, state, checks, result["config_digest"], result["policy_digest"]) and equivalent(result, record["receipt"]):
                     return {"status": "already_reviewed", "url": record["source"]["url"], "author": record["source"]["author"], "event": None}
@@ -337,7 +365,9 @@ def publish_result(result, directory, github, write):
     preview = {"status": "preview", "event": journal["event"], "actions": journal["actions"], "body": review["body"] if review else "", "run": str(directory)}
     write_json(directory / "publication-preview.json", preview)
     if not write:
-        return {**preview, "body": "\n\n".join(item["visible_body"] for item in journal["actions"] if item.get("visible_body")), "actions": [{key: value for key, value in item.items() if key not in {"body", "marker", "source", "receipt"}} for item in journal["actions"]]}
+        return {**preview, "body": "\n\n".join(item["visible_body"] for item in journal["actions"] if item.get("visible_body")), "actions": [{key: value for key, value in item.items() if key not in {"body", "marker", "source", "receipt"}} for item in journal["actions"]],
+                "safety_hold": bool(result.get("safety_hold")),
+                "next_step": "This is only a preview. Publish the safety comment if authorized, then tell the requester to inspect it." if result.get("safety_hold") else None}
     write_json(saved, journal)
     for item in journal["actions"]:
         if item["status"] == "done":
@@ -380,4 +410,4 @@ def publish_result(result, directory, github, write):
     write_json(saved, journal)
     state, checks = github.state(), github.checks(head)
     stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
-    return completed_response(journal, stale=stale)
+    return completed_response(journal, stale=stale, safety_hold=bool(result.get("safety_hold")))

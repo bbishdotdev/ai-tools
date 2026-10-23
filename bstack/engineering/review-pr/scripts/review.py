@@ -18,12 +18,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared"))
 from pr_policy import NAME as PROJECT_POLICY_NAME, PolicyError, human_review, parse as parse_project_policy
 from contracts import JUDGMENT, REVIEW, ReviewError, canonical, consolidate, digest, scrub, unique, validate_review, verdict
 from artifacts import coverage
+from budget import reserve
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
-from shared import compatible_receipt, config_digest, context_digest, matching_context, model_state, receipts
+from preflight import assess as assess_safety
+from runtime_verification import run_runtime_verification
+from security import allowed_target, validate_public_report
+from shared import config_digest, context_digest, matching_context, model_state
 
 ROOT = Path(__file__).resolve().parent.parent
-ANALYSIS_VERSION = 3
+ANALYSIS_VERSION = 4
 MAX_REVIEW_PASSES = 3
 
 
@@ -36,6 +40,7 @@ def private_root(project):
     if (project / ".bstack").is_symlink() or root.is_symlink():
         raise ReviewError("Private review directories must not be symlinks")
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    root.chmod(0o700)
     return root
 
 
@@ -113,13 +118,6 @@ def publication_echoes(directory, result, state):
     return echoes
 
 
-def shared_baseline(record, state):
-    value = record["receipt"]
-    snapshot = {**state, "pr": {**state["pr"], "head": {**state["pr"]["head"], "sha": value["head"]}}}
-    return {"run_id": value["run_id"], "snapshot": snapshot, "config_digest": value["config_digest"], "policy_digest": value["policy_digest"],
-            "findings": value["findings"], "decisions": [], "settled_findings": [], "shared_source": record["source"]}
-
-
 def context_for(state, checks, scope, trees, changes, patch, previous):
     return {"snapshot": model_state(state), "checks": checks, "scope": scope, "changed_paths": changes, "diff": patch,
             "tree_index": trees, "prior_findings": previous["findings"] if previous else [],
@@ -163,6 +161,7 @@ def anonymous_reports(reports, previous, config):
 def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_number=1, chain=(), config_override=None, force=False):
     config = config_override or configuration(project, config_path)
     target = parse_pr(pr_url)
+    allowed_target(project, target, config)
     root = private_root(project)
     with locked(root, target) as directory:
         run_id = uuid.uuid4().hex
@@ -172,6 +171,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
         try:
             github = GitHub(target)
             state = github.state()
+            if (state["pr"]["base"]["repo"] or "").lower() != target["repo"].lower():
+                raise ReviewError("GitHub returned a PR whose base repository differs from the allowed target")
             if state["pr"]["state"] != "open" or state["pr"].get("merged"):
                 outcome = {"status": "skipped", "reason": "The pull request is closed or merged"}
                 write_json(output / "preflight.json", outcome)
@@ -191,21 +192,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
             if not fresh and recent and not recent.get("stale") and recent.get("config_digest") == config_id and recent["policy_digest"] == policy_id and matching_context(recent, state, checks, publication_echoes(directory, recent, state)):
                 write_json(output / "reuse.json", {"run_id": run_id, "reused_run": recent["run_id"], "reason": "Review inputs are unchanged"})
                 return {"status": "reused", "run": str(directory / recent["run_id"]), "verdict": recent["verdict"], "assessment_status": recent["status"]}
-            public = receipts(state, github)
-            if not fresh and not force:
-                for record in reversed(public):
-                    if compatible_receipt(record, state, checks, config_id, policy_id):
-                        outcome = {"status": "reused_shared", "url": record["source"]["url"], "author": record["source"]["author"],
-                                   "verdict": record["receipt"]["verdict"], "reason": "This published assessment already covers these inputs; no new approval was submitted"}
-                        write_json(output / "reuse.json", outcome)
-                        return outcome
             if fresh or (previous and (previous.get("config_digest") != config_id or previous["policy_digest"] != policy_id)):
                 previous = None
-            if previous is None and not fresh and not force:
-                compatible = [record for record in public if record["receipt"]["config_digest"] == config_id and record["receipt"]["policy_digest"] == policy_id and record["receipt"]["base"] == state["pr"]["base"]["sha"]]
-                if compatible:
-                    previous = shared_baseline(compatible[-1], state)
-            write_json(output / "doctor.json", doctor(config, project, live=True))
             with tempfile.TemporaryDirectory(prefix="bstack-review-snapshot-") as temporary:
                 scratch = Path(temporary)
                 repository, prior_head = fetch_snapshot(scratch, state, previous["snapshot"]["pr"]["head"]["sha"] if previous else None)
@@ -226,15 +214,55 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     trees[side], _ = materialize(repository, commit, snapshots[side])
                 full_changes = changed_paths(repository, merge_base, head)
                 changes = changed_paths(repository, scope["from"], head)
+                patch = diff(repository, scope["from"], head)
+                if len(changes) > 1000 or len(patch.encode()) > 512 * 1024:
+                    raise ReviewError("PR diff exceeds the review limit of 1000 paths or 512 KiB; split or narrow it before running models")
+                safety_patch = patch if scope["from"] == merge_base else diff(repository, merge_base, head)
+                write_json(output / "budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=1))
+                opaque_suffixes = {".wasm", ".so", ".dll", ".dylib", ".exe", ".jar", ".class", ".node", ".pyc"}
+                opaque_paths = [path for path in full_changes if path in trees["head"] and
+                                trees["head"][path]["lines"] is None and
+                                (trees["head"][path]["mode"] == "100755" or Path(path).suffix.lower() in opaque_suffixes)]
+                safety = assess_safety(config, project, state, safety_patch, full_changes, opaque_paths)
+                write_json(output / "preflight.json", safety)
+                if context_digest(github.state(), github.checks(head)) != context_id:
+                    raise ReviewError("PR code or discussion changed during security preflight; rerun before reviewing")
+                if safety["decision"] == "hold":
+                    result = {"status": "partial", "safety_hold": safety["concerns"], "stale": False,
+                              "review_passes": pass_number, "review_chain": [*chain, run_id], "run_id": run_id,
+                              "completed_at": now(), "snapshot": state, "checks": checks,
+                              "input_digest": fingerprint, "context_digest": context_id,
+                              "config_digest": config_id, "policy_digest": policy_id, "config": config,
+                              "scope": scope, "findings": [], "decisions": [], "verdict": "COMMENT",
+                              "evidence_commits": commits, "coverage": {"complete": False, "limits": ["A human needs to inspect the security preflight concerns before automated review"]},
+                              "human_review_required": [], "feedback": [], "new_findings": [], "resolved_findings": []}
+                    result["digest"] = digest(result)
+                    write_json(output / "result.json", result)
+                    write_json(directory / "last-assessment.json", {"run_id": run_id})
+                    return {"status": "partial", "run": str(output), "verdict": "COMMENT", "safety_hold": True,
+                            "concerns": len(safety["concerns"]),
+                            "next_step": "Automated review stopped. Preview and publish the safety comment if authorized, then tell the requester what needs human inspection."}
+                if not config.get("worker"):
+                    raise ReviewError("No isolated model worker is configured for the independent reviewers. Add one in .bstack/review.json")
+                write_json(output / "reviewer-budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=6))
+                write_json(output / "doctor.json", doctor(config, project, live=True))
+                runtime_result = run_runtime_verification(config.get("runtime_verification"), project, snapshots["head"], trees["head"])
+                write_json(output / "runtime-verification.json", runtime_result)
+                if context_digest(github.state(), github.checks(head)) != context_id:
+                    raise ReviewError("PR code or discussion changed during runtime verification; rerun before reviewing")
+                runtime_limit = (f"Sandboxed runtime verification {runtime_result['status']}; inspect the local runtime result before approval"
+                                 if runtime_result["status"] not in {"skipped", "passed"} else None)
                 human_required = human_review(accepted_policy, full_changes)
                 missing_standards = [item["path"] for item in accepted_policy["standards"]
                                      if item["path"] not in trees["target"] or trees["target"][item["path"]]["lines"] is None]
                 limits, verified_archives = coverage(sorted(set(full_changes) | set(changes)), {side: trees[side] for side in ("base", "head")}, snapshots, commits, config["zip_trees"])
-                context = context_for(state, checks, scope, trees, changes, diff(repository, scope["from"], head), previous)
+                context = context_for(state, checks, scope, trees, changes, patch, previous)
                 context.update({"evidence_commits": commits, "full_pr_changed_paths": full_changes, "coverage_limits": limits,
                                 "verified_archives": verified_archives, "project_pr_policy": accepted_policy,
                                 "human_review_required": human_required, "missing_project_standards": missing_standards,
-                                "project_pr_policy_error": policy_error})
+                                "project_pr_policy_error": policy_error, "runtime_verification": runtime_result})
+                if len(canonical({key: value for key, value in context.items() if key != "tree_index"}).encode()) > 768 * 1024:
+                    raise ReviewError("Review prompt context exceeds 768 KiB; narrow the PR before running models")
                 write_json(output / "snapshot.json", context)
                 context = {key: value for key, value in context.items() if key != "tree_index"}
                 previous_dir = directory / previous["run_id"] if previous and not previous.get("shared_source") else None
@@ -245,6 +273,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     report = invoke(config["roles"][role], REVIEW, prompts["rubric"] + "\n\n" + prompts["reviewer"], own, snapshots, config, output / (role + ".json"), project)
                     validate_review(report, [item["id"] for item in context["prior_findings"]], trees,
                                     [item["id"] for item in context["prior_decisions"]])
+                    validate_public_report(report)
                     write_json(output / (role + ".json"), report)
                     return report
                 with ThreadPoolExecutor(max_workers=2) as pool:
@@ -270,6 +299,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 write_json(output / "provenance.json", aliases)
                 judgment = invoke(config["roles"]["adjudicator"], JUDGMENT, prompts["rubric"] + "\n\n" + prompts["adjudicator"], judge_context, snapshots, config, output / "adjudicator.json", project)
                 consolidate(judgment, candidates, trees, state["discussion"], limits)
+                validate_public_report(judgment)
                 write_json(output / "adjudicator.json", judgment)
                 findings = [{**item, "id": aliases[item["id"]]["stable_id"]} for item in judgment["findings"]]
                 unique(findings)
@@ -279,9 +309,10 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 mandatory = [item["reason"] for item in limits if item["mandatory"]]
                 material = [item["reason"] for item in judgment["artifact_assessments"] if item["material"]]
                 report_limits = judgment["coverage"]["limits"] if not judgment["coverage"]["complete"] else []
-                complete = not mandatory and not material and not missing_standards and not policy_error and judgment["coverage"]["complete"]
+                complete = not mandatory and not material and not missing_standards and not policy_error and not runtime_limit and judgment["coverage"]["complete"]
                 stale = context_digest(github.state(), github.checks(head)) != context_id
                 coverage_result = {"complete": complete, "limits": list(dict.fromkeys(mandatory + material + report_limits +
+                                   ([runtime_limit] if runtime_limit else []) +
                                    [f"Project PR standard missing from the accepted target: {path}" for path in missing_standards] +
                                    ([f"Project PR policy could not be applied: {policy_error}"] if policy_error else [])))}
                 if not complete and not coverage_result["limits"]:
@@ -296,7 +327,7 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                           "previous_complete_run_id": previous_complete,
                           "input_digest": fingerprint, "context_digest": context_id, "config_digest": config_id, "policy_digest": policy_id, "config": config, "scope": scope,
                           "findings": findings, "decisions": decisions, "verdict": result_verdict, "evidence_commits": commits, "coverage": coverage_result,
-                          "human_review_required": human_required,
+                          "human_review_required": human_required, "runtime_verification": runtime_result,
                           "artifact_assessments": judgment["artifact_assessments"],
                           "feedback": [{**item, "finding_ids": [aliases[name]["stable_id"] for name in item["finding_ids"]]} for item in judgment["feedback"]],
                           "new_findings": [aliases[name]["stable_id"] for name in judgment["new_findings"]]}
@@ -392,6 +423,7 @@ def publish(project, run_path, write):
             directory = directory.parent / recent["run_id"]
             result = recent
     target = result["snapshot"]["target"]
+    allowed_target(project, target, result["config"])
     pr_url = f"https://{target['host']}/{target['repo']}/pull/{target['number']}"
     while True:
         github = GitHub(target)
@@ -403,6 +435,8 @@ def publish(project, run_path, write):
         checks = github.checks(state["pr"]["head"]["sha"])
         if not publication_started(directory) and not result.get("stale_exhausted") and (result.get("stale") or not matching_context(result, state, checks)):
             if result.get("review_passes", 1) >= MAX_REVIEW_PASSES:
+                if result.get("safety_hold"):
+                    raise ReviewError("Security preflight inputs kept changing; rerun after the PR settles")
                 result = mark_exhausted(directory, result)
             else:
                 outcome, directory, result = refresh_review(project, pr_url, result)
@@ -416,6 +450,8 @@ def publish(project, run_path, write):
             if "Review is stale" not in str(exc) or result.get("stale_exhausted") or publication_started(directory):
                 raise
             if result.get("review_passes", 1) >= MAX_REVIEW_PASSES:
+                if result.get("safety_hold"):
+                    raise ReviewError("Security preflight inputs kept changing; rerun after the PR settles") from exc
                 result = mark_exhausted(directory, result)
             else:
                 outcome, directory, result = refresh_review(project, pr_url, result)
