@@ -34,10 +34,10 @@ There are two steps: skills.sh downloads `install-bstack`; asking your agent to 
 
 ### Install a published version
 
-The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 1.0.0:
+The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 2.0.0:
 
 ```sh
-npx skills add 'bbishdotdev/ai-tools#v1.0.0' --skill install-bstack
+npx skills add 'bbishdotdev/ai-tools#v2.0.0' --skill install-bstack
 ```
 
 Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route updates an installed project just because `main` changes.

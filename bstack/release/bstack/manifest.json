@@ -38,7 +38,7 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "3921b0e94707707fa11f263eee2418baf4d856d13939c40119f300ce4daea6f0",
+      "sha256": "4103d33124a77ddd6285fb6b0e9da7b2f3088091364261bbde63ba4fae1db2fd",
       "source": "bstack/package/templates/README.md",
       "source_sha256": "2db41e249c108d39718349795e56df1b00795c57df7efc843ef17e704df2fa7c",
       "transforms": [
@@ -1745,7 +1745,7 @@
       "path": "index.json",
       "sha256": "dc82eb1e8680ee26cc2c94509d679467405861bf99e8e380a687141970a5acc6",
       "source": "bstack/package/selection.json",
-      "source_sha256": "abdbea87584490df920301587cfc4fa1662d603943c8f3729ffdd39c4484cb5a",
+      "source_sha256": "60d7aa7950086f8be815902a74e474bd58478cddaa42027d727e3177db351b34",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -2066,9 +2066,9 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/assets/overview.html",
-      "sha256": "35915587e934348d036f8adc6525dc075da8fa37d6fdf16edcd30a9bc4999cd5",
+      "sha256": "23fa28450795d8c2b9b49c660419f20f5fd980c2e8d0671e8880e8c88d3bf95c",
       "source": "bstack/shared/skills/bstack-guide/assets/overview.html",
-      "source_sha256": "35915587e934348d036f8adc6525dc075da8fa37d6fdf16edcd30a9bc4999cd5",
+      "source_sha256": "23fa28450795d8c2b9b49c660419f20f5fd980c2e8d0671e8880e8c88d3bf95c",
       "transforms": []
     },
     {
@@ -2837,5 +2837,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "2.0.0-dev.1"
+  "version": "2.0.0"
 }
