@@ -240,7 +240,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     write_json(output / "result.json", result)
                     write_json(directory / "last-assessment.json", {"run_id": run_id})
                     return {"status": "partial", "run": str(output), "verdict": "COMMENT", "safety_hold": True,
-                            "concerns": len(safety["concerns"])}
+                            "concerns": len(safety["concerns"]),
+                            "next_step": "Automated review stopped. Preview and publish the safety comment if authorized, then tell the requester what needs human inspection."}
                 if not config.get("worker"):
                     raise ReviewError("No isolated model worker is configured for the independent reviewers. Add one in .bstack/review.json")
                 write_json(output / "reviewer-budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=6))

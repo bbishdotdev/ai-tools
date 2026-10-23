@@ -296,7 +296,7 @@ def assert_fresh(result, journal, state, checks):
         raise ReviewError("Review is stale: code, requirements, checks or discussion changed. Run a follow-up review before publishing.")
 
 
-def completed_response(journal, stale=False, repeated=False):
+def completed_response(journal, stale=False, repeated=False, safety_hold=False):
     review = next((item for item in journal["actions"] if item["kind"] == "review" and item.get("receipt")), None)
     comment = next((item for item in journal["actions"] if item["kind"] == "comment" and item.get("receipt")), None)
     status = "already_published" if repeated else "published"
@@ -309,6 +309,12 @@ def completed_response(journal, stale=False, repeated=False):
         value["url"] = comment["receipt"].get("url")
     if stale:
         value["warning"] = "The PR changed during publication. This review covers the earlier snapshot; run a follow-up review."
+    if safety_hold:
+        value["safety_hold"] = True
+        posted = "I already left a comment" if repeated else "I left a comment"
+        value["user_message"] = (f"I paused the automated review. {posted} on the PR with potential security concerns. "
+                                 "It isn't safe to continue automatically until a person checks them. "
+                                 "I didn't run the reviewers or project code.")
     return value
 
 
@@ -342,7 +348,7 @@ def publish_result(result, directory, github, write):
         write_json(saved, journal)
         if all(item["status"] == "done" for item in journal["actions"]):
             stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
-            return completed_response(journal, stale=stale, repeated=True)
+            return completed_response(journal, stale=stale, repeated=True, safety_hold=bool(result.get("safety_hold")))
     else:
         if not result.get("stale_exhausted") and not result.get("safety_hold"):
             for record in receipts(state, github):
@@ -359,7 +365,9 @@ def publish_result(result, directory, github, write):
     preview = {"status": "preview", "event": journal["event"], "actions": journal["actions"], "body": review["body"] if review else "", "run": str(directory)}
     write_json(directory / "publication-preview.json", preview)
     if not write:
-        return {**preview, "body": "\n\n".join(item["visible_body"] for item in journal["actions"] if item.get("visible_body")), "actions": [{key: value for key, value in item.items() if key not in {"body", "marker", "source", "receipt"}} for item in journal["actions"]]}
+        return {**preview, "body": "\n\n".join(item["visible_body"] for item in journal["actions"] if item.get("visible_body")), "actions": [{key: value for key, value in item.items() if key not in {"body", "marker", "source", "receipt"}} for item in journal["actions"]],
+                "safety_hold": bool(result.get("safety_hold")),
+                "next_step": "This is only a preview. Publish the safety comment if authorized, then tell the requester to inspect it." if result.get("safety_hold") else None}
     write_json(saved, journal)
     for item in journal["actions"]:
         if item["status"] == "done":
@@ -402,4 +410,4 @@ def publish_result(result, directory, github, write):
     write_json(saved, journal)
     state, checks = github.state(), github.checks(head)
     stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
-    return completed_response(journal, stale=stale)
+    return completed_response(journal, stale=stale, safety_hold=bool(result.get("safety_hold")))
