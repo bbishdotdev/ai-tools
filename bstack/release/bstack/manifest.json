@@ -1282,9 +1282,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "3f3c8e390e20201ac00bbad235d93e9414c079f95011bdaf581b26a1f8645ee1",
+      "sha256": "ba1f300eaf1909ddb2437452e1d138abcc13e56caba711e4338db00f2ef51359",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "3f3c8e390e20201ac00bbad235d93e9414c079f95011bdaf581b26a1f8645ee1",
+      "source_sha256": "ba1f300eaf1909ddb2437452e1d138abcc13e56caba711e4338db00f2ef51359",
       "transforms": []
     },
     {
@@ -1330,9 +1330,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/preflight.py",
-      "sha256": "ec5bef0ad73c3692a35c1a693586453ea16c2abf703b29851272d12896d0fc7a",
+      "sha256": "c56eafdca935c31ffb836a0c42e73502086c71fbf148e39da119ceb63e658b70",
       "source": "bstack/engineering/review-pr/scripts/preflight.py",
-      "source_sha256": "ec5bef0ad73c3692a35c1a693586453ea16c2abf703b29851272d12896d0fc7a",
+      "source_sha256": "c56eafdca935c31ffb836a0c42e73502086c71fbf148e39da119ceb63e658b70",
       "transforms": []
     },
     {
@@ -1370,9 +1370,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/security_eval.py",
-      "sha256": "8f63e40ada2bb2016cb247abe45602adc4710ac5758637d5c76d16cabc3c512d",
+      "sha256": "e4cd56767637bf8faf82ec73629387e1f6b2c32b36189caa7bbcceab3539a0c9",
       "source": "bstack/engineering/review-pr/scripts/security_eval.py",
-      "source_sha256": "8f63e40ada2bb2016cb247abe45602adc4710ac5758637d5c76d16cabc3c512d",
+      "source_sha256": "e4cd56767637bf8faf82ec73629387e1f6b2c32b36189caa7bbcceab3539a0c9",
       "transforms": []
     },
     {
