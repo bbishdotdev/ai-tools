@@ -306,8 +306,8 @@ class ReviewLifecycleTests(unittest.TestCase):
         worker = self.home / "runtime-worker.py"
         worker.write_text("import subprocess, sys\n"
                           "args = sys.argv[1:]\n"
-                          "if len(args) > 2 and args[0] == 'python3' and '.bstack-runtime-canary-' in args[1]:\n"
-                          "    print(args[2])\n"
+                          "if len(args) > 3 and args[0:2] == ['python3', '-I'] and '.bstack-runtime-canary-' in args[2]:\n"
+                          "    print(args[3])\n"
                           "    raise SystemExit(0)\n"
                           "raise SystemExit(subprocess.call(args))\n")
         config = self.project / ".bstack/review.json"
