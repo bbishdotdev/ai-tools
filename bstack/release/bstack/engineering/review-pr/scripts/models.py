@@ -8,6 +8,7 @@ import tempfile
 from contracts import ReviewError, canonical
 from artifacts import validate_zip_trees
 from host import command, read_json, write_json
+from runtime_verification import probe_runtime_worker, validate_runtime_config
 from security import trusted_executable, verify_worker, worker_argv, worker_environment
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared"))
@@ -36,12 +37,12 @@ def launcher_availability(project, cli):
 
 def configuration(project, path=None):
     source = Path(path) if path else project / ".bstack/review.json"
-    config = {"roles": {key: dict(value) for key, value in DEFAULTS.items()}, "timeout_seconds": 900, "zip_trees": {}, "targets": [], "worker": None,
-              "max_model_calls_24h": 60, "trusted_pr": False}
+    config = {"roles": {key: dict(value) for key, value in DEFAULTS.items()}, "timeout_seconds": 900, "zip_trees": {}, "targets": [], "worker": None, "runtime_verification": None,
+              "max_model_calls_24h": 60}
     if path or source.exists():
         supplied = read_json(source)
-        if not isinstance(supplied, dict) or set(supplied) - {"roles", "timeout_seconds", "zip_trees", "targets", "worker", "max_model_calls_24h"}:
-            raise ReviewError("Review config accepts only roles, timeout_seconds, zip_trees, targets, worker and max_model_calls_24h")
+        if not isinstance(supplied, dict) or set(supplied) - {"roles", "timeout_seconds", "zip_trees", "targets", "worker", "runtime_verification", "max_model_calls_24h"}:
+            raise ReviewError("Review config accepts only roles, timeout_seconds, zip_trees, targets, worker, runtime_verification and max_model_calls_24h")
         if not isinstance(supplied.get("roles", {}), dict) or set(supplied.get("roles", {})) - set(DEFAULTS):
             raise ReviewError("Unknown review role")
         for role, values in supplied.get("roles", {}).items():
@@ -52,11 +53,13 @@ def configuration(project, path=None):
         config["zip_trees"] = validate_zip_trees(supplied.get("zip_trees", {}))
         config["targets"] = supplied.get("targets", [])
         config["worker"] = supplied.get("worker")
+        runtime = supplied.get("runtime_verification")
+        config["runtime_verification"] = validate_runtime_config(runtime, project) if runtime is not None else None
         config["max_model_calls_24h"] = supplied.get("max_model_calls_24h", config["max_model_calls_24h"])
     if type(config["timeout_seconds"]) is not int or not 30 <= config["timeout_seconds"] <= 3600:
         raise ReviewError("timeout_seconds must be an integer between 30 and 3600")
-    if type(config["max_model_calls_24h"]) is not int or not 6 <= config["max_model_calls_24h"] <= 1000:
-        raise ReviewError("max_model_calls_24h must be an integer between 6 and 1000")
+    if type(config["max_model_calls_24h"]) is not int or not 7 <= config["max_model_calls_24h"] <= 1000:
+        raise ReviewError("max_model_calls_24h must be an integer between 7 and 1000")
     if not isinstance(config["targets"], list) or len(config["targets"]) > 20 or any(
             not isinstance(item, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]*/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", item)
             for item in config["targets"]):
@@ -105,24 +108,27 @@ def doctor(config, project=None, live=False):
             results[cli] = {"path": shutil.which(cli), "version": lines[0] if lines else "unknown"}
     checks = {}
     worker_checks = {}
+    runtime_check = {"status": "configured_not_checked" if config.get("runtime_verification") else "not_configured"}
     if live:
         if config.get("worker"):
             with tempfile.TemporaryDirectory(prefix="bstack-review-worker-check-") as directory:
                 work = Path(directory)
                 write_json(work / "context.json", {})
                 worker_checks = verify_worker(config, work, project)
+        runtime_check = probe_runtime_worker(config.get("runtime_verification"), project)
         for name, role in config["roles"].items():
             checks[name] = probe_review_role(role, project, config)
             if checks[name]["status"] != "passed":
                 raise ReviewError(f"{name} is not ready: {checks[name]['reason']}. Check the selected model, login and .bstack/model-clis.json wrapper command before review")
-    status = ("ready" if live else "ready_for_runtime_check") if config.get("worker") else "host_access_only"
-    limits = (["No isolated worker is configured; untrusted PR review is unavailable."] if not config.get("worker") else [])
+    status = ("ready" if live else "ready_for_runtime_check") if config.get("worker") else "isolation_required"
+    limits = (["No isolated worker is configured; independent PR review is unavailable."] if not config.get("worker") else [])
     limits.extend(["No provider substitution will be attempted."] if live else
                   ["Authentication, model availability and effective effort have not been tested.", "No provider substitution will be attempted."])
     return {"status": status, "executables": results, "config": config,
             "runtime_checked": live, "model_checks": checks,
             "worker_checks": worker_checks,
-            "isolation": "configured_worker" if config.get("worker") else "host_access",
+            "runtime_verification_check": runtime_check,
+            "isolation": "configured_worker" if config.get("worker") else "isolation_required",
             "limits": limits}
 
 
@@ -155,16 +161,16 @@ def model_command(role, schema, work, project):
 
 def run_model(role, schema, work, project, config, data, timeout, capture=None):
     args = model_command(role, schema, work, project)
-    if config.get("worker"):
-        trusted_executable(config["worker"][0], project)
-        trusted_executable(args[0], project)
-        verify_worker(config, work, project)
-        try:
-            return command(worker_argv(config, args), cwd=work, data=data, timeout=timeout,
-                           env=worker_environment(), inherit_env=False)
-        except ReviewError as error:
-            raise ReviewError(f"Isolated {role['cli']} invocation failed; check the worker and CLI login") from error
-    return command(args, cwd=work, data=data, timeout=timeout, capture=capture)
+    if not config.get("worker"):
+        raise ReviewError("Independent reviewers require an isolated model worker")
+    trusted_executable(config["worker"][0], project)
+    trusted_executable(args[0], project)
+    verify_worker(config, work, project)
+    try:
+        return command(worker_argv(config, args), cwd=work, data=data, timeout=timeout,
+                       env=worker_environment(), inherit_env=False)
+    except ReviewError as error:
+        raise ReviewError(f"Isolated {role['cli']} invocation failed; check the worker and CLI login") from error
 
 
 def probe_review_role(role, project, config=None):

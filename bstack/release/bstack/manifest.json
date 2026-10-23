@@ -1227,9 +1227,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/SKILL.md",
-      "sha256": "e11200e1b3d3f51ae84d92472f30b2c23124ed0fa9d5641fe0b15b975d3c0829",
+      "sha256": "02431eb03225909f151fbb0a280fc041ebf13d1bb02140ab715e0875b30bb448",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "c4c555cf49da26f26d18e56bcea6cf2e71ef597932ae34fe997aab226edf9a41",
+      "source_sha256": "20373a868da7cca69d3b25f67694b93dbc5a3a0c8d24bb74925ff7b86ddcb021",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1274,17 +1274,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "624760a915756a02700ae8eafad65b3dda39d2924d9fb481aa24bade91563309",
+      "sha256": "e464f8c187be8079167915ea6f8be196cdf36ea67b41eb66954b4e9a866caacb",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "624760a915756a02700ae8eafad65b3dda39d2924d9fb481aa24bade91563309",
+      "source_sha256": "e464f8c187be8079167915ea6f8be196cdf36ea67b41eb66954b4e9a866caacb",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "88aefb7da5474aa8422bbe4a6a6bf2c9a498760d7f41cd808d566963d06ffa36",
+      "sha256": "b4a1bd7912a217d0ead9725afe3b4ae5940039e35fc6047ce1d4695243b626f7",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "88aefb7da5474aa8422bbe4a6a6bf2c9a498760d7f41cd808d566963d06ffa36",
+      "source_sha256": "b4a1bd7912a217d0ead9725afe3b4ae5940039e35fc6047ce1d4695243b626f7",
       "transforms": []
     },
     {
@@ -1306,9 +1306,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/contracts.py",
-      "sha256": "f1356c3322252d9809a66e56289cf1e572c47423f402bb5f853f25ffa04b48f6",
+      "sha256": "614d2df1d542ab7664b8b00f948ac26269588f861227966e78815885ab999b24",
       "source": "bstack/engineering/review-pr/scripts/contracts.py",
-      "source_sha256": "f1356c3322252d9809a66e56289cf1e572c47423f402bb5f853f25ffa04b48f6",
+      "source_sha256": "614d2df1d542ab7664b8b00f948ac26269588f861227966e78815885ab999b24",
       "transforms": []
     },
     {
@@ -1322,41 +1322,65 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/models.py",
-      "sha256": "124681d4489e70b63019f44600a2d1a0b9a2043e2dc7b0de1361effbd1787642",
+      "sha256": "930759896be9da67d0d8f5c3afcc6eeddf7988f4082d4f22b05956c7cc3a89a3",
       "source": "bstack/engineering/review-pr/scripts/models.py",
-      "source_sha256": "124681d4489e70b63019f44600a2d1a0b9a2043e2dc7b0de1361effbd1787642",
+      "source_sha256": "930759896be9da67d0d8f5c3afcc6eeddf7988f4082d4f22b05956c7cc3a89a3",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/review-pr/scripts/preflight.py",
+      "sha256": "3e6da5c31873b2fc8e5120dba1c29ee6be1b871c43ae6c9087ad99131ba36217",
+      "source": "bstack/engineering/review-pr/scripts/preflight.py",
+      "source_sha256": "3e6da5c31873b2fc8e5120dba1c29ee6be1b871c43ae6c9087ad99131ba36217",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/publication.py",
-      "sha256": "55ecb787fe7d4209cd035bf3a407cc66f4626e99a4de55ae0a50dcde05453fbf",
+      "sha256": "8165c97700a75f9fdbda56030c832b31d4dfffcc731d71db58ebf05ce6c87aab",
       "source": "bstack/engineering/review-pr/scripts/publication.py",
-      "source_sha256": "55ecb787fe7d4209cd035bf3a407cc66f4626e99a4de55ae0a50dcde05453fbf",
+      "source_sha256": "8165c97700a75f9fdbda56030c832b31d4dfffcc731d71db58ebf05ce6c87aab",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/review.py",
-      "sha256": "44b0fd3d70a78e6401c98647166df8208132aa1e305678ed3a9c3e18676622ec",
+      "sha256": "c179bc19c00c6fbf6b04f89d341210abfbde2be087eaed8a16512c64d14ca385",
       "source": "bstack/engineering/review-pr/scripts/review.py",
-      "source_sha256": "44b0fd3d70a78e6401c98647166df8208132aa1e305678ed3a9c3e18676622ec",
+      "source_sha256": "c179bc19c00c6fbf6b04f89d341210abfbde2be087eaed8a16512c64d14ca385",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/review-pr/scripts/runtime_verification.py",
+      "sha256": "ce6cccb75d76e8d93c54a5fe16812327f4b688cfc34504885d9fdb59e975f412",
+      "source": "bstack/engineering/review-pr/scripts/runtime_verification.py",
+      "source_sha256": "ce6cccb75d76e8d93c54a5fe16812327f4b688cfc34504885d9fdb59e975f412",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/security.py",
-      "sha256": "8bf6bdc1bf708e5262e3c8433b58d24777e8693c4e9b4e34961bd6157e895059",
+      "sha256": "e82cfedd5eb0b816bfc179e8bbe2e40aa1cab260697cf872a5d3113a31423fc2",
       "source": "bstack/engineering/review-pr/scripts/security.py",
-      "source_sha256": "8bf6bdc1bf708e5262e3c8433b58d24777e8693c4e9b4e34961bd6157e895059",
+      "source_sha256": "e82cfedd5eb0b816bfc179e8bbe2e40aa1cab260697cf872a5d3113a31423fc2",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/review-pr/scripts/security_eval.py",
+      "sha256": "def0e9205b598e1935b022859091b85e764472bea78e3df47959569d599b0212",
+      "source": "bstack/engineering/review-pr/scripts/security_eval.py",
+      "source_sha256": "def0e9205b598e1935b022859091b85e764472bea78e3df47959569d599b0212",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/shared.py",
-      "sha256": "247fcc260e71b4d5a94e8cc9e59255e7d2e8a072e7c203719f7ff0bb36d7d7d7",
+      "sha256": "49c09f508c4b0f88a99a4472933592720b191acd986d936ce9b2416baac62f63",
       "source": "bstack/engineering/review-pr/scripts/shared.py",
-      "source_sha256": "247fcc260e71b4d5a94e8cc9e59255e7d2e8a072e7c203719f7ff0bb36d7d7d7",
+      "source_sha256": "49c09f508c4b0f88a99a4472933592720b191acd986d936ce9b2416baac62f63",
       "transforms": []
     },
     {

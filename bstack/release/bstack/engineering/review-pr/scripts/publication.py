@@ -9,6 +9,10 @@ from shared import compatible_receipt, matching_context, public_receipt, receipt
 
 
 LABELS = {"blocker": "🛑", "human-decision": "❓", "moderate": "⚠️", "low": "💡"}
+SAFETY_LABELS = {"agent-instruction": "Instructions aimed at the reviewer", "secret-exfiltration": "Possible secret access or transfer",
+                 "external-endpoint": "External destination needs inspection", "unsafe-execution": "Execution behavior needs inspection",
+                 "opaque-executable": "Executable content could not be inspected as text",
+                 "unverified-signal": "The safety check raised a concern without a verifiable line"}
 
 
 def now():
@@ -24,6 +28,9 @@ def signature(result):
 def evidence_link(result, evidence):
     if evidence["path"] == "@pr":
         return result["snapshot"]["pr"]["html_url"]
+    if evidence["path"].startswith("@pr/"):
+        target = result["snapshot"]["target"]
+        return f"https://{target['host']}/{target['repo']}/pull/{evidence['path'][4:]}"
     target = result["snapshot"]["target"]
     commit = result["evidence_commits"][evidence["side"]]
     return f"https://{target['host']}/{target['repo']}/blob/{commit}/{quote(evidence['path'], safe='/')}#L{evidence['line']}"
@@ -120,6 +127,16 @@ def action(result, kind, destination, body=None, **values):
 
 
 def plan_actions(result, user):
+    if result.get("safety_hold"):
+        points = []
+        for item in result["safety_hold"]:
+            evidence = {"path": item["path"], "line": item["line"], "side": "head"}
+            label = "Related PR text" if item["source"] == "open-pr" else "PR text or discussion" if item["path"] == "@pr" else "Changed file" if item["source"] == "file" else "Added line"
+            points.append(f"- {SAFETY_LABELS[item['category']]}: [{label}]({evidence_link(result, evidence)})")
+        body = ("⚠️ I paused automated review so a person can inspect these security concerns first. "
+                "I did not run the independent reviewers or execute this PR.\n\n" + "\n".join(points) +
+                "\n\n<sub><i>🤖 BStack security preflight · No independent review performed</i></sub>")
+        return [action(result, "comment", {"kind": "comments", "pr": result["snapshot"]["target"]["number"]}, body)], None
     if result.get("stale_exhausted"):
         body = summary_body(result, "COMMENT", False)
         return [action(result, "review", {"kind": "reviews", "pr": result["snapshot"]["target"]["number"]}, body, event="COMMENT")], "COMMENT"
@@ -281,12 +298,15 @@ def assert_fresh(result, journal, state, checks):
 
 def completed_response(journal, stale=False, repeated=False):
     review = next((item for item in journal["actions"] if item["kind"] == "review" and item.get("receipt")), None)
+    comment = next((item for item in journal["actions"] if item["kind"] == "comment" and item.get("receipt")), None)
     status = "already_published" if repeated else "published"
     if stale:
         status += "_stale" if repeated else "_but_stale"
     value = {"status": status, "event": journal.get("event"), "actions": len(journal["actions"])}
     if review:
         value.update({"url": review["receipt"].get("url"), "state": review["receipt"].get("state")})
+    elif comment:
+        value["url"] = comment["receipt"].get("url")
     if stale:
         value["warning"] = "The PR changed during publication. This review covers the earlier snapshot; run a follow-up review."
     return value
@@ -324,7 +344,7 @@ def publish_result(result, directory, github, write):
             stale = result.get("stale_exhausted", False) or not matching_context(result, state, checks, extra_ignored=echoes(journal))
             return completed_response(journal, stale=stale, repeated=True)
     else:
-        if not result.get("stale_exhausted"):
+        if not result.get("stale_exhausted") and not result.get("safety_hold"):
             for record in receipts(state, github):
                 if compatible_receipt(record, state, checks, result["config_digest"], result["policy_digest"]) and equivalent(result, record["receipt"]):
                     return {"status": "already_reviewed", "url": record["source"]["url"], "author": record["source"]["author"], "event": None}

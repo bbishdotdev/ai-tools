@@ -146,7 +146,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workf
 
 The live check sends a short prompt to the configured model for each role. A failed role stops that workflow and tells you whether to fix login, choose another model, or correct the launcher. The PR review runner also checks its roles before a new full review. Autonomous grilling's normal preflight checks its CLI roles before planning writes. The `to-pr` check proves Codex can answer a text prompt; its image tool and the final picture still need a real visual attempt.
 
-For an untrusted PR, `review-pr` also needs an isolated model worker. The general model doctor checks model access; the review runner's own `doctor --live` checks its worker canary. See [review setup](engineering/review-pr/references/running.md) before automating reviews. A trusted PR can be reviewed with the explicit `--trusted-pr` flag, which gives the models ordinary host access.
+`review-pr` needs an isolated model worker for every PR. Its tool-free safety preflight checks the pinned diff and discussion first, but a pass does not give reviewers host access. The general model doctor checks model access; the review runner's own `doctor --live` checks its worker canary. Optional app or test execution needs a separate credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md) before automating reviews.
 
 If a tool is launched through a local wrapper, tell your agent the working terminal command. For example, a wrapper that runs `launch claude -- <arguments>` can be saved once:
 

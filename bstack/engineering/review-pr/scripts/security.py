@@ -56,7 +56,7 @@ def allowed_target(project, target, config):
 def worker_argv(config, args):
     template = config.get("worker")
     if not template:
-        raise ReviewError("Reviewing untrusted PRs requires an isolated model worker. Configure worker in .bstack/review.json, or use --trusted-pr for a PR you trust")
+        raise ReviewError("PR review requires an isolated model worker. Configure worker in .bstack/review.json")
     result = []
     for part in template:
         result.extend(args if part == "{args}" else [part])

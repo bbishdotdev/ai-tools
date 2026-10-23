@@ -10,7 +10,7 @@ VOLATILE = {"created_at", "updated_at", "submitted_at", "reactions", "node_id", 
 
 def config_digest(config):
     return digest({"roles": config["roles"], "zip_trees": config["zip_trees"], "worker": config.get("worker"),
-                   "trusted_pr": config.get("trusted_pr", False)})
+                   "runtime_verification": config.get("runtime_verification")})
 
 
 def normalized(value):

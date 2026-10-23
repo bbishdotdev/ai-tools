@@ -47,6 +47,14 @@ FEEDBACK = object_schema({"kind": {"type": "string", "enum": ["comments", "inlin
 ARTIFACT_ASSESSMENT = object_schema({"id": text_schema(100), "material": {"type": "boolean"}, "reason": text_schema(1000)})
 JUDGMENT = object_schema({"coverage": COVERAGE, "decisions": array_schema(DECISION, 200), "findings": array_schema(FINDING, 30),
     "feedback": array_schema(FEEDBACK, 100), "new_findings": array_schema(text_schema(100), 30), "artifact_assessments": array_schema(ARTIFACT_ASSESSMENT, 500)})
+PREFLIGHT_CONCERN = object_schema({
+    "category": {"type": "string", "enum": ["agent-instruction", "secret-exfiltration", "external-endpoint", "unsafe-execution", "opaque-executable"]},
+    "source": {"type": "string", "enum": ["diff", "file", "pr", "discussion", "open-pr"]},
+    "path": text_schema(500),
+    "line": {"type": "integer", "minimum": 1},
+})
+PREFLIGHT = object_schema({"decision": {"type": "string", "enum": ["pass", "hold"]},
+                           "concerns": array_schema(PREFLIGHT_CONCERN, 20)})
 
 
 def validate(value, schema, path="result"):
