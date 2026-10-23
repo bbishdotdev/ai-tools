@@ -1,0 +1,57 @@
+bstack/engineering/review-pr/references/security.md
+  s_96ebcebc44494c::t_23b6feb3cb70d1 9
+bstack/engineering/review-pr/scripts/preflight.py
+  s_dc73ce23e77fce::t_7ed1bb07a9d365 20,73-75,126,146
+bstack/engineering/review-pr/scripts/security_eval.py
+  s_4451dca19df188::t_1b6a7491f9baa3 27-38
+bstack/github/tests/test_review.py
+  s_4451dca19df188::t_21b8f9ced18b6d 434-438,444-453
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_ceb82f74e4bfe0 9
+bstack/release/bstack/engineering/review-pr/scripts/preflight.py
+  s_822e08e34bda62::t_d81e23d106e921 20,73-75,126,146
+bstack/release/bstack/engineering/review-pr/scripts/security_eval.py
+  s_822e08e34bda62::t_72bd962a72c23f 27-38
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_2459302a1c288f 1285,1287,1333,1335,1373,1375
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dac57610a8d2df6c1c3cf0636a815bb9faf67658",
+  "prompts": {},
+  "sessions": {
+    "s_4451dca19df188": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "27391b20-c7cf-47eb-9471-16c19e91d921",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_96ebcebc44494c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc3ac606-2a6e-45ff-9270-4c1b4170cb48",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_dc73ce23e77fce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1084b-d071-7252-9b09-97372829af86",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
