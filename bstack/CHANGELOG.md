@@ -4,7 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- PR reviews now group findings by the action needed, separate next steps from explanations, and use named code links. Final review prose has a plain-language edit and smaller public-text limits.
+- PR reviews now group findings by the action needed, separate next steps from explanations, and use named code links. Final review prose has a plain-language edit and smaller public-text limits. Existing published reviews remain readable after upgrading.
 
 - PR reviewers now browse the entire pinned repository through a bundled, restricted browser. Static reviews no longer require Bubblewrap, Socat, or a custom model worker; optional app and test execution still requires a separate runtime worker. Upgrading from the automatic Linux worker removes its default OS isolation; configure an explicit vetted worker if that boundary is required.
 - Added portable `automate-me`, `recall`, and `reflect` workflows with a project-scoped reader for Codex, Claude Code, Cursor, and Grok sessions. Amp thread export is available with an explicit project-confirmation step.

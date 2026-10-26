@@ -10,7 +10,7 @@ SCRIPTS = Path(__file__).resolve().parents[2] / "engineering/review-pr/scripts"
 sys.path.insert(0, str(SCRIPTS))
 from contracts import ReviewError, digest
 from publication import publish_result
-from shared import config_digest, context_digest, decoded_receipt, public_receipt
+from shared import config_digest, context_digest, decoded_receipt, model_state, public_receipt
 
 
 class FakeGitHub:
@@ -254,6 +254,20 @@ class ReviewPublicationTests(unittest.TestCase):
         with self.assertRaisesRegex(ReviewError, "stale"):
             publish_result(result, self.directory, github, True)
         self.assertEqual(len(github.writes), 1)
+
+    def test_longer_published_reviews_remain_readable_after_writing_limits_shrink(self):
+        finding = {**self.finding, "title": "Older title. " * 12,
+                   "explanation": "Previously published review detail. " * 20,
+                   "action": "Previously published next step. " * 10}
+        result = self.result([finding], new=[finding["id"]])
+        visible = "This older review still needs attention."
+        body = visible + "\n\n" + public_receipt(result, visible)
+        source = self.source("reviews", 90, body)
+        receipt = decoded_receipt(source, self.snapshot["target"])
+        self.assertEqual(receipt["findings"], [finding])
+        self.assertEqual(model_state(self.snapshot)["discussion"]["reviews"][0]["body"], visible)
+        source["body"] = body.replace(visible, "Changed review text", 1)
+        self.assertIsNone(decoded_receipt(source, self.snapshot["target"]))
 
     def test_other_developers_equivalent_receipt_requires_reassessment(self):
         result = self.result()
