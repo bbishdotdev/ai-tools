@@ -1,6 +1,8 @@
 # Restricted tools for static PR review
 
-Status: Accepted, 2026-10-26.
+Status: Accepted
+
+Date: 2026-10-26
 
 Decision authority: Brenden Bishop approved this direction in the implementation discussion, then requested end-to-end review and merge. This record preserves that approved change to the earlier mandatory-worker design.
 
