@@ -1,6 +1,6 @@
 # bstack release
 
-Version 2.0.0. The [bstack package](bstack/README.md) contains the engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.
+Version 2.1.0-dev.1. The [bstack package](bstack/README.md) contains the engineering, SDLC and shared skills, local workspace app, internal references, controller, and notices.
 
 ## Quick start from GitHub
 

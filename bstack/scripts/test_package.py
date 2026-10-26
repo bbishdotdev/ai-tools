@@ -25,9 +25,9 @@ class PackageTests(unittest.TestCase):
 
     def test_public_skills_are_direct_and_internal_principles_are_not_discoverable(self):
         manifest = json.loads(self.assets["bstack/manifest.json"].data)
-        expected = {"architect", "arena", "blast-radius", "bro", "control-cli", "control-ui",
+        expected = {"architect", "arena", "automate-me", "blast-radius", "bro", "control-cli", "control-ui",
                     "create-verification-skill", "deslop", "figure-it-out", "how", "interrogate",
-                    "maintain-verification-skill", "no-comments", "poteto-mode",
+                    "maintain-verification-skill", "no-comments", "poteto-mode", "recall", "reflect", "worktree-cleanup",
                     "show-me-your-work", "swarm", "tdd", "teach", "technical-writing",
                     "typescript-best-practices", "why", "unslop", "setup-bstack", "bstack-auto", "verify-bstack",
                     "grilling", "grill-me", "grill-with-docs", "domain-modeling", "wayfinder", "to-spec",
@@ -139,19 +139,18 @@ class PackageTests(unittest.TestCase):
         creator = self.assets[prefix + "create-verification-skill/SKILL.md"].data.decode()
         self.assertIn(".agents/skills/verify-<app>/SKILL.md", creator)
         self.assertNotIn(".cursor/skills/verify-<app>/SKILL.md", creator)
-        plan = self.assets[prefix + "poteto-mode/playbooks/multi-phase-plan.md"].data.decode()
-        self.assertIn("node ../scripts/check-plan.mjs", plan)
-        self.assertIn("cat ../../swarm/SKILL.md", plan)
-        self.assertNotIn("git show origin/main:pstack/skills/swarm/SKILL.md", plan)
-        self.assertNotIn("git show origin/main:", plan)
-        self.assertNotIn("pstack/skills/", plan)
-        self.assertIn('cat "<absolute installed control-workflow path>"', plan)
-        self.assertIn("resolve its execution playbook, control workflow, and every selected leaf", plan)
-        self.assertNotIn("playbook from trunk", plan)
-        babysit = self.assets[prefix + "poteto-mode/playbooks/babysit.md"].data.decode()
-        self.assertIn("`../scripts/watch-pr/watch-pr`", babysit)
-        orchestrate = self.assets[prefix + "poteto-mode/playbooks/orchestrate.md"].data.decode()
-        self.assertIn("bun ../scripts/orch/orch.ts", orchestrate)
+        quarantined = json.loads((package.ROOT / "package/selection.json").read_text())["quarantined_playbooks"]
+        index = json.loads(self.assets["bstack/index.json"].data)
+        mode = self.assets[prefix + "poteto-mode/WORKFLOW.md"].data.decode()
+        self.assertEqual(set(quarantined), set(index["quarantined_playbooks"]))
+        self.assertFalse(set(quarantined) & set(index["playbooks"]))
+        for name in quarantined:
+            self.assertNotIn(prefix + f"poteto-mode/playbooks/{name}.md", self.assets)
+            self.assertNotIn(f"playbooks/{name}.md", mode)
+            self.assertTrue((package.ROOT / f"upstream/pstack/skills/poteto-mode/playbooks/{name}.md").is_file())
+        self.assertFalse(any(prefix + "poteto-mode/scripts/" in path for path in self.assets))
+        self.assertIn("resolve-pr", mode)
+        self.assertIn(prefix + "worktree-cleanup/SKILL.md", self.assets)
 
     def test_all_dependency_links_resolve_and_missing_leaf_fails(self):
         self.assertEqual(package.closure_errors(self.assets), [])

@@ -3,6 +3,7 @@
   "package": "bstack",
   "policy": "shared/router/WORKFLOW.md",
   "replacements": {
+    "automate-me": "engineering/automate-me/SKILL.md",
     "bstack-guide": "shared/bstack-guide/SKILL.md",
     "configure-pr": "shared/configure-pr/SKILL.md",
     "create-verification-skill": "engineering/create-verification-skill/SKILL.md",
@@ -15,6 +16,8 @@
     "maintain-verification-skill": "engineering/maintain-verification-skill/SKILL.md",
     "no-comments": "engineering/no-comments/SKILL.md",
     "prototype": "engineering/prototype/SKILL.md",
+    "recall": "engineering/recall/SKILL.md",
+    "reflect": "engineering/reflect/SKILL.md",
     "research": "engineering/research/SKILL.md",
     "resolve-pr": "engineering/resolve-pr/SKILL.md",
     "review-pr": "engineering/review-pr/SKILL.md",
@@ -26,7 +29,8 @@
     "to-tickets": "sdlc/to-tickets/SKILL.md",
     "triage": "sdlc/triage/SKILL.md",
     "unslop": "shared/unslop/SKILL.md",
-    "wayfinder": "sdlc/wayfinder/SKILL.md"
+    "wayfinder": "sdlc/wayfinder/SKILL.md",
+    "worktree-cleanup": "engineering/worktree-cleanup/SKILL.md"
   },
   "reviewed_layers": [
     {

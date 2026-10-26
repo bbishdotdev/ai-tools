@@ -4,7 +4,9 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-No changes yet.
+- Added portable `automate-me`, `recall`, and `reflect` workflows with a project-scoped reader for Codex, Claude Code, Cursor, and Grok sessions. Amp thread export is available with an explicit project-confirmation step.
+- Added a read-only worktree audit and owned cleanup skill. Quarantined playbooks and their unused helper scripts no longer ship in the consumer bundle; their pinned sources remain for selective porting.
+- Added optional Amp and Copilot core bindings through `AGENTS.md` and `.agents/skills`, with clear limits on routing hooks and live validation. The README now tracks app and CLI compatibility separately.
 
 ## Published releases
 

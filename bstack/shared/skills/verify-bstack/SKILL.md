@@ -18,6 +18,8 @@ From the ai-tools repository root, run `python3 bstack/shared/router/install.py`
 
 Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py doctor`. This discovers Codex, Claude Code, Cursor, and Grok on PATH and checks executable versions and configuration without starting a model. Authentication is checked by live probes. Missing tools are skipped by automatic discovery; an explicitly requested missing tool is blocked. Cursor can be supplied with `--cursor-bin /path/to/cursor-agent`.
 
+Amp and Copilot are optional core bindings, not part of this four-host live harness yet. Use their native skill listings in an installed project and report the result separately. Package `doctor` checks BStack files; it does not prove those hosts loaded the skill or ran a hook.
+
 ## Drive
 
 Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py live`. It selects every installed supported CLI and starts independent read-only sessions, resuming each session for two follow-up prompts. This sends test prompts and the instruction files the agent reads to each signed-in provider and spends model usage. The caller must have authorized live verification. Use `--tools claude` or another subset for focused retesting. Codex honors native hook trust; review the three hooks through `/hooks` inside the Codex terminal CLI before testing. Keep normal Codex config discovery. Grok uses its read-only sandbox and only read/search tools, with subagents and web search disabled. Cursor and Grok receive their documented project-trust option for this repository.

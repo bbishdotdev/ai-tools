@@ -4,12 +4,32 @@ bstack is my opinionated suite of skills, agents, and tools for planning, buildi
 
 It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tree/main/pstack) and [Matt Pocock's skills](https://github.com/mattpocock/skills). Some workflows reuse their work directly, others adapt it, and others draw inspiration from it. Their work is a huge part of the foundation. bstack adds my own skills, preferences, and integrations to connect it all into one stack. [Attribution](ATTRIBUTION.md) records what comes from where.
 
+## Tool compatibility
+
+Every install has one project `AGENTS.md` and one `.agents/skills` catalog. Host bindings add discovery links and hooks where BStack implements them. **Configured** means the installer writes those bindings; it does not prove a particular app loaded them. **Partial** means core instructions and skills are available but BStack's automatic router or PR guard is not fully bound or verified.
+
+| Tool | Core skills | Automatic routing and PR guard | Current evidence |
+| --- | --- | --- | --- |
+| Codex CLI | Configured | Configured; hook trust must be checked in the CLI | CLI probes; trust is machine-specific |
+| Codex desktop | Configured | Partial; desktop hook delivery not established | Package binding, no full desktop run |
+| Claude Code CLI | Configured | Configured | CLI probes |
+| Claude Code desktop Code tab | Configured; start a new chat after setup | Partial; app hook behavior needs a live check | Skill discovery observed, not full workflow coverage |
+| Cursor CLI | Configured | Configured, with documented reminder timing limits | CLI probes |
+| Cursor app | Configured | Partial; app behavior needs a live check | Package binding, no full app run |
+| Grok CLI | Configured | Partial; after-tool reminder cannot cover every turn | Headless probes, limited router continuity |
+| [Amp CLI and app](https://ampcode.com/docs/customize/skills) | Partial; `AGENTS.md` and `.agents/skills` are supported | No BStack hook yet | Docs-based binding; Amp is not installed on this test box |
+| [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills) | Partial; project skills are discoverable | No BStack hook yet | Docs-based binding; no live probe |
+| [VS Code with Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) | Partial; project skills are discoverable | No BStack hook yet | Docs-based binding; no live probe |
+
+Select `amp` or `copilot` with `--hosts` to record them in the project setup; the default selection remains Codex, Claude Code, Cursor, and Grok. Amp's [project guidance](https://ampcode.com/docs/customize/agents-md) and [skill discovery](https://ampcode.com/docs/customize/skills) cover the core path. Its [plugin events](https://ampcode.com/docs/customize/plugins) could support a stronger router and guard later. The [installation guide](INSTALL.md) explains how to check a particular host rather than treating this matrix as a live certification.
+
 ## What bstack adds
 
 - A connected [planning and engineering workflow](sdlc/README.md): questions, prototypes, specs, tickets, implementation, and PRs, with shared handoffs between phases.
 - A shared [ADR process](shared/references/architecture-decisions.md) that carries fundamental decisions between phases and avoids reopening settled choices without new evidence. Most features need no ADR.
 - A [local workspace app](workspace/README.md) for Wayfinder decision maps and a Kanban ticket board. You and your agent use the same saved work without needing an external tracker.
-- One installer for Codex, Claude Code, Cursor, and Grok CLIs, with direct skill invocation and automatic routing through Poteto Mode on new installs. You can turn routing off.
+- One installer for the four established CLI hosts, with optional Amp and Copilot core bindings. Direct skill invocation works through the host catalog; automatic Poteto Mode routing is on by default where its hooks are implemented, and you can turn it off.
+- Portable `recall`, `reflect`, and `automate-me` workflows read selected project sessions without copying full transcripts into the package; a read-only worktree audit helps reclaim unused checkouts safely.
 - Optional [shared personal memory](shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.
 - Custom [prototyping](engineering/prototype/SKILL.md), [writing rules](shared/skills/unslop/SKILL.md), and [visual PR briefings](engineering/to-pr/SKILL.md), shaped around how I work.
 - [PR feedback resolution](engineering/resolve-pr/SKILL.md) that checks reviewer claims before editing and keeps unrelated work out of the PR.
@@ -78,6 +98,8 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 | Turn accepted decisions into work | `to-spec`, then `to-tickets` if tickets help |
 | Build from an approved plan or a clear request | `implement`; automatic routing can also select the engineering workflow for an ordinary prompt |
 | Prepare, review, or respond to a PR | `to-pr`, `review-pr`, or `resolve-pr` |
+| Catch up on prior work or improve a repeated agent workflow | `recall`, `reflect`, or `automate-me` |
+| Audit stale Git worktrees before reclaiming disk | `worktree-cleanup` |
 | Set this repo's PR review priorities | `configure-pr` |
 
 Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
