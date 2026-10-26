@@ -122,6 +122,27 @@ class RepositoryBrowserTests(unittest.TestCase):
         self.assertEqual(self.browser.call("read_policy", {})["paths"], ["review/rubric.md"])
         self.assertEqual(self.browser.call("read_policy", {"path": "review/rubric.md"})["total_lines"], 2)
 
+    def test_large_diff_and_nested_discussion_remain_readable_without_losing_text(self):
+        context = {"diff": "+changed source line\n" * 12000,
+                   "snapshot": {"comments": [{"body": "long discussion\n" + "😀" * 20000}]},
+                   "changed_paths": ["src/a.py"]}
+        self.browser.manifest["context"] = context
+
+        def read_all(section=""):
+            lines, start = [], 1
+            while start is not None:
+                page = self.browser.call("read_context", {"section": section, "start_line": start, "max_lines": 33})
+                lines.extend(row["text"] for row in page["lines"])
+                start = page["next_line"]
+            return json.loads("\n".join(lines))
+
+        complete = read_all()
+        self.assertEqual("".join(complete["diff"]["text_chunks"]), context["diff"])
+        self.assertEqual("".join(read_all("diff")["text_chunks"]), context["diff"])
+        self.assertEqual("".join(complete["snapshot"]["comments"][0]["body"]["text_chunks"]),
+                         context["snapshot"]["comments"][0]["body"])
+        self.assertEqual(complete["changed_paths"], context["changed_paths"])
+
     def test_windows_and_large_lines_have_explicit_limits(self):
         for arguments in ({"max_lines": 0}, {"start_line": -1}, {"max_lines": 1001}, {"start_line": 1000}):
             with self.subTest(arguments=arguments), self.assertRaises(BrowserError):

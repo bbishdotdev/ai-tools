@@ -1175,9 +1175,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/repo_browser.py",
-      "sha256": "2e11cd73d5eccef2f09e9aaeaf8b46b25a17d164077c3bc3211ab19990474a6d",
+      "sha256": "4371bec7d3050ecbe2c35c262ad7e9679ff33ce09b80bed2f88efe2935645022",
       "source": "bstack/engineering/review-pr/scripts/repo_browser.py",
-      "source_sha256": "2e11cd73d5eccef2f09e9aaeaf8b46b25a17d164077c3bc3211ab19990474a6d",
+      "source_sha256": "4371bec7d3050ecbe2c35c262ad7e9679ff33ce09b80bed2f88efe2935645022",
       "transforms": []
     },
     {
