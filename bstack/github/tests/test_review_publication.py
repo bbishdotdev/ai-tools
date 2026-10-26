@@ -10,7 +10,7 @@ SCRIPTS = Path(__file__).resolve().parents[2] / "engineering/review-pr/scripts"
 sys.path.insert(0, str(SCRIPTS))
 from contracts import ReviewError, digest
 from publication import publish_result
-from shared import config_digest, context_digest, decoded_receipt, public_receipt
+from shared import config_digest, context_digest, decoded_receipt, model_state, public_receipt
 
 
 class FakeGitHub:
@@ -147,6 +147,25 @@ class ReviewPublicationTests(unittest.TestCase):
                 self.assertEqual(publish_result(assessment, directory, host, True)["status"], "already_published")
                 self.assertEqual(len(host.writes), 2)
 
+    def test_findings_separate_impact_next_step_and_named_code_references(self):
+        references = [*self.evidence, {**self.evidence[0], "line": 2}, {**self.evidence[0], "line": 3},
+                      {**self.evidence[0], "line": 4}, self.evidence[0]]
+        decision = {**self.finding, "id": "decision", "category": "human-decision",
+                    "title": "Confirm who can see shared records", "explanation": "This changes who can read existing records.",
+                    "action": "Confirm which users should have access.", "evidence": references}
+        suggestion = {**self.finding, "id": "suggestion", "category": "moderate", "title": "Large exports repeat work"}
+        result = self.result([suggestion, decision], new=["suggestion", "decision"])
+        preview = publish_result(result, self.directory, FakeGitHub(self.snapshot), False)
+        body = preview["body"]
+        self.assertLess(body.index("### Decision needed"), body.index("### Suggested improvements"))
+        self.assertIn("This changes who can read existing records\\.\n\n**Next step:** Confirm which users should have access\\.", body)
+        self.assertIn(r"[service\.py:1](https://github.com/owner/repo/blob/" + "a" * 40 + "/service.py#L1)", body)
+        self.assertIn("<summary>More code references</summary>", body)
+        self.assertIn("service.py#L4", body)
+        self.assertNotIn("Evidence", body)
+        self.assertNotIn("❓", body)
+        self.assertEqual(preview["event"], "COMMENT")
+
     def test_legacy_assessment_renders_model_written_links_as_plain_text(self):
         malicious = {**self.finding, "explanation": "See [proof][x] and ![fetch](https://attacker.example/collect).\n\n[x]: //attacker.example/collect\n<img src=//attacker.example/collect> @attacker"}
         result = self.result([malicious], new=[malicious["id"]])
@@ -235,6 +254,20 @@ class ReviewPublicationTests(unittest.TestCase):
         with self.assertRaisesRegex(ReviewError, "stale"):
             publish_result(result, self.directory, github, True)
         self.assertEqual(len(github.writes), 1)
+
+    def test_longer_published_reviews_remain_readable_after_writing_limits_shrink(self):
+        finding = {**self.finding, "title": "Older title. " * 12,
+                   "explanation": "Previously published review detail. " * 20,
+                   "action": "Previously published next step. " * 10}
+        result = self.result([finding], new=[finding["id"]])
+        visible = "This older review still needs attention."
+        body = visible + "\n\n" + public_receipt(result, visible)
+        source = self.source("reviews", 90, body)
+        receipt = decoded_receipt(source, self.snapshot["target"])
+        self.assertEqual(receipt["findings"], [finding])
+        self.assertEqual(model_state(self.snapshot)["discussion"]["reviews"][0]["body"], visible)
+        source["body"] = body.replace(visible, "Changed review text", 1)
+        self.assertIsNone(decoded_receipt(source, self.snapshot["target"]))
 
     def test_other_developers_equivalent_receipt_requires_reassessment(self):
         result = self.result()

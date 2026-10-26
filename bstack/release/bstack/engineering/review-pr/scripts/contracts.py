@@ -31,8 +31,10 @@ COVERAGE = object_schema({"complete": {"type": "boolean"}, "limits": array_schem
 EVIDENCE = object_schema({"path": text_schema(), "line": {"type": "integer", "minimum": 1}, "side": {"type": "string", "enum": ["head", "base", "target"]}, "reason": text_schema()})
 FINDING = object_schema({
     "id": text_schema(100), "category": {"type": "string", "enum": ["blocker", "human-decision", "moderate", "low"]},
-    "title": text_schema(200), "explanation": text_schema(2000),
-    "evidence": {**array_schema(EVIDENCE, 12), "minItems": 1}, "action": text_schema(1000),
+    "title": {**text_schema(100), "description": "Short plain-language problem or impact; keep code identifiers in evidence."},
+    "explanation": {**text_schema(350), "description": "One or two short sentences: what can go wrong and why the author should care."},
+    "evidence": {**array_schema(EVIDENCE, 12), "minItems": 1},
+    "action": {**text_schema(180), "description": "One concrete next step or decision. No implementation walkthrough or repeated explanation."},
 })
 PRIOR = object_schema({"id": text_schema(100), "status": {"type": "string", "enum": ["open", "resolved", "reopened"]}, "evidence": {**array_schema(text_schema(), 12), "minItems": 1}})
 REVIEW = object_schema({
@@ -43,7 +45,7 @@ REVIEW = object_schema({
 DECISION = object_schema({"id": text_schema(100), "disposition": {"type": "string", "enum": ["kept", "dismissed", "resolved", "duplicate"]}, "reason": text_schema(), "duplicate_of": {"type": ["string", "null"]}})
 FEEDBACK = object_schema({"kind": {"type": "string", "enum": ["comments", "inline", "reviews"]}, "id": {"type": "integer", "minimum": 1},
     "relation": {"type": "string", "enum": ["agree", "extend", "disagree", "resolved"]}, "finding_ids": array_schema(text_schema(100), 30),
-    "body": {"type": "string", "maxLength": 1600}, "evidence": array_schema(EVIDENCE, 12)})
+    "body": {"type": "string", "maxLength": 350}, "evidence": array_schema(EVIDENCE, 12)})
 ARTIFACT_ASSESSMENT = object_schema({"id": text_schema(100), "material": {"type": "boolean"}, "reason": text_schema(1000)})
 JUDGMENT = object_schema({"coverage": COVERAGE, "decisions": array_schema(DECISION, 200), "findings": array_schema(FINDING, 30),
     "feedback": array_schema(FEEDBACK, 100), "new_findings": array_schema(text_schema(100), 30), "artifact_assessments": array_schema(ARTIFACT_ASSESSMENT, 500)})

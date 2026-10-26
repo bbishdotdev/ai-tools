@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timezone
+from pathlib import PurePosixPath
 from urllib.parse import quote
 
 from contracts import ReviewError, digest
@@ -8,7 +9,8 @@ from security import public_text, validate_public_report
 from shared import compatible_receipt, matching_context, public_receipt, receipts, source_record
 
 
-LABELS = {"blocker": "🛑", "human-decision": "❓", "moderate": "⚠️", "low": "💡"}
+FINDING_SECTIONS = {"blocker": "Fix before merging", "human-decision": "Decision needed",
+                    "moderate": "Suggested improvements", "low": "Small improvements"}
 SAFETY_LABELS = {"agent-instruction": "Instructions aimed at the reviewer", "secret-exfiltration": "Possible secret access or transfer",
                  "external-endpoint": "External destination needs inspection", "unsafe-execution": "Execution behavior needs inspection",
                  "opaque-executable": "Executable content could not be inspected as text",
@@ -37,8 +39,24 @@ def evidence_link(result, evidence):
 
 
 def evidence_links(result, evidence):
-    urls = list(dict.fromkeys(evidence_link(result, item) for item in evidence))
-    return " ".join(f"[Evidence{'' if len(urls) == 1 else ' ' + str(index + 1)}]({url})" for index, url in enumerate(urls))
+    links = {}
+    for item in evidence:
+        path = item["path"]
+        if path == "@pr":
+            label = "PR discussion"
+        elif path.startswith("@pr/"):
+            label = "PR #" + path[4:]
+        else:
+            label = f"{PurePosixPath(path).name}:{item['line']}"
+        if item["side"] != "head" and not path.startswith("@pr"):
+            label += f" ({item['side']})"
+        url = evidence_link(result, item)
+        links.setdefault(url, f"[{public_text(label)}]({url})")
+    values = list(links.values())
+    visible = " · ".join(values[:2])
+    if len(values) > 2:
+        visible += "\n\n<details>\n<summary>More code references</summary>\n\n" + "\n".join("- " + value for value in values[2:]) + "\n\n</details>"
+    return visible
 
 
 def desired_event(result):
@@ -61,10 +79,15 @@ def desired_event(result):
 def assessment_details(result):
     text = []
     new_ids = set(result.get("new_findings", [item["id"] for item in result["findings"]]))
-    for item in result["findings"]:
-        if item["id"] not in new_ids:
+    for category, heading in FINDING_SECTIONS.items():
+        findings = [item for item in result["findings"] if item["id"] in new_ids and item["category"] == category]
+        if not findings:
             continue
-        text.append(f"{LABELS[item['category']]} **{public_text(item['title'])}**\n\n{public_text(item['explanation'])} {public_text(item['action'])} {evidence_links(result, item['evidence'])}")
+        section = ["### " + heading]
+        for item in findings:
+            section.extend([f"**{public_text(item['title'])}**", public_text(item["explanation"]),
+                            "**Next step:** " + public_text(item["action"]), evidence_links(result, item["evidence"])])
+        text.append("\n\n".join(section))
     limits = result.get("coverage", {}).get("limits", [])
     if limits:
         text.append("**Still unverified**\n\n" + "\n".join("- " + public_text(limit) for limit in dict.fromkeys(limits)))
@@ -86,14 +109,12 @@ def summary_body(result, event, self_review):
     intended = desired_event(result)
     if intended == "APPROVE":
         text = ["✅ Looks good. GitHub won't let me formally approve my own PR." if self_review else "✅ Looks good."]
-    elif intended == "REQUEST_CHANGES":
-        text = ["🛑 These changes need attention before merging."]
     elif result["status"] == "partial":
         text = ["⚠️ Here's what I could verify. A few gaps still need checking."]
     elif result.get("human_review_required"):
         text = ["👤 This change needs a human reviewer under the project PR policy."]
     else:
-        text = ["❓ There's a decision to make before merging."]
+        text = []
     text.extend(assessment_details(result))
     if result.get("human_review_required"):
         paths = sorted({path for rule in result["human_review_required"] for path in rule["changed"]})
@@ -161,9 +182,8 @@ def plan_actions(result, user):
             seen.add(root["id"])
             root = sources[(kind, root["in_reply_to_id"])]
         target = root["id"] if kind == "inline" else identity
-        prefix = {"extend": "⚠️", "disagree": "💬", "resolved": "✅"}[feedback["relation"]]
         mention = "@" + source["author"] + " " if source.get("author") and source["author"].casefold() != user.casefold() else ""
-        body = f"{prefix} {mention}{public_text(feedback['body'].strip())}"
+        body = f"{mention}{public_text(feedback['body'].strip())}"
         if feedback["relation"] == "resolved":
             references = []
             if kind != "inline":

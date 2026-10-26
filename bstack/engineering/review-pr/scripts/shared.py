@@ -1,7 +1,10 @@
 import json
 import re
 
-from contracts import COVERAGE, FINDING, ReviewError, canonical, digest, unique, validate, verdict
+from contracts import COVERAGE, FINDING, ReviewError, canonical, digest, text_schema, unique, validate, verdict
+
+PUBLISHED_FINDING = {**FINDING, "properties": {**FINDING["properties"], "title": text_schema(200),
+                     "explanation": text_schema(2000), "action": text_schema(1000)}}
 
 PREFIXES = {1: "<!-- bstack-review-v1:", 2: "<!-- bstack-review-v2:"}
 MAX_RECEIPT = 40000
@@ -88,7 +91,7 @@ def decoded_receipt(item, target):
             return None
         unique(value["findings"])
         for finding in value["findings"]:
-            validate(finding, FINDING)
+            validate(finding, PUBLISHED_FINDING)
             for evidence in finding["evidence"]:
                 path = evidence["path"]
                 if path != "@pr" and (path.startswith("/") or ".." in path.split("/") or ".bstack" in path.split("/") or "\\" in path):

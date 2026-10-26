@@ -1048,9 +1048,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/SKILL.md",
-      "sha256": "9bdbb0f97aaa3a3a0bc510455c675ec8c4438eb38f13b04ec086bcb6b3e6c82c",
+      "sha256": "96d410910f0f4dfd67d5b6550b6ac68fde9d99542259ec884ca026512f2c612e",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "cf026b726b5987bfe5de23b8aabba843d54e7d29d2f46d82075ecf5676985c9e",
+      "source_sha256": "716d9cd88d42a2e07275ea164dea9fecb4d2b4e02551c2b8af28648934024cbb",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1069,25 +1069,25 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/adjudicator.md",
-      "sha256": "edea21bdd9f2556018774e77e1cfb4e9dd0c2c7639db13d0a09349b3ce67c6c2",
+      "sha256": "eaec29cb1b82a4fcd869ff6600255e7778e95ab76bdc173227509205ecc94d7d",
       "source": "bstack/engineering/review-pr/references/adjudicator.md",
-      "source_sha256": "edea21bdd9f2556018774e77e1cfb4e9dd0c2c7639db13d0a09349b3ce67c6c2",
+      "source_sha256": "eaec29cb1b82a4fcd869ff6600255e7778e95ab76bdc173227509205ecc94d7d",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/references/reviewer.md",
-      "sha256": "8ae304cf5128e3979ed76c40d7dea79ef233c9a8b491c92eb5106e1e2a504d72",
+      "sha256": "d47891e5bf10138704a4c7d14c4d03a8bdcf3ed418f49df7e0476762b1edd127",
       "source": "bstack/engineering/review-pr/references/reviewer.md",
-      "source_sha256": "8ae304cf5128e3979ed76c40d7dea79ef233c9a8b491c92eb5106e1e2a504d72",
+      "source_sha256": "d47891e5bf10138704a4c7d14c4d03a8bdcf3ed418f49df7e0476762b1edd127",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/references/rubric.md",
-      "sha256": "a72a8abf79d1112176fae85e4900e6c3bb6cf5c023763152a98caee5d626ea97",
+      "sha256": "ddf02876f51886eae539b4f7371805de66d285606a122a9044c799af03f84fb1",
       "source": "bstack/engineering/review-pr/references/rubric.md",
-      "source_sha256": "3be4012347dc8a9a895c897d82e881982cd37545eddc5e48fd9e0d3169ad1ac7",
+      "source_sha256": "69cf9de7e07b4f4ee9b5b51b9f8c943df331e7b93e401a47579bd7166488e0bc",
       "transforms": [
         "rewrite-local-markdown-links"
       ]
@@ -1135,9 +1135,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/contracts.py",
-      "sha256": "29c439a6b1b09d16a37a347139bb191782c46b1ab4aa72080a061d92022d8a08",
+      "sha256": "dcd1b8c674c180c3123c45bd9bb4d651cd8f52cb15d7640daf5db181376bd8d8",
       "source": "bstack/engineering/review-pr/scripts/contracts.py",
-      "source_sha256": "29c439a6b1b09d16a37a347139bb191782c46b1ab4aa72080a061d92022d8a08",
+      "source_sha256": "dcd1b8c674c180c3123c45bd9bb4d651cd8f52cb15d7640daf5db181376bd8d8",
       "transforms": []
     },
     {
@@ -1167,9 +1167,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/publication.py",
-      "sha256": "36e8354652a56c6cf30889a809267a2171c1d3feac65ed28fee4b51f8aeb74c5",
+      "sha256": "f7365f6fe3f2cf9e436214bee486aaa3db44f589e3f40c5a6c1f57063d256371",
       "source": "bstack/engineering/review-pr/scripts/publication.py",
-      "source_sha256": "36e8354652a56c6cf30889a809267a2171c1d3feac65ed28fee4b51f8aeb74c5",
+      "source_sha256": "f7365f6fe3f2cf9e436214bee486aaa3db44f589e3f40c5a6c1f57063d256371",
       "transforms": []
     },
     {
@@ -1223,9 +1223,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/shared.py",
-      "sha256": "49c09f508c4b0f88a99a4472933592720b191acd986d936ce9b2416baac62f63",
+      "sha256": "397d702e9b29044c615a0ce339e206449665ebf3c88e9f741ff9c10b1c81ee26",
       "source": "bstack/engineering/review-pr/scripts/shared.py",
-      "source_sha256": "49c09f508c4b0f88a99a4472933592720b191acd986d936ce9b2416baac62f63",
+      "source_sha256": "397d702e9b29044c615a0ce339e206449665ebf3c88e9f741ff9c10b1c81ee26",
       "transforms": []
     },
     {

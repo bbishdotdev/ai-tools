@@ -18,4 +18,4 @@ Separate facts from unverified claims. If a material missing artifact prevents a
 
 Assess the relevance of supplied artifact limitations. An uninspected image need not block assessing unrelated code; an unexplained executable or mismatched package may matter. Keep supported findings even when another part cannot be assessed.
 
-Write short, natural explanations the author can act on. No praise paragraphs, severity inflation, quotas, speculative edge cases, or stock suggestions to add tests. Return only the structured report; the runner handles rendering and publication.
+Apply the rubric's public-writing standard: explain the problem, impact, and next step simply; put investigative detail in evidence. No praise paragraphs, severity inflation, quotas, speculative edge cases, or stock suggestions to add tests. Return only the structured report; the runner handles rendering and publication.
