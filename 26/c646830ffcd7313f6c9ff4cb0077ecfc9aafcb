@@ -1,0 +1,56 @@
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_aeb5f4a63a131c 26
+  s_822e08e34bda62::t_360915d8db13d5 27
+  s_822e08e34bda62::t_25722b3e281184 28
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_8ffb6bb9173976 305-311,333,484
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_b080512aa54557 172-176
+  s_822e08e34bda62::t_b89efcc98260bc 42,56,61-64
+bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_04ada219f5eba0 12
+  s_822e08e34bda62::t_850d312cfdfd3a 11
+bstack/INSTALL.md
+  s_822e08e34bda62::t_7e16ac2566e41f 153
+bstack/engineering/review-pr/scripts/isolated_worker.py
+  s_822e08e34bda62::t_da42cdc841e4d9 100,114,137-138,140,152,159-160,178,189-190
+  s_822e08e34bda62::t_deda4f5fc7162c 35,38-47,71
+  s_822e08e34bda62::t_bf5f14ae5a510b 1-34,36-37,48-70,72-99,101-113,115-136,139,141-151,153-158,161-177,179-188,191-216
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_e35f84274fc530 6-8
+  s_822e08e34bda62::t_aeb5f4a63a131c 5
+bstack/README.md
+  s_822e08e34bda62::t_7318183ebd83da 87
+bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_c32a1cdad94b57 11
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_70ce02bb4a95f9 26-28
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_89510f52092a82 5-8
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_fad7e028b2658f 11-12
+bstack/release/bstack/engineering/review-pr/scripts/isolated_worker.py
+  s_822e08e34bda62::t_e8353ad8f12ce5 1-216
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_ca806f2a9c2df2 42,56,61-64,172-176
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_d1c5db1e88b3da 1051,1053,1098,1100,1106,1108,1143-1150,1154,1156,2170,2172
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_1c93f2ec251c62 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "26c646830ffcd7313f6c9ff4cb0077ecfc9aafcb",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
