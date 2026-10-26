@@ -246,6 +246,35 @@ def workflow_roles(project, workflow):
     raise ModelCLIError(f"Unknown workflow: {workflow}")
 
 
+def review_diagnose(project, roles):
+    runner = Path(__file__).resolve().parents[1] / "engineering/review-pr/scripts/review.py"
+    command = [sys.executable, "-B", str(runner), "doctor", "--project", str(project), "--live"]
+    report, reason = {}, None
+    try:
+        process = subprocess.run(command, capture_output=True, text=True, timeout=480, cwd=project)
+        report = json.loads(process.stdout)
+        if not isinstance(report, dict):
+            raise ValueError()
+        checks = report.get("model_checks", {})
+        complete = isinstance(checks, dict) and set(checks) == set(roles) and all(
+            isinstance(check, dict) and check.get("status") == "passed" for check in checks.values())
+        if (process.returncode == 0 and report.get("status") == "ready"
+                and report.get("isolation") == "restricted_repository_tools" and complete):
+            return {"status": "passed", "roles": checks, "restriction": "restricted_repository_tools"}
+        reason = report.get("error") or "The review doctor did not verify every selected role and its restricted repository tools. Rerun review.py doctor --live."
+    except subprocess.TimeoutExpired:
+        reason = "The review doctor did not finish within eight minutes. Check the selected CLI logins and wrapper commands, then retry."
+    except (OSError, ValueError):
+        reason = "The bundled review doctor could not return a valid result. Check the BStack package and rerun review.py doctor --live."
+    if not isinstance(reason, str):
+        reason = "The review doctor could not complete. Rerun review.py doctor --live."
+    failed_role = next((name for name in roles if re.search(r"\b" + re.escape(name) + r"\b", reason)), None)
+    checks = {name: {"status": "failed" if failed_role in {None, name} else "not_checked",
+                     "cli": binding.get("cli"), "model": binding.get("model"), "reason": reason}
+              for name, binding in roles.items()}
+    return {"status": "needs_setup", "roles": checks, "restriction": "restricted_repository_tools", "reason": reason}
+
+
 def diagnose(project, workflow=None, live=False):
     if live and workflow is None:
         raise ModelCLIError("Choose --workflow review-pr, grilling, or to-pr for a live check")
@@ -264,6 +293,9 @@ def diagnose(project, workflow=None, live=False):
         roles = definitions[name]
         if not roles:
             workflows[name] = {"status": "not_configured", "hint": "Configure two roles before autonomous grilling; human-guided grilling needs none."}
+            continue
+        if name == "review-pr" and live:
+            workflows[name] = review_diagnose(project, roles)
             continue
         checks = {}
         for role, binding in roles.items():

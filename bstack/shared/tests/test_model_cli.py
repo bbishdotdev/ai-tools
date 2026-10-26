@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,13 +65,53 @@ class ModelCommandTests(unittest.TestCase):
     def test_review_doctor_checks_exact_roles_and_reports_unavailable_model(self):
         for client in ("claude", "codex"):
             self.set_client(client)
-        result = model_cli.diagnose(self.project, "review-pr", live=True)
-        self.assertEqual(result["status"], "passed", result)
-        roles = self.project / ".bstack/review.json"
-        roles.write_text(json.dumps({"roles": {"reviewer_b": {"model": "bad-model"}}}))
-        result = model_cli.diagnose(self.project, "review-pr", live=True)
+        actual_run = subprocess.run
+        calls = []
+
+        def review_doctor(command, **kwargs):
+            if "doctor" not in command:
+                return actual_run(command, **kwargs)
+            self.assertEqual(command, [sys.executable, "-B", str(ROOT / "engineering/review-pr/scripts/review.py"),
+                                       "doctor", "--project", str(self.project), "--live"])
+            calls.append(command)
+            roles = model_cli.workflow_roles(self.project, "review-pr")
+            if roles["reviewer_b"]["model"] == "bad-model":
+                body = {"status": "incomplete", "error": "reviewer_b is not ready: The selected model is unavailable. Choose an exact model this account can run, then retry."}
+                return subprocess.CompletedProcess(command, 1, json.dumps(body), "")
+            checks = {name: {"status": "passed", "model": binding["model"],
+                             "browsing": "snapshot_read_and_traversal_denial"} for name, binding in roles.items()}
+            return subprocess.CompletedProcess(command, 0, json.dumps({"status": "ready", "model_checks": checks,
+                                                                        "isolation": "restricted_repository_tools"}), "")
+
+        with mock.patch.object(model_cli.subprocess, "run", side_effect=review_doctor):
+            result = model_cli.diagnose(self.project, "review-pr", live=True)
+            self.assertEqual(result["status"], "passed", result)
+            self.assertEqual(result["workflows"]["review-pr"]["restriction"], "restricted_repository_tools")
+            self.assertEqual(result["workflows"]["review-pr"]["roles"]["reviewer_b"]["browsing"], "snapshot_read_and_traversal_denial")
+            roles = self.project / ".bstack/review.json"
+            roles.write_text(json.dumps({"roles": {"reviewer_b": {"model": "bad-model"}}}))
+            result = model_cli.diagnose(self.project, "review-pr", live=True)
         self.assertEqual(result["status"], "needs_setup")
         self.assertEqual(result["workflows"]["review-pr"]["roles"]["reviewer_b"]["status"], "failed")
+        self.assertEqual(result["workflows"]["review-pr"]["roles"]["reviewer_a"]["status"], "not_checked")
+        self.assertIn("Choose an exact model", result["workflows"]["review-pr"]["reason"])
+        self.assertEqual(len(calls), 2)
+
+    def test_review_doctor_does_not_accept_model_access_without_restricted_browsing(self):
+        self.set_client("claude")
+        self.set_client("codex")
+        actual_run = subprocess.run
+
+        def incomplete_boundary(command, **kwargs):
+            if "doctor" not in command:
+                return actual_run(command, **kwargs)
+            body = {"status": "ready", "model_checks": {name: {"status": "passed"} for name in model_cli.REVIEW_DEFAULTS}}
+            return subprocess.CompletedProcess(command, 0, json.dumps(body), "")
+
+        with mock.patch.object(model_cli.subprocess, "run", side_effect=incomplete_boundary):
+            result = model_cli.diagnose(self.project, "review-pr", live=True)
+        self.assertEqual(result["status"], "needs_setup")
+        self.assertIn("restricted repository tools", result["workflows"]["review-pr"]["reason"])
 
     def test_command_template_requires_a_single_argument_slot(self):
         with self.assertRaises(model_cli.ModelCLIError):
