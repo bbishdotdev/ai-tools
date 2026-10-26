@@ -64,8 +64,13 @@ def worker_argv(config, args):
 
 
 def worker_environment():
-    keep = {"PATH", "HOME", "LANG", "LC_ALL", "LC_CTYPE", "TERM", "TMPDIR", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME", "SSL_CERT_FILE", "SSL_CERT_DIR"}
-    return {key: value for key, value in os.environ.items() if key in keep}
+    keep = {"PATH", "HOME", "LANG", "LC_ALL", "LC_CTYPE", "TERM", "TMPDIR", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME",
+            "SSL_CERT_FILE", "SSL_CERT_DIR", "NODE_EXTRA_CA_CERTS", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE",
+            "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "all_proxy", "no_proxy",
+            "CODEX_HOME", "CODEX_API_KEY", "CLAUDE_CONFIG_DIR", "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX",
+            "CLAUDE_CODE_USE_FOUNDRY", "GOOGLE_APPLICATION_CREDENTIALS"}
+    providers = ("ANTHROPIC_", "OPENAI_", "AZURE_OPENAI_", "AWS_", "VERTEX_")
+    return {key: value for key, value in os.environ.items() if key in keep or key.startswith(providers)}
 
 
 def verify_worker(config, work, project):

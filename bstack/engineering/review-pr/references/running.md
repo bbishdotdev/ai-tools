@@ -2,9 +2,9 @@
 
 Requires Python 3.11+, Git, authenticated `gh` for the PR's host, and the selected model CLIs on macOS or Linux. The first draft implements Claude Code and Codex runners; its process and file locking require a POSIX host. It can be invoked from another agent host, but Cursor and Grok are not yet review execution adapters. No Wayfinder workspace, tracker, or skills.sh connection is required.
 
-On Linux, install `bubblewrap` and `socat` once. BStack then selects its bundled model worker automatically when `worker` is absent from `.bstack/review.json`. The worker gives each headless review a separate filesystem and network namespace, limits outbound connections to the selected model providers, and leaves GitHub publication in the parent process. It accepts native Codex and Claude binaries invoked directly as `codex` and `claude`, including symlinks to version-named native files. JavaScript/npm entry points and custom launcher wrappers need a separately vetted worker; the bundled worker fails closed rather than mounting their broad install prefixes. Run `doctor --live` to check the worker and actual model logins before starting the review. If a project deliberately sets `"worker": null`, automatic selection is disabled.
+Static review needs no OS worker or extra system packages. BStack starts its bundled repository browser for each headless session and connects it privately to the selected CLI. It adds no global MCP configuration or listening network service. Reviewers can list, search, read, and compare the full pinned repository, including unchanged callers. BStack handles these requests automatically without file-read approvals.
 
-The bundled worker is currently Linux only. On macOS or with a custom CLI launcher, provide a separately vetted worker that enforces the same boundaries. A forwarding script is not enough. An unavailable worker or failed live doctor stops the review; do not run the model commands on the host as a fallback.
+General machine tools are disabled at the model interface: no shell, arbitrary filesystem reader, browser, or unrelated integration. Codex may use its pure V8 orchestration tool to call the repository browser; that tool has no host filesystem or network APIs. Run `doctor --live` to check the restricted launches and actual model logins. If an installed CLI cannot support the required restrictions, repair or update that CLI rather than restoring general tools. Custom launchers use the shared configuration below.
 
 ## Roles
 
@@ -19,8 +19,20 @@ Defaults are Opus 5.5 at medium effort, Codex Astra at medium effort, and a fres
   },
   "timeout_seconds": 900,
   "max_model_calls_24h": 60,
-  "targets": ["github.com/owner/repo"],
-  "worker": ["/absolute/path/to/isolated-review-worker", "{args}"],
+  "targets": ["github.com/owner/repo"]
+}
+```
+
+`targets` is optional for a GitHub.com PR in the selected project's `origin` repository. Set it explicitly for another approved repository or GitHub host. The runner rejects other URLs before asking `gh` to contact them. This boundary follows `--project`, not the location of the BStack package, so a shared package can serve multiple projects without granting each review access to the others.
+
+An optional `worker` argv wrapper can add OS isolation around the model CLIs. Static review does not require or automatically select one. A wrapper must preserve the private browser connection, review work directory, and absolute output paths. A script that merely forwards arguments is not isolation. BStack's restricted tools remain active inside a configured wrapper.
+
+## Optional app or test execution
+
+Static review inspects code, callers, tests, ADRs, and existing CI results. It does not execute the project's tests or application. To enable an existing project check, add a separate runtime configuration:
+
+```json
+{
   "runtime_verification": {
     "command": ["python3", "-B", "scripts/verify.py"],
     "worker": ["/absolute/path/to/no-network-runtime-worker", "{args}"],
@@ -29,17 +41,17 @@ Defaults are Opus 5.5 at medium effort, Codex Astra at medium effort, and a fres
 }
 ```
 
-`targets` is optional for a GitHub.com PR in the project's `origin` repository. Set it explicitly for another approved repository or GitHub host. The runner rejects other URLs before asking `gh` to contact them. The worker is an argv wrapper around the selected model CLI. It must preserve the review work directory and absolute output paths while limiting readable files to that snapshot, the installed BStack package read-only, required CLI runtime, and narrowly scoped provider login. The package contains the review rules the model must read; when installed in a project, expose `.bstack/package` without exposing its sibling `.bstack/reviews` directory. Keep GitHub credentials and unrelated host files out, and restrict network access to the provider route it needs. A regular shell script that simply forwards arguments is not isolation.
-
-The runner tests the review worker by reading required BStack policy files, trying to read canaries outside the snapshot and in the project, probing common credential paths, and checking that `gh` cannot return a token inside the worker. It also checks access to a local listener when the host permits one. A passing canary is a useful check of the configured worker, not a proof that every host secret or network route is isolated. `doctor --live` also sends a short request through that worker. Every PR review requires a configured worker.
-
 `runtime_verification` is optional. It runs one fixed command from this private config against a disposable copy of the pinned PR head after the safety preflight passes. Point `command` at an existing, executable project check. The separate runtime worker must have no GitHub or model credentials, block network egress, and enforce CPU, memory, and process limits; do not use the review worker for this job. `doctor --live` probes its selected file, credential, environment, and host-loopback boundaries without running the project command. That probe cannot establish that every external route is blocked, so inspect the worker's actual network policy too. The snapshot has no `.git` directory or preinstalled dependencies. If the check needs either, provide the required trusted inputs inside the worker or leave runtime verification unconfigured; the runner will not retry on the host. Project output is hashed and bounded, never shown to the models as instructions. A failed or timed-out check leaves a reviewable partial assessment that cannot approve.
 
-Two reviewers must use distinct model identities. Prefer different families for independent perspectives. The adjudicator may use either family in a fresh session. The safety preflight uses a configured Claude role with no tools, then the two independent reviewers run through the isolated review worker. Supported effort values are `low`, `medium`, and `high`; the configured model must support the requested value. Model IDs depend on the authenticated deployment. The runner does not substitute another model when one fails.
+## Model checks and launchers
 
-`doctor` checks configuration, executable availability, versions, and required CLI options. Add `--live` to check the worker canary and send one short prompt to each selected role. `run` does this before the three-model review. A failed role stops the run and names the role; BStack does not silently substitute a provider. A successful probe proves the CLI answered with the requested settings at that moment. It cannot guarantee the login will remain valid or, for every CLI, independently prove the exact effective model.
+Two reviewers must use distinct model identities. Prefer different families for independent perspectives. The adjudicator may use either family in a fresh session. The safety preflight uses a configured Claude role with no tools, then the independent reviewers and adjudicator use their own restricted browsing sessions. Supported effort values are `low`, `medium`, and `high`; the configured model must support the requested value. Model IDs depend on the authenticated deployment. The runner does not substitute another model when one fails.
+
+`doctor` checks configuration, executable availability, versions, and required CLI options. Add `--live` to ask each selected role to read a random snapshot value through the browser and try a traversal request that must be denied. The runner checks the answer and the browser trace. `run` does this before the three-model review. A failed role stops the run and names the role. A successful probe proves that browsing path worked at that moment; it cannot guarantee future login validity, independently confirm every CLI's effective model, or certify a launcher that silently drops restriction flags.
 
 If the CLI runs through a local wrapper, configure its argument prefix once in the project's private `.bstack/model-clis.json` through the bundled helper. For example, `python3 .bstack/package/shared/model_cli.py --project "$PWD" configure --cli claude --command 'launch claude -- {args}'`. BStack expands `{args}` as an argument list, never as shell text. Then run `python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr`. The same command map is used by the PR review runner. Ask the developer for the actual wrapper command when the normal invocation fails; do not guess flags or bypass the wrapper.
+
+The installed CLI, wrapper, and administrator-managed policy are trusted local components. They must honor the supplied restrictions. Model authentication and permitted proxy settings still reach the CLI through the shared launcher; GitHub publication stays in the parent runner. Read [reviewer-job security](security.md) for these trust limits.
 
 The roles are separate from autonomous grilling configuration. Changing review roles does not enable automatic routing or grant product/ADR decision authority.
 
@@ -47,7 +59,7 @@ The roles are separate from autonomous grilling configuration. Changing review r
 
 Run from the consumer's project and use its `.bstack/` directory for private review data. Run records include pinned source metadata, diffs, model responses, prior decisions, and publication state. Temporary source trees are removed when the run ends. Records can still contain private source code. Keep `.bstack/` gitignored.
 
-The safety preflight runs tool-free with a reduced environment. Independent reviewers run through the isolated worker and keep raw model output out of the review record. Reauthenticate or repair the named CLI before retrying; the runner never replaces a failed reviewer with another model.
+The safety preflight runs tool-free with a reduced environment. Independent reviewers receive the repository browser and allowlisted BStack policy through `read_policy`; raw CLI output stays out of the public review. Reauthenticate or repair the named CLI before retrying; the runner never replaces a failed reviewer with another model.
 
 The runner pins the comparison tree, proposed head and current target tip. Reviewers can consult current target ADRs even when they landed after the PR forked. Only complete assessments become durable incremental baselines. A changed PR repeats the safety preflight, both reviewers, and the adjudicator on the affected delta, at most three passes total. A changed base/history or incomplete earlier coverage can require a full pass. A rebuttal or requirement change without new code produces a context reassessment. Reviewers decide which callers or contracts are affected.
 
@@ -59,7 +71,7 @@ Published reviews carry a bounded receipt for publication reconciliation. Anothe
 
 Changed CI results or public discussion can require a context refresh. Reactions and timestamps alone do not. Existing reviews remain visible to the models; only an assessment's own verified publication batch is excluded from its freshness comparison. Arbitrary new prose is conservatively reassessed rather than discarded by a keyword filter. Other open PRs are supplied as titles, descriptions and commit identities; titles alone cannot prove duplication.
 
-The runner first checks the full pinned diff, PR description, and discussion with a tool-free safety preflight. A credible injection or exfiltration concern, or a changed executable file that cannot be inspected as text, pauses review and prepares a short, runner-written comment with links to the affected locations. Ordinary images do not trigger that hold. Independent reviewers then inspect materialized source as data through the isolated worker. The runner disables supported host customization paths and restricts model tools. It does not run repository tests or hooks unless a separate, credential-free runtime verification worker is configured. The publisher renders model prose as escaped plain text; only the runner creates clickable evidence links. This does not detect every malicious diff, so isolation remains the primary boundary. Read [reviewer-job security](security.md) before running on a PR whose author may deliberately attack the reviewer host. Explicit model metadata is withheld from the judge; prose may still reveal stylistic clues.
+The runner first checks the full pinned diff, PR description, and discussion with a tool-free safety preflight. A credible injection or exfiltration concern, or a changed executable file that cannot be inspected as text, pauses review and prepares a short, runner-written comment with links to the affected locations. Ordinary images do not trigger that hold. After a pass, reviewers explore captured source as data through the browser. A preflight pass does not permit executing PR code. The publisher renders model prose as escaped plain text; only the runner creates clickable evidence links. Tool restrictions limit the available actions; they do not prove every malicious instruction will be detected or every conclusion correct. Explicit model metadata is withheld from the judge; prose may still reveal stylistic clues.
 
 The runner reserves one model call for preflight, then six more for live probes, reviewers, and adjudication if preflight passes. The default 24-hour budget is 60 calls; a fresh run or changed PR spends more. A PR diff above 640 KiB, preflight or review context above 768 KiB, or more than 1,000 changed paths stops before models run. The per-PR lock and local budget reduce duplicate callbacks and runaway model calls on one machine; they do not cap provider tokens or spend. A callback service must still verify GitHub's webhook signature, restrict its event types and target repositories, and deduplicate delivery IDs before starting this script. The runner does not provide a public webhook endpoint or a cross-machine rate limit.
 

@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- PR reviewers now browse the entire pinned repository through a bundled, restricted browser. Static reviews no longer require Bubblewrap, Socat, or a custom model worker; optional app and test execution still requires a separate runtime worker.
 - Added portable `automate-me`, `recall`, and `reflect` workflows with a project-scoped reader for Codex, Claude Code, Cursor, and Grok sessions. Amp thread export is available with an explicit project-confirmation step.
 - Added a read-only worktree audit and owned cleanup skill. Quarantined playbooks and their unused helper scripts no longer ship in the consumer bundle; their pinned sources remain for selective porting.
 - Added optional Amp and Copilot core bindings through `AGENTS.md` and `.agents/skills`, with clear limits on routing hooks and live validation. The README now tracks app and CLI compatibility separately.

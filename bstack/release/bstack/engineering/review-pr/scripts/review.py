@@ -27,7 +27,7 @@ from security import allowed_target, validate_public_report
 from shared import config_digest, context_digest, matching_context, model_state
 
 ROOT = Path(__file__).resolve().parent.parent
-ANALYSIS_VERSION = 4
+ANALYSIS_VERSION = 5
 MAX_REVIEW_PASSES = 3
 
 
@@ -242,8 +242,6 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     return {"status": "partial", "run": str(output), "verdict": "COMMENT", "safety_hold": True,
                             "concerns": len(safety["concerns"]),
                             "next_step": "Automated review stopped. Preview and publish the safety comment if authorized, then tell the requester what needs human inspection."}
-                if not config.get("worker"):
-                    raise ReviewError("No isolated model worker is configured for the independent reviewers. Add one in .bstack/review.json")
                 write_json(output / "reviewer-budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=6))
                 write_json(output / "doctor.json", doctor(config, project, live=True))
                 runtime_result = run_runtime_verification(config.get("runtime_verification"), project, snapshots["head"], trees["head"])

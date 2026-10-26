@@ -84,7 +84,7 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 
 Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
 
-Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models and supports local wrapper commands. On Linux, `bubblewrap` and `socat` let review-pr use its bundled isolated worker without a custom setup command; other hosts need a vetted worker. PR review checks the diff and discussion before starting its isolated reviewers. Running the app or tests during review is optional and needs a separate credential-free worker.
+Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models and supports local wrapper commands. Reviewers autonomously search and read the entire pinned repository through a bundled browser, with general-purpose tools disabled. No extra system packages or file-read approvals are needed. Running the app or tests during review is optional and needs a separate credential-free worker.
 
 ### What loads into context
 
