@@ -1,0 +1,49 @@
+bstack/README.md
+  s_822e08e34bda62::t_295c6ff2493e3d 11
+  s_822e08e34bda62::t_556ef7f854e91a 9,15-19
+  s_96ebcebc44494c::t_510ae551df659f 10
+bstack/package/selection.json
+  s_822e08e34bda62::t_35535e2dfb85b4 103-104
+bstack/assets/workflow.svg
+  s_822e08e34bda62::t_abe6336b61700e 14
+  s_822e08e34bda62::t_a0875c89f21bcf 1-13,15-16
+bstack/assets/compatibility.svg
+  s_822e08e34bda62::t_37f076f867925d 1-5,7-29,31
+  s_822e08e34bda62::t_295c6ff2493e3d 6,30
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_35535e2dfb85b4 7-8,14
+  s_822e08e34bda62::t_3db4bb599253ba 9-12
+  s_822e08e34bda62::t_295c6ff2493e3d 13
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_a0c90a9adbaeb9 7-14
+bstack/release/bstack/assets/compatibility.svg
+  s_822e08e34bda62::t_2b02168f95d148 1-31
+bstack/release/bstack/assets/workflow.svg
+  s_822e08e34bda62::t_63bfe493dc58a2 1-16
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_19f9e5b1cc85a4 41,43,48-63,1597
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9dcf381594e2f02a8c39afb1579f23943f6c71f0",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_96ebcebc44494c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc3ac606-2a6e-45ff-9270-4c1b4170cb48",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
