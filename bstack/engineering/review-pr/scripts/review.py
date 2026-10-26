@@ -21,7 +21,7 @@ from artifacts import coverage
 from budget import reserve
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
-from preflight import assess as assess_safety
+from preflight import MAX_DIFF_BYTES, assess as assess_safety
 from runtime_verification import run_runtime_verification
 from security import allowed_target, validate_public_report
 from shared import config_digest, context_digest, matching_context, model_state
@@ -215,8 +215,8 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                 full_changes = changed_paths(repository, merge_base, head)
                 changes = changed_paths(repository, scope["from"], head)
                 patch = diff(repository, scope["from"], head)
-                if len(changes) > 1000 or len(patch.encode()) > 512 * 1024:
-                    raise ReviewError("PR diff exceeds the review limit of 1000 paths or 512 KiB; split or narrow it before running models")
+                if len(changes) > 1000 or len(patch.encode()) > MAX_DIFF_BYTES:
+                    raise ReviewError("PR diff exceeds the review limit of 1000 paths or 640 KiB; split or narrow it before running models")
                 safety_patch = patch if scope["from"] == merge_base else diff(repository, merge_base, head)
                 write_json(output / "budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=1))
                 opaque_suffixes = {".wasm", ".so", ".dll", ".dylib", ".exe", ".jar", ".class", ".node", ".pyc"}
