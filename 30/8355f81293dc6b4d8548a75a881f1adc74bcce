@@ -1,0 +1,45 @@
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_ee8105954e806b 177-179
+  s_822e08e34bda62::t_233f7f001ceb72 175
+bstack/shared/session_history.py
+  s_822e08e34bda62::t_19b2b5e6acceed 3,118-120,145,152,186-218,222,224-225,230,232,246,258
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_741965d7713907 5
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_741965d7713907 26
+bstack/engineering/review-pr/scripts/isolated_worker.py
+  s_822e08e34bda62::t_233f7f001ceb72 101,107-110,118,157,164,167,172-173
+  s_822e08e34bda62::t_f71b8da9c70f6a 7,102-106
+  s_822e08e34bda62::t_80c74a7b733726 175
+  s_822e08e34bda62::t_b7df19ae0f5f48 160-163
+bstack/shared/tests/test_session_history.py
+  s_822e08e34bda62::t_fa9a189189eb81 47-71
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_99e2a510a19d43 26
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_ff66fb2f2f7bf7 5
+bstack/release/bstack/engineering/review-pr/scripts/isolated_worker.py
+  s_822e08e34bda62::t_f3c2ebb8e6327e 7,101-110,118,157,160-164,167,172-173,175
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_67edbfa765b1dc 175,177-179
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_3e453683f5b2ec 1051,1053,1098,1100,1146,1148,1154,1156,2232,2234
+bstack/release/bstack/shared/session_history.py
+  s_822e08e34bda62::t_00e4cdebbdbe4d 3,118-120,145,152,186-218,222,224-225,230,232,246,258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "308355f81293dc6b4d8548a75a881f1adc74bcce",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
