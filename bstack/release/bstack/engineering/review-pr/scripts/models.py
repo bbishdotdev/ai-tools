@@ -172,8 +172,11 @@ def run_model(role, schema, work, project, config, data, timeout, capture=None):
     bundled = Path(__file__).with_name("isolated_worker.py")
     if len(config["worker"]) > 1 and config["worker"][1] == str(bundled):
         selected = shutil.which(args[0])
-        if not selected or Path(selected).resolve().name != role["cli"]:
+        if not selected or Path(args[0]).name != role["cli"]:
             raise ReviewError("The bundled review worker supports direct Codex and Claude CLIs. This launcher needs a separately isolated worker")
+        with Path(selected).resolve().open("rb") as binary:
+            if binary.read(4) != b"\x7fELF":
+                raise ReviewError("The bundled review worker needs a native Codex or Claude binary. This script-based CLI needs a separately isolated worker")
     trusted_executable(config["worker"][0], project)
     trusted_executable(args[0], project)
     verify_worker(config, work, project)

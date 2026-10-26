@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+from collections import deque
 from datetime import datetime, timedelta, timezone
 import json
 import os
@@ -114,7 +115,9 @@ def local_candidates(project, host, home):
     if host == "codex":
         candidates = (home / ".codex/sessions").glob("*/*/*/*.jsonl")
     elif host == "claude":
-        candidates = (home / ".claude/projects" / ("-" + slug)).glob("*.jsonl")
+        root = home / ".claude/projects"
+        directories = (path for path in root.iterdir() if path.is_dir() and not path.is_symlink()) if root.is_dir() else ()
+        candidates = (path for directory in directories for path in directory.glob("*.jsonl"))
     elif host == "cursor":
         candidates = (home / ".cursor/projects" / slug / "agent-transcripts").glob("**/*.jsonl")
     elif host == "grok":
@@ -139,14 +142,14 @@ def amp_threads(limit):
     return ids, None if ids else "Amp returned no recognizable thread IDs"
 
 
-def amp_markdown(thread_id):
+def amp_markdown(thread_id, window):
     if not re.fullmatch(r"T-[a-fA-F0-9-]{16,}", thread_id):
         raise ValueError("Invalid Amp thread ID")
     result = subprocess.run(["amp", "threads", "markdown", thread_id], capture_output=True,
                             text=True, timeout=30)
     if result.returncode:
         raise ValueError("Amp could not export this thread")
-    return result.stdout[:MAX_BYTES]
+    return result.stdout[:MAX_BYTES] if window == "start" else result.stdout[-MAX_BYTES:]
 
 
 def list_sessions(project, hosts, days, limit, home):
@@ -180,25 +183,53 @@ def list_sessions(project, hosts, days, limit, home):
                       "amp_project_and_time_filter": "unverified" if "amp" in hosts else "not_applicable"}}
 
 
-def read_session(project, host, session_id, home, max_chars, allow_unverified_amp=False):
+def bounded_messages(items, max_chars, window):
+    messages, size, truncated = deque(), 0, False
+    for item in items:
+        value = item["text"]
+        if not value:
+            continue
+        if window == "start":
+            remaining = max_chars - size
+            if remaining <= 0:
+                truncated = True
+                break
+            messages.append({"role": item["role"], "text": value[:remaining]})
+            size += min(len(value), remaining)
+            truncated = truncated or len(value) > remaining
+            continue
+        messages.append({"role": item["role"], "text": value})
+        size += len(value)
+        while size > max_chars:
+            excess = size - max_chars
+            first = messages[0]
+            if len(first["text"]) <= excess:
+                size -= len(first["text"])
+                messages.popleft()
+            else:
+                first["text"] = first["text"][excess:]
+                size -= excess
+            truncated = True
+    return list(messages), truncated
+
+
+def read_session(project, host, session_id, home, max_chars, allow_unverified_amp=False, window="end"):
+    if window not in {"start", "end"}:
+        raise ValueError("Session window must be start or end")
     if host == "amp":
         if not allow_unverified_amp:
             raise ValueError("Amp thread project is unverified; confirm this ID belongs to the selected project and pass --allow-unverified-amp")
+        transcript = amp_markdown(session_id, window)
         return {"host": host, "id": session_id, "source": "amp CLI",
-                "project_match": "unverified", "text": amp_markdown(session_id)[:max_chars]}
+                "project_match": "unverified", "text": transcript[:max_chars] if window == "start" else transcript[-max_chars:],
+                "truncated": len(transcript) > max_chars}
     for path in local_candidates(project, host, home):
         identifier = path.stem if host != "grok" else path.parent.name
         if identifier != session_id:
             continue
-        messages, size = [], 0
-        for item in READERS[host](path):
-            text = item["text"][:max_chars - size]
-            if not text:
-                break
-            messages.append({"role": item["role"], "text": text})
-            size += len(text)
+        messages, truncated = bounded_messages(READERS[host](path), max_chars, window)
         return {"host": host, "id": session_id, "source": str(path), "messages": messages,
-                "truncated": size >= max_chars}
+                "truncated": truncated, "window": window}
     raise ValueError("Session is unavailable in the selected project")
 
 
@@ -212,6 +243,7 @@ def main():
     parser.add_argument("--host", choices=HOSTS)
     parser.add_argument("--id")
     parser.add_argument("--max-chars", type=int, default=30000)
+    parser.add_argument("--window", choices=("start", "end"), default="end")
     parser.add_argument("--allow-unverified-amp", action="store_true",
                         help="Read a confirmed Amp thread whose project the CLI cannot verify")
     args = parser.parse_args()
@@ -223,7 +255,7 @@ def main():
     result = (list_sessions(project, args.hosts, args.days, args.limit, Path.home())
               if args.operation == "list" else read_session(project, args.host, args.id,
                                                                 Path.home(), args.max_chars,
-                                                                args.allow_unverified_amp))
+                                                                args.allow_unverified_amp, args.window))
     print(json.dumps(result, indent=2))
 
 

@@ -4,6 +4,7 @@ import ipaddress
 import json
 import os
 from pathlib import Path
+import re
 import select
 import shutil
 import socket
@@ -97,7 +98,16 @@ def dirs_for(path):
     return [parent for parent in reversed(path.parents) if parent != Path("/")]
 
 
-def codex_arguments(args, executable):
+def runtime_path(name, executable):
+    version = executable.parents[1]
+    if (name == "codex" and executable.parent.name == "bin" and version.parent.name == "codex"
+            and re.fullmatch(r"\d+(?:\.\d+)+(?:[-+][A-Za-z0-9.-]+)?", version.name)
+            and (version / "codex-package.json").is_file()):
+        return version
+    return executable
+
+
+def codex_arguments(args, runtime):
     if args[:3] != ["exec", "--ignore-user-config", "--ignore-rules"]:
         raise ValueError("Built-in review worker only accepts BStack's restricted Codex invocation")
     flag = ["--sandbox", "read-only"]
@@ -105,7 +115,7 @@ def codex_arguments(args, executable):
     if index is None:
         raise ValueError("Codex review invocation is missing its sandbox flag")
     filesystem = '{":root"="deny",":minimal"="read",":workspace_roots"={"."="read"},' + \
-        json.dumps(str(executable.parents[1])) + '="read",' + json.dumps(str(ROOT)) + '="read"}'
+        json.dumps(str(runtime)) + '="read",' + json.dumps(str(ROOT)) + '="read"}'
     return args[:index] + ["-c", 'default_permissions="bstack-review"', "-c", "permissions.bstack-review.filesystem=" + filesystem] + args[index + 2:]
 
 
@@ -144,20 +154,25 @@ def run(args):
     if not found:
         raise ValueError("Model executable was not found")
     executable = Path(found).resolve()
-    name = executable.name
+    name = Path(args[0]).name
     if name not in {"codex", "claude", "python3", "python3.11", "python3.12", "python3.13", "python3.14"}:
         raise ValueError("Built-in isolation supports direct Codex and Claude CLIs; configure a separate worker for a launcher wrapper")
+    if name in {"codex", "claude"}:
+        with executable.open("rb") as binary:
+            if binary.read(4) != b"\x7fELF":
+                raise ValueError("The bundled worker supports native Codex and Claude binaries. A script-based installation needs a separately isolated worker")
+    runtime = runtime_path(name, executable)
     work = Path.cwd().resolve()
     if name == "codex":
-        args = codex_arguments(args[1:], executable)
+        args = codex_arguments(args[1:], runtime)
     else:
         args = args[1:]
     home = Path.home()
     paths = {home, work, ROOT}
-    if not executable.is_relative_to(Path("/usr")):
-        paths.add(executable.parents[1] if name == "codex" else executable.parent)
+    if not runtime.is_relative_to(Path("/usr")):
+        paths.add(runtime)
     if not socat.is_relative_to(Path("/usr")):
-        paths.add(socat.parent)
+        paths.add(socat)
     dirs = set()
     for path in paths:
         dirs.update(dirs_for(path))

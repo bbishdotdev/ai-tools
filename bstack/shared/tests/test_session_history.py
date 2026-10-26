@@ -44,6 +44,31 @@ class SessionHistoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "--allow-unverified-amp"):
             history.read_session(Path("/tmp/example"), "amp", "T-1234567890abcdef", Path("/tmp"), 100)
 
+    def test_claude_session_uses_verified_cwd_and_reads_recent_messages(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            project = home / ".codex/worktrees/my_app"
+            other = home / "other"
+            project.mkdir(parents=True)
+            folder = home / ".claude/projects/nonstandard-folder-name"
+            folder.mkdir(parents=True)
+            session = folder / "selected.jsonl"
+            session.write_text("\n".join(json.dumps({"type": role, "cwd": str(project),
+                                                       "message": {"content": [{"type": "text", "text": value}]}})
+                                         for role, value in (("user", "First message"),
+                                                             ("assistant", "Later message"),
+                                                             ("assistant", "Latest result"))) + "\n")
+            (folder / "unrelated.jsonl").write_text(json.dumps({"type": "user", "cwd": str(other),
+                                                                  "message": {"content": "Another project"}}) + "\n")
+            listed = history.list_sessions(project, ["claude"], 14, 10, home)
+            self.assertEqual([item["id"] for item in listed["sessions"]], ["selected"])
+            recent = history.read_session(project, "claude", "selected", home, 20)
+            self.assertTrue(recent["truncated"])
+            self.assertIn("Latest result", "".join(item["text"] for item in recent["messages"]))
+            self.assertNotIn("First message", "".join(item["text"] for item in recent["messages"]))
+            opening = history.read_session(project, "claude", "selected", home, 20, window="start")
+            self.assertIn("First message", "".join(item["text"] for item in opening["messages"]))
+
 
 if __name__ == "__main__":
     unittest.main()

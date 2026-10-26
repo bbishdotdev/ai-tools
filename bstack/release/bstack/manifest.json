@@ -1048,9 +1048,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/SKILL.md",
-      "sha256": "ba6411fd0836fb87b887c2e994c177e3ac8abc9105d079cba724186fb3ccd57b",
+      "sha256": "d9b9969283ba7236f41d532316a5d01a3b1d38059a880475e41938dff94d7fe1",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "8b25e1cdc1c58b371076b3d2cc3804d18cdba22c8f617af362f07303c235ef81",
+      "source_sha256": "9d817ab9e94acf9f29c3db68594d2eb8390cbcaf004cbf236a6b5ea5a84ee6b0",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1095,9 +1095,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "22be43cff98daf7a6a2ed5f2cf5b157fa12924844dfe6d3baf374b7e76fa428b",
+      "sha256": "fa4a24b6152d1d014a09c98815f406254f0debc15fe2cdc5d12b95b1c9f43a3e",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "22be43cff98daf7a6a2ed5f2cf5b157fa12924844dfe6d3baf374b7e76fa428b",
+      "source_sha256": "fa4a24b6152d1d014a09c98815f406254f0debc15fe2cdc5d12b95b1c9f43a3e",
       "transforms": []
     },
     {
@@ -1143,17 +1143,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/isolated_worker.py",
-      "sha256": "e9355fc34efe2c247cfa8348e4be9a6b58354315c6575249e7c773772c242c64",
+      "sha256": "b1549254814f9da5d1aa5884dd6a33ebf7b28ffeac548b6b2a1784e010290355",
       "source": "bstack/engineering/review-pr/scripts/isolated_worker.py",
-      "source_sha256": "e9355fc34efe2c247cfa8348e4be9a6b58354315c6575249e7c773772c242c64",
+      "source_sha256": "b1549254814f9da5d1aa5884dd6a33ebf7b28ffeac548b6b2a1784e010290355",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/models.py",
-      "sha256": "2c8d5af08cdf0cd5e57e8a7a9eabab23b99ac8fa37d4603c9903dc20cbc57808",
+      "sha256": "d8c5212a0bb0b2ec716cc1ee2aecd75b7164238b9a1e661f02ba6796283d691b",
       "source": "bstack/engineering/review-pr/scripts/models.py",
-      "source_sha256": "2c8d5af08cdf0cd5e57e8a7a9eabab23b99ac8fa37d4603c9903dc20cbc57808",
+      "source_sha256": "d8c5212a0bb0b2ec716cc1ee2aecd75b7164238b9a1e661f02ba6796283d691b",
       "transforms": []
     },
     {
@@ -2229,9 +2229,9 @@
     {
       "mode": 420,
       "path": "shared/session_history.py",
-      "sha256": "9c1b8f24be1cd003e7aff71c0e08aa141a1312390231e54870b54a11e4394dd1",
+      "sha256": "47abba34b76441d5ea0ca9d443532e782103f3c4cd02c2cc7546392e99b2576d",
       "source": "bstack/shared/session_history.py",
-      "source_sha256": "9c1b8f24be1cd003e7aff71c0e08aa141a1312390231e54870b54a11e4394dd1",
+      "source_sha256": "47abba34b76441d5ea0ca9d443532e782103f3c4cd02c2cc7546392e99b2576d",
       "transforms": []
     },
     {
