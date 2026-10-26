@@ -47,6 +47,7 @@
   "skills": {
     "architect": "engineering/architect/SKILL.md",
     "arena": "engineering/arena/SKILL.md",
+    "automate-me": "engineering/automate-me/SKILL.md",
     "blast-radius": "engineering/blast-radius/SKILL.md",
     "bro": "engineering/bro/SKILL.md",
     "bstack-auto": "shared/bstack-auto/SKILL.md",
@@ -93,6 +94,8 @@
     "principle-test-behavior-not-implementation": "engineering/principles/principle-test-behavior-not-implementation/WORKFLOW.md",
     "principle-type-system-discipline": "engineering/principles/principle-type-system-discipline/WORKFLOW.md",
     "prototype": "engineering/prototype/SKILL.md",
+    "recall": "engineering/recall/SKILL.md",
+    "reflect": "engineering/reflect/SKILL.md",
     "research": "engineering/research/SKILL.md",
     "resolve-pr": "engineering/resolve-pr/SKILL.md",
     "review-pr": "engineering/review-pr/SKILL.md",
@@ -113,7 +116,8 @@
     "unslop": "shared/unslop/SKILL.md",
     "verify-bstack": "shared/verify-bstack/SKILL.md",
     "wayfinder": "sdlc/wayfinder/SKILL.md",
-    "why": "engineering/why/SKILL.md"
+    "why": "engineering/why/SKILL.md",
+    "worktree-cleanup": "engineering/worktree-cleanup/SKILL.md"
   },
   "upstream_router": "engineering/poteto-mode/WORKFLOW.md",
   "workflow": "shared/workflow.py",

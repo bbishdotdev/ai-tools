@@ -21,7 +21,8 @@ import tomllib
 sys.dont_write_bytecode = True
 
 SCHEMA = 1
-HOSTS = ("codex", "claude", "cursor", "grok")
+HOSTS = ("codex", "claude", "cursor", "grok", "amp", "copilot")
+DEFAULT_HOSTS = ("codex", "claude", "cursor", "grok")
 STATE = ".bstack/config.json"
 PACKAGE = ".bstack/package"
 BASELINE = "shared/references/baseline-agents.md"
@@ -57,6 +58,14 @@ def session_guidance(auto, hosts, changed=False, codex_disabled=False):
     elif "codex" in hosts:
         notices.append("Codex hooks are disabled in `.codex/config.toml`; the PR creation guard cannot run there. "
                        "Enable hooks and rerun setup when you want Codex hook delivery.")
+    if "amp" in hosts:
+        notices.append("Amp can read `AGENTS.md` and discover `.agents/skills`, but this package does not install an Amp "
+                       "prompt or tool hook. Verify skill discovery with `amp skills list`; automatic routing and the PR guard "
+                       "are advisory in Amp until live hook support is implemented and tested.")
+    if "copilot" in hosts:
+        notices.append("Copilot can discover `AGENTS.md` and `.agents/skills`, but this package does not install "
+                       "Copilot hooks. Verify skill discovery in your Copilot client; automatic routing and the PR guard "
+                       "are advisory until client-specific hooks are implemented and tested.")
     return {"fresh_session_required": changed,
             "native_hook_trust": hook_trust,
             "notice": " ".join(notices)}
@@ -376,7 +385,7 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
                 handler = {"command": command, "timeout": 5}
                 entries.update({e: [handler] for e in ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")})
             add(".cursor/hooks.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
-        else:
+        elif host == "grok":
             guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
             entries = {"PreToolUse": [guard_handler]}
             if auto:
@@ -582,7 +591,7 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
             state = None
         else:
             manifest = package_check(capsule)
-            chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else HOSTS))
+            chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else DEFAULT_HOSTS))
             enabled = mode if mode is not None else current["auto"] if current else True
             verification_mode = verification if verification is not None else current["verification"] if current else "ask"
             install_kind = installation or (current.get("installation", "external") if current else "external")
@@ -664,7 +673,7 @@ def install_offline(project, capsule, hosts=None, mode=None, verification=None):
                 raise Conflict("Existing externally installed Poteto Mode is not owned by bstack. "
                                "Remove it using its distributor before setup; its files will not be adopted or deleted")
             legacy = None
-        chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else HOSTS))
+        chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else DEFAULT_HOSTS))
         enabled = mode if mode is not None else current["auto"] if current else True
         verification_mode = verification if verification is not None else current["verification"] if current else "ask"
         previous = current["managed"] if current else {}

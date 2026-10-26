@@ -145,31 +145,26 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
     text = asset.data.decode()
     changed = []
 
-    if destination == "engineering/poteto-mode/playbooks/multi-phase-plan.md":
-        replacements = {
-            "`git show origin/main:pstack/skills/poteto-mode/playbooks/<execution playbook>.md`": '`cat "<absolute installed execution-playbook path>"`',
-            "`git show origin/main:<control skill path>`": '`cat "<absolute installed control-workflow path>"`',
-            "`git show origin/main:pstack/skills/<each other leaf skill the program uses>`": '`cat "<absolute installed leaf-workflow path>"` for each selected leaf',
-            "`pstack/skills/poteto-mode/playbooks/<execution playbook>.md`": "`<absolute installed execution-playbook path>`",
-            "Read these from trunk at program start.": "Read these installed workflow files at program start.",
-            "Re-read the execution playbook from trunk and the armed /goal.": "Re-read the installed execution playbook at its resolved package path and the armed /goal.",
-        }
-        for before, after in replacements.items():
-            if before not in text:
-                raise ValueError("Review changed multi-phase packaging template: " + before)
-            text = text.replace(before, after)
-        instruction = (
-            "When writing the plan, resolve its execution playbook, control workflow, and every selected leaf through the "
-            "[packaged index](" + relative_target(destination, "index.json") + "). Replace each installed-path "
-            "placeholder with the resolved absolute filename in this installed package. Repeat the leaf-read item for every "
-            "selected leaf. These workflow files come from the reviewed package, not the consumer repository's trunk.\n\n"
-        )
-        text = text.replace("````markdown\n", instruction + "````markdown\n", 1)
-        changed.append("bind-program-template-to-installed-workflow-paths")
-    if destination in ("engineering/poteto-mode/playbooks/autopilot-full.md",
-                       "engineering/poteto-mode/playbooks/autopilot-stack.md"):
-        text = text.replace("re-read this playbook from trunk with", "re-read this bundled playbook with")
-        changed.append("reread-installed-playbook")
+    if destination == "engineering/poteto-mode/WORKFLOW.md":
+        retired = ("- Any PR-status request →", "- Asked to land or ship a green stack →",
+                   "- **Babysit.**", "- **Shipping.**", "- **Orchestrate.**",
+                   "- **Autopilot-full.**", "- **Autopilot-stack.**",
+                   "- **Multi-phase or multi-PR plan.**", "- **Worktree and simulator cleanup.**")
+        lines = text.splitlines()
+        for prefix in retired:
+            if sum(line.startswith(prefix) for line in lines) != 1:
+                raise ValueError("Review changed quarantined router branch: " + prefix)
+        lines = [line for line in lines if not line.startswith(retired)]
+        text = "\n".join(lines) + "\n"
+        old = " A standing project-scale program (multi-day, many stacked PRs, a fleet of subagents under one coordinator) routes to **Orchestrate** instead. figure-it-out designs one bespoke run, orchestrate runs the program."
+        if old not in text:
+            raise ValueError("Review changed Orchestrate router fallback")
+        text = text.replace(old, "")
+        old = "- Bugbot or the agentic security review commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code. Triage fix / dismiss / ask per `references/bugbot-triage.md`."
+        if old not in text:
+            raise ValueError("Review changed review-feedback route")
+        text = text.replace(old, "- Review feedback on your PR → use bstack's resolve-pr entry. Test each claim against evidence and scope before changing code.")
+        changed.append("remove-quarantined-router-branches")
 
     def link(match):
         target = local_target(source, match[2], mapping)
@@ -325,11 +320,15 @@ def assemble(root=ROOT):
     pinned = sources["pstack"]
     upstream = pinned["destination"]
     selected = []
+    quarantined = selection.get("quarantined_playbooks", {})
     for skill in selection["skills"]:
         directory = layers.safe_path(root, upstream + "/skills/" + skill)
         if not (directory / "SKILL.md").is_file():
             raise ValueError(f"Selected workflow missing: {skill}")
-        selected.extend(upstream + "/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory)))
+        selected.extend(upstream + "/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory))
+                        if not (skill == "poteto-mode" and (
+                            path.startswith("scripts/") or path == "references/bugbot-triage.md"
+                            or path.startswith("playbooks/") and PurePosixPath(path).stem in quarantined)))
     selected.extend(upstream + "/agents/" + agent for agent in selection["agents"])
     prototype_source = upstream + "/skills/poteto-mode/playbooks/prototype.md"
     selected.remove(prototype_source)
@@ -440,12 +439,12 @@ def assemble(root=ROOT):
     agents = {Path(agent).stem: mapping[upstream + "/agents/" + agent] for agent in selection["agents"]}
     all_playbooks = {PurePosixPath(source).stem: target for source, target in mapping.items()
                      if source.startswith(upstream + "/skills/poteto-mode/playbooks/") and source.endswith(".md")}
-    quarantined = selection.get("quarantined_playbooks", {})
-    if not isinstance(quarantined, dict) or not set(quarantined) <= set(all_playbooks) or any(
+    source_playbooks = {path.stem for path in (root / upstream / "skills/poteto-mode/playbooks").glob("*.md")}
+    if not isinstance(quarantined, dict) or not set(quarantined) <= source_playbooks or any(
         not isinstance(reason, str) or not reason.strip() for reason in quarantined.values()
     ):
-        raise ValueError("quarantined_playbooks must name bundled playbooks with reasons")
-    playbooks = {name: path for name, path in all_playbooks.items() if name not in quarantined}
+        raise ValueError("quarantined_playbooks must name pinned playbooks with reasons")
+    playbooks = all_playbooks
     index = {"schema_version": 2, "paths_relative_to": "package", "policy": ROUTER,
              "skills": skills, "agents": agents, "playbooks": playbooks,
              "quarantined_playbooks": quarantined,

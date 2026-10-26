@@ -15,7 +15,7 @@ import zipfile
 
 MAX_FILES = 4096
 MAX_BYTES = 128 * 1024 * 1024
-HOSTS = ("codex", "claude", "cursor", "grok")
+HOSTS = ("codex", "claude", "cursor", "grok", "amp", "copilot")
 
 
 class InvalidBundle(ValueError):

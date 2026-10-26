@@ -14,6 +14,7 @@ DATA = re.compile(r'(<script id="catalog-data" type="application/json">)(.*?)(</
 SKILL_WHY = {
     "architect": "Settle risky interfaces and ownership before code locks in the wrong shape.",
     "arena": "Compare real alternatives when one attempt would be too easy to accept.",
+    "automate-me": "Turn repeated working preferences into a small, reusable rule or skill.",
     "blast-radius": "Find effects outside the diff before a change ships.",
     "bro": "Get the last answer in language you would use with another developer.",
     "bstack-auto": "Choose whether ordinary engineering requests enter Poteto Mode automatically.",
@@ -37,6 +38,8 @@ SKILL_WHY = {
     "poteto-mode": "Choose a full PStack engineering playbook for the current task.",
     "prototype": "Make a design or behavior choice with a cheap, disposable example.",
     "research": "Answer a bounded question from evidence before a decision depends on it.",
+    "recall": "Recover relevant work from project-scoped agent sessions and check what still holds.",
+    "reflect": "Find recurring workflow lessons without turning one mistake into a permanent rule.",
     "resolve-pr": "Judge review feedback before replying or changing code.",
     "review-pr": "Challenge a PR independently and filter out weak findings.",
     "setup-bstack": "Check or adjust the package and host bindings in this project.",
@@ -54,6 +57,7 @@ SKILL_WHY = {
     "unslop": "Keep the agent's prose plain, specific, and human.",
     "verify-bstack": "Check package bindings and runtime behavior before claiming BStack works.",
     "wayfinder": "Keep connected planning questions visible across sessions.",
+    "worktree-cleanup": "Find unused checkouts while preserving work and active sessions.",
     "why": "Find the evidence behind a choice before proposing to reverse it.",
 }
 
@@ -103,6 +107,9 @@ PLAYBOOKS = {
 }
 
 RELATED = {
+    "automate-me": ["reflect", "recall"],
+    "recall": ["reflect", "handoff"],
+    "reflect": ["automate-me", "recall"],
     "grill-me": ["grilling", "wayfinder"],
     "grill-with-docs": ["grilling", "domain-modeling"],
     "wayfinder": ["grilling", "research", "prototype", "to-spec"],

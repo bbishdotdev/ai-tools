@@ -4,19 +4,19 @@ bstack is my opinionated suite of skills, agents, and tools for planning, buildi
 
 It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tree/main/pstack) and [Matt Pocock's skills](https://github.com/mattpocock/skills). Some workflows reuse their work directly, others adapt it, and others draw inspiration from it. Their work is a huge part of the foundation. bstack adds my own skills, preferences, and integrations to connect it all into one stack. [Attribution](ATTRIBUTION.md) records what comes from where.
 
+## Tool compatibility
+
+![bstack compatibility across skills, auto mode, PR workflows, and hooks for CLI and desktop tools](assets/compatibility.svg)
+
+**Supported** means bstack has an implemented path. **Partial** means there is a known gap or the app still needs live validation. **Not supported** means bstack has no binding for that capability. This describes bstack integration, not everything the tool itself can do. In particular, [OpenCode](https://opencode.ai/v2/docs/skills/) can discover `.agents/skills` and [`AGENTS.md`](https://opencode.ai/v2/docs/instructions/), but bstack does not yet install an OpenCode hook. The [installation guide](INSTALL.md) covers host selection and checks.
+
 ## What bstack adds
 
-- A connected [planning and engineering workflow](sdlc/README.md): questions, prototypes, specs, tickets, implementation, and PRs, with shared handoffs between phases.
-- A shared [ADR process](shared/references/architecture-decisions.md) that carries fundamental decisions between phases and avoids reopening settled choices without new evidence. Most features need no ADR.
-- A [local workspace app](workspace/README.md) for Wayfinder decision maps and a Kanban ticket board. You and your agent use the same saved work without needing an external tracker.
-- One installer for Codex, Claude Code, Cursor, and Grok CLIs, with direct skill invocation and automatic routing through Poteto Mode on new installs. You can turn routing off.
-- Optional [shared personal memory](shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.
-- Custom [prototyping](engineering/prototype/SKILL.md), [writing rules](shared/skills/unslop/SKILL.md), and [visual PR briefings](engineering/to-pr/SKILL.md), shaped around how I work.
-- [PR feedback resolution](engineering/resolve-pr/SKILL.md) that checks reviewer claims before editing and keeps unrelated work out of the PR.
-- An optional [project PR policy](shared/references/pr-policy-template.md) for human-review paths, critical behavior, and team priorities that `to-pr`, `review-pr`, and `resolve-pr` share.
-- A complete, pinned package that installs offline and preserves your selected tools and routing preferences when you upgrade.
+![bstack planning, building, and PR review connected by handoffs, architecture decisions, shared memory, and a local workspace](assets/workflow.svg)
 
-Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. The [verification skill](shared/skills/verify-bstack/SKILL.md) explains what to check for a given change; dated results live in [audit](audit/).
+The [planning skills](sdlc/README.md), [engineering workflows](engineering/README.md), and [PR tools](engineering/to-pr/SKILL.md) work on their own or together. [Handoffs](shared/skills/handoff/SKILL.md) carry work between sessions; the [ADR process](shared/references/architecture-decisions.md) preserves the few decisions worth keeping. The [local workspace](workspace/README.md) holds Wayfinder maps and Kanban tickets without an external tracker.
+
+The package is pinned and installs offline. It also includes [shared memory](shared/memory.md), the `recall` / `reflect` / `automate-me` session tools, and a [project PR policy](shared/references/pr-policy-template.md) that teams can customize. Planning and tickets are local today; GitHub, Jira, and Linear tracker adapters remain future work. GitHub PR publishing already works.
 
 ## Install
 
@@ -78,11 +78,13 @@ You can enter at any point. A bug fix does not need a Wayfinder map, and a plann
 | Turn accepted decisions into work | `to-spec`, then `to-tickets` if tickets help |
 | Build from an approved plan or a clear request | `implement`; automatic routing can also select the engineering workflow for an ordinary prompt |
 | Prepare, review, or respond to a PR | `to-pr`, `review-pr`, or `resolve-pr` |
+| Catch up on prior work or improve a repeated agent workflow | `recall`, `reflect`, or `automate-me` |
+| Audit stale Git worktrees before reclaiming disk | `worktree-cleanup` |
 | Set this repo's PR review priorities | `configure-pr` |
 
 Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how` in Claude Code and Cursor. [SDLC entries](sdlc/README.md) and [engineering entries](engineering/README.md) describe the individual workflows. The local [workspace app](workspace/README.md) and agent CLI share planning and ticket records.
 
-Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models and supports local wrapper commands. PR review checks the diff and discussion before starting its isolated reviewers. Running the app or tests during review is optional and needs a separate credential-free worker.
+Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models and supports local wrapper commands. On Linux, `bubblewrap` and `socat` let review-pr use its bundled isolated worker without a custom setup command; other hosts need a vetted worker. PR review checks the diff and discussion before starting its isolated reviewers. Running the app or tests during review is optional and needs a separate credential-free worker.
 
 ### What loads into context
 

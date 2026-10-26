@@ -39,6 +39,7 @@ def configuration(project, path=None):
     source = Path(path) if path else project / ".bstack/review.json"
     config = {"roles": {key: dict(value) for key, value in DEFAULTS.items()}, "timeout_seconds": 900, "zip_trees": {}, "targets": [], "worker": None, "runtime_verification": None,
               "max_model_calls_24h": 60}
+    worker_specified = False
     if path or source.exists():
         supplied = read_json(source)
         if not isinstance(supplied, dict) or set(supplied) - {"roles", "timeout_seconds", "zip_trees", "targets", "worker", "runtime_verification", "max_model_calls_24h"}:
@@ -52,10 +53,15 @@ def configuration(project, path=None):
         config["timeout_seconds"] = supplied.get("timeout_seconds", config["timeout_seconds"])
         config["zip_trees"] = validate_zip_trees(supplied.get("zip_trees", {}))
         config["targets"] = supplied.get("targets", [])
+        worker_specified = "worker" in supplied
         config["worker"] = supplied.get("worker")
         runtime = supplied.get("runtime_verification")
         config["runtime_verification"] = validate_runtime_config(runtime, project) if runtime is not None else None
         config["max_model_calls_24h"] = supplied.get("max_model_calls_24h", config["max_model_calls_24h"])
+    if not worker_specified and sys.platform == "linux" and shutil.which("bwrap") and shutil.which("socat"):
+        bundled = Path(__file__).with_name("isolated_worker.py")
+        if bundled.is_file():
+            config["worker"] = [sys.executable, str(bundled), "{args}"]
     if type(config["timeout_seconds"]) is not int or not 30 <= config["timeout_seconds"] <= 3600:
         raise ReviewError("timeout_seconds must be an integer between 30 and 3600")
     if type(config["max_model_calls_24h"]) is not int or not 7 <= config["max_model_calls_24h"] <= 1000:
@@ -163,6 +169,14 @@ def run_model(role, schema, work, project, config, data, timeout, capture=None):
     args = model_command(role, schema, work, project)
     if not config.get("worker"):
         raise ReviewError("Independent reviewers require an isolated model worker")
+    bundled = Path(__file__).with_name("isolated_worker.py")
+    if len(config["worker"]) > 1 and config["worker"][1] == str(bundled):
+        selected = shutil.which(args[0])
+        if not selected or Path(args[0]).name != role["cli"]:
+            raise ReviewError("The bundled review worker supports direct Codex and Claude CLIs. This launcher needs a separately isolated worker")
+        with Path(selected).resolve().open("rb") as binary:
+            if binary.read(4) != b"\x7fELF":
+                raise ReviewError("The bundled review worker needs a native Codex or Claude binary. This script-based CLI needs a separately isolated worker")
     trusted_executable(config["worker"][0], project)
     trusted_executable(args[0], project)
     verify_worker(config, work, project)

@@ -220,6 +220,18 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(self.run_cli("install", "--auto", "on")["auto"])
         self.assertTrue(self.run_cli("install")["auto"])
 
+    def test_amp_and_copilot_use_shared_skills_without_claiming_hooks(self):
+        installed = self.run_cli("install", "--hosts", "amp", "copilot")
+        self.assertEqual(installed["hosts"], ["amp", "copilot"])
+        self.assertIn("Amp can read", installed["notice"])
+        self.assertIn("Copilot can discover", installed["notice"])
+        self.assertTrue((self.project / "AGENTS.md").is_file())
+        self.assertTrue((self.project / ".agents/skills/how/SKILL.md").is_file())
+        for folder in (".codex", ".claude", ".cursor", ".grok"):
+            self.assertFalse((self.project / folder).exists())
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        self.assertEqual(self.run_cli("install")["hosts"], ["amp", "copilot"])
+
     def test_pr_guard_stays_bound_across_manual_and_automatic_routing(self):
         self.run_cli("install", "--auto", "off")
         paths = {"codex": ".codex/hooks.json", "claude": ".claude/settings.json",

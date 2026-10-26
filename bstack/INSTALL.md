@@ -71,6 +71,10 @@ Start a fresh Code chat rooted in that repo afterward. The parent can serve as a
 
 A separate worktree, cloud session, or SSH host can have a different filesystem. Install bstack in that session's checkout. Copying `.bstack/config.json` from another checkout is not a substitute: ownership records and generated bindings contain paths to their original project. Regular Chat and Cowork are separate environments and are not covered by this project installer.
 
+### Check a host after installation
+
+Run the installed `doctor` first, then start a fresh session in the project. For Amp, run `amp skills list --json` there and look for a BStack entry such as `how`; Amp's own `reload_skills` tool can rescan an existing thread. For Copilot CLI, run `copilot skill list`; in VS Code with Copilot, open the Skills customization view or type `/skills` in a Local chat. These are native discovery checks, not proof of automatic routing. Amp and Copilot currently have no BStack prompt hook or PR guard. Check the [compatibility matrix](README.md#tool-compatibility) before depending on those behaviors.
+
 ## From a download or clone
 
 [Download bstack](https://github.com/bbishdotdev/ai-tools/releases/latest) and choose the `bstack-<version>.zip` asset. Extract it to get one `bstack/` folder. The automatic source ZIP and tarball on that page contain the development repository; the named bstack ZIP contains the ready-to-use installer.
@@ -85,7 +89,7 @@ Or, from that extracted folder, run:
 python3 install.py --project /path/to/my-project
 ```
 
-The project directory must already exist. Add `--hosts codex claude cursor grok`, with only the tools you want, to choose hosts. Without this flag, a new install configures all four; an upgrade preserves its existing selection. You can pass `--auto off` and `--verification off|ask|auto` at install time.
+The project directory must already exist. Add `--hosts codex claude cursor grok amp copilot`, with only the tools you want, to choose hosts. Without this flag, a new install configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves its existing selection. Amp and Copilot must be selected explicitly for now. They read `AGENTS.md` and discover `.agents/skills`, but BStack does not install their hooks yet. You can pass `--auto off` and `--verification off|ask|auto` at install time.
 
 The installer checks the bundled files, copies the package into `.bstack/package/`, creates the skill bindings, and runs `doctor`. Setup needs Python 3.11+ but no npm, skills.sh, Git, or network. You can remove the downloaded folder afterward. Start a fresh agent session when the result requests it. Automatic routing is on for a new install and can be turned off; shared memory remains optional.
 
@@ -146,7 +150,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workf
 
 The live check sends a short prompt to the configured model for each role. A failed role stops that workflow and tells you whether to fix login, choose another model, or correct the launcher. The PR review runner also checks its roles before a new full review. Autonomous grilling's normal preflight checks its CLI roles before planning writes. The `to-pr` check proves Codex can answer a text prompt; its image tool and the final picture still need a real visual attempt.
 
-`review-pr` needs an isolated model worker for every PR. Its tool-free safety preflight checks the pinned diff and discussion first, but a pass does not give reviewers host access. The general model doctor checks model access; the review runner's own `doctor --live` checks its worker canary. Optional app or test execution needs a separate credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md) before automating reviews.
+`review-pr` needs an isolated model worker for every PR. On Linux with `bubblewrap` and `socat`, BStack selects its bundled worker automatically. Its tool-free safety preflight checks the pinned diff and discussion first, but a pass does not give reviewers host access. Run the review runner's `doctor --live` to check the worker, logins and selected models together. Other hosts need a vetted worker. Optional app or test execution needs a separate credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md) before automating reviews.
 
 If a tool is launched through a local wrapper, tell your agent the working terminal command. For example, a wrapper that runs `launch claude -- <arguments>` can be saved once:
 
@@ -240,7 +244,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 
 Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Auto hooks send a short router reminder; they do not add the full engineering corpus to every turn. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Checking status or repeating an unchanged mode does not require a fresh session.
 
-When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack keeps its PR creation guard for selected hosts, so Codex hook trust may still need review. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
+When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack keeps its PR creation guard for selected Codex, Claude Code, Cursor, and Grok hosts, so Codex hook trust may still need review. Amp and Copilot have no BStack hook binding yet. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
 
 Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 
