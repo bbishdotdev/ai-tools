@@ -1,0 +1,55 @@
+bstack/CHANGELOG.md
+  s_38de0cff648beb::t_a81fe549246897 7-8
+bstack/engineering/review-pr/SKILL.md
+  s_38de0cff648beb::t_8ce3cedd6f963a 55
+bstack/engineering/review-pr/references/adjudicator.md
+  s_38de0cff648beb::t_21e75d77fbca6f 21,27
+bstack/engineering/review-pr/references/reviewer.md
+  s_38de0cff648beb::t_41de1199fc157d 21
+bstack/engineering/review-pr/references/rubric.md
+  s_38de0cff648beb::t_683329f0d378bc 24-35
+bstack/engineering/review-pr/scripts/contracts.py
+  s_38de0cff648beb::t_18ffd0aaba0066 34-37,48
+bstack/engineering/review-pr/scripts/publication.py
+  s_38de0cff648beb::t_5314a3d058d09f 3,12-13,42-59,82-84,86-90,117,186
+bstack/github/tests/test_review_publication.py
+  s_822e08e34bda62::t_c6516bf2002d23 150-168
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_cb42df8ba4b0e7 55
+bstack/release/bstack/engineering/review-pr/references/adjudicator.md
+  s_822e08e34bda62::t_efef317ec846b6 21,27
+bstack/release/bstack/engineering/review-pr/references/reviewer.md
+  s_822e08e34bda62::t_2fa189b63dfb12 21
+bstack/release/bstack/engineering/review-pr/references/rubric.md
+  s_822e08e34bda62::t_0a54699186af2c 24-35
+bstack/release/bstack/engineering/review-pr/scripts/contracts.py
+  s_822e08e34bda62::t_6b777b45b18438 34-37,48
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_822e08e34bda62::t_17e0e0e9dcfb84 3,12-13,42-59,82-84,86-90,117,186
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_312f846797ea0d 1051,1053,1072,1074,1080,1082,1088,1090,1138,1140,1170,1172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d80be1e120c3e522b277a075beeaa793d11fc43c",
+  "prompts": {},
+  "sessions": {
+    "s_38de0cff648beb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ada28974-6f5e-4474-8542-25acc15d4959",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
