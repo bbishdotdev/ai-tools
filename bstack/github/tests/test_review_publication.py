@@ -147,6 +147,25 @@ class ReviewPublicationTests(unittest.TestCase):
                 self.assertEqual(publish_result(assessment, directory, host, True)["status"], "already_published")
                 self.assertEqual(len(host.writes), 2)
 
+    def test_findings_separate_impact_next_step_and_named_code_references(self):
+        references = [*self.evidence, {**self.evidence[0], "line": 2}, {**self.evidence[0], "line": 3},
+                      {**self.evidence[0], "line": 4}, self.evidence[0]]
+        decision = {**self.finding, "id": "decision", "category": "human-decision",
+                    "title": "Confirm who can see shared records", "explanation": "This changes who can read existing records.",
+                    "action": "Confirm which users should have access.", "evidence": references}
+        suggestion = {**self.finding, "id": "suggestion", "category": "moderate", "title": "Large exports repeat work"}
+        result = self.result([suggestion, decision], new=["suggestion", "decision"])
+        preview = publish_result(result, self.directory, FakeGitHub(self.snapshot), False)
+        body = preview["body"]
+        self.assertLess(body.index("### Decision needed"), body.index("### Suggested improvements"))
+        self.assertIn("This changes who can read existing records\\.\n\n**Next step:** Confirm which users should have access\\.", body)
+        self.assertIn(r"[service\.py:1](https://github.com/owner/repo/blob/" + "a" * 40 + "/service.py#L1)", body)
+        self.assertIn("<summary>More code references</summary>", body)
+        self.assertIn("service.py#L4", body)
+        self.assertNotIn("Evidence", body)
+        self.assertNotIn("❓", body)
+        self.assertEqual(preview["event"], "COMMENT")
+
     def test_legacy_assessment_renders_model_written_links_as_plain_text(self):
         malicious = {**self.finding, "explanation": "See [proof][x] and ![fetch](https://attacker.example/collect).\n\n[x]: //attacker.example/collect\n<img src=//attacker.example/collect> @attacker"}
         result = self.result([malicious], new=[malicious["id"]])

@@ -21,4 +21,15 @@ A finding names a reachable trigger or material structural cost, the consequence
 
 An unresolved material coverage gap makes the review incomplete. It is not evidence of a bug, and does not erase valid findings elsewhere. Explain why uninspected content matters; a changed binary file alone does not establish a material gap. A failed mapped archive verification remains an unresolved integrity gap. Read-only review does not require rerunning tests. A missing live check makes coverage incomplete only when you can name the consequential behavior you cannot assess from the available code and evidence. No findings is valid; do not fill empty categories.
 
-Write for a busy developer. Usually two short sentences per finding: what can happen and why it matters, then the useful next step. Give precise evidence paths and lines; the runner makes the published links. Keep model prose plain text, without Markdown links or images. Do not narrate the runner or repeat the same point in the title, explanation and action. Use plain language without softening real blockers to meet a length target.
+## Write the public review
+
+Apply [bro's plain-language standard](../../../upstream/pstack/skills/bro/SKILL.md) before returning public text: restate it simply and concisely, like one developer talking to another. Assume the author knows the feature but has not studied the reviewer's internals.
+
+- `title`: name the problem or impact in familiar words. Avoid function names and variable names.
+- `explanation`: one or two short sentences explaining what can happen and why it matters. Usually 25-45 words is enough. Pick the main cause and consequence; do not recap every supporting fact. Keep exact flags, error text, internal names, byte limits, and investigative history in evidence reasons or private decisions unless essential to understand the impact. Explain a necessary technical term in familiar words.
+- `action`: one specific next step or decision, usually one sentence. State the desired outcome rather than writing an implementation recipe. Don't repeat the explanation or prescribe extra tests instead of fixing the cause.
+- `evidence`: precise paths, lines, and technical detail. The publisher keeps code links separate from the prose.
+
+For example, "read_context rejects a serialized diff with max_lines=1" belongs in the private analysis. Public text can say: "Long patches and comments can become unreadable, so reviewers may miss important details." The next step is: "Split long text into complete, readable chunks."
+
+Read the public text once more before returning it. Can the author understand the problem, risk, and next step on the first read? Replace jargon, cut repetition, and preserve the concrete facts. A serious finding may need more detail, but not a wall of text. Coverage limits and replies need the same plain language. Keep model prose plain text without Markdown links, images, severity icons, or formatting; the publisher owns the layout. Do not soften a real blocker to meet a length target.
