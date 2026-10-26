@@ -1,0 +1,91 @@
+bstack/github/tests/test_restricted_cli.py
+  s_822e08e34bda62::t_697e177fe05447 5,20
+  s_822e08e34bda62::t_461e76d20f8d54 96-102,125-153
+  s_822e08e34bda62::t_f7ac86024e7023 53
+  s_822e08e34bda62::t_c5ab2cd7a12a2f 67
+  s_822e08e34bda62::t_c5a964c49f5087 88,118-123
+  s_822e08e34bda62::t_b36077318421d6 1-4,6-19,21-52,54-56,58-66,68-87,89-95,103-117,124,154-160
+  s_822e08e34bda62::t_f4a95df179717a 57
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_169dcb9328ad9b 5,7,22-35,46-48,50,54-55,62,74
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_72c71e6e0f66cb 7
+bstack/engineering/review-pr/scripts/restricted_cli.py
+  s_822e08e34bda62::t_c5ab2cd7a12a2f 66
+  s_822e08e34bda62::t_b06099a6766a27 82
+  s_822e08e34bda62::t_b36077318421d6 1-11,13-28,31-65,67-81,83-85,87-90,92-105
+  s_822e08e34bda62::t_f4a95df179717a 12,86
+  s_822e08e34bda62::t_f7ac86024e7023 29-30,91
+bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_d1d672fb11a99d 7,9,11,13,15,17-33,36-42
+  s_822e08e34bda62::t_7bd17049a142fc 34-35
+bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_72c71e6e0f66cb 11-12
+bstack/INSTALL.md
+  s_822e08e34bda62::t_72c71e6e0f66cb 153
+bstack/github/tests/test_review.py
+  s_822e08e34bda62::t_87b2b6d9a9d827 162-170,210,508-528
+  s_822e08e34bda62::t_d2f22ce9a8edb6 22-23,26,29,35,42-47,85,113-135,137-144,146,148,150-152,172,175,234,382,387-390,478,484-488,572-576,846
+  s_822e08e34bda62::t_8ff833aec14f6a 529
+bstack/shared/model_cli.py
+  s_822e08e34bda62::t_43094b201985b6 249-277,297-298
+  s_822e08e34bda62::t_dcb5ea92ed8c0c 299
+bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_72c71e6e0f66cb 26,28,32
+bstack/README.md
+  s_822e08e34bda62::t_72c71e6e0f66cb 87
+bstack/shared/tests/test_model_cli.py
+  s_822e08e34bda62::t_43094b201985b6 8,68-93,96-114
+bstack/engineering/review-pr/scripts/browsing_eval.py
+  s_822e08e34bda62::t_3ed7c84acf587e 1-6,9,12-95,97-106,108-164,166-168,170-197,199-203,207-220,222-236
+bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_69a86bda2f9793 5,12-13,22-23,126-127,134-135,148-150,156-183,189-192,194,197,201-202,205-209,213,221-228,234,244-245,261-264,267-272
+bstack/engineering/review-pr/scripts/repo_browser.py
+  s_822e08e34bda62::t_d27b8467d2d794 1-393
+bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_a497bcd7ea6819 30
+bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_6a69faad2c4ec0 67-73
+bstack/github/tests/test_repo_browser.py
+  s_822e08e34bda62::t_30f68f472a5567 1-140
+bstack/release/bstack/engineering/review-pr/SKILL.md
+  s_822e08e34bda62::t_205f949cced9aa 26,28,32
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_23bd29b497f1eb 5,7,22-35,46-48,50,54-55,62,74
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_822e08e34bda62::t_922f7fa2406784 7,9,11,13,15,17-42
+bstack/release/bstack/engineering/review-pr/scripts/browsing_eval.py
+  s_822e08e34bda62::t_c6a0814711a0ac 1-240
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_822e08e34bda62::t_427381a20f98fa 5,12-13,22-23,126-127,134-135,148-150,156-183,189-192,194,197,201-202,205-209,213,221-228,234,244-245,261-264,267-272
+bstack/release/bstack/engineering/review-pr/scripts/repo_browser.py
+  s_822e08e34bda62::t_472bae98ba271a 1-393
+bstack/release/bstack/engineering/review-pr/scripts/restricted_cli.py
+  s_822e08e34bda62::t_f7e88ce06cfb74 1-105
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_822e08e34bda62::t_52123b963ae450 30
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_822e08e34bda62::t_04c00f20502dfa 67-73
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_18279f74d9027a 1051,1053,1098,1100,1106,1108,1119-1126,1154,1156,1175-1190,1194,1196,1210,1212,2124,2126,2186,2188
+bstack/release/bstack/shared/model_cli.py
+  s_822e08e34bda62::t_1ab4c43f800f33 249-277,297-299
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_682fb0bd6dd9d7 11-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8a072e5a7b30f03e32eac64b33bf2160a16a055e",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
