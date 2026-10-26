@@ -4,17 +4,11 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- PR reviews now group findings by the action needed, separate next steps from explanations, and use named code links. Final review prose has a plain-language edit and smaller public-text limits. Existing published reviews remain readable after upgrading.
-
-- PR reviewers now browse the entire pinned repository through a bundled, restricted browser. Static reviews no longer require Bubblewrap, Socat, or a custom model worker; optional app and test execution still requires a separate runtime worker. Upgrading from the automatic Linux worker removes its default OS isolation; configure an explicit vetted worker if that boundary is required.
-- Added portable `automate-me`, `recall`, and `reflect` workflows with a project-scoped reader for Codex, Claude Code, Cursor, and Grok sessions. Amp thread export is available with an explicit project-confirmation step.
-- Added a read-only worktree audit and owned cleanup skill. Quarantined playbooks and their unused helper scripts no longer ship in the consumer bundle; their pinned sources remain for selective porting.
-- Added optional Amp and Copilot core bindings through `AGENTS.md` and `.agents/skills`, with clear limits on routing hooks and live validation. The README now tracks app and CLI compatibility separately.
-
 ## Published releases
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [3.0.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.0.0) | 2026-10-26 | [Portable review tools and clearer feedback](release-notes/3.0.0.md) |
 | [2.0.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v2.0.0) | 2026-10-23 | [Safer PR reviews and portable setup](release-notes/2.0.0.md) |
 | [1.0.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v1.0.0) | 2026-10-19 | [Browsable guide, project PR policy, and clearer setup](release-notes/1.0.0.md) |
 | [0.8.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v0.8.0) | 2026-10-10 | [Scoped PR feedback and safer upgrades](release-notes/0.8.0.md) |

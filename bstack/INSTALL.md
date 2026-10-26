@@ -34,10 +34,10 @@ There are two steps: skills.sh downloads `install-bstack`; asking your agent to 
 
 ### Install a published version
 
-The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 2.0.0:
+The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 3.0.0:
 
 ```sh
-npx skills add 'bbishdotdev/ai-tools#v2.0.0' --skill install-bstack
+npx skills add 'bbishdotdev/ai-tools#v3.0.0' --skill install-bstack
 ```
 
 Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route updates an installed project just because `main` changes.
@@ -165,7 +165,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workf
 Keep credentials in the CLI's normal login or environment, not in the saved command template.
 If the wrapper executable lives in the project, a relative executable path is resolved from the project root. Use absolute paths for any separate script files passed to that executable.
 
-The current launcher adapters cover Codex, Claude Code, Cursor and Grok. AMP has not been added or verified yet.
+The headless model launcher covers Codex, Claude Code, Cursor, and Grok. Amp and Copilot have optional project skill bindings, but are not headless review-model adapters. Their native discovery checks are described above.
 
 ## Installed layout
 
@@ -249,6 +249,8 @@ When automatic routing is enabled for Codex, review its hooks by opening `codex`
 Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 
 ## Update, migrate, and remove
+
+For a 2.0 upgrade, first read the [3.0.0 security change](release-notes/3.0.0.md#breaking-changes). Static review no longer requires an external model worker. Keep an explicit vetted worker if you rely on OS isolation, and retest it with `doctor --live`; the bundled tool restrictions do not provide that boundary.
 
 Refresh the installer first, then run it again for the target project. If you used skills.sh, repeat the same `npx skills add ... --skill install-bstack` command from [above](#with-skillssh), with the new tag if you pin releases. Use `-g` again if your installer is user-scoped. Then ask your agent: "Use install-bstack to upgrade this project." If you installed from a release ZIP or clone, get the newer bundle and run its `install.py --project <project-root>`. Updating the installer skill alone does not update the project package.
 

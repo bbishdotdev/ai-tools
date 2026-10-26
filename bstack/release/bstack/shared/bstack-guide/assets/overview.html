@@ -239,6 +239,7 @@
         </section>
         <section class="route-panel" id="panel-pr" role="tabpanel" aria-labelledby="tab-pr" tabindex="0" hidden>
           <h3 class="route-title">Make the change easy to judge.</h3><p><code>to-pr</code> explains a new PR and checks overlapping work. <code>review-pr</code> challenges it with independent reviewers when the required CLIs are available. <code>resolve-pr</code> checks feedback before making a fix or replying.</p><span class="route-takeaway">An existing PR can start at review.</span>
+          <p class="muted">Reviewers can search the whole saved repository, including unchanged callers. General shell, private-file reads, and arbitrary web requests are disabled through their tools. These restrictions are not an operating-system sandbox. Running your app or tests is a separate optional setup. Feedback explains the problem, its impact, and a concrete next step, with code links underneath.</p>
           <div class="flow" aria-label="Optional to-pr for a new PR, review-pr, then resolve-pr as needed"><span class="flow-step optional"><strong>to-pr</strong><small>new PR briefing</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step"><strong>review-pr</strong><small>independent challenge</small></span><span class="flow-arrow" aria-hidden="true">→</span><span class="flow-step optional"><strong>resolve-pr</strong><small>judge feedback</small></span><p class="flow-note">A reply can resolve a comment. Code changes are not automatic.</p></div>
         </section>
         <section class="route-panel" id="panel-learn" role="tabpanel" aria-labelledby="tab-learn" tabindex="0" hidden>
@@ -275,6 +276,7 @@
         <p class="kicker">Context</p><h2 id="continuity-title">What survives a chat</h2>
         <p class="section-intro">Keep project decisions in the project. Keep active work in the workspace. Move only accepted scope and evidence to the next agent or model.</p>
         <div class="continuity-list"><div class="continuity-item"><h3>Project baseline</h3><p>Seven engineering rules go in project instructions, including when auto routing is off.</p></div><div class="continuity-item"><h3>ADRs</h3><p>Short repository records capture fundamental architecture choices. Most feature-level decisions do not need one.</p></div><div class="continuity-item"><h3>Local work + handoffs</h3><p>Maps, specs, and tickets persist in a private SQLite workspace. Handoffs carry accepted work into a fresh agent context.</p></div><div class="continuity-item"><h3>Optional personal memory</h3><p>Approved preferences can carry across Codex, Claude Code, and Cursor. Project facts stay outside personal memory.</p></div></div>
+        <p class="muted">Use <code>recall</code> to catch up on a project, <code>reflect</code> to review how a session went, or <code>automate-me</code> to turn repeated preferences into a proposed skill or rule. Their session reader stays within the selected project. Amp thread export needs you to confirm the selected threads first.</p>
       </section>
       <section class="doc-section" id="workspace" aria-labelledby="workspace-title">
         <p class="kicker">Local data</p><h2 id="workspace-title">Workspace and operations</h2>
@@ -308,7 +310,7 @@ python3 .bstack/package/scripts/bstack.py verification status --project "$PWD"</
   <dialog id="catalog-detail" aria-labelledby="detail-title"><div class="dialog-head"><span>Catalog entry</span><span style="flex:1"></span><button class="dialog-close" id="detail-close" type="button" aria-label="Close catalog entry">Close</button></div><div class="detail-body"><div class="detail-meta" id="detail-meta"></div><h2 id="detail-title"></h2><h3>What it does</h3><p id="detail-what"></p><h3>Why or when to use it</h3><p id="detail-why"></p><h3>How it gets loaded</h3><p id="detail-loading"></p><div id="detail-related-wrap"><h3>Related entries</h3><div id="detail-related"></div><p>Related doesn't mean they run in sequence. The routing map shows which calls happen within a skill.</p></div></div></dialog>
   <script id="catalog-data" type="application/json">
 {
-  "version": "2.1.0-dev.1",
+  "version": "3.0.0",
   "counts": {"skills":47,"principles":23,"playbooks":16,"internal":3},
   "items": [
     {"name":"architect","kind":"skill","area":"Engineering","what":"Sketch types, signatures, and module structure before code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', or non-trivial work where jumping to code would lock in the wrong shape.","why":"Settle risky interfaces and ownership before code locks in the wrong shape.","loading":"Invoke directly; a selected workflow may read it when relevant","related":[]},

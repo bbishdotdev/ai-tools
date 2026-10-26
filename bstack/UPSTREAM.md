@@ -22,7 +22,7 @@ Run `python3 bstack/scripts/package.py build` after changing owned sources or se
 
 The owned [PR workflow](engineering/to-pr/SKILL.md) also replaces the imported Opening a PR playbook during assembly. Its PStack review bases are recorded separately. Matt Pocock's experimental PR skill informed the visual/evidence approach but is not imported as another pinned source.
 
-The owned [project verifier creator](engineering/create-verification-skill/SKILL.md), [verifier maintainer](engineering/maintain-verification-skill/SKILL.md), and [no-comments pass](engineering/no-comments/SKILL.md) replace Cursor-bound PStack versions. Their reviewed bases are in `layers.json`; the pinned originals remain untouched. The [portability audit](docs/PORTABILITY-AUDIT.md) records imported workflows that need host capabilities, playbooks quarantined from routing, and source skills removed from the consumer catalog. A quarantined file can remain in the bundle for provenance without being an active playbook in `index.json`.
+The owned [project verifier creator](engineering/create-verification-skill/SKILL.md), [verifier maintainer](engineering/maintain-verification-skill/SKILL.md), and [no-comments pass](engineering/no-comments/SKILL.md) replace Cursor-bound PStack versions. Their reviewed bases are in `layers.json`; the pinned originals remain untouched. The [portability audit](docs/PORTABILITY-AUDIT.md) records imported workflows that need host capabilities, playbooks quarantined from routing, and source skills removed from the consumer catalog. Quarantined playbooks and their unused helpers remain in the pinned development sources, outside the consumer bundle. `index.json` records their names and limits without making them runnable.
 
 ## Check the current tree
 

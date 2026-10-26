@@ -4,7 +4,7 @@
 
 `review-pr` runs two independent model sessions, anonymizes structured findings, and starts a fresh adjudicator with the source needed to challenge them. Both reviewers question whether the PR is needed. Current ADRs and the bstack baseline govern the review. An empty, completed review can approve; an unavailable or incomplete review cannot.
 
-Follow-ups use the last complete review, new changes and affected scope. Settled findings need explicit dispositions. Unchanged compatible inputs reuse assessments, including trusted shared public reviews; different models or `--fresh` still run independently. Human rebuttals receive evidence-based reassessment without automatic concession. Publication is separately authorized, tied to the reviewed commit and reconciled action by action.
+Follow-ups use the last complete review, new changes and affected scope. Settled findings need explicit dispositions. Unchanged compatible inputs reuse local assessments; published reviews from another checkout remain discussion evidence and cannot skip model work. Different models or `--fresh` still run independently. Human rebuttals receive evidence-based reassessment without automatic concession. Publication is separately authorized, tied to the reviewed commit and reconciled action by action.
 
 ## Draft checks
 
@@ -19,9 +19,9 @@ Use temporary Git repositories and fake forge/model executables for lifecycle ch
 
 Include stdout-only client failures and generated ZIP coverage. A configured ZIP must match its pinned source tree exactly, including after a follow-up reverts only the archive. A mismatch must leave the prior complete assessment intact.
 
-Cover preserved partial findings, unchanged partial reuse, current target ADR context, closed/conflicting PR preflight and public receipt reuse from another checkout without creating an approval. Verify that changed models run and existing reviews remain in context. Exercise agreement-only reactions without another request-changes event, evidence-based replies, unique new blockers, and retries after a reply succeeds but the later review fails. Malformed, edited, dismissed or untrusted receipts must not skip review.
+Check that older published findings remain readable under their original text limits, edited receipts stay invalid, and public text separates impact, next step, and named code references. Cover preserved partial findings, unchanged partial reuse, current target ADR context, closed/conflicting PR preflight and public receipt reuse from another checkout without creating an approval. Verify that changed models run and existing reviews remain in context. Exercise agreement-only reactions without another request-changes event, evidence-based replies, unique new blockers, and retries after a reply succeeds but the later review fails. Malformed, edited, dismissed or untrusted receipts must not skip review.
 
-Install the generated bundle into a disposable consumer, remove the downloaded installer and run the installed review helper's help/doctor. Confirm its prompts and referenced principles resolve from the installed package. Doctor's runtime-unchecked result is not a successful model review.
+Install the generated bundle into a disposable consumer, remove the downloaded installer and run the installed review helper's help/doctor. Confirm its prompts and referenced principles resolve from the installed package. A filesystem-only doctor result is not a successful model review. The live doctor must read a snapshot value and observe denied traversal through the configured launch. Review models must retain full-repository search and unchanged-caller reads while shell, arbitrary filesystem, network, and unrelated integration tools stay disabled. Check the [security contract](../../../../engineering/review-pr/references/security.md) for the cross-file and synthetic escape evaluations.
 
 ## Live calibration, when requested
 

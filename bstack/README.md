@@ -98,6 +98,8 @@ Review PR has a built-in Codex/Claude runner. Autonomous grilling still needs it
 
 ## Updates
 
+When upgrading from 2.0, read the [3.0.0 security change](release-notes/3.0.0.md#breaking-changes) before unattended PR review. An external model isolation worker is now optional; restricted review tools are not an OS sandbox.
+
 [Changelog](CHANGELOG.md) collects unreleased changes and links to published release notes. Normal commits and pushes to `main` do not publish a release. A version tag starts the tested release workflow; [release preparation](RELEASING.md) covers when and how to do that.
 
 ## Work in the source tree
