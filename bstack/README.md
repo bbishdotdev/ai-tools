@@ -6,37 +6,17 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 
 ## Tool compatibility
 
-Every install has one project `AGENTS.md` and one `.agents/skills` catalog. Host bindings add discovery links and hooks where BStack implements them. **Configured** means the installer writes those bindings; it does not prove a particular app loaded them. **Partial** means core instructions and skills are available but BStack's automatic router or PR guard is not fully bound or verified.
+![bstack compatibility across skills, auto mode, PR workflows, and hooks for CLI and desktop tools](assets/compatibility.svg)
 
-| Tool | Core skills | Automatic routing and PR guard | Current evidence |
-| --- | --- | --- | --- |
-| Codex CLI | Configured | Configured; hook trust must be checked in the CLI | CLI probes; trust is machine-specific |
-| Codex desktop | Configured | Partial; desktop hook delivery not established | Package binding, no full desktop run |
-| Claude Code CLI | Configured | Configured | CLI probes |
-| Claude Code desktop Code tab | Configured; start a new chat after setup | Partial; app hook behavior needs a live check | Skill discovery observed, not full workflow coverage |
-| Cursor CLI | Configured | Configured, with documented reminder timing limits | CLI probes |
-| Cursor app | Configured | Partial; app behavior needs a live check | Package binding, no full app run |
-| Grok CLI | Configured | Partial; after-tool reminder cannot cover every turn | Headless probes, limited router continuity |
-| [Amp CLI and app](https://ampcode.com/docs/customize/skills) | Partial; `AGENTS.md` and `.agents/skills` are supported | No BStack hook yet | Docs-based binding; Amp is not installed on this test box |
-| [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills) | Partial; project skills are discoverable | No BStack hook yet | Docs-based binding; no live probe |
-| [VS Code with Copilot](https://code.visualstudio.com/docs/agent-customization/agent-skills) | Partial; project skills are discoverable | No BStack hook yet | Docs-based binding; no live probe |
-
-Select `amp` or `copilot` with `--hosts` to record them in the project setup; the default selection remains Codex, Claude Code, Cursor, and Grok. Amp's [project guidance](https://ampcode.com/docs/customize/agents-md) and [skill discovery](https://ampcode.com/docs/customize/skills) cover the core path. Its [plugin events](https://ampcode.com/docs/customize/plugins) could support a stronger router and guard later. The [installation guide](INSTALL.md) explains how to check a particular host rather than treating this matrix as a live certification.
+**Supported** means bstack has an implemented path. **Partial** means there is a known gap or the app still needs live validation. **Not supported** means bstack has no binding for that capability. This describes bstack integration, not everything the tool itself can do. In particular, [OpenCode](https://opencode.ai/v2/docs/skills/) can discover `.agents/skills` and [`AGENTS.md`](https://opencode.ai/v2/docs/instructions/), but bstack does not yet install an OpenCode hook. The [installation guide](INSTALL.md) covers host selection and checks.
 
 ## What bstack adds
 
-- A connected [planning and engineering workflow](sdlc/README.md): questions, prototypes, specs, tickets, implementation, and PRs, with shared handoffs between phases.
-- A shared [ADR process](shared/references/architecture-decisions.md) that carries fundamental decisions between phases and avoids reopening settled choices without new evidence. Most features need no ADR.
-- A [local workspace app](workspace/README.md) for Wayfinder decision maps and a Kanban ticket board. You and your agent use the same saved work without needing an external tracker.
-- One installer for the four established CLI hosts, with optional Amp and Copilot core bindings. Direct skill invocation works through the host catalog; automatic Poteto Mode routing is on by default where its hooks are implemented, and you can turn it off.
-- Portable `recall`, `reflect`, and `automate-me` workflows read selected project sessions without copying full transcripts into the package; a read-only worktree audit helps reclaim unused checkouts safely.
-- Optional [shared personal memory](shared/memory.md) across Codex, Claude, and Cursor's file bridge, with explicit approval for changes to personal notes.
-- Custom [prototyping](engineering/prototype/SKILL.md), [writing rules](shared/skills/unslop/SKILL.md), and [visual PR briefings](engineering/to-pr/SKILL.md), shaped around how I work.
-- [PR feedback resolution](engineering/resolve-pr/SKILL.md) that checks reviewer claims before editing and keeps unrelated work out of the PR.
-- An optional [project PR policy](shared/references/pr-policy-template.md) for human-review paths, critical behavior, and team priorities that `to-pr`, `review-pr`, and `resolve-pr` share.
-- A complete, pinned package that installs offline and preserves your selected tools and routing preferences when you upgrade.
+![bstack planning, building, and PR review connected by handoffs, architecture decisions, shared memory, and a local workspace](assets/workflow.svg)
 
-Planning and ticket storage are local today. GitHub, Jira, and Linear tracker connections are future work; the [adapter contract](shared/references/work-adapters.md) allows planning and tickets to use different providers. GitHub PR publishing is already implemented. The [verification skill](shared/skills/verify-bstack/SKILL.md) explains what to check for a given change; dated results live in [audit](audit/).
+The [planning skills](sdlc/README.md), [engineering workflows](engineering/README.md), and [PR tools](engineering/to-pr/SKILL.md) work on their own or together. [Handoffs](shared/skills/handoff/SKILL.md) carry work between sessions; the [ADR process](shared/references/architecture-decisions.md) preserves the few decisions worth keeping. The [local workspace](workspace/README.md) holds Wayfinder maps and Kanban tickets without an external tracker.
+
+The package is pinned and installs offline. It also includes [shared memory](shared/memory.md), the `recall` / `reflect` / `automate-me` session tools, and a [project PR policy](shared/references/pr-policy-template.md) that teams can customize. Planning and tickets are local today; GitHub, Jira, and Linear tracker adapters remain future work. GitHub PR publishing already works.
 
 ## Install
 

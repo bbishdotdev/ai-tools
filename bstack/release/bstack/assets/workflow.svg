@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 356" role="img" aria-labelledby="title description">
+<title id="title">bstack workflow at a glance</title>
+<desc id="description">Start with planning, engineering, or pull requests. Handoffs, architecture decisions, shared memory, and a local workspace connect the stages.</desc>
+<rect width="1120" height="356" rx="18" fill="#101318"/>
+<g font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+<text x="34" y="49" fill="#f2f5f8" font-size="25" font-weight="700">Start where the work is</text>
+<text x="34" y="76" fill="#a8b3bf" font-size="14">Use one step or move through the whole flow.</text>
+<g stroke="#3b4856" fill="#1a2027"><rect x="34" y="111" width="315" height="139" rx="12"/><rect x="402" y="111" width="315" height="139" rx="12"/><rect x="770" y="111" width="315" height="139" rx="12"/></g>
+<g fill="#72d6ab" font-size="12" font-weight="700" letter-spacing="2"><text x="54" y="143">01 · PLAN</text><text x="422" y="143">02 · BUILD</text><text x="790" y="143">03 · REVIEW</text></g>
+<g fill="#f2f5f8" font-size="22" font-weight="700"><text x="54" y="177">Find the right shape</text><text x="422" y="177">Make it work</text><text x="790" y="177">Make it reviewable</text></g>
+<g fill="#b8c3cd" font-size="14"><text x="54" y="207">Grill · Wayfinder · Prototype</text><text x="54" y="229">Spec · Tickets</text><text x="422" y="207">Poteto Mode · Principles</text><text x="422" y="229">Verification</text><text x="790" y="207">to-pr · review-pr</text><text x="790" y="229">resolve-pr</text></g>
+<g stroke="#72d6ab" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M360 180h30m-9-8 9 8-9 8"/><path d="M728 180h30m-9-8 9 8-9 8"/></g>
+<rect x="34" y="277" width="1051" height="49" rx="10" fill="#202831" stroke="#394754"/>
+<g fill="#dce5ec" font-size="14" font-weight="600"><text x="55" y="307">Handoffs</text><text x="302" y="307">Architecture decisions</text><text x="654" y="307">Optional memory</text><text x="873" y="307">Local workspace</text></g>
+<g fill="#72d6ab"><circle cx="269" cy="302" r="3"/><circle cx="619" cy="302" r="3"/><circle cx="837" cy="302" r="3"/></g>
+</g></svg>

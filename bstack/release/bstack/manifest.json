@@ -38,12 +38,28 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "926bd96632f1c6dcf746bf46cc3d03b7ded99420ca22123128d2e3042b339d3f",
+      "sha256": "760db0b91f3128fd9ef2859508333b512f1fec6ed5ec4e651230339e5a118896",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "54003a4695a725c48d9b15eb342c254de5ee737a382be98a94335e3a4e9b2673",
+      "source_sha256": "0087fcb1dc1d6fb5b34a9016484ff19dc58b7887a4b528d1081f5d5a591ba60c",
       "transforms": [
         "render-release-template"
       ]
+    },
+    {
+      "mode": 420,
+      "path": "assets/compatibility.svg",
+      "sha256": "255e3edf721fb5e662789b8ca48c4152c1eae8864cc0dbab174d1cae27faf56f",
+      "source": "bstack/assets/compatibility.svg",
+      "source_sha256": "255e3edf721fb5e662789b8ca48c4152c1eae8864cc0dbab174d1cae27faf56f",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "assets/workflow.svg",
+      "sha256": "7f89e3abbc3a6a245e720095d2a0a25147e459428fcf9b6fd313d89527ee48bf",
+      "source": "bstack/assets/workflow.svg",
+      "source_sha256": "7f89e3abbc3a6a245e720095d2a0a25147e459428fcf9b6fd313d89527ee48bf",
+      "transforms": []
     },
     {
       "mode": 420,
@@ -1578,7 +1594,7 @@
       "path": "index.json",
       "sha256": "cc476b438aacf15e493df9969259ef69ffe48e3a117aa8ce5cbebe76dcf52aeb",
       "source": "bstack/package/selection.json",
-      "source_sha256": "d9d7b7bdc877469450835703994847f0e9edca51c278fbb4af13c32b5ec68f9c",
+      "source_sha256": "a6f5876af4b654c778916143706339a86e8579a23fd5863a54e325c893ec3016",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]

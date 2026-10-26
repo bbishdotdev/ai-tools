@@ -100,6 +100,8 @@
     "resolve-pr": "engineering/resolve-pr"
   },
   "owned_resources": [
+    "assets/compatibility.svg",
+    "assets/workflow.svg",
     "shared/references/baseline-agents.md",
     "shared/references/workspace.md",
     "shared/references/workspace-requests.md",

@@ -4,6 +4,14 @@ Version 2.1.0-dev.1. bstack is the collection; Poteto Mode is one engineering sk
 
 The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
+![Plan, build, and review with connected handoffs, architecture decisions, shared memory, and a local workspace](assets/workflow.svg)
+
+## Tool compatibility
+
+![bstack compatibility across skills, auto mode, PR workflows, and hooks for CLI and desktop tools](assets/compatibility.svg)
+
+Partial means a known gap or pending live validation; not supported means no bstack binding yet. These statuses describe bstack integration, not every feature of the host itself.
+
 ## Install
 
 Python 3.11+ on macOS or Linux is required. Both routes install the same bundled package.
