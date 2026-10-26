@@ -1,0 +1,65 @@
+bstack/ATTRIBUTION.md
+  s_822e08e34bda62::t_c2b3de2e980a3c 18
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_1314819b051cbe 11
+bstack/INSTALL.md
+  s_38de0cff648beb::t_33de2cb33f2023 37,40,168,253-254
+bstack/README.md
+  s_38de0cff648beb::t_885c0fa8184f73 101-102
+bstack/UPSTREAM.md
+  s_822e08e34bda62::t_e1e79dc63582ab 25
+bstack/docs/PORTABILITY-AUDIT.md
+  s_822e08e34bda62::t_9a1a4842fa75d8 5,14-16,19,27,31,33,40-45
+bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_e4c4c2206ee92d 98
+bstack/package/selection.json
+  s_822e08e34bda62::t_72fba3611c3d02 4
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_78c8dbddf5a7b4 62,109
+bstack/release-notes/3.0.0.md
+  s_822e08e34bda62::t_a1997338d3f15b 1-42
+bstack/release/README.md
+  s_822e08e34bda62::t_3f72824dd98cb1 3
+bstack/release/bstack/ATTRIBUTION.md
+  s_822e08e34bda62::t_259b947ed822b5 18
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_4340b411238aa7 3,62,109
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_822e08e34bda62::t_b52de3755ef7ba 98
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_24d7961a0eebef 23,25,41,43,1098,1100,1621,1942,1944,2186,2188,2741
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_86464bce9305c1 242,279,313
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_8507e0fe6e84a5 19
+bstack/shared/references/setup-requirements.md
+  s_822e08e34bda62::t_a323b7aedaba12 19
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_611e0b3ab318e3 242,279,313
+bstack/shared/skills/verify-bstack/features/pr-reviews.md
+  s_822e08e34bda62::t_7ff9b186ede83e 7,22,24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a4381718dccb9f6e90ab3ffc4d42b9730486a3e3",
+  "prompts": {},
+  "sessions": {
+    "s_38de0cff648beb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ada28974-6f5e-4474-8542-25acc15d4959",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
