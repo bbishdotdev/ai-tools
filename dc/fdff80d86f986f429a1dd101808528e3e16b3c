@@ -1,0 +1,29 @@
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_bfcbab6714057c 7
+bstack/engineering/review-pr/scripts/repo_browser.py
+  s_822e08e34bda62::t_af8f71b0fbfc73 123-134,264,336
+bstack/github/tests/test_repo_browser.py
+  s_822e08e34bda62::t_78fcd918da006c 125-145
+bstack/release/bstack/engineering/review-pr/scripts/repo_browser.py
+  s_822e08e34bda62::t_528abd8f339568 123-134,264,336
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_d5952766166f3c 1178,1180
+docs/adr/0001-restricted-static-review-tools.md
+  s_822e08e34bda62::t_6093c152d05a38 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dcfdff80d86f986f429a1dd101808528e3e16b3c",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
