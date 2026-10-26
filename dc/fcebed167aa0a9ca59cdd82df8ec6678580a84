@@ -1,0 +1,27 @@
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_b7e363e8cabe68 7
+bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_db9bd01588da10 4-7,94
+bstack/github/tests/test_review_publication.py
+  s_822e08e34bda62::t_0905f76e3aaaff 13,258-271
+bstack/release/bstack/engineering/review-pr/scripts/shared.py
+  s_822e08e34bda62::t_7c4ac405a56aea 4-7,94
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_1ec168a7bb6f86 1226,1228
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dcfcebed167aa0a9ca59cdd82df8ec6678580a84",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
