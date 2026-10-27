@@ -39,6 +39,8 @@ class PullRequestGuardTests(unittest.TestCase):
                 decision = json.loads(denied.stdout)
                 self.assertEqual(decision["permissionDecision"], "deny")
                 self.assertIn("to-pr", decision["permissionDecisionReason"])
+                helper = decision["permissionDecisionReason"].rsplit("python3 ", 1)[1]
+                self.assertTrue(Path(helper).is_file(), helper)
                 allowed = subprocess.run(
                     [sys.executable, "-B", str(GUARD), "--host", host],
                     input=json.dumps({"toolName": "bash", "toolArgs": {"command": "gh pr view 3"}}),

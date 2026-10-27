@@ -7,7 +7,9 @@ import shlex
 import sys
 
 
-MESSAGE = "Use bstack's to-pr skill before creating a PR or replacing its body. Run its scan, prepare, then publish steps."
+HELPER = Path(__file__).resolve().parents[2] / "github/pr.py"
+MESSAGE = (f"Use bstack's to-pr skill before creating a PR or replacing its body. Run its helper's scan, prepare, "
+           f"then publish steps: python3 {HELPER}")
 
 
 def commands(source):
