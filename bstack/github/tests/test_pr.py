@@ -441,9 +441,14 @@ class PRTests(unittest.TestCase):
             self.prepare()
         self.assertEqual(raised.exception.code, "invalid_visual")
 
-    def test_multi_file_change_requires_a_visual(self):
+    def test_small_code_and_test_change_needs_no_visual(self):
         gh = FakeGitHub()
-        gh.compare_files = [FILE, {**FILE, "filename": "other.py"}]
+        gh.compare_files = [{**FILE, "changes": 12}, {**FILE, "filename": "test_shared.py", "changes": 15}]
+        self.assertEqual(self.prepare(gh)["status"], "prepared")
+
+    def test_larger_change_requires_a_visual(self):
+        gh = FakeGitHub()
+        gh.compare_files = [{**FILE, "changes": 20}, {**FILE, "filename": "other.py", "changes": 20}]
         with self.assertRaises(pr.Error) as raised:
             self.prepare(gh)
         self.assertEqual(raised.exception.code, "visual_required")
