@@ -48,6 +48,23 @@ class HookProtocol(unittest.TestCase):
             start = self.invoke("cursor", {"hook_event_name": "sessionStart"}, directory)
             self.assertIn("bstack-router/SKILL.md", json.loads(start.stdout)["additional_context"])
 
+    def test_flat_context_hosts_take_the_event_from_the_binding(self):
+        cases = {"copilot": ("userPromptSubmitted", {"sessionId": "s1", "prompt": "fix it"}),
+                 "opencode": ("chat.system.transform", {"sessionID": "s2"}),
+                 "amp": ("agent.start", {"threadId": "T-3"})}
+        with tempfile.TemporaryDirectory() as directory:
+            for host, (event, payload) in cases.items():
+                with self.subTest(host=host):
+                    env = dict(os.environ, BSTACK_VERIFY_DIR=directory, BSTACK_STATE_DIR=str(Path(directory) / "state"))
+                    result = subprocess.run(["python3", str(SCRIPT), "--host", host, "--event", event],
+                                            input=json.dumps(payload), text=True, capture_output=True, env=env)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("bstack-router/SKILL.md", json.loads(result.stdout)["additionalContext"])
+            records = {json.loads(p.read_text())["host"]: json.loads(p.read_text()) for p in Path(directory).glob("hook-*.json")}
+            self.assertEqual({host: (r["event"], r["session_id"]) for host, r in records.items()},
+                             {"copilot": ("userPromptSubmitted", "s1"), "opencode": ("chat.system.transform", "s2"),
+                              "amp": ("agent.start", "T-3")})
+
     def test_invalid_payload_is_visible_failure(self):
         with tempfile.TemporaryDirectory() as directory:
             result = self.invoke("codex", [], directory)

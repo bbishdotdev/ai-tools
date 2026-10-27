@@ -26,6 +26,23 @@ class PullRequestGuardTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
                 self.assertIn("to-pr", result.stderr)
 
+    def test_json_hosts_deny_with_a_reason_the_model_sees(self):
+        for host in ("copilot", "opencode", "amp"):
+            with self.subTest(host=host):
+                denied = subprocess.run(
+                    [sys.executable, "-B", str(GUARD), "--host", host],
+                    input=json.dumps({"toolName": "bash", "toolArgs": {"command": "git push && gh pr create --fill"}}),
+                    text=True, capture_output=True)
+                self.assertEqual(denied.returncode, 0)
+                decision = json.loads(denied.stdout)
+                self.assertEqual(decision["permissionDecision"], "deny")
+                self.assertIn("to-pr", decision["permissionDecisionReason"])
+                allowed = subprocess.run(
+                    [sys.executable, "-B", str(GUARD), "--host", host],
+                    input=json.dumps({"toolName": "bash", "toolArgs": {"command": "gh pr view 3"}}),
+                    text=True, capture_output=True)
+                self.assertEqual((allowed.returncode, json.loads(allowed.stdout)), (0, {}))
+
     def test_body_replacement_is_redirected_but_other_commands_pass(self):
         for command in ("gh pr edit 42 --body-file details.md", "gh pr edit 42 -b 'new body'"):
             self.assertEqual(self.run_guard("claude", command).returncode, 2)

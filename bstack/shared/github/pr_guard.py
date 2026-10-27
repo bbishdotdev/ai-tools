@@ -66,19 +66,22 @@ def bypasses_to_pr(source):
     return False
 
 
+SHELL_TOOLS = ("Bash", "Shell", "bash", "shell")
+
+
 def shell_command(host, payload):
     if host == "cursor":
         return payload.get("command")
     tool = payload.get("tool_name", payload.get("toolName"))
-    if tool not in ("Bash", "Shell"):
+    if tool not in SHELL_TOOLS:
         return None
-    detail = payload.get("tool_input", payload.get("toolInput", {}))
+    detail = payload.get("tool_input", payload.get("toolInput", payload.get("toolArgs", {})))
     return detail.get("command") if isinstance(detail, dict) else None
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--host", required=True, choices=("codex", "claude", "cursor", "grok"))
+    parser.add_argument("--host", required=True, choices=("codex", "claude", "cursor", "grok", "copilot", "opencode", "amp"))
     args = parser.parse_args()
     if os.environ.get("GROK_HOOK_EVENT") and args.host != "grok":
         print(json.dumps({"permission": "allow"} if args.host == "cursor" else {}))
@@ -89,6 +92,9 @@ def main():
         payload = {}
     command = shell_command(args.host, payload) if isinstance(payload, dict) else None
     if isinstance(command, str) and bypasses_to_pr(command):
+        if args.host in ("copilot", "opencode", "amp"):
+            print(json.dumps({"permissionDecision": "deny", "permissionDecisionReason": MESSAGE}))
+            return 0
         print(MESSAGE, file=sys.stderr)
         return 2
     print(json.dumps({"permission": "allow"} if args.host == "cursor" else {}))

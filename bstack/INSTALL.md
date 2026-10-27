@@ -73,7 +73,7 @@ A separate worktree, cloud session, or SSH host can have a different filesystem.
 
 ### Check a host after installation
 
-Run the installed `doctor` first, then start a fresh session in the project. For Amp, run `amp skills list --json` there and look for a BStack entry such as `how`; Amp's own `reload_skills` tool can rescan an existing thread. For Copilot CLI, run `copilot skill list`; in VS Code with Copilot, open the Skills customization view or type `/skills` in a Local chat. These are native discovery checks, not proof of automatic routing. Amp and Copilot currently have no BStack prompt hook or PR guard. Check the [compatibility matrix](README.md#tool-compatibility) before depending on those behaviors.
+Run the installed `doctor` first, then start a fresh session in the project. For Amp, run `amp skills list --json` there and look for a BStack entry such as `how`; Amp's own `reload_skills` tool can rescan an existing thread. For Copilot CLI, run `copilot skill list`; in VS Code with Copilot, open the Skills customization view or type `/skills` in a Local chat. These are native discovery checks, not proof of automatic routing. Amp loads `.amp/plugins/bstack.ts`; `amp plugins list` should show it active. Copilot runs `.github/hooks/bstack.json` only after you trust the folder. OpenCode loads `.opencode/plugins/bstack.js`; `opencode debug config` lists it, and `--pure` skips it. Check the [compatibility matrix](README.md#tool-compatibility) for what has been exercised.
 
 ## From a download or clone
 
@@ -89,7 +89,7 @@ Or, from that extracted folder, run:
 python3 install.py --project /path/to/my-project
 ```
 
-The project directory must already exist. Add `--hosts codex claude cursor grok amp copilot`, with only the tools you want, to choose hosts. Without this flag, a new install configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves its existing selection. Amp and Copilot must be selected explicitly for now. They read `AGENTS.md` and discover `.agents/skills`, but BStack does not install their hooks yet. You can pass `--auto off` and `--verification off|ask|auto` at install time.
+The project directory must already exist. Add `--hosts codex claude cursor grok amp copilot opencode`, with only the tools you want, to choose hosts. Without this flag, a new install configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves its existing selection. Select Amp, Copilot, and OpenCode explicitly. Each gets its native binding: an Amp plugin, Copilot hooks, or an OpenCode plugin. You can pass `--auto off` and `--verification off|ask|auto` at install time.
 
 The installer checks the bundled files, copies the package into `.bstack/package/`, creates the skill bindings, and runs `doctor`. Setup needs Python 3.11+ but no npm, skills.sh, Git, or network. You can remove the downloaded folder afterward. Start a fresh agent session when the result requests it. Automatic routing is on for a new install and can be turned off; shared memory remains optional.
 

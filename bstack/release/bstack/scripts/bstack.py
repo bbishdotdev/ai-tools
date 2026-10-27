@@ -21,7 +21,7 @@ import tomllib
 sys.dont_write_bytecode = True
 
 SCHEMA = 1
-HOSTS = ("codex", "claude", "cursor", "grok", "amp", "copilot")
+HOSTS = ("codex", "claude", "cursor", "grok", "amp", "copilot", "opencode")
 DEFAULT_HOSTS = ("codex", "claude", "cursor", "grok")
 STATE = ".bstack/config.json"
 PACKAGE = ".bstack/package"
@@ -59,13 +59,12 @@ def session_guidance(auto, hosts, changed=False, codex_disabled=False):
         notices.append("Codex hooks are disabled in `.codex/config.toml`; the PR creation guard cannot run there. "
                        "Enable hooks and rerun setup when you want Codex hook delivery.")
     if "amp" in hosts:
-        notices.append("Amp can read `AGENTS.md` and discover `.agents/skills`, but this package does not install an Amp "
-                       "prompt or tool hook. Verify skill discovery with `amp skills list`; automatic routing and the PR guard "
-                       "are advisory in Amp until live hook support is implemented and tested.")
+        notices.append("Amp loads `.amp/plugins/bstack.ts` from this project. Check it with `amp plugins list`.")
+    if "opencode" in hosts:
+        notices.append("OpenCode loads `.opencode/plugins/bstack.js` from this project; `--pure` skips it.")
     if "copilot" in hosts:
-        notices.append("Copilot can discover `AGENTS.md` and `.agents/skills`, but this package does not install "
-                       "Copilot hooks. Verify skill discovery in your Copilot client; automatic routing and the PR guard "
-                       "are advisory until client-specific hooks are implemented and tested.")
+        notices.append("Copilot runs `.github/hooks/bstack.json` only in a trusted folder. Trust the project when "
+                       "Copilot asks, or pass `--trust-folder` for one prompt-mode session.")
     return {"fresh_session_required": changed,
             "native_hook_trust": hook_trust,
             "notice": " ".join(notices)}
@@ -300,6 +299,15 @@ def existing_pr_templates(project):
     return sorted(found)
 
 
+PLUGINS = {"opencode": (".opencode/plugins/bstack.js", "runtime/opencode-plugin.js"),
+           "amp": (".amp/plugins/bstack.ts", "runtime/amp-plugin.ts")}
+
+
+def plugin_source(template, host, invocation, project_arg, guard, auto):
+    return (template.replace("__BSTACK_HOOK__", json.dumps(f"{invocation} hook --host {host} {project_arg}"))
+            .replace("__BSTACK_GUARD__", json.dumps(guard)).replace("__BSTACK_AUTO__", json.dumps(auto)))
+
+
 def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None, verification="ask"):
     manifest = manifest or package_check(capsule)
     included = {entry["path"] for entry in manifest["files"]}
@@ -323,8 +331,8 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
 
     for name, skill in manifest["public_skills"].items():
         source = capsule / skill["path"]
-        body = (f"Read `{source}` in full and follow it. Resolve its bundled references from `{source.parent}`, "
-                "not this generated entry directory.\n\n"
+        body = (f"Read `{router}` and `{source}` in full, then follow the skill under that policy. "
+                f"Resolve its bundled references from `{source.parent}`, not this generated entry directory.\n\n"
                 f"This entry selects `{name}` and the dependencies needed for the user's requested deliverable. "
                 "Keep that scope. Invoking a planning, explanation, or review skill does not authorize implementation.\n")
         text = wrapper(name, skill["description"], body, manual=not skill["implicit"])
@@ -385,6 +393,16 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
                 handler = {"command": command, "timeout": 5}
                 entries.update({e: [handler] for e in ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")})
             add(".cursor/hooks.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
+        elif host == "copilot":
+            entries = {"preToolUse": [{"type": "command", "bash": guard, "timeoutSec": 5}]}
+            if auto:
+                entries.update({event: [{"type": "command", "bash": f"{command} --event {event}", "timeoutSec": 5}]
+                                for event in ("sessionStart", "userPromptSubmitted", "subagentStart")})
+            add(".github/hooks/bstack.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
+        elif host in PLUGINS:
+            target, template = PLUGINS[host]
+            add(target, {"kind": "file", "text": plugin_source(
+                (capsule_root() / template).read_text(), host, invocation, project_arg, guard, auto)})
         elif host == "grok":
             guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
             entries = {"PreToolUse": [guard_handler]}
@@ -784,7 +802,7 @@ def status(project, capsule, check=False):
     return result
 
 
-def run_hook(project, capsule, host):
+def run_hook(project, capsule, host, event=None):
     current = state_read(project)
     if not current or not current["auto"] or host not in current["hosts"]:
         print("{}")
@@ -808,7 +826,7 @@ def run_hook(project, capsule, host):
     module.TEMPLATE = capsule / "runtime/reminder.txt"
     original = sys.argv
     try:
-        sys.argv = [str(path), "--host", host]
+        sys.argv = [str(path), "--host", host, *(["--event", event] if event else [])]
         return module.main()
     finally:
         sys.argv = original
@@ -837,6 +855,7 @@ def main():
     commands.add_parser("uninstall")
     hook = commands.add_parser("hook")
     hook.add_argument("--host", required=True, choices=HOSTS)
+    hook.add_argument("--event")
     for command in commands.choices.values():
         command.add_argument("--project", type=Path, default=Path.cwd())
     args = parser.parse_args()
@@ -859,7 +878,7 @@ def main():
         if not project.is_dir():
             raise Conflict(f"Project directory does not exist: {project}")
         if args.command == "hook":
-            return run_hook(project, capsule, args.host)
+            return run_hook(project, capsule, args.host, args.event)
         if args.command in ("install", "setup"):
             result = install_offline(project, capsule, hosts=args.hosts,
                                      mode=None if args.auto is None else args.auto == "on",

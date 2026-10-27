@@ -51,6 +51,8 @@ class RuntimeTests(unittest.TestCase):
         shutil.copyfile(SOURCE / "runtime.py", root / "scripts/bstack.py")
         shutil.copyfile(BSTACK / "shared/router/hook.py", root / "runtime/reminder.py")
         shutil.copyfile(BSTACK / "shared/router/reminder.txt", root / "runtime/reminder.txt")
+        for template in ("opencode-plugin.js", "amp-plugin.ts"):
+            shutil.copyfile(BSTACK / "shared/router" / template, root / "runtime" / template)
         shutil.copyfile(BSTACK / "shared/github/pr_guard.py", root / "shared/github/pr_guard.py")
         shutil.copyfile(BSTACK / "shared/references/verification-policy.md", root / "shared/references/verification-policy.md")
         (root / "shared/router/WORKFLOW.md").write_text("# Fixture router\n")
@@ -220,17 +222,28 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(self.run_cli("install", "--auto", "on")["auto"])
         self.assertTrue(self.run_cli("install")["auto"])
 
-    def test_amp_and_copilot_use_shared_skills_without_claiming_hooks(self):
-        installed = self.run_cli("install", "--hosts", "amp", "copilot")
-        self.assertEqual(installed["hosts"], ["amp", "copilot"])
-        self.assertIn("Amp can read", installed["notice"])
-        self.assertIn("Copilot can discover", installed["notice"])
+    def test_amp_copilot_and_opencode_bind_their_native_hooks(self):
+        installed = self.run_cli("install", "--hosts", "amp", "copilot", "opencode")
+        self.assertEqual(installed["hosts"], ["amp", "copilot", "opencode"])
         self.assertTrue((self.project / "AGENTS.md").is_file())
         self.assertTrue((self.project / ".agents/skills/how/SKILL.md").is_file())
         for folder in (".codex", ".claude", ".cursor", ".grok"):
             self.assertFalse((self.project / folder).exists())
+        copilot = json.loads((self.project / ".github/hooks/bstack.json").read_text())
+        self.assertEqual(set(copilot["hooks"]), {"preToolUse", "sessionStart", "userPromptSubmitted", "subagentStart"})
+        self.assertIn("--host copilot", copilot["hooks"]["preToolUse"][0]["bash"])
+        self.assertIn("--event userPromptSubmitted", copilot["hooks"]["userPromptSubmitted"][0]["bash"])
+        for relative, host in ((".amp/plugins/bstack.ts", "amp"), (".opencode/plugins/bstack.js", "opencode")):
+            source = (self.project / relative).read_text()
+            self.assertIn(f"hook --host {host}", source)
+            self.assertIn(f"pr_guard.py' --host {host}", source)
+            self.assertNotIn("__BSTACK_", source)
+            self.assertIn("const AUTO = true", source)
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
-        self.assertEqual(self.run_cli("install")["hosts"], ["amp", "copilot"])
+        self.run_cli("auto", "off")
+        self.assertIn("const AUTO = false", (self.project / ".amp/plugins/bstack.ts").read_text())
+        self.assertEqual(set(json.loads((self.project / ".github/hooks/bstack.json").read_text())["hooks"]), {"preToolUse"})
+        self.assertEqual(self.run_cli("install")["hosts"], ["amp", "copilot", "opencode"])
 
     def test_pr_guard_stays_bound_across_manual_and_automatic_routing(self):
         self.run_cli("install", "--auto", "off")

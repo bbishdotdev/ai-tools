@@ -19,6 +19,9 @@ INJECT_EVENTS = {
     "claude": {"SessionStart", "UserPromptSubmit", "SubagentStart"},
     "cursor": {"sessionStart", "postToolUse"},
     "grok": {"PostToolUse"},
+    "copilot": {"sessionStart", "userPromptSubmitted", "subagentStart"},
+    "opencode": {"chat.system.transform", "session.compacting"},
+    "amp": {"agent.start"},
 }
 AFTER_TOOL = {"cursor": "postToolUse", "grok": "PostToolUse"}
 
@@ -26,6 +29,12 @@ AFTER_TOOL = {"cursor": "postToolUse", "grok": "PostToolUse"}
 def identity(host, payload):
     if host == "grok":
         return payload.get("sessionId"), payload.get("promptId")
+    if host == "copilot":
+        return payload.get("sessionId"), None
+    if host == "opencode":
+        return payload.get("sessionID"), None
+    if host == "amp":
+        return payload.get("threadId"), None
     return (payload.get("session_id", payload.get("conversation_id")),
             payload.get("turn_id", payload.get("generation_id")))
 
@@ -99,17 +108,22 @@ def build_output(host, payload, receipt=None):
         return ({"continue": True} if event == "beforeSubmitPrompt" else {}), None
     if host == "cursor":
         return {"additional_context": text}, text
+    if host in ("copilot", "opencode", "amp"):
+        return {"additionalContext": text}, text
     return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}}, text
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", required=True, choices=INJECT_EVENTS)
+    parser.add_argument("--event", help="Event name for hosts whose payload omits it")
     args = parser.parse_args()
     try:
         payload = json.load(sys.stdin)
         if not isinstance(payload, dict):
             raise ValueError("Hook input must be an object")
+        if args.event and not event_name(payload, args.host):
+            payload["hook_event_name"] = args.event
         if os.environ.get("GROK_HOOK_EVENT") and args.host != "grok":
             # Grok invokes compatible hooks but discards context for these events.
             print("{}")
