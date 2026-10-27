@@ -1668,9 +1668,9 @@
     {
       "mode": 420,
       "path": "scripts/bstack.py",
-      "sha256": "de9007cd4fdf3b1643ebfefcf2b33417f3ee95cfc0bbe58dc6fa29cc7b9e0770",
+      "sha256": "b49c6f92c9f4c3bce4b3faba8f680178b508b84cdbb00552c46b4337fd86f8fc",
       "source": "bstack/package/runtime.py",
-      "source_sha256": "de9007cd4fdf3b1643ebfefcf2b33417f3ee95cfc0bbe58dc6fa29cc7b9e0770",
+      "source_sha256": "b49c6f92c9f4c3bce4b3faba8f680178b508b84cdbb00552c46b4337fd86f8fc",
       "transforms": []
     },
     {

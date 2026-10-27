@@ -299,6 +299,7 @@ def existing_pr_templates(project):
     return sorted(found)
 
 
+SKILL_HELPERS = {"to-pr": "github/pr.py"}
 PLUGINS = {"opencode": (".opencode/plugins/bstack.js", "runtime/opencode-plugin.js"),
            "amp": (".amp/plugins/bstack.ts", "runtime/amp-plugin.ts")}
 
@@ -331,7 +332,8 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
 
     for name, skill in manifest["public_skills"].items():
         source = capsule / skill["path"]
-        body = (f"Read `{router}` and `{source}` in full, then follow the skill under that policy. "
+        helper = f"Its helper is `{capsule / SKILL_HELPERS[name]}`. " if name in SKILL_HELPERS else ""
+        body = (f"Read `{router}` and `{source}` in full, then follow the skill under that policy. {helper}"
                 f"Resolve its bundled references from `{source.parent}`, not this generated entry directory.\n\n"
                 f"This entry selects `{name}` and the dependencies needed for the user's requested deliverable. "
                 "Keep that scope. Invoking a planning, explanation, or review skill does not authorize implementation.\n")

@@ -21,6 +21,7 @@ PUBLIC_SKILLS = {
     "poteto-mode": "engineering/poteto-mode/SKILL.md",
     "how": "engineering/how/SKILL.md",
     "architect": "engineering/architect/SKILL.md",
+    "to-pr": "engineering/to-pr/SKILL.md",
     "unslop": "shared/unslop/SKILL.md",
     "bstack-guide": "shared/bstack-guide/SKILL.md",
     "bstack-auto": "shared/bstack-auto/SKILL.md",
@@ -58,6 +59,7 @@ class RuntimeTests(unittest.TestCase):
         (root / "shared/router/WORKFLOW.md").write_text("# Fixture router\n")
         (root / BASELINE_PATH).write_text(BASELINE)
         (root / "github/pull_request_template.md").write_text("# Fixture PR template\n")
+        (root / "github/pr.py").write_text("# Fixture PR helper\n")
         (root / "index.json").write_text("{}\n")
         for name, relative in PUBLIC_SKILLS.items():
             path = root / relative
@@ -240,6 +242,8 @@ class RuntimeTests(unittest.TestCase):
             self.assertNotIn("__BSTACK_", source)
             self.assertIn("const AUTO = true", source)
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        entry = (self.project / ".agents/skills/to-pr/SKILL.md").read_text()
+        self.assertIn(str(self.project / ".bstack/package/github/pr.py"), entry)
         self.run_cli("auto", "off")
         self.assertIn("const AUTO = false", (self.project / ".amp/plugins/bstack.ts").read_text())
         self.assertEqual(set(json.loads((self.project / ".github/hooks/bstack.json").read_text())["hooks"]), {"preToolUse"})
