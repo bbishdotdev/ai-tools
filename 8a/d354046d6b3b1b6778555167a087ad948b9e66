@@ -1,0 +1,38 @@
+bstack/shared/skills/verify-bstack/features/behavior.md
+  s_6bff603607ccc7::t_de7dc47873752f 14,17,19-21,55,57
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_6bff603607ccc7::t_691c7ae6fde57b 74-78,421-426
+  s_6bff603607ccc7::t_7409cfb0ec724c 44,527-528,532-533,583,585-586,588-589,602
+  s_6bff603607ccc7::t_aade063168fd70 128,618,626-627
+  s_6bff603607ccc7::t_e206a4f2c7d2e9 452-453,531
+  s_6bff603607ccc7::t_a7a477edaf5020 15,18,213-242,466-468,663-664
+  s_6bff603607ccc7::t_230b9c4d82e31e 243-244
+bstack/shared/skills/verify-bstack/behavior/matrix.py
+  s_6bff603607ccc7::t_92f766d6b340a4 12-13,67-68,86-104,110,112,116
+  s_6bff603607ccc7::t_a7a477edaf5020 29-30,36
+bstack/shared/skills/verify-bstack/behavior/hosts.py
+  s_6bff603607ccc7::t_a7a477edaf5020 38,133-134
+  s_6bff603607ccc7::t_e206a4f2c7d2e9 37,73,80,88-89,96-97,122,127-129,131,136-137
+  s_6bff603607ccc7::t_ea7510f0a697a5 104-105,114-115,132,135
+bstack/shared/skills/verify-bstack/SKILL.md
+  s_6bff603607ccc7::t_76379fb756f1c4 21
+bstack/audit/compatibility-results.json
+  s_6bff603607ccc7::t_547b24db1c0a5b 54-55,68-69,78-80
+  s_6bff603607ccc7::t_a7a477edaf5020 57-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8ad354046d6b3b1b6778555167a087ad948b9e66",
+  "prompts": {},
+  "sessions": {
+    "s_6bff603607ccc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a4c23b0-fbe3-4e2b-a6e1-358d881cafd7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
