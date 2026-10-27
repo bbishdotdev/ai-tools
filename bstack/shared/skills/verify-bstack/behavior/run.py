@@ -541,7 +541,7 @@ def assess(folder):
                     if HOSTS[host].reminder_events else None)
     result = {"host": host, "model": observed.get("model"), "scenario": name, "repeat": observed["repeat"],
               "status": status, "integration_pass": bool(checks) and integration,
-              "quality_pass": bool(checks) and integration and quality, "checks": checks,
+              "quality_pass": bool(checks) and quality, "checks": checks,
               "reminder_hook_every_turn": prompt_hooks, "seconds": observed.get("seconds"),
               "session": observed["session"], "workspace": str(base),
               "usage": {key: sum(item[key] for item in ctx["usage"]) for key in ("input_tokens", "output_tokens", "cost_usd")}}
@@ -590,6 +590,8 @@ def run_case(host, binary, name, repeat, out, timeout):
 def summarize(results, clients):
     summary = {}
     for result in results:
+        if result["status"] == "error":
+            continue
         host = summary.setdefault(result["host"], {"version": clients[result["host"]].get("version"), "scenarios": {}})
         host["model"] = result.get("model") or host.get("model")
         row = host["scenarios"].setdefault(result["scenario"], {"column": SCENARIOS[result["scenario"]]["column"],

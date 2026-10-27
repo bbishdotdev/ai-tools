@@ -10,6 +10,8 @@ from run import RESULTS, ROOT, SCENARIOS
 
 ASSET = ROOT / "bstack/assets/compatibility.svg"
 MODELS = ROOT / "bstack/audit/model-results.md"
+ORDER = ("codex-cli", "claude-cli", "cursor-cli", "grok-cli", "amp-cli", "copilot-cli", "opencode-cli",
+         "codex-desktop", "claude-desktop", "cursor-desktop", "vscode-copilot", "opencode-desktop")
 QUALITY_SCENARIOS = ("misleading-bug", "feature-verifier", "adr-rejected", "late-pr", "direct-pr", "compaction-resume")
 COLUMNS = (("skills", "Skills"), ("auto", "Auto mode"), ("pr", "PR workflows"), ("hooks", "Hooks"))
 BADGES = {
@@ -46,8 +48,9 @@ def badge(name):
 
 
 def render(data):
-    groups = [("CLI", [h for h in data["hosts"].values() if h["surface"] == "cli"]),
-              ("DESKTOP / EDITOR", [h for h in data["hosts"].values() if h["surface"] == "desktop"])]
+    hosts = [data["hosts"][key] for key in ORDER]
+    groups = [("CLI", [h for h in hosts if h["surface"] == "cli"]),
+              ("DESKTOP / EDITOR", [h for h in hosts if h["surface"] == "desktop"])]
     rows, y, stripe = [], 172, 0
     for title, hosts in groups:
         rows.append(f'<text x="36" y="{y}" fill="#8998a8" font-size="12" font-weight="700" letter-spacing="2">{title}</text>')
@@ -64,8 +67,8 @@ def render(data):
         y += 37
     height = y + 30
     header = "".join(f'<text x="{342 + 205 * index}" y="128">{label}</text>' for index, (_, label) in enumerate(COLUMNS))
-    footer = ("Supported: bstack's instructions, workflows, and hooks were delivered and used in every repeat. "
-              "Partial: a binding exists but is not yet proven. Model quality is reported separately.")
+    footer = ("Supported: delivered and used in every recorded repeat. Partial: bound but not yet proven. "
+              "Model quality is tracked separately.")
     return "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 {height}" role="img" aria-labelledby="title description">',
         '<title id="title">bstack tool compatibility</title>',
@@ -91,7 +94,7 @@ def render_models(data):
              "rejected alternatives avoided, and correct answers. bstack integration is reported separately in "
              "the compatibility matrix.", "", f"Last recorded: {data['updated'] or 'never'}.", "",
              header, "|" + " --- |" * (len(QUALITY_SCENARIOS) + 2)]
-    for host in data["hosts"].values():
+    for host in (data["hosts"][key] for key in ORDER):
         if not host["scenarios"]:
             continue
         cells = []

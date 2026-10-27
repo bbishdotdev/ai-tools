@@ -1,137 +1,620 @@
 {
-  "updated": null,
   "hosts": {
-    "codex-cli": {
-      "label": "Codex CLI",
-      "surface": "cli",
-      "bindings": [
-        "skills",
-        "auto",
-        "pr",
-        "hooks"
-      ],
-      "scenarios": {}
-    },
-    "claude-cli": {
-      "label": "Claude Code CLI",
-      "surface": "cli",
-      "bindings": [
-        "skills",
-        "auto",
-        "pr",
-        "hooks"
-      ],
-      "scenarios": {}
-    },
-    "cursor-cli": {
-      "label": "Cursor CLI",
-      "surface": "cli",
-      "bindings": [
-        "skills",
-        "auto",
-        "pr",
-        "hooks"
-      ],
-      "scenarios": {}
-    },
-    "grok-cli": {
-      "label": "Grok CLI",
-      "surface": "cli",
-      "bindings": [
-        "skills",
-        "auto",
-        "pr",
-        "hooks"
-      ],
-      "scenarios": {}
-    },
     "amp-cli": {
-      "label": "Amp CLI",
-      "surface": "cli",
       "bindings": [
         "skills",
         "auto",
         "pr",
         "hooks"
       ],
-      "scenarios": {},
+      "label": "Amp CLI",
+      "model": "low",
       "not_applicable": [
         "compaction-resume"
-      ]
-    },
-    "copilot-cli": {
-      "label": "GitHub Copilot CLI",
+      ],
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T063625Z-behavior-ada5f4"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
       "surface": "cli",
+      "version": null
+    },
+    "claude-cli": {
       "bindings": [
         "skills",
         "auto",
         "pr",
         "hooks"
       ],
-      "scenarios": {}
-    },
-    "opencode-cli": {
-      "label": "OpenCode CLI",
+      "label": "Claude Code CLI",
+      "model": "claude-sonnet-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [
+            "instructions_recovered"
+          ],
+          "passes": 0,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T063625Z-behavior-ada5f4"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
       "surface": "cli",
-      "bindings": [
-        "skills",
-        "auto",
-        "pr",
-        "hooks"
-      ],
-      "scenarios": {}
-    },
-    "codex-desktop": {
-      "label": "Codex desktop",
-      "surface": "desktop",
-      "bindings": [
-        "skills",
-        "auto",
-        "pr",
-        "hooks"
-      ],
-      "scenarios": {}
+      "version": null
     },
     "claude-desktop": {
-      "label": "Claude Code desktop",
-      "surface": "desktop",
       "bindings": [
         "skills",
         "auto",
         "pr",
         "hooks"
       ],
-      "scenarios": {}
+      "label": "Claude Code desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "codex-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Codex CLI",
+      "model": "gpt-reserve",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T063625Z-behavior-ada5f4"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 2,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": null
+    },
+    "codex-desktop": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Codex desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "copilot-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "GitHub Copilot CLI",
+      "model": "auto",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        }
+      },
+      "surface": "cli",
+      "version": null
+    },
+    "cursor-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Cursor CLI",
+      "model": "composer-2.5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [
+            "compacted",
+            "instructions_recovered"
+          ],
+          "passes": 0,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [
+            "verifier_ran",
+            "verifier_recipe_updated",
+            "workflow_loaded"
+          ],
+          "passes": 0,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T063625Z-behavior-ada5f4"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": null
     },
     "cursor-desktop": {
-      "label": "Cursor desktop",
-      "surface": "desktop",
       "bindings": [
         "skills",
         "auto",
         "pr",
         "hooks"
       ],
-      "scenarios": {}
+      "label": "Cursor desktop",
+      "scenarios": {},
+      "surface": "desktop"
     },
-    "vscode-copilot": {
-      "label": "VS Code with Copilot",
-      "surface": "desktop",
+    "grok-cli": {
       "bindings": [
         "skills",
         "auto",
-        "pr"
+        "pr",
+        "hooks"
       ],
-      "scenarios": {}
+      "label": "Grok CLI",
+      "model": "grok-4.7",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T063625Z-behavior-ada5f4"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": null
     },
-    "opencode-desktop": {
-      "label": "OpenCode desktop",
-      "surface": "desktop",
+    "opencode-cli": {
       "bindings": [
         "skills",
-        "pr"
+        "auto",
+        "pr",
+        "hooks"
       ],
-      "scenarios": {}
+      "label": "OpenCode CLI",
+      "model": "opencode/claude-haiku-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [
+            "adr_read"
+          ],
+          "passes": 2,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [
+            "workflow_loaded"
+          ],
+          "passes": 1,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [
+            "outcome",
+            "published_by_workflow",
+            "single_pr"
+          ],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T063625Z-behavior-ada5f4"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": null
+    },
+    "opencode-desktop": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "OpenCode desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "vscode-copilot": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "VS Code with Copilot",
+      "scenarios": {},
+      "surface": "desktop"
     }
-  }
+  },
+  "updated": "2026-10-27"
 }
