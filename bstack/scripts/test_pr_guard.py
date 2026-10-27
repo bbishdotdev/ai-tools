@@ -12,6 +12,8 @@ GUARD = Path(__file__).resolve().parents[1] / "shared/github/pr_guard.py"
 class PullRequestGuardTests(unittest.TestCase):
     def run_guard(self, host, command):
         payload = {"command": command} if host == "cursor" else {
+            "hook_event_name": "PreToolUse", "toolName": "run_terminal_command", "toolInput": {"command": command}
+        } if host == "grok" else {
             "tool_name": "Bash", "tool_input": {"command": command}
         }
         return subprocess.run(

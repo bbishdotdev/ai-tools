@@ -66,7 +66,7 @@ def bypasses_to_pr(source):
     return False
 
 
-SHELL_TOOLS = ("Bash", "Shell", "bash", "shell")
+SHELL_TOOLS = ("Bash", "Shell", "bash", "shell", "run_terminal_command")
 
 
 def shell_command(host, payload):
