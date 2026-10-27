@@ -1,0 +1,70 @@
+bstack/shared/router/opencode-plugin.js
+  s_6bff603607ccc7::t_f456b4cfe867ca 1-42
+bstack/shared/router/amp-plugin.ts
+  s_6bff603607ccc7::t_9b2a85c9822706 1-38
+bstack/shared/github/pr_guard.py
+  s_6bff603607ccc7::t_8a28417ec1d83a 84,95
+  s_6bff603607ccc7::t_8f8117e00fc3d0 69-71,76,78,96-97
+bstack/package/runtime.py
+  s_6bff603607ccc7::t_60a8b37e2a80e3 24,308-310
+  s_6bff603607ccc7::t_8f8117e00fc3d0 66-67,396-401,805,829,858,881
+  s_6bff603607ccc7::t_2c582c57bf6b32 334-335
+  s_6bff603607ccc7::t_8a28417ec1d83a 62-64,302-307,402-404
+  s_6bff603607ccc7::t_99e8348397f28a 405
+bstack/release/bstack/scripts/bstack.py
+  s_6bff603607ccc7::t_ccec0d790a65ac 62-64,302-307,402-404
+  s_6bff603607ccc7::t_c7f41c871ad7d8 24,66-67,308-310,334-335,396-401,805,829,858,881
+  s_6bff603607ccc7::t_547b24db1c0a5b 405
+bstack/shared/router/hook.py
+  s_6bff603607ccc7::t_8a28417ec1d83a 24,36-37,111
+  s_6bff603607ccc7::t_60a8b37e2a80e3 23,34-35
+  s_6bff603607ccc7::t_8f8117e00fc3d0 22,32-33,112,119,125-126
+bstack/scripts/package.py
+  s_6bff603607ccc7::t_8a28417ec1d83a 416-417
+  s_6bff603607ccc7::t_d9ffb781554be8 415
+bstack/release/bstack/shared/github/pr_guard.py
+  s_6bff603607ccc7::t_c7f41c871ad7d8 69-71,76,78,96-97
+  s_6bff603607ccc7::t_ccec0d790a65ac 84,95
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_6bff603607ccc7::t_c7f41c871ad7d8 23
+bstack/package/test_runtime.py
+  s_6bff603607ccc7::t_102fdbf9379b22 54-55
+  s_6bff603607ccc7::t_ccec0d790a65ac 225-227,232-241,243-246
+bstack/release/bstack/runtime/amp-plugin.ts
+  s_6bff603607ccc7::t_ccec0d790a65ac 1-38
+bstack/shared/router/test_hook.py
+  s_6bff603607ccc7::t_ccec0d790a65ac 51-67
+bstack/README.md
+  s_6bff603607ccc7::t_76379fb756f1c4 11
+bstack/shared/skills/bstack-router/SKILL.md
+  s_6bff603607ccc7::t_8b88824c80c1d3 23
+bstack/release/bstack/runtime/reminder.py
+  s_6bff603607ccc7::t_ccec0d790a65ac 24,36-37,111
+  s_6bff603607ccc7::t_c7f41c871ad7d8 22-23,32-35,112,119,125-126
+bstack/release/bstack/manifest.json
+  s_6bff603607ccc7::t_ccec0d790a65ac 80,131,151,172,193,214,235,255,284,305,326,367,388,448,468,502,929,965,985,1006,1027,1064,1255,1292,1313,1334,1355,1376,1413,1445,1587,1636,1638-1645,1655,1657,1711,1732,1753,1775,1797,1819,1841,1879,1901,1930,1950,1996,2004,2006,2026,2285,2306,2327
+  s_6bff603607ccc7::t_c7f41c871ad7d8 1637,1646-1651,2242,2244
+  s_6bff603607ccc7::t_547b24db1c0a5b 1671,1673
+bstack/scripts/test_pr_guard.py
+  s_6bff603607ccc7::t_ccec0d790a65ac 29-45
+bstack/INSTALL.md
+  s_6bff603607ccc7::t_76379fb756f1c4 76,92
+bstack/release/bstack/runtime/opencode-plugin.js
+  s_6bff603607ccc7::t_c7f41c871ad7d8 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d6dc92e620971b82db21e0fa83d01e2134d4a5d3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff603607ccc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a4c23b0-fbe3-4e2b-a6e1-358d881cafd7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
