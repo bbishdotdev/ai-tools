@@ -41,6 +41,7 @@ def copilot_compacted(session):
     log = HOME / ".copilot/session-state" / str(session) / "events.jsonl"
     return log.is_file() and any('"type":"session.compaction_complete"' in line.replace(" ", "")
                                  for line in log.read_text(errors="replace").splitlines())
+PROVIDER_LIMITS = re.compile(r"quota_exceeded|exceeded your monthly quota|insufficient[ _]credits|usage limit reached", re.I)
 QUALITY_CHECKS = {"outcome", "rejected_option_avoided", "answer_explains_rules"}
 ROUTER = ".bstack/package/shared/router/WORKFLOW.md"
 CACHE = re.compile(r"lru_cache|functools\.cache|@cache\b|\bcache\s*=\s*\{|_cache\b|results_by_query|memo")
@@ -125,8 +126,10 @@ def workspace(scenario, host):
     url = f"https://github.com/{repo}.git"
     git(project, "remote", "add", "origin", url, env=env)
     git(project, "push", "-q", "-u", "origin", "main", env=env)
-    controller = [sys.executable, str(Path(os.environ.get("BSTACK_BEHAVIOR_RELEASE", RELEASE)) / "scripts/bstack.py")]
-    run(controller + ["install", "--project", str(project), "--hosts", HOSTS[host].install], project, env=env)
+    script = Path(os.environ.get("BSTACK_BEHAVIOR_RELEASE", RELEASE)) / "scripts/bstack.py"
+    install = HOSTS[host].install if f'"{HOSTS[host].install}"' in script.read_text().split("HOSTS = ", 1)[1].split("\n", 1)[0] \
+        else "codex"
+    run([sys.executable, str(script), "install", "--project", str(project), "--hosts", install], project, env=env)
     installed = [sys.executable, str(project / ".bstack/package/scripts/bstack.py")]
     if scenario.get("verification"):
         run(installed + ["verification", scenario["verification"], "--project", str(project)], project, env=env)
@@ -516,6 +519,14 @@ def assess(folder):
         ctx["usage"].append(usage(stream))
         ctx["prompt_turns"].append(number)
         (turn_dir / "answer.txt").write_text(ctx["answers"][-1])
+    limited = any(PROVIDER_LIMITS.search(path.read_text(errors="replace"))
+                  for path in folder.glob("turn-*/std*") if path.is_file())
+    if limited:
+        result = {"host": host, "model": observed.get("model"), "scenario": name, "repeat": observed["repeat"],
+                  "status": "error", "reason": "provider quota or credit limit", "workspace": str(base)}
+        verify.save(folder / "result.json", result)
+        print(f"{host} {name}#{observed['repeat']}: error provider limit", flush=True)
+        return result
     completed = len(ctx["exits"]) == len(scenario["turns"])
     shutil.rmtree(folder / "grading", ignore_errors=True)
     shutil.rmtree(folder / "head", ignore_errors=True)
@@ -663,7 +674,7 @@ def main():
                 if COMPACT in SCENARIOS[name]["turns"] and not HOSTS[tool].compacts:
                     continue
                 folder = out / tool / f"{name}-{repeat}"
-                if (folder / "result.json").exists():
+                if (folder / "result.json").exists() and json.loads((folder / "result.json").read_text())["status"] != "error":
                     continue
                 if folder.exists():
                     folder.rename(folder.with_name(folder.name + ".interrupted-" + uuid.uuid4().hex[:4]))
