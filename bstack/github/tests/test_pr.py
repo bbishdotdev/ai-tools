@@ -229,6 +229,33 @@ class PRTests(unittest.TestCase):
         self.assertEqual(pr.publish_bundle(self.bundle, True, gh)["status"], "draft")
         self.assertIn("Missing semantic review", gh.raw[99]["body"])
 
+    def publish_then_prepare_refresh(self):
+        gh, _ = self.prepare(draft=True)
+        self.assertEqual(pr.publish_bundle(self.bundle, True, gh)["status"], "draft")
+        first = self.bundle
+        self.scan_path, self.bundle = self.root / "scan two.json", self.root / "bundle two"
+        self.body_path.write_text("## What changed\n\nRecorded the final results.\n")
+        self.prepare(gh, draft=True)
+        return gh, first
+
+    def test_refresh_replaces_owned_body_and_keeps_draft(self):
+        gh, first = self.publish_then_prepare_refresh()
+        self.assertEqual(pr.refresh_bundle(self.bundle, first, False)["status"], "plan")
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual((result["status"], result["draft"]), ("draft", True))
+        self.assertEqual(gh.raw[99]["body"], (self.bundle / "body.fallback.md").read_text())
+        self.assertIn("Recorded the final results.", gh.raw[99]["body"])
+        self.assertEqual(pr.read_json(first / "publication.json")["status"], "superseded")
+        self.assertFalse(self.mutations(gh, "create")[1:])
+
+    def test_refresh_refuses_a_body_edited_outside_the_helper(self):
+        gh, first = self.publish_then_prepare_refresh()
+        gh.raw[99]["body"] += "\nEdited by hand.\n"
+        with self.assertRaises(pr.Error) as raised:
+            pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual(raised.exception.code, "body_changed")
+        self.assertIn("Edited by hand.", gh.raw[99]["body"])
+
     def test_explicit_draft_with_complete_review(self):
         gh, _ = self.prepare(draft=True)
         self.assertEqual(pr.publish_bundle(self.bundle, True, gh)["status"], "draft")
@@ -444,7 +471,7 @@ class PRTests(unittest.TestCase):
     def test_small_code_and_test_change_needs_no_visual(self):
         gh = FakeGitHub()
         gh.compare_files = [{**FILE, "changes": 12}, {**FILE, "filename": "test_shared.py", "changes": 15}]
-        self.assertEqual(self.prepare(gh)["status"], "prepared")
+        self.assertEqual(self.prepare(gh)[1]["status"], "prepared")
 
     def test_larger_change_requires_a_visual(self):
         gh = FakeGitHub()

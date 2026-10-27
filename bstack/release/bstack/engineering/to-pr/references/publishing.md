@@ -89,6 +89,13 @@ python3 "$PR_HELPER" publish --bundle .bstack/pr/bundle --write
 
 Publication creates a draft first. Only a complete, clear, fresh review and applicable ready-publication scope permit a ready PR. A flagged PR still gets created as a draft when publication is authorized. The helper inserts a linked warning above the briefing and specific actions below it. Preserve those warnings during edits until a fresh substantive review resolves them. Do not promote a prior draft merely because another PR closed or the current scan no longer flags it.
 
-If a PR already exists and its review becomes stale, leave it draft for an explicit reviewed follow-up. A new bundle cannot adopt that PR, overwrite its body, or change its readiness. Recheck the current diff and all open PRs, then carry the refreshed evidence into a supported follow-up on the existing PR within the user's authorization. Never create a replacement PR to bypass this limit.
+If a PR already exists and its review becomes stale, leave it draft for an explicit reviewed follow-up. A new bundle cannot publish over that PR or change its readiness. When the user authorizes an updated description, scan the current branch, review all other open PRs, prepare a new bundle, and refresh the existing PR from the bundle that published it:
+
+```bash
+python3 "$PR_HELPER" refresh --bundle .bstack/pr/bundle-2 --from .bstack/pr/bundle
+python3 "$PR_HELPER" refresh --bundle .bstack/pr/bundle-2 --from .bstack/pr/bundle --write
+```
+
+The refresh only proceeds while the PR still carries the previous bundle's marker, target, and last published body, and the new scan is fresh. It replaces the body, attaches media, and keeps the current draft status. Never create a replacement PR to bypass these checks.
 
 If a create or attachment response is uncertain, reconcile the same branch and bundle before retrying. Never create a second PR for the same branch to escape an uncertain response. Verify the final PR's content, visuals or fallbacks, base, head, and status through the forge. Report the URL and any limits. Use the host's PR attachment capability when available. Opening a PR does not authorize comments on other PRs, review requests, a merge, or ongoing monitoring.

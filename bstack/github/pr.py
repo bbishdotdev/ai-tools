@@ -717,6 +717,53 @@ def publish_bundle(directory, write=False, gh=None):
                 "media": state.get("mediaResult", "none")}
 
 
+def refresh_bundle(directory, previous, write=False, gh=None):
+    directory, previous = Path(directory).resolve(), Path(previous).resolve()
+    bundle, scan, state = load_bundle(directory)
+    old_bundle, _, old_state = load_bundle(previous)
+    if not old_state.get("pr"):
+        fail("missing_pr", "The previous bundle has no published PR to refresh")
+    if any(bundle[key] != old_bundle[key] for key in ("repo", "host", "base", "head")):
+        fail("target_changed", "The new bundle targets a different repository, base, or head")
+    if state["attempted"]:
+        fail("bundle_used", "This bundle was already published; prepare a new bundle")
+    number = old_state["pr"]["number"]
+    if not write:
+        return {"status": "plan", "pr": old_state["pr"]["url"], "bundle": str(directory),
+                "steps": ["Confirm the PR is still owned by the previous bundle and unedited",
+                          "Check branch SHAs and all other open PRs against the new scan",
+                          "Replace the body, attach media, and keep the current draft status"]}
+    gh = gh or GitHub(bundle["repo"], bundle["host"])
+    pr = gh.pr(number)
+    check_owned_body(pr, old_bundle, old_state)
+    fresh, _ = freshness(gh, scan, number)
+    if not fresh:
+        return {"status": "review_stale", "pr": pr["url"],
+                "message": "Target SHAs or other open PRs changed since the new scan; rescan before refreshing"}
+    event(directory, state, "refreshing", attempted=True)
+    mutation(gh, ["pr", "edit", str(number), "--repo", bundle["repo"], "--body-file",
+                  str(directory / "body.fallback.md")], directory, state, "refreshing")
+    actual = gh.pr(number)
+    if not owned(actual, bundle) or actual["body"] != (directory / "body.fallback.md").read_text():
+        fail("refresh_failed", "The refreshed body could not be verified", pr=actual["url"])
+    event(directory, state, "refreshed", pr={"number": number, "url": actual["url"]}, lastBodyHash=digest(actual["body"]))
+    event(previous, old_state, "superseded", status="superseded", supersededBy=str(directory))
+    media = read_json(directory / "media.json")
+    if media:
+        if gh.attachments_supported():
+            result, actual = edit_body(gh, directory, bundle, state, actual, directory / "body.media.md", attach=True)
+            if result.returncode or not generated_media_body(actual["body"], directory):
+                _, actual = edit_body(gh, directory, bundle, state, actual, directory / "body.fallback.md")
+                state["mediaResult"] = "fallback_after_upload_failure"
+            else:
+                state["mediaResult"] = "attached"
+        else:
+            state["mediaResult"] = "fallback_attach_unavailable"
+    status = "draft" if actual["draft"] else "ready"
+    event(directory, state, "complete", status=status)
+    return {"status": status, "pr": actual["url"], "draft": actual["draft"], "media": state.get("mediaResult", "none")}
+
+
 class Parser(argparse.ArgumentParser):
     def error(self, message):
         fail("validation", message)
@@ -749,6 +796,10 @@ def main(argv=None):
         publish = commands.add_parser("publish", help="Plan, or explicitly publish, a saved bundle")
         publish.add_argument("--bundle", type=Path, required=True)
         publish.add_argument("--write", action="store_true")
+        refresh = commands.add_parser("refresh", help="Replace an owned PR's body from a newly prepared bundle")
+        refresh.add_argument("--bundle", type=Path, required=True)
+        refresh.add_argument("--from", dest="previous", type=Path, required=True)
+        refresh.add_argument("--write", action="store_true")
         args = parser.parse_args(argv)
         if args.command == "scan":
             result = scan_repository(GitHub(args.repo, args.host), args.base, args.head, args.out)
@@ -768,6 +819,8 @@ def main(argv=None):
         elif args.command == "prepare":
             result = prepare_bundle(args.scan, args.review, args.title, args.body, args.out, args.media, args.draft,
                                     args.length_exception, args.author_model)
+        elif args.command == "refresh":
+            result = refresh_bundle(args.bundle, args.previous, args.write)
         else:
             result = publish_bundle(args.bundle, args.write)
         print(canonical({"ok": True, "value": result}))

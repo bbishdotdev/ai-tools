@@ -1381,9 +1381,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "73de64d9eef8b513459cbb035029005a6e83b1042eefd6869dc06739f1afea27",
+      "sha256": "c78dc15980cfc2e61fb277654e972d323052aee8b4c146c5182cd3d24caa3acf",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "73de64d9eef8b513459cbb035029005a6e83b1042eefd6869dc06739f1afea27",
+      "source_sha256": "c78dc15980cfc2e61fb277654e972d323052aee8b4c146c5182cd3d24caa3acf",
       "transforms": []
     },
     {
@@ -1600,9 +1600,9 @@
     {
       "mode": 493,
       "path": "github/pr.py",
-      "sha256": "900197347a3a52e55d9cd29d94714926ae028679bbfbcf97bcd5678174603f28",
+      "sha256": "80c6c6d2e47182e9cda4e2e02feeb0ce290791aaab4a837a8cbbdc0aadf919c8",
       "source": "bstack/github/pr.py",
-      "source_sha256": "900197347a3a52e55d9cd29d94714926ae028679bbfbcf97bcd5678174603f28",
+      "source_sha256": "80c6c6d2e47182e9cda4e2e02feeb0ce290791aaab4a837a8cbbdc0aadf919c8",
       "transforms": []
     },
     {
