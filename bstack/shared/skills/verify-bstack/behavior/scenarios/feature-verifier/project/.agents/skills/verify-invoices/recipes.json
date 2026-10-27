@@ -1,0 +1,7 @@
+[
+  {
+    "name": "summary-default",
+    "args": ["summary", "fixtures/sample.csv"],
+    "expect": "Invoices: 3\nTotal: 123.45"
+  }
+]

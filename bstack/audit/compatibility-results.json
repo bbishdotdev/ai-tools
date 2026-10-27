@@ -1,0 +1,130 @@
+{
+  "updated": null,
+  "hosts": {
+    "codex-cli": {
+      "label": "Codex CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "claude-cli": {
+      "label": "Claude Code CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "cursor-cli": {
+      "label": "Cursor CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "grok-cli": {
+      "label": "Grok CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "amp-cli": {
+      "label": "Amp CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr"
+      ],
+      "scenarios": {}
+    },
+    "copilot-cli": {
+      "label": "GitHub Copilot CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr"
+      ],
+      "scenarios": {}
+    },
+    "opencode-cli": {
+      "label": "OpenCode CLI",
+      "surface": "cli",
+      "bindings": [
+        "skills",
+        "pr"
+      ],
+      "scenarios": {}
+    },
+    "codex-desktop": {
+      "label": "Codex desktop",
+      "surface": "desktop",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "claude-desktop": {
+      "label": "Claude Code desktop",
+      "surface": "desktop",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "cursor-desktop": {
+      "label": "Cursor desktop",
+      "surface": "desktop",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "scenarios": {}
+    },
+    "vscode-copilot": {
+      "label": "VS Code with Copilot",
+      "surface": "desktop",
+      "bindings": [
+        "skills",
+        "auto",
+        "pr"
+      ],
+      "scenarios": {}
+    },
+    "opencode-desktop": {
+      "label": "OpenCode desktop",
+      "surface": "desktop",
+      "bindings": [
+        "skills",
+        "pr"
+      ],
+      "scenarios": {}
+    }
+  }
+}

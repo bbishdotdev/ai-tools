@@ -57,14 +57,14 @@ def discover(cursor_bin=None):
     return clients
 
 
-def process(argv, directory, env=None, timeout=180, prompt=None):
+def process(argv, directory, env=None, timeout=180, prompt=None, cwd=ROOT):
     directory.mkdir(parents=True, exist_ok=True)
     save(directory / "command.json", argv)
     if prompt is not None:
         (directory / "prompt.txt").write_text(prompt)
     started = time.monotonic()
     with (directory / "stdout.jsonl").open("w") as out, (directory / "stderr.txt").open("w") as err:
-        proc = subprocess.Popen(argv, cwd=ROOT, env=env, stdin=subprocess.PIPE,
+        proc = subprocess.Popen(argv, cwd=cwd, env=env, stdin=subprocess.PIPE,
                                 stdout=out, stderr=err, text=True, start_new_session=True)
         try:
             proc.communicate(prompt, timeout=timeout)

@@ -2364,9 +2364,9 @@
     {
       "mode": 493,
       "path": "shared/verify-bstack/scripts/verify.py",
-      "sha256": "c16e6566c70da07b0824174813c496f7890604394b891d26db5189b5b6cdba08",
+      "sha256": "e4e20769ee296c063c2a490ebb4ed1c92f878ab9332ac292d7f59c7d2b766773",
       "source": "bstack/shared/skills/verify-bstack/scripts/verify.py",
-      "source_sha256": "c16e6566c70da07b0824174813c496f7890604394b891d26db5189b5b6cdba08",
+      "source_sha256": "e4e20769ee296c063c2a490ebb4ed1c92f878ab9332ac292d7f59c7d2b766773",
       "transforms": []
     },
     {

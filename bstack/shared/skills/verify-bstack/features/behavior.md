@@ -1,0 +1,54 @@
+# Behavior scenarios
+
+## Contract
+
+The compatibility matrix claims what bstack does in a host, so each cell must come from a host doing ordinary work, not from a model describing what it would do. A scenario installs the current release into a disposable project, sends prompts a developer would actually type without naming skills, lets the real CLI work with its native hooks and session lifecycle, then grades the resulting repository and trace with code.
+
+| Scenario | Column | What passes |
+| --- | --- | --- |
+| `explicit-skill` | Skills | `/how` or `$how` loads the packaged skill's bstack policy, explains the real code, and changes nothing. |
+| `misleading-bug` | Auto mode | The reported symptom points at a cache; the real defect is a key mismatch with a second affected caller. Hidden tests cover both paths. The router and bug-fix playbook are loaded. |
+| `feature-verifier` | Auto mode | With verification set to `auto`, the agent implements the flag, adds a recipe to the existing `verify-invoices` skill, and runs it. Evidence is the verifier's own output file. |
+| `adr-rejected` | Auto mode | The obvious speedup is a result cache that the project's ADR rejected. The agent reads the ADR, avoids the rejected option, and meets a distinct-query latency budget that a cache cannot meet. |
+| `late-pr` | PR workflows | After two feature turns, "Raise a PR" loads `to-pr`, pushes a branch, and publishes exactly one PR through the bundled helper. Hidden tests run on the pushed head. |
+| `compaction-resume` | Hooks | The first turn explains without editing. A real native compaction follows. The next turn rereads the router and fixes the defect. |
+
+The Hooks column also requires the host's delivering reminder hook on every user turn of every scenario: `UserPromptSubmit` for Codex and Claude Code, the after-tool fallback for Grok, and the session or after-tool hook for Cursor. That is execution evidence, not a receipt-based delivery proof; `verify.py live` keeps that narrower claim.
+
+A cell is Supported only when every mapped scenario passed every repeat in the recorded run. A binding without that proof is Partial. A host without a binding is Not supported. Matrix colors are never edited by hand.
+
+## Isolation
+
+Each CLI runs in its own full-access mode, because that is the behavior under test: Codex `danger-full-access`, Claude Code and Grok `bypassPermissions`, Cursor `--force` with its sandbox disabled, Copilot `--allow-all`, Amp `amp.dangerouslyAllowAll`, and OpenCode `--auto`. One outer bubblewrap jail contains the process instead. The root filesystem is read-only. Only the disposable workspace and the seven CLIs' own state paths are writable, so sign-ins and session resume work. `~/.ssh` and `~/.config/gh` are replaced with empty mounts. A host's native sandbox and approval prompts are therefore not exercised.
+
+Codex loads project hooks only for a project trusted in `~/.codex/config.toml`. The jail mounts a copy of that file over the original with trust for the workspace and its hook hashes from `hooks/list`, so the user's file never changes.
+
+Projects live in fresh temporary directories with project-shaped names. Expected answers, hidden tests, and graders stay in this checkout; any candidate path or command that touches the checkout fails `stayed_in_project`. This directory is outside `verify-bstack/scripts/`, so the packager does not ship graders into installs.
+
+`gh` is a copy of `fake_gh.py` inside each workspace, backed by a bare repository. A shimmed `git-remote-https` routes `https://github.com/acme/<project>.git` to that repository, so the remote looks real while nothing reaches GitHub. Global and system git config are replaced, and GitHub tokens are removed from the environment. Copilot therefore needs its own `/login`; it cannot borrow `gh` credentials.
+
+User-level instructions still load from the real home directory, and Cursor and Grok also run the user's Claude Code hooks from `~/.claude/settings.json`. Hooks that only record or notify do not change agent context, but treat user-level instructions and hooks as a known confound.
+
+## Drive
+
+```sh
+python3 bstack/shared/skills/verify-bstack/behavior/run.py --list
+python3 bstack/shared/skills/verify-bstack/behavior/run.py --tools codex claude --repeats 3 --record
+python3 bstack/shared/skills/verify-bstack/behavior/matrix.py
+```
+
+Live runs spend model usage and need authorization. Use `--scenarios` and `--tools` for an adapter change, and the full suite with `--repeats 3` before a release. `matrix.py --check` fails when the committed SVG no longer matches the recorded results.
+
+Each case writes prompts, native streams, hook records, `observed.json`, the normalized trace, the forge state, grading output, and `result.json` under `.bstack/verification/<run>-behavior-<id>/`. Workspaces are kept for inspection. After changing a parser or check, rerun grading without model calls:
+
+```sh
+python3 bstack/shared/skills/verify-bstack/behavior/run.py --regrade .bstack/verification/<run> --record
+```
+
+The first verdict is kept as `result.original.json`.
+
+## Limits
+
+Compaction is native: Codex through its app-server, Claude Code and Grok through `/compact` with a `compact_boundary` event, and Copilot through `/compact` confirmed by `session.compaction_complete` in its session log. Cursor's headless mode treats slash commands as ordinary prompts, so its Hooks cell stays Partial until compaction can be triggered. Amp, Copilot, and OpenCode have no bstack hook binding, so their compaction results do not affect the matrix.
+
+Headless runs skip interactive trust: Claude Code `-p` treats the folder as trusted, Cursor and Copilot receive their trust flags, and the jail supplies Codex trust. Interactive sessions can hold back every hook until the user trusts the folder, so a headless pass does not establish first-run interactive behavior. Desktop surfaces reuse the scenarios and graders but need a person to submit the prompts. The local forge proves workflow behavior, not GitHub upload or permissions. One pass per scenario is weak evidence; record at least three repeats.
