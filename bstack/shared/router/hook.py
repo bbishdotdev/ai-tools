@@ -100,6 +100,9 @@ def claim_turn(host, session, turn):
 def build_output(host, payload, receipt=None):
     event = event_name(payload, host)
     text = TEMPLATE.read_text().strip().format(router_path=ROUTER)
+    if payload.get("source") == "compact":
+        text = (f"Context was just compacted. Before continuing, reread {ROUTER} and the playbook it selected; "
+                "the summary does not replace them. Continue the active workflow within the user's scope.")
     if receipt:
         label = "After-tool verification receipt" if event == AFTER_TOOL.get(host) else "Verification receipt for this event"
         text += f" {label}: {receipt}."

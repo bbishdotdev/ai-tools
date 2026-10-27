@@ -37,6 +37,10 @@ class HookProtocol(unittest.TestCase):
             records = [json.loads(p.read_text()) for p in Path(directory).glob("hook-*.json")]
             self.assertEqual(len(records), 6)
             self.assertTrue(all(r["injection_supported"] for r in records))
+            compact = self.invoke("claude", {"hook_event_name": "SessionStart", "source": "compact"}, directory)
+            self.assertIn("just compacted", json.loads(compact.stdout)["hookSpecificOutput"]["additionalContext"])
+            fresh = self.invoke("claude", {"hook_event_name": "SessionStart", "source": "startup"}, directory)
+            self.assertNotIn("just compacted", json.loads(fresh.stdout)["hookSpecificOutput"]["additionalContext"])
 
     def test_cursor_does_not_claim_prompt_injection(self):
         with tempfile.TemporaryDirectory() as directory:
