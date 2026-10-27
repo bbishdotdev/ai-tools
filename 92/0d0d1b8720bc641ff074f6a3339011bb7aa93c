@@ -1,0 +1,32 @@
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_6bff603607ccc7::t_4fe9a03337097d 593-594
+  s_6bff603607ccc7::t_0d72e95bb42b71 544
+bstack/audit/compatibility-results.json
+  s_6bff603607ccc7::t_0d72e95bb42b71 101,361,392,527,565,600-601,611-612
+  s_6bff603607ccc7::t_f249ef5bb24967 3,10-74,83-100,102-151,153-155,162-164,166,173-241,243-245,252,254,263-331,333-335,342-360,362-391,393-419,421,428-430,432,439-509,511,518-526,528-564,566-594,596,604-607,610,614-616,618-619
+bstack/assets/compatibility.svg
+  s_6bff603607ccc7::t_971454533bf517 1,3,7,10,15,20-21,24,27
+  s_6bff603607ccc7::t_8dfb5fd4e1262a 17-19,22-23,25-26,28
+bstack/shared/skills/verify-bstack/behavior/matrix.py
+  s_6bff603607ccc7::t_8dfb5fd4e1262a 13-14,51-53,70-71,97
+bstack/audit/model-results.md
+  s_6bff603607ccc7::t_8dfb5fd4e1262a 10,13-14
+  s_6bff603607ccc7::t_0d72e95bb42b71 11,15
+  s_6bff603607ccc7::t_971454533bf517 1-9,12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "920d0d1b8720bc641ff074f6a3339011bb7aa93c",
+  "prompts": {},
+  "sessions": {
+    "s_6bff603607ccc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a4c23b0-fbe3-4e2b-a6e1-358d881cafd7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
