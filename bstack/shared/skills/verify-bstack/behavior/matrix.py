@@ -9,6 +9,8 @@ sys.dont_write_bytecode = True
 from run import RESULTS, ROOT, SCENARIOS
 
 ASSET = ROOT / "bstack/assets/compatibility.svg"
+MODELS = ROOT / "bstack/audit/model-results.md"
+QUALITY_SCENARIOS = ("misleading-bug", "feature-verifier", "adr-rejected", "late-pr", "direct-pr", "compaction-resume")
 COLUMNS = (("skills", "Skills"), ("auto", "Auto mode"), ("pr", "PR workflows"), ("hooks", "Hooks"))
 BADGES = {
     "supported": ("#16392f", "#2f8066", "#70d6a8", "#d9f9e8", "Supported"),
@@ -24,13 +26,14 @@ def proven(row):
 def status(host, column):
     if column not in host["bindings"]:
         return "unsupported"
-    required = [name for name, scenario in SCENARIOS.items() if scenario["column"] == column]
+    skipped = set(host.get("not_applicable", []))
+    required = [name for name, scenario in SCENARIOS.items() if scenario["column"] == column and name not in skipped]
     rows = [host["scenarios"].get(name) for name in required]
     if not all(proven(row) for row in rows):
         return "partial"
     if column == "hooks":
         runs = host["scenarios"].values()
-        if any(row["reminder_hook_runs"] < row["repeats"] for row in runs) or set(host["scenarios"]) != set(SCENARIOS):
+        if any(row["reminder_hook_runs"] < row["repeats"] for row in runs) or set(host["scenarios"]) != set(SCENARIOS) - skipped:
             return "partial"
     return "supported"
 
@@ -61,8 +64,8 @@ def render(data):
         y += 37
     height = y + 30
     header = "".join(f'<text x="{342 + 205 * index}" y="128">{label}</text>' for index, (_, label) in enumerate(COLUMNS))
-    footer = ("Supported: every mapped behavior scenario passed every repeat on the recorded run. "
-              "Partial: a binding exists but is not yet proven. Not supported: no bstack binding yet.")
+    footer = ("Supported: bstack's instructions, workflows, and hooks were delivered and used in every repeat. "
+              "Partial: a binding exists but is not yet proven. Model quality is reported separately.")
     return "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 {height}" role="img" aria-labelledby="title description">',
         '<title id="title">bstack tool compatibility</title>',
@@ -80,17 +83,37 @@ def render(data):
         "</g></svg>", ""])
 
 
+def render_models(data):
+    header = "| Tool | Model | " + " | ".join(QUALITY_SCENARIOS) + " |"
+    lines = ["# Model results", "",
+             "How well each host's configured model completed the work once bstack's instructions reached it. "
+             "Cells show passing repeats out of recorded repeats for the work-quality checks: hidden tests, "
+             "rejected alternatives avoided, and correct answers. bstack integration is reported separately in "
+             "the compatibility matrix.", "", f"Last recorded: {data['updated'] or 'never'}.", "",
+             header, "|" + " --- |" * (len(QUALITY_SCENARIOS) + 2)]
+    for host in data["hosts"].values():
+        if not host["scenarios"]:
+            continue
+        cells = []
+        for name in QUALITY_SCENARIOS:
+            row = host["scenarios"].get(name)
+            cells.append(f"{row.get('quality_passes', row['passes'])}/{row['repeats']}" if row else "-")
+        lines.append(f"| {host['label']} | `{host.get('model') or 'default'}` | " + " | ".join(cells) + " |")
+    return "\n".join(lines) + "\n"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="Fail if the committed asset is stale")
     args = parser.parse_args()
     data = json.loads(RESULTS.read_text())
-    svg = render(data)
+    svg, models = render(data), render_models(data)
     if args.check:
-        stale = ASSET.read_text() != svg
+        stale = ASSET.read_text() != svg or not MODELS.exists() or MODELS.read_text() != models
         print("stale" if stale else "current")
         return int(stale)
     ASSET.write_text(svg)
+    MODELS.write_text(models)
     for host in data["hosts"].values():
         print(f'{host["label"]:22} ' + "  ".join(f"{key}={status(host, key)}" for key, _ in COLUMNS))
     return 0

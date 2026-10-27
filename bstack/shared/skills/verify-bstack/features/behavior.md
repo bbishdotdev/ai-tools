@@ -11,11 +11,14 @@ The compatibility matrix claims what bstack does in a host, so each cell must co
 | `feature-verifier` | Auto mode | With verification set to `auto`, the agent implements the flag, adds a recipe to the existing `verify-invoices` skill, and runs it. Evidence is the verifier's own output file. |
 | `adr-rejected` | Auto mode | The obvious speedup is a result cache that the project's ADR rejected. The agent reads the ADR, avoids the rejected option, and meets a distinct-query latency budget that a cache cannot meet. |
 | `late-pr` | PR workflows | After two feature turns, "Raise a PR" loads `to-pr`, pushes a branch, and publishes exactly one PR through the bundled helper. Hidden tests run on the pushed head. |
+| `direct-pr` | PR workflows | The user asks for `gh pr create --fill` directly. A PR must still be created, and only through the bundled helper. This is the PR guard's check. |
 | `compaction-resume` | Hooks | The first turn explains without editing. A real native compaction follows. The next turn rereads the router and fixes the defect. |
 
-The Hooks column also requires the host's delivering reminder hook on every user turn of every scenario: `UserPromptSubmit` for Codex and Claude Code, the after-tool fallback for Grok, and the session or after-tool hook for Cursor. That is execution evidence, not a receipt-based delivery proof; `verify.py live` keeps that narrower claim.
+The Hooks column also requires the host's delivering reminder hook on every user turn of every scenario: `UserPromptSubmit` for Codex and Claude Code, the after-tool fallback for Grok, the session or after-tool hook for Cursor, `userPromptSubmitted` for Copilot, `agent.start` for Amp, and the system-prompt transform for OpenCode. That is execution evidence, not a receipt-based delivery proof; `verify.py live` keeps that narrower claim.
 
-A cell is Supported only when every mapped scenario passed every repeat in the recorded run. A binding without that proof is Partial. A host without a binding is Not supported. Matrix colors are never edited by hand.
+Checks are split in two. Integration checks ask whether bstack's instructions, workflows, and hooks reached the model and were used: router and playbook reads, skill policy reads, ADR reads, verifier upkeep, `to-pr` and helper publication, first-turn scope, hook delivery, and compaction recovery. Quality checks ask whether the model then did the work well: hidden-test outcomes, avoiding the rejected alternative, and correct answers. The matrix uses integration checks. `matrix.py` writes quality pass rates per host and model to `bstack/audit/model-results.md`, which is where model recommendations come from.
+
+A cell is Supported only when every mapped scenario passed its integration checks in every repeat of the recorded run. A binding without that proof is Partial. A host without a binding is Not supported. Matrix colors are never edited by hand.
 
 ## Isolation
 
@@ -49,6 +52,6 @@ The first verdict is kept as `result.original.json`.
 
 ## Limits
 
-Compaction is native: Codex through its app-server, Claude Code and Grok through `/compact` with a `compact_boundary` event, and Copilot through `/compact` confirmed by `session.compaction_complete` in its session log. Cursor's headless mode treats slash commands as ordinary prompts, so its Hooks cell stays Partial until compaction can be triggered. Amp, Copilot, and OpenCode have no bstack hook binding, so their compaction results do not affect the matrix.
+Compaction is native: Codex through its app-server, Claude Code and Grok through `/compact` with a `compact_boundary` event, Copilot through `/compact` confirmed by `session.compaction_complete` in its session log, and OpenCode through its server's summarize endpoint. Cursor's headless mode treats slash commands as ordinary prompts, so its Hooks cell stays Partial until compaction can be triggered. Amp has no compaction; its per-turn `agent.start` reminder is the recovery path, so the compaction scenario does not apply to it.
 
-Headless runs skip interactive trust: Claude Code `-p` treats the folder as trusted, Cursor and Copilot receive their trust flags, and the jail supplies Codex trust. Interactive sessions can hold back every hook until the user trusts the folder, so a headless pass does not establish first-run interactive behavior. Desktop surfaces reuse the scenarios and graders but need a person to submit the prompts. The local forge proves workflow behavior, not GitHub upload or permissions. One pass per scenario is weak evidence; record at least three repeats.
+Headless runs skip interactive trust: Claude Code `-p` treats the folder as trusted, Cursor receives its trust flag, Copilot gets `COPILOT_ALLOW_ALL=true`, and the jail supplies Codex trust. Interactive sessions can hold back every hook until the user trusts the folder, so a headless pass does not establish first-run interactive behavior. Desktop surfaces reuse the scenarios and graders but need a person to submit the prompts. The local forge proves workflow behavior, not GitHub upload or permissions. One pass per scenario is weak evidence; record at least three repeats.

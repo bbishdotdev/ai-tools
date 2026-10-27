@@ -34,6 +34,8 @@ class Host:
     skill_prefix: str
     reminder_events: tuple
     state: tuple
+    model: str
+    compacts: bool = True
 
     def binary(self):
         return next((found for command in self.binaries if (found := shutil.which(command))), None)
@@ -68,14 +70,14 @@ class Codex(Host):
         return files
 
     def native(self, binary, base, project, session, prompt):
-        args = [binary, "exec", "--json", "-c", 'model="gpt-6-astra"', "-c", 'model_reasoning_effort="medium"',
+        args = [binary, "exec", "--json", "-c", f'model="{self.model}"', "-c", 'model_reasoning_effort="medium"',
                 "-c", 'sandbox_mode="danger-full-access"', "-c", 'approval_policy="never"']
         return args + (["resume", session, "-"] if session else ["-"]), prompt
 
 
 class Claude(Host):
     def native(self, binary, base, project, session, prompt):
-        args = [binary, "-p", "--output-format", "stream-json", "--verbose",
+        args = [binary, "-p", "--model", self.model, "--output-format", "stream-json", "--verbose",
                 "--permission-mode", "bypassPermissions", "--strict-mcp-config",
                 "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "project"]
         return args + (["--resume", session] if session else []), prompt
@@ -83,22 +85,24 @@ class Claude(Host):
 
 class Grok(Host):
     def native(self, binary, base, project, session, prompt):
-        args = [binary, "--output-format", "streaming-messages-json", "--cwd", str(project), "--trust",
+        args = [binary, "-m", self.model, "--reasoning-effort", "low",
+                "--output-format", "streaming-messages-json", "--cwd", str(project), "--trust",
                 "--permission-mode", "bypassPermissions", "--disable-web-search"]
         return args + (["--resume", session] if session else []) + ["-p", prompt], None
 
 
 class Cursor(Host):
     def native(self, binary, base, project, session, prompt):
-        args = [binary, "--print", "--output-format", "stream-json", "--trust", "--workspace", str(project),
+        args = [binary, "--print", "--model", self.model, "--output-format", "stream-json", "--trust",
+                "--workspace", str(project),
                 "--sandbox", "disabled", "--force"]
         return args + (["--resume", session] if session else []) + [prompt], None
 
 
 class Copilot(Host):
     def native(self, binary, base, project, session, prompt):
-        args = [binary, "-p", prompt, "--output-format", "json", "--allow-all", "--disable-builtin-mcps",
-                *([] if session else ["--trust-folder"])]
+        args = ["env", "COPILOT_ALLOW_ALL=true", binary, "-p", prompt, "--model", self.model,
+                "--output-format", "json", "--allow-all", "--disable-builtin-mcps"]
         return args + (["--resume", session] if session else []), None
 
 
@@ -107,25 +111,28 @@ class Amp(Host):
         settings = base / "amp-settings.json"
         settings.write_text(json.dumps({"amp.dangerouslyAllowAll": True}) + "\n")
         command = ([binary, "threads", "continue", session] if session else [binary]) + [
-            "-x", "--stream-json", "--no-ide", "--no-notifications", "--no-archive-after-execute",
+            "-x", "--stream-json", "--mode", self.model, "--plugin-ready-timeout", "10", "--no-ide",
+            "--no-notifications", "--no-archive-after-execute",
             "--settings-file", str(settings)]
         return command, prompt
 
 
 class OpenCode(Host):
     def native(self, binary, base, project, session, prompt):
-        command = [binary, "run", "--format", "json", "--dir", str(project), "--auto"]
+        command = [binary, "run", "--format", "json", "--dir", str(project), "--auto", "-m", self.model]
         return command + (["-s", session] if session else []) + [prompt], None
 
 
 HOSTS = {
-    "codex": Codex("codex", ("codex",), "codex", "$", ("UserPromptSubmit",), (".codex",)),
-    "claude": Claude("claude", ("claude",), "claude", "/", ("UserPromptSubmit",), (".claude", ".claude.json")),
-    "grok": Grok("grok", ("grok",), "grok", "/", ("PostToolUse",), (".grok",)),
+    "codex": Codex("codex", ("codex",), "codex", "$", ("UserPromptSubmit",), (".codex",), "gpt-reserve"),
+    "claude": Claude("claude", ("claude",), "claude", "/", ("UserPromptSubmit",), (".claude", ".claude.json"), "claude-sonnet-5-5"),
+    "grok": Grok("grok", ("grok",), "grok", "/", ("PostToolUse",), (".grok",), "grok-4.7"),
     "cursor": Cursor("cursor", ("cursor-agent", "agent"), "cursor", "/", ("postToolUse", "sessionStart"),
-                     (".cursor", ".config/cursor", ".local/share/cursor-agent")),
-    "copilot": Copilot("copilot", ("copilot",), "copilot", "/", (), (".copilot",)),
-    "amp": Amp("amp", ("amp",), "amp", "/", (), (".amp", ".local/share/amp", ".cache/amp", ".config/amp")),
-    "opencode": OpenCode("opencode", ("opencode",), "codex", "/", (),
-                         (".config/opencode", ".local/share/opencode", ".cache/opencode", ".local/state/opencode")),
+                     (".cursor", ".config/cursor", ".local/share/cursor-agent"), "composer-2.5"),
+    "copilot": Copilot("copilot", ("copilot",), "copilot", "/", ("userPromptSubmitted",), (".copilot",), "auto"),
+    "amp": Amp("amp", ("amp",), "amp", "/", ("agent.start",), (".amp", ".local/share/amp", ".cache/amp", ".config/amp"), "low",
+               compacts=False),
+    "opencode": OpenCode("opencode", ("opencode",), "opencode", "/", ("chat.system.transform",),
+                         (".config/opencode", ".local/share/opencode", ".cache/opencode", ".local/state/opencode"),
+                         "opencode/claude-haiku-5-5"),
 }

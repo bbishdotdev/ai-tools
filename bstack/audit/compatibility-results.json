@@ -51,9 +51,13 @@
       "bindings": [
         "skills",
         "auto",
-        "pr"
+        "pr",
+        "hooks"
       ],
-      "scenarios": {}
+      "scenarios": {},
+      "not_applicable": [
+        "compaction-resume"
+      ]
     },
     "copilot-cli": {
       "label": "GitHub Copilot CLI",
@@ -61,7 +65,8 @@
       "bindings": [
         "skills",
         "auto",
-        "pr"
+        "pr",
+        "hooks"
       ],
       "scenarios": {}
     },
@@ -70,7 +75,9 @@
       "surface": "cli",
       "bindings": [
         "skills",
-        "pr"
+        "auto",
+        "pr",
+        "hooks"
       ],
       "scenarios": {}
     },

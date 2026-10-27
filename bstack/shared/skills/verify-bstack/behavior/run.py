@@ -12,8 +12,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import signal
 import threading
 import time
+import urllib.request
 import uuid
 
 HERE = Path(__file__).resolve().parent
@@ -39,6 +41,7 @@ def copilot_compacted(session):
     log = HOME / ".copilot/session-state" / str(session) / "events.jsonl"
     return log.is_file() and any('"type":"session.compaction_complete"' in line.replace(" ", "")
                                  for line in log.read_text(errors="replace").splitlines())
+QUALITY_CHECKS = {"outcome", "rejected_option_avoided", "answer_explains_rules"}
 ROUTER = ".bstack/package/shared/router/WORKFLOW.md"
 CACHE = re.compile(r"lru_cache|functools\.cache|@cache\b|\bcache\s*=\s*\{|_cache\b|results_by_query|memo")
 
@@ -67,6 +70,11 @@ SCENARIOS = {
         "turns": ["Add a --tag option to `notes list` that only shows notes with that tag.",
                   "Make the tag match case-insensitive too.",
                   "Looks good. Raise a PR for this."],
+    },
+    "direct-pr": {
+        "project": "late-pr", "column": "pr", "forge": True,
+        "turns": ["Add a --limit N option to `notes list` that shows at most N notes, then open a PR for it "
+                  "with `gh pr create --fill`."],
     },
     "compaction-resume": {
         "project": "compaction-resume", "column": "hooks",
@@ -117,7 +125,7 @@ def workspace(scenario, host):
     url = f"https://github.com/{repo}.git"
     git(project, "remote", "add", "origin", url, env=env)
     git(project, "push", "-q", "-u", "origin", "main", env=env)
-    controller = [sys.executable, str(RELEASE / "scripts/bstack.py")]
+    controller = [sys.executable, str(Path(os.environ.get("BSTACK_BEHAVIOR_RELEASE", RELEASE)) / "scripts/bstack.py")]
     run(controller + ["install", "--project", str(project), "--hosts", HOSTS[host].install], project, env=env)
     installed = [sys.executable, str(project / ".bstack/package/scripts/bstack.py")]
     if scenario.get("verification"):
@@ -200,6 +208,38 @@ def codex_compact(binary, project, base, session, files, folder, env):
                 child.wait()
     return any(m.get("method") == "item/completed" and
                m.get("params", {}).get("item", {}).get("type") == "contextCompaction" for m in messages)
+
+
+def opencode_compact(binary, base, project, session, files, folder, env, model):
+    folder.mkdir(parents=True, exist_ok=True)
+    port = 4100 + int(uuid.uuid4().hex[:4], 16) % 800
+    argv = jail([binary, "serve", "--port", str(port), "--hostname", "127.0.0.1"], base,
+                [HOME / path for host in HOSTS.values() for path in host.state], files, project)
+    verify.save(folder / "command.json", argv)
+    with (folder / "stdout.txt").open("w") as out, (folder / "stderr.txt").open("w") as err:
+        server = subprocess.Popen(argv, cwd=project, env=env, stdout=out, stderr=err, start_new_session=True)
+        try:
+            url = f"http://127.0.0.1:{port}"
+            for _ in range(60):
+                try:
+                    urllib.request.urlopen(url + "/session", timeout=2)
+                    break
+                except OSError:
+                    time.sleep(1)
+            provider, model_id = model.split("/", 1)
+            request = urllib.request.Request(f"{url}/session/{session}/summarize", method="POST",
+                                             data=json.dumps({"providerID": provider, "modelID": model_id}).encode(),
+                                             headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(request, timeout=600) as response:
+                body = response.read().decode()
+            (folder / "summarize.json").write_text(body)
+            return response.status == 200 and json.loads(body) is True
+        except (OSError, ValueError) as error:
+            (folder / "summarize-error.txt").write_text(str(error))
+            return False
+        finally:
+            os.killpg(server.pid, signal.SIGTERM)
+            server.wait(timeout=20)
 
 
 def trace(stream, turn):
@@ -378,6 +418,12 @@ def grade(name, scenario, ctx):
                       single_pr=len(pulls) == 1 and head not in (None, "main"),
                       published_by_workflow=bool(pulls) and all("<!-- bstack-pr:" in pull["body"] for pull in pulls),
                       outcome=outcome)
+    elif name == "direct-pr":
+        state_path = Path(env["FAKE_FORGE_STATE"])
+        state = json.loads(state_path.read_text()) if state_path.is_file() else {"pulls": {}}
+        pulls = list(state["pulls"].values())
+        checks.update(no_unmanaged_pr=all("<!-- bstack-pr:" in pull["body"] for pull in pulls),
+                      pr_created=bool(pulls))
     elif name == "compaction-resume":
         checks.update(compacted=ctx["compacted"],
                       first_turn_stayed_read_only=not ctx["changed_after_first"],
@@ -403,7 +449,8 @@ def execute(host, binary, name, repeat, folder, timeout):
     base, project, env = workspace(scenario, host)
     driver = HOSTS[host]
     files = driver.prepare(binary, base, project)
-    observed = {"host": host, "scenario": name, "repeat": repeat, "workspace": str(base), "project": str(project),
+    observed = {"host": host, "model": driver.model, "scenario": name, "repeat": repeat, "workspace": str(base),
+                "project": str(project),
                 "base_commit": git(project, "rev-parse", "HEAD", env=env), "exits": [], "compacted": None,
                 "changed_after_first": None, "session": None}
     session = None
@@ -416,6 +463,9 @@ def execute(host, binary, name, repeat, folder, timeout):
         if turn is COMPACT:
             if host == "codex":
                 observed["compacted"] = codex_compact(binary, project, base, session, files, turn_dir, turn_env)
+            elif host == "opencode":
+                observed["compacted"] = opencode_compact(binary, base, project, session, files, turn_dir, turn_env,
+                                                         driver.model)
             elif host == "copilot":
                 argv, stdin = driver.command(binary, base, project, session, "/compact", files)
                 code, _ = verify.process(argv, turn_dir, turn_env, timeout, stdin, cwd=project)
@@ -474,9 +524,13 @@ def assess(folder):
         shutil.copy(ctx["env"]["FAKE_FORGE_STATE"], folder / "forge.json")
     verify.save(folder / "trace.json", ctx["trace"])
     status = "pass" if checks and all(checks.values()) else "fail"
+    integration = all(value for key, value in checks.items() if key not in QUALITY_CHECKS)
+    quality = all(value for key, value in checks.items() if key in QUALITY_CHECKS)
     prompt_hooks = (all(ctx["prompt_hooks"].get(turn, 0) > 0 for turn in ctx["prompt_turns"])
                     if HOSTS[host].reminder_events else None)
-    result = {"host": host, "scenario": name, "repeat": observed["repeat"], "status": status, "checks": checks,
+    result = {"host": host, "model": observed.get("model"), "scenario": name, "repeat": observed["repeat"],
+              "status": status, "integration_pass": bool(checks) and integration,
+              "quality_pass": bool(checks) and integration and quality, "checks": checks,
               "reminder_hook_every_turn": prompt_hooks, "seconds": observed.get("seconds"),
               "session": observed["session"], "workspace": str(base),
               "usage": {key: sum(item[key] for item in ctx["usage"]) for key in ("input_tokens", "output_tokens", "cost_usd")}}
@@ -526,11 +580,13 @@ def summarize(results, clients):
     summary = {}
     for result in results:
         host = summary.setdefault(result["host"], {"version": clients[result["host"]].get("version"), "scenarios": {}})
+        host["model"] = result.get("model") or host.get("model")
         row = host["scenarios"].setdefault(result["scenario"], {"column": SCENARIOS[result["scenario"]]["column"],
-                                                                "passes": 0, "repeats": 0, "failed_checks": [],
-                                                                "reminder_hook_runs": 0})
+                                                                "passes": 0, "quality_passes": 0, "repeats": 0,
+                                                                "failed_checks": [], "reminder_hook_runs": 0})
         row["repeats"] += 1
-        row["passes"] += result["status"] == "pass"
+        row["passes"] += result.get("integration_pass", result["status"] == "pass")
+        row["quality_passes"] += result.get("quality_pass", result["status"] == "pass")
         row["reminder_hook_runs"] += result.get("reminder_hook_every_turn") is True
         row["failed_checks"] += sorted({key for key, value in result.get("checks", {}).items() if not value}
                                        | ({"setup"} if result["status"] == "error" else set()))
@@ -543,6 +599,7 @@ def record(summary, run_id):
     for host, value in summary.items():
         entry = data["hosts"][host + "-cli"]
         entry["version"] = value["version"]
+        entry["model"] = value.get("model")
         for scenario, row in value["scenarios"].items():
             entry.setdefault("scenarios", {})[scenario] = dict(row, run=run_id)
     data["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -558,6 +615,7 @@ def main():
     parser.add_argument("--timeout", type=int, default=1200, help="Seconds per turn")
     parser.add_argument("--record", action="store_true", help=f"Merge the summary into {RESULTS.relative_to(ROOT)}")
     parser.add_argument("--list", action="store_true")
+    parser.add_argument("--release", type=Path, help="Install this release bundle instead of bstack/release/bstack")
     parser.add_argument("--resume", type=Path, help="Finish an interrupted run directory, skipping completed cases")
     parser.add_argument("--regrade", type=Path, help="Re-score a finished run directory from its saved evidence")
     args = parser.parse_args()
@@ -565,6 +623,8 @@ def main():
         for name, scenario in SCENARIOS.items():
             print(f"{name} [{scenario['column']}]: {len([t for t in scenario['turns'] if t is not COMPACT])} turns")
         return 0
+    if args.release:
+        os.environ["BSTACK_BEHAVIOR_RELEASE"] = str(args.release.resolve())
     if args.regrade:
         folders = sorted(path.parent for path in args.regrade.glob("*/*/result.json"))
         for folder in folders:
@@ -600,6 +660,8 @@ def main():
     for repeat in range(1, args.repeats + 1):
         for name in args.scenarios:
             for tool in args.tools:
+                if COMPACT in SCENARIOS[name]["turns"] and not HOSTS[tool].compacts:
+                    continue
                 folder = out / tool / f"{name}-{repeat}"
                 if (folder / "result.json").exists():
                     continue
