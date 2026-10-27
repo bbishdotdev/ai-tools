@@ -1,0 +1,24 @@
+bstack/shared/skills/verify-bstack/behavior/matrix.py
+  s_6bff603607ccc7::t_2cf664686c2bec 97-98,101,103
+  s_6bff603607ccc7::t_fa1558e51b6187 92-95,102
+bstack/shared/skills/verify-bstack/features/behavior.md
+  s_6bff603607ccc7::t_9ecb9aea1ebdae 15,19,55
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_6bff603607ccc7::t_2cf664686c2bec 471-472,658-659,662
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "01a8901b5babbc2cae5f0a5d732de82fef9ef8a2",
+  "prompts": {},
+  "sessions": {
+    "s_6bff603607ccc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a4c23b0-fbe3-4e2b-a6e1-358d881cafd7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
