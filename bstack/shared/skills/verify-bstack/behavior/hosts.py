@@ -11,6 +11,20 @@ from codex_hooks import hooks_list
 
 HOME = Path.home()
 HIDDEN = (HOME / ".config/gh", HOME / ".ssh")
+import glob
+import os
+
+
+def real_gh():
+    candidates = [Path(entry) / "gh" for entry in os.environ.get("PATH", "").split(os.pathsep)]
+    candidates += [Path(found) for pattern in (".local/share/mise/installs/gh/*/*/bin/gh", ".local/share/mise/shims/gh")
+                   for found in glob.glob(str(HOME / pattern))]
+    candidates += [Path("/usr/bin/gh"), Path("/usr/local/bin/gh")]
+    resolved = {path.resolve() for path in candidates if path.is_file()}
+    return sorted(str(path) for path in resolved if path.name == "gh" and "/work-" not in str(path))
+
+
+REAL_GH = real_gh()
 
 
 def jail(argv, base, state, files=(), cwd=None):
@@ -23,6 +37,7 @@ def jail(argv, base, state, files=(), cwd=None):
             *[arg for path in state for arg in ("--bind", str(path), str(path))],
             *[arg for source, target in files for arg in ("--bind", str(source), str(target))],
             *[arg for path in HIDDEN if path.exists() for arg in ("--tmpfs", str(path))],
+            *[arg for path in REAL_GH if (base / "bin/gh").exists() for arg in ("--ro-bind", str(base / "bin/gh"), path)],
             "--bind", str(base), str(base), "--chdir", str(cwd or base), "--", *argv]
 
 
