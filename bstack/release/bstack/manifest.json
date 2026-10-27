@@ -48,9 +48,9 @@
     {
       "mode": 420,
       "path": "assets/compatibility.svg",
-      "sha256": "255e3edf721fb5e662789b8ca48c4152c1eae8864cc0dbab174d1cae27faf56f",
+      "sha256": "d1ad92097242e8d878a9e2c4e0c5356d308841aa09cc7af242bb42dd93b8907f",
       "source": "bstack/assets/compatibility.svg",
-      "source_sha256": "255e3edf721fb5e662789b8ca48c4152c1eae8864cc0dbab174d1cae27faf56f",
+      "source_sha256": "d1ad92097242e8d878a9e2c4e0c5356d308841aa09cc7af242bb42dd93b8907f",
       "transforms": []
     },
     {
