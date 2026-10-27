@@ -1660,9 +1660,9 @@
     {
       "mode": 420,
       "path": "runtime/reminder.txt",
-      "sha256": "8657e30e3bc10630e50858ef3d347ad8813ec3ff3f0871b02a3fff21ad606cf0",
+      "sha256": "2ed02d8bdcf0a2d5869dbce09788ed4fdaefd453cfae7504fc487f0ef64918cc",
       "source": "bstack/shared/router/reminder.txt",
-      "source_sha256": "8657e30e3bc10630e50858ef3d347ad8813ec3ff3f0871b02a3fff21ad606cf0",
+      "source_sha256": "2ed02d8bdcf0a2d5869dbce09788ed4fdaefd453cfae7504fc487f0ef64918cc",
       "transforms": []
     },
     {
