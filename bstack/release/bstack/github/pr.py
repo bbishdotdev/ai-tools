@@ -324,22 +324,26 @@ def visual_section(body):
     return rest[:end.start()] if end else rest
 
 
-def micro_change(scan):
+SMALL_CHANGE_FILES = 2
+SMALL_CHANGE_LINES = 30
+
+
+def small_change(scan):
     files = scan.get("comparison", {}).get("files", [])
-    if len(files) != 1:
-        return False
-    patch = files[0].get("patch")
-    return isinstance(patch, str) and len(re.findall(r"(?m)^@@[ \t]", patch)) == 1
+    return (0 < len(files) <= SMALL_CHANGE_FILES
+            and all(isinstance(item.get("patch"), str) and isinstance(item.get("changes"), int) for item in files)
+            and sum(item["changes"] for item in files) <= SMALL_CHANGE_LINES)
 
 
 def validate_visual(scan, body):
     section = visual_section(body)
     if section is not None and not has_visual(section):
         fail("invalid_visual", "A legacy For visual nerds section needs an image or Mermaid diagram; remove an empty section")
-    if micro_change(scan):
+    if small_change(scan):
         return
     if not has_visual(body):
-        fail("visual_required", "A multi-file or multi-hunk PR needs an image or Mermaid diagram")
+        fail("visual_required", f"A PR over {SMALL_CHANGE_FILES} files or {SMALL_CHANGE_LINES} changed lines "
+                                "needs an image or Mermaid diagram")
 
 
 def prose_word_count(body):

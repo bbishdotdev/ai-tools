@@ -6,8 +6,10 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import pty
 import queue
 import re
+import select
 import shutil
 import subprocess
 import sys
@@ -42,7 +44,7 @@ def copilot_compacted(session):
     return log.is_file() and any('"type":"session.compaction_complete"' in line.replace(" ", "")
                                  for line in log.read_text(errors="replace").splitlines())
 PROVIDER_LIMITS = re.compile(r"quota_exceeded|exceeded your monthly quota|insufficient[ _]credits|usage limit reached", re.I)
-QUALITY_CHECKS = {"outcome", "rejected_option_avoided", "answer_explains_rules"}
+QUALITY_CHECKS = {"outcome", "rejected_option_avoided", "answer_explains_rules", "verifier_covers_feature"}
 ROUTER = ".bstack/package/shared/router/WORKFLOW.md"
 CACHE = re.compile(r"lru_cache|functools\.cache|@cache\b|\bcache\s*=\s*\{|_cache\b|results_by_query|memo")
 
@@ -211,6 +213,41 @@ def codex_compact(binary, project, base, session, files, folder, env):
                 child.wait()
     return any(m.get("method") == "item/completed" and
                m.get("params", {}).get("item", {}).get("type") == "contextCompaction" for m in messages)
+
+
+def cursor_compact(binary, base, project, session, files, folder, env, model, hooks):
+    folder.mkdir(parents=True, exist_ok=True)
+    argv = jail([binary, "--resume", session, "--trust", "--workspace", str(project), "--model", model], base,
+                [HOME / path for host in HOSTS.values() for path in host.state], files, project)
+    verify.save(folder / "command.json", argv)
+    primary, secondary = pty.openpty()
+    child = subprocess.Popen(argv, cwd=project, stdin=secondary, stdout=secondary, stderr=secondary,
+                             start_new_session=True, env=dict(env, TERM="xterm-256color", COLUMNS="120", LINES="40"))
+    os.close(secondary)
+    with (folder / "pty.log").open("wb") as log:
+        def drain(seconds):
+            end = time.monotonic() + seconds
+            while time.monotonic() < end:
+                if select.select([primary], [], [], 0.5)[0]:
+                    try:
+                        log.write(os.read(primary, 65536))
+                    except OSError:
+                        return
+        drain(15)
+        for character in "/compress":
+            os.write(primary, character.encode())
+            time.sleep(0.05)
+        drain(2)
+        os.write(primary, b"\r")
+        end = time.monotonic() + 180
+        while time.monotonic() < end and not any(
+                json.loads(path.read_text()).get("event") == "preCompact" for path in hooks.glob("hook-*.json")):
+            drain(5)
+        drain(10)
+    os.killpg(child.pid, signal.SIGTERM)
+    child.wait(timeout=20)
+    os.close(primary)
+    return any(json.loads(path.read_text()).get("event") == "preCompact" for path in hooks.glob("hook-*.json"))
 
 
 def opencode_compact(binary, base, project, session, files, folder, env, model):
@@ -397,9 +434,10 @@ def grade(name, scenario, ctx):
         runs = json.loads(evidence.read_text()) if evidence.is_file() else []
         checks.update(workflow_loaded=touched(entries, ROUTER) and touched(entries, "playbooks/feature.md"),
                       outcome=hidden_tests(project, name, scenario, folder),
-                      verifier_recipe_updated="--currency" in recipes.read_text(),
-                      verifier_ran=any("--currency" in item["args"] and item["passed"] for item in runs)
-                      and all(item["passed"] for item in runs))
+                      verifier_recipe_updated=bool(run(["git", "diff", ctx["base_commit"], "--", str(recipes)],
+                                                       project, env=env).stdout.strip()),
+                      verifier_ran=bool(runs) and all(item["passed"] for item in runs),
+                      verifier_covers_feature=any("--currency" in item["args"] and item["passed"] for item in runs))
     elif name == "adr-rejected":
         lines = added_lines(project, env, ctx["base_commit"])
         checks.update(workflow_loaded=touched(entries, ROUTER) and (touched(entries, "playbooks/feature.md")
@@ -466,6 +504,9 @@ def execute(host, binary, name, repeat, folder, timeout):
         if turn is COMPACT:
             if host == "codex":
                 observed["compacted"] = codex_compact(binary, project, base, session, files, turn_dir, turn_env)
+            elif host == "cursor":
+                observed["compacted"] = cursor_compact(binary, base, project, session, files, turn_dir, turn_env,
+                                                       driver.model, hooks)
             elif host == "opencode":
                 observed["compacted"] = opencode_compact(binary, base, project, session, files, turn_dir, turn_env,
                                                          driver.model)
@@ -628,6 +669,8 @@ def main():
     parser.add_argument("--timeout", type=int, default=1200, help="Seconds per turn")
     parser.add_argument("--record", action="store_true", help=f"Merge the summary into {RESULTS.relative_to(ROOT)}")
     parser.add_argument("--list", action="store_true")
+    parser.add_argument("--model", action="append", default=[], metavar="HOST=MODEL",
+                        help="Override a host's pinned model for this run")
     parser.add_argument("--release", type=Path, help="Install this release bundle instead of bstack/release/bstack")
     parser.add_argument("--resume", type=Path, help="Finish an interrupted run directory, skipping completed cases")
     parser.add_argument("--regrade", type=Path, help="Re-score a finished run directory from its saved evidence")
@@ -638,6 +681,9 @@ def main():
         return 0
     if args.release:
         os.environ["BSTACK_BEHAVIOR_RELEASE"] = str(args.release.resolve())
+    for override in args.model:
+        host, model = override.split("=", 1)
+        HOSTS[host].model = model
     if args.regrade:
         folders = sorted(path.parent for path in args.regrade.glob("*/*/result.json"))
         for folder in folders:

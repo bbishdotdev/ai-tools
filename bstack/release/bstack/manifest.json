@@ -1360,9 +1360,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/SKILL.md",
-      "sha256": "c057ebbf3bd82639e7545e091b37c74e6f1b21bd338351ea22878daa0fd61f9d",
+      "sha256": "ecf141c56555424ec37af07b39bbec0a6daec8f3fa64f5813d2f1a8b396ba789",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "7f47df97c6e29532faabee8bedba5fff79234d1a1d1e5d4cef350ae1510d0b8d",
+      "source_sha256": "2848dd8f2a1e59548ac4f504298927c7e2136c44aad6591b04cb26a3a44ba193",
       "transforms": [
         "rewrite-local-markdown-links",
         "public-skill-invocation-policy"
@@ -1389,9 +1389,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/visuals.md",
-      "sha256": "b48b43c8704232a7f4bf7aef61f9e9042371a130d12ebec3e72939ada16b1c7d",
+      "sha256": "45c6b1e6b67baf5c7b9ebf002cae31607c789c7d7de9a868da71d412c204adcf",
       "source": "bstack/engineering/to-pr/references/visuals.md",
-      "source_sha256": "b48b43c8704232a7f4bf7aef61f9e9042371a130d12ebec3e72939ada16b1c7d",
+      "source_sha256": "45c6b1e6b67baf5c7b9ebf002cae31607c789c7d7de9a868da71d412c204adcf",
       "transforms": []
     },
     {
@@ -1600,9 +1600,9 @@
     {
       "mode": 493,
       "path": "github/pr.py",
-      "sha256": "cea03c19cb016d58d5fc626d8335967f583415970abdf7f63d232176f04eacf8",
+      "sha256": "900197347a3a52e55d9cd29d94714926ae028679bbfbcf97bcd5678174603f28",
       "source": "bstack/github/pr.py",
-      "source_sha256": "cea03c19cb016d58d5fc626d8335967f583415970abdf7f63d232176f04eacf8",
+      "source_sha256": "900197347a3a52e55d9cd29d94714926ae028679bbfbcf97bcd5678174603f28",
       "transforms": []
     },
     {
@@ -1652,9 +1652,9 @@
     {
       "mode": 493,
       "path": "runtime/reminder.py",
-      "sha256": "fec1d4ce603c1688621e766eb9e2f245e51c2ceef070d72e758ff96c377b3683",
+      "sha256": "f604e917015c4543a6a31cf716172c25c21b4a1f052711cbd4b4e4f07057f7b8",
       "source": "bstack/shared/router/hook.py",
-      "source_sha256": "fec1d4ce603c1688621e766eb9e2f245e51c2ceef070d72e758ff96c377b3683",
+      "source_sha256": "f604e917015c4543a6a31cf716172c25c21b4a1f052711cbd4b4e4f07057f7b8",
       "transforms": []
     },
     {
@@ -2207,9 +2207,9 @@
     {
       "mode": 420,
       "path": "shared/references/verification-policy.md",
-      "sha256": "f18dc76770c96863d491f4b6a974e79637142e38fa249f2d4c57fc6ea0bb7cac",
+      "sha256": "5630e7ee55e0cc37739966e6d7b9a27ca887a05261210e9959333c278edad12f",
       "source": "bstack/shared/references/verification-policy.md",
-      "source_sha256": "f18dc76770c96863d491f4b6a974e79637142e38fa249f2d4c57fc6ea0bb7cac",
+      "source_sha256": "5630e7ee55e0cc37739966e6d7b9a27ca887a05261210e9959333c278edad12f",
       "transforms": []
     },
     {
