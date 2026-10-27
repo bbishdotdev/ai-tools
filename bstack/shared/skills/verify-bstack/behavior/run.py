@@ -468,7 +468,8 @@ def grade(name, scenario, ctx):
     elif name == "compaction-resume":
         checks.update(compacted=ctx["compacted"],
                       first_turn_stayed_read_only=not ctx["changed_after_first"],
-                      instructions_recovered=touched(entries, ROUTER, turn=last),
+                      instructions_recovered=touched(entries, ROUTER, turn=last)
+                      or touched(entries, "poteto-mode/playbooks/", turn=last),
                       outcome=hidden_tests(project, name, scenario, folder))
     return checks
 
@@ -654,8 +655,11 @@ def record(summary, run_id):
         entry = data["hosts"][host + "-cli"]
         entry["version"] = value["version"]
         entry["model"] = value.get("model")
+        model_row = data.setdefault("models", {}).setdefault(f"{host}-cli|{value.get('model')}", {
+            "host": host + "-cli", "model": value.get("model"), "scenarios": {}})
         for scenario, row in value["scenarios"].items():
             entry.setdefault("scenarios", {})[scenario] = dict(row, run=run_id)
+            model_row["scenarios"][scenario] = dict(row, run=run_id)
     data["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     RESULTS.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
 

@@ -89,19 +89,18 @@ def render(data):
 def render_models(data):
     header = "| Tool | Model | " + " | ".join(QUALITY_SCENARIOS) + " |"
     lines = ["# Model results", "",
-             "How well each host's configured model completed the work once bstack's instructions reached it. "
-             "Cells show passing repeats out of recorded repeats for the work-quality checks: hidden tests, "
-             "rejected alternatives avoided, and correct answers. bstack integration is reported separately in "
-             "the compatibility matrix.", "", f"Last recorded: {data['updated'] or 'never'}.", "",
+             "How each model did with bstack on each host. Each cell is `integration · quality of repeats`. "
+             "Integration means the model loaded and followed bstack's routing, workflows, and hooks. Quality "
+             "means it then did the work well: hidden tests, avoiding rejected alternatives, verifier coverage, "
+             "and correct answers. The compatibility matrix uses the most recent integration result per host.", "", f"Last recorded: {data['updated'] or 'never'}.", "",
              header, "|" + " --- |" * (len(QUALITY_SCENARIOS) + 2)]
-    for host in (data["hosts"][key] for key in ORDER):
-        if not host["scenarios"]:
-            continue
+    rows = sorted(data.get("models", {}).values(), key=lambda row: (ORDER.index(row["host"]), row["model"] or ""))
+    for row in rows:
         cells = []
         for name in QUALITY_SCENARIOS:
-            row = host["scenarios"].get(name)
-            cells.append(f"{row.get('quality_passes', row['passes'])}/{row['repeats']}" if row else "-")
-        lines.append(f"| {host['label']} | `{host.get('model') or 'default'}` | " + " | ".join(cells) + " |")
+            cell = row["scenarios"].get(name)
+            cells.append(f"{cell['passes']} · {cell['quality_passes']} of {cell['repeats']}" if cell else "-")
+        lines.append(f"| {data['hosts'][row['host']]['label']} | `{row['model'] or 'default'}` | " + " | ".join(cells) + " |")
     return "\n".join(lines) + "\n"
 
 
