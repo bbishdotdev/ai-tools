@@ -11,7 +11,8 @@ from run import RESULTS, ROOT, SCENARIOS
 ASSET = ROOT / "bstack/assets/compatibility.svg"
 MODELS = ROOT / "bstack/audit/model-results.md"
 ORDER = ("codex-cli", "claude-cli", "cursor-cli", "grok-cli", "amp-cli", "copilot-cli", "opencode-cli",
-         "codex-desktop", "claude-desktop", "cursor-desktop", "vscode-copilot", "opencode-desktop")
+         "codex-desktop", "claude-desktop", "cursor-desktop", "vscode-copilot", "opencode-desktop",
+         "codex-tui", "claude-tui", "cursor-tui", "grok-tui", "amp-tui", "opencode-tui")
 QUALITY_SCENARIOS = ("misleading-bug", "feature-verifier", "adr-rejected", "late-pr", "direct-pr", "compaction-resume")
 COLUMNS = (("skills", "Skills"), ("auto", "Auto mode"), ("pr", "PR workflows"), ("hooks", "Hooks"))
 BADGES = {
@@ -50,7 +51,9 @@ def badge(name):
 def render(data):
     hosts = [data["hosts"][key] for key in ORDER]
     groups = [("CLI", [h for h in hosts if h["surface"] == "cli"]),
+              ("INTERACTIVE CLI", [h for h in hosts if h["surface"] == "tui" and h["scenarios"]]),
               ("DESKTOP / EDITOR", [h for h in hosts if h["surface"] == "desktop"])]
+    groups = [(title, members) for title, members in groups if members]
     rows, y, stripe = [], 172, 0
     for title, hosts in groups:
         rows.append(f'<text x="36" y="{y}" fill="#8998a8" font-size="12" font-weight="700" letter-spacing="2">{title}</text>')

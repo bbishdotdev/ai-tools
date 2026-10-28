@@ -564,7 +564,8 @@ def assess(folder):
     limited = any(PROVIDER_LIMITS.search(path.read_text(errors="replace"))
                   for path in folder.glob("turn-*/std*") if path.is_file())
     if limited:
-        result = {"host": host, "model": observed.get("model"), "scenario": name, "repeat": observed["repeat"],
+        result = {"host": host, "surface": observed.get("surface"), "model": observed.get("model"), "scenario": name,
+                  "repeat": observed["repeat"],
                   "status": "error", "reason": "provider quota or credit limit", "workspace": str(base)}
         verify.save(folder / "result.json", result)
         print(f"{host} {name}#{observed['repeat']}: error provider limit", flush=True)
@@ -579,10 +580,14 @@ def assess(folder):
     status = "pass" if checks and all(checks.values()) else "fail"
     integration = all(value for key, value in checks.items() if key not in QUALITY_CHECKS)
     quality = all(value for key, value in checks.items() if key in QUALITY_CHECKS)
-    prompt_hooks = (all(ctx["prompt_hooks"].get(turn, 0) > 0 for turn in ctx["prompt_turns"])
-                    if HOSTS[host].reminder_events else None)
-    result = {"host": host, "model": observed.get("model"), "scenario": name, "repeat": observed["repeat"],
-              "status": status, "integration_pass": bool(checks) and integration,
+    if not HOSTS[host].reminder_events:
+        prompt_hooks = None
+    elif observed.get("interactive"):
+        prompt_hooks = sum(ctx["prompt_hooks"].values()) >= len(ctx["prompt_turns"])
+    else:
+        prompt_hooks = all(ctx["prompt_hooks"].get(turn, 0) > 0 for turn in ctx["prompt_turns"])
+    result = {"host": host, "surface": observed.get("surface"), "model": observed.get("model"), "scenario": name,
+              "repeat": observed["repeat"], "status": status, "integration_pass": bool(checks) and integration,
               "quality_pass": bool(checks) and quality, "checks": checks,
               "reminder_hook_every_turn": prompt_hooks, "seconds": observed.get("seconds"),
               "session": observed["session"], "workspace": str(base),
@@ -634,7 +639,8 @@ def summarize(results, clients):
     for result in results:
         if result["status"] == "error":
             continue
-        host = summary.setdefault(result["host"], {"version": clients[result["host"]].get("version"), "scenarios": {}})
+        key = result.get("surface") or result["host"] + "-cli"
+        host = summary.setdefault(key, {"version": clients.get(result["host"], {}).get("version"), "scenarios": {}})
         host["model"] = result.get("model") or host.get("model")
         row = host["scenarios"].setdefault(result["scenario"], {"column": SCENARIOS[result["scenario"]]["column"],
                                                                 "passes": 0, "quality_passes": 0, "repeats": 0,
@@ -652,11 +658,11 @@ def summarize(results, clients):
 def record(summary, run_id):
     data = json.loads(RESULTS.read_text())
     for host, value in summary.items():
-        entry = data["hosts"][host + "-cli"]
+        entry = data["hosts"][host]
         entry["version"] = value["version"]
         entry["model"] = value.get("model")
-        model_row = data.setdefault("models", {}).setdefault(f"{host}-cli|{value.get('model')}", {
-            "host": host + "-cli", "model": value.get("model"), "scenarios": {}})
+        model_row = data.setdefault("models", {}).setdefault(f"{host}|{value.get('model')}", {
+            "host": host, "model": value.get("model"), "scenarios": {}})
         for scenario, row in value["scenarios"].items():
             entry.setdefault("scenarios", {})[scenario] = dict(row, run=run_id)
             model_row["scenarios"][scenario] = dict(row, run=run_id)

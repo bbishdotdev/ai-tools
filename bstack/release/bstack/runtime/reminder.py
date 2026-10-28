@@ -97,6 +97,16 @@ def claim_turn(host, session, turn):
         return None if inserted.rowcount else "duplicate_turn"
 
 
+def tool_summary(payload):
+    tool = payload.get("tool_name", payload.get("toolName"))
+    detail = payload.get("tool_input", payload.get("toolInput", payload.get("toolArgs")))
+    if not isinstance(detail, dict):
+        return tool, None
+    target = next((detail[key] for key in ("file_path", "filePath", "path", "target_file", "command", "cmd")
+                   if isinstance(detail.get(key), str)), None)
+    return tool, target[:2000] if target else None
+
+
 def build_output(host, payload, receipt=None):
     event = event_name(payload, host)
     text = TEMPLATE.read_text().strip().format(router_path=ROUTER)
@@ -168,6 +178,8 @@ def main():
                 "injection_supported": context is not None,
                 "context_chars": len(context or ""),
                 "router_sha256": hashlib.sha256(ROUTER.read_bytes()).hexdigest(),
+                "tool": tool_summary(payload)[0],
+                "tool_target": tool_summary(payload)[1],
             }
             (destination / f"hook-{receipt}.json").write_text(json.dumps(record, indent=2) + "\n")
         print(json.dumps(output))

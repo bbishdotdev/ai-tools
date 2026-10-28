@@ -26,6 +26,8 @@ Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py live`. It sele
 
 For compatibility claims, follow [behavior scenarios](features/behavior.md). `behavior/run.py` drives real work in disposable installed projects and `behavior/matrix.py` renders the README matrix from recorded results.
 
+For desktop apps and interactive terminal UIs, follow [computer-use verification](features/computer-use.md). Hand a computer-use agent [the runbook](computer-use/RUNBOOK.md); `behavior/interactive.py` prepares and grades the cases.
+
 For changes to the Cursor/Grok after-tool fallback, run `python3 bstack/shared/skills/verify-bstack/scripts/fallback.py`. It discovers those two clients and tests dependent reads, once-per-turn emission, resumed turns, and a tool-free response. Use `--tools cursor` or `--tools grok` for a focused retest. Read [the after-tool feature contract](features/after-tool-reminder.md) before interpreting its results.
 
 For bstack policy changes, run `python3 bstack/shared/skills/verify-bstack/scripts/policy.py`. It tests routing, design thresholds, scoped execution, local delivery, authorization reuse, and evidence claims in fresh read-only sessions. Use `--cases` for affected cases and `--tools` for focused retesting. Read [the policy feature contract](features/router-policy.md). These are classification probes, not proof that full workflows or external adapters executed correctly.

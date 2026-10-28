@@ -2,6 +2,7 @@
 
 The POC verifies real CLI sessions against bstack's policy entry and its pinned PStack dependencies. Earlier reports using Poteto Mode directly are historical baseline evidence. Local desktop apps are separate surfaces and require their own evidence.
 
+- [Computer-use verification](computer-use.md): the same scenarios driven through desktop apps and interactive terminal UIs by a computer-use agent, graded from each app's transcript.
 - [Behavior scenarios](behavior.md): installed hosts doing ordinary work, graded by code, feeding the compatibility matrix.
 - [Router activation](router-activation.md): initial discovery, prompt reminders, selected dependency reads, and reuse.
 - [Router policy](router-policy.md): fresh-session classification, design risk, local/provider delivery, authorization, and audit claims.

@@ -73,6 +73,20 @@
       "surface": "cli",
       "version": null
     },
+    "amp-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Amp terminal UI",
+      "not_applicable": [
+        "compaction-resume"
+      ],
+      "scenarios": {},
+      "surface": "tui"
+    },
     "claude-cli": {
       "bindings": [
         "skills",
@@ -160,6 +174,17 @@
       "label": "Claude Code desktop",
       "scenarios": {},
       "surface": "desktop"
+    },
+    "claude-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Claude Code terminal UI",
+      "scenarios": {},
+      "surface": "tui"
     },
     "codex-cli": {
       "bindings": [
@@ -250,6 +275,17 @@
       "label": "Codex desktop",
       "scenarios": {},
       "surface": "desktop"
+    },
+    "codex-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Codex terminal UI",
+      "scenarios": {},
+      "surface": "tui"
     },
     "copilot-cli": {
       "bindings": [
@@ -420,6 +456,17 @@
       "scenarios": {},
       "surface": "desktop"
     },
+    "cursor-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Cursor terminal UI",
+      "scenarios": {},
+      "surface": "tui"
+    },
     "grok-cli": {
       "bindings": [
         "skills",
@@ -498,6 +545,17 @@
       },
       "surface": "cli",
       "version": null
+    },
+    "grok-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Grok terminal UI",
+      "scenarios": {},
+      "surface": "tui"
     },
     "opencode-cli": {
       "bindings": [
@@ -588,6 +646,17 @@
       "label": "OpenCode desktop",
       "scenarios": {},
       "surface": "desktop"
+    },
+    "opencode-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "OpenCode terminal UI",
+      "scenarios": {},
+      "surface": "tui"
     },
     "vscode-copilot": {
       "bindings": [
