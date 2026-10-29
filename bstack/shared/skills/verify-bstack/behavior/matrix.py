@@ -23,7 +23,8 @@ BADGES = {
 
 
 def proven(row):
-    return row is not None and row["repeats"] > 0 and row["passes"] == row["repeats"]
+    return (row is not None and row["repeats"] > 0 and row["passes"] == row["repeats"]
+            and row.get("attempts", row["repeats"]) == row["repeats"] and not row.get("errors"))
 
 
 def status(host, column):
@@ -35,8 +36,10 @@ def status(host, column):
     if not all(proven(row) for row in rows):
         return "partial"
     if column == "hooks":
-        runs = host["scenarios"].values()
-        if any(row["reminder_hook_runs"] < row["repeats"] for row in runs) or set(host["scenarios"]) != set(SCENARIOS) - skipped:
+        runs = [row for name, row in host["scenarios"].items() if SCENARIOS[name].get("reminder", True)]
+        if any(row.get("errors") or row.get("attempts", row["repeats"]) != row["repeats"]
+               or row["reminder_hook_runs"] < row["repeats"] for row in runs) \
+                or set(host["scenarios"]) != set(SCENARIOS) - skipped:
             return "partial"
     return "supported"
 
@@ -70,7 +73,7 @@ def render(data):
         y += 37
     height = y + 30
     header = "".join(f'<text x="{342 + 205 * index}" y="128">{label}</text>' for index, (_, label) in enumerate(COLUMNS))
-    footer = ("Supported: delivered and used in every recorded repeat. Partial: bound but not yet proven. "
+    footer = ("Supported: every recorded attempt passed integration. Partial: bound but not yet proven. "
               "Model quality is tracked separately.")
     return "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 {height}" role="img" aria-labelledby="title description">',
@@ -95,14 +98,26 @@ def render_models(data):
              "How each model did with bstack on each host. Each cell is `integration · quality of repeats`. "
              "Integration means the model loaded and followed bstack's routing, workflows, and hooks. Quality "
              "means it then did the work well: hidden tests, avoiding rejected alternatives, verifier coverage, "
-             "and correct answers. The compatibility matrix uses the most recent integration result per host.", "", f"Last recorded: {data['updated'] or 'never'}.", "",
+             "and correct answers. Errors are ungraded attempts and appear separately from completed repeats. "
+             "The compatibility matrix uses the most recent integration result per host.", "", f"Last recorded: {data['updated'] or 'never'}.", "",
              header, "|" + " --- |" * (len(QUALITY_SCENARIOS) + 2)]
     rows = sorted(data.get("models", {}).values(), key=lambda row: (ORDER.index(row["host"]), row["model"] or ""))
     for row in rows:
         cells = []
         for name in QUALITY_SCENARIOS:
             cell = row["scenarios"].get(name)
-            cells.append(f"{cell['passes']} · {cell['quality_passes']} of {cell['repeats']}" if cell else "-")
+            if cell is None:
+                cells.append("-")
+                continue
+            text = f"{cell['passes']} · {cell['quality_passes']} of {cell['repeats']}" if cell["repeats"] else "ungraded"
+            errors = cell.get("errors", [])
+            if errors:
+                limits = sum(error["kind"] == "provider_limit" for error in errors)
+                counts = [(limits, "provider limit"), (len(errors) - limits, "execution error")]
+                labels = [f"{count} {label}{'s' if count != 1 else ''}" for count, label in counts if count]
+                attempts = cell.get("attempts", cell["repeats"] + len(errors))
+                text += f"; {', '.join(labels)} of {attempts} attempt{'s' if attempts != 1 else ''}"
+            cells.append(text)
         lines.append(f"| {data['hosts'][row['host']]['label']} | `{row['model'] or 'default'}` | " + " | ".join(cells) + " |")
     return "\n".join(lines) + "\n"
 

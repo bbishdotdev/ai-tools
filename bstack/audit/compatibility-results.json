@@ -49,6 +49,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -71,7 +82,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "0.0.1793059276-g2394d3 (released 2026-10-27T00:01:16.000Z, 2d ago)"
     },
     "amp-tui": {
       "bindings": [
@@ -142,6 +153,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -162,7 +184,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "2.1.296 (Claude Code)"
     },
     "claude-desktop": {
       "bindings": [
@@ -241,6 +263,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -263,7 +296,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "codex-cli 0.162.1"
     },
     "codex-desktop": {
       "bindings": [
@@ -342,6 +375,23 @@
           "repeats": 3,
           "run": "20261027T034253Z-behavior-e50a17"
         },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [
+            {
+              "kind": "provider_limit",
+              "reason": "provider quota or credit limit",
+              "repeat": 1
+            }
+          ],
+          "failed_checks": [],
+          "passes": 0,
+          "quality_passes": 0,
+          "reminder_hook_runs": 0,
+          "repeats": 0,
+          "run": "20261029T051223Z-behavior-019305"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -364,7 +414,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "GitHub Copilot CLI 1.0.104."
     },
     "cursor-cli": {
       "bindings": [
@@ -374,7 +424,7 @@
         "hooks"
       ],
       "label": "Cursor CLI",
-      "model": "claude-sonnet-5-thinking-high",
+      "model": "composer-2.5",
       "scenarios": {
         "adr-rejected": {
           "column": "auto",
@@ -421,6 +471,17 @@
           "repeats": 3,
           "run": "20261027T121932Z-behavior-0de0ed"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -443,7 +504,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "2026.10.22-27dcf5f"
     },
     "cursor-desktop": {
       "bindings": [
@@ -522,6 +583,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 0,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -544,7 +616,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "grok 1.0.70 (f50904eaee6c) [stable]"
     },
     "grok-tui": {
       "bindings": [
@@ -565,7 +637,7 @@
         "hooks"
       ],
       "label": "OpenCode CLI",
-      "model": "opencode/claude-sonnet-5-5",
+      "model": "opencode/claude-haiku-5-5",
       "scenarios": {
         "adr-rejected": {
           "column": "auto",
@@ -612,6 +684,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-78005c"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -634,7 +717,7 @@
         }
       },
       "surface": "cli",
-      "version": null
+      "version": "1.18.35"
     },
     "opencode-desktop": {
       "bindings": [
@@ -711,6 +794,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -782,6 +876,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -850,6 +955,17 @@
           "reminder_hook_runs": 3,
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
         },
         "late-pr": {
           "column": "pr",
@@ -921,6 +1037,23 @@
           "reminder_hook_runs": 3,
           "repeats": 3,
           "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [
+            {
+              "kind": "provider_limit",
+              "reason": "provider quota or credit limit",
+              "repeat": 1
+            }
+          ],
+          "failed_checks": [],
+          "passes": 0,
+          "quality_passes": 0,
+          "reminder_hook_runs": 0,
+          "repeats": 0,
+          "run": "20261029T051223Z-behavior-019305"
         },
         "late-pr": {
           "column": "pr",
@@ -1022,6 +1155,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -1092,6 +1236,17 @@
           "reminder_hook_runs": 3,
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 0,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
         },
         "late-pr": {
           "column": "pr",
@@ -1168,6 +1323,17 @@
           "repeats": 3,
           "run": "20261027T115254Z-behavior-209bd6"
         },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
         "late-pr": {
           "column": "pr",
           "failed_checks": [],
@@ -1224,5 +1390,5 @@
       }
     }
   },
-  "updated": "2026-10-27"
+  "updated": "2026-10-29"
 }

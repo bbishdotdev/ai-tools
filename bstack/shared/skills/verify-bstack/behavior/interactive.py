@@ -297,7 +297,7 @@ TRANSCRIPTS = {"claude": claude_turns, "codex": codex_turns, "opencode": opencod
 def grade(folder):
     case = json.loads((folder / "case.json").read_text())
     hooks = Path(case["workspace"]) / "hooks/interactive"
-    records = sorted((json.loads(path.read_text()) for path in hooks.glob("hook-*.json")),
+    records = sorted(run.grading.records(hooks, "hook-*.json"),
                      key=lambda record: record.get("observed_at_ns", 0))
     turns, compacted = TRANSCRIPTS[case["host"]](case) if case["host"] in TRANSCRIPTS else hook_turns(case, records)
     if case["host"] == "cursor" and any(record.get("event") == "preCompact" for record in records):

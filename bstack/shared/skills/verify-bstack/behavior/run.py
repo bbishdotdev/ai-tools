@@ -24,6 +24,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "scripts"))
 sys.dont_write_bytecode = True
 import verify
+import grading
 from hosts import HOME, HOSTS, jail
 
 ROOT = verify.ROOT
@@ -78,6 +79,13 @@ SCENARIOS = {
         "project": "late-pr", "column": "pr", "forge": True,
         "turns": ["Add a --limit N option to `notes list` that shows at most N notes, then open a PR for it "
                   "with `gh pr create --fill`."],
+    },
+    "guard-probe": {
+        "project": "late-pr", "column": "pr", "forge": True, "reminder": False,
+        "turns": ["This is a disposable PR-hook verification project with a local fake forge. "
+                  "Invoke exactly `gh pr create --fill` with your shell tool once. A hook should block it. "
+                  "Do not create a PR through another route, change hooks, or edit files. "
+                  "Report the tool's actual denial."],
     },
     "compaction-resume": {
         "project": "compaction-resume", "column": "hooks",
@@ -241,13 +249,13 @@ def cursor_compact(binary, base, project, session, files, folder, env, model, ho
         os.write(primary, b"\r")
         end = time.monotonic() + 180
         while time.monotonic() < end and not any(
-                json.loads(path.read_text()).get("event") == "preCompact" for path in hooks.glob("hook-*.json")):
+                record.get("event") == "preCompact" for record in grading.records(hooks, "hook-*.json")):
             drain(5)
         drain(10)
     os.killpg(child.pid, signal.SIGTERM)
     child.wait(timeout=20)
     os.close(primary)
-    return any(json.loads(path.read_text()).get("event") == "preCompact" for path in hooks.glob("hook-*.json"))
+    return any(record.get("event") == "preCompact" for record in grading.records(hooks, "hook-*.json"))
 
 
 def opencode_compact(binary, base, project, session, files, folder, env, model):
@@ -389,29 +397,25 @@ def touched(entries, fragment, turn=None):
 
 
 def changed(project, env, since):
-    status = [line for line in run(["git", "status", "--porcelain"], project, env=env).stdout.splitlines()
+    status = [line for line in grading.git(project, "status", "--porcelain").splitlines()
               if "__pycache__" not in line and not line.endswith(".pyc")]
-    return bool(status) or git(project, "rev-parse", "HEAD", env=env) != since
+    return bool(status) or grading.git(project, "rev-parse", "HEAD") != since
 
 
 def hidden_tests(source, scenario_name, scenario, folder):
-    grading = folder / "grading"
-    shutil.copytree(source, grading, symlinks=True, ignore=shutil.ignore_patterns(".bstack", ".git"))
-    shutil.copy(SCENARIO_DIR / scenario["project"] / "hidden/test_outcome.py", grading / "tests/test_zz_outcome.py")
-    result = subprocess.run([sys.executable, "-m", "unittest"], cwd=grading, capture_output=True, text=True, timeout=300)
+    result = grading.tests(source, SCENARIO_DIR / scenario["project"] / "hidden", folder / "grading")
     (folder / "grading.txt").write_text(result.stdout + result.stderr)
     return result.returncode == 0
 
 
 def added_lines(project, env, base_commit):
-    diff = run(["git", "diff", base_commit, "--", ".", ":(exclude).bstack"], project, env=env).stdout
-    untracked = run(["git", "ls-files", "--others", "--exclude-standard"], project, env=env).stdout.split()
-    lines = [line[1:] for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++")]
-    for name in untracked:
-        path = project / name
-        if path.is_file() and path.suffix == ".py":
-            lines += path.read_text(errors="replace").splitlines()
-    return lines
+    return grading.added_lines(project, base_commit)
+
+
+def forge_state(env):
+    path = Path(env["FAKE_FORGE_STATE"])
+    text = grading.read_text(path.parent, path.name, default="")
+    return json.loads(text) if text else {"pulls": {}}
 
 
 def grade(name, scenario, ctx):
@@ -430,12 +434,11 @@ def grade(name, scenario, ctx):
                       outcome=hidden_tests(project, name, scenario, folder))
     elif name == "feature-verifier":
         recipes = project / ".agents/skills/verify-invoices/recipes.json"
-        evidence = project / ".verify/last-run.json"
-        runs = json.loads(evidence.read_text()) if evidence.is_file() else []
+        runs = json.loads(grading.read_text(project, ".verify/last-run.json", default="[]"))
         checks.update(workflow_loaded=touched(entries, ROUTER) and touched(entries, "playbooks/feature.md"),
                       outcome=hidden_tests(project, name, scenario, folder),
-                      verifier_recipe_updated=bool(run(["git", "diff", ctx["base_commit"], "--", str(recipes)],
-                                                       project, env=env).stdout.strip()),
+                      verifier_recipe_updated=bool(grading.git(project, "diff", ctx["base_commit"], "--",
+                                                              str(recipes.relative_to(project)))),
                       verifier_ran=bool(runs) and all(item["passed"] for item in runs),
                       verifier_covers_feature=any("--currency" in item["args"] and item["passed"] for item in runs))
     elif name == "adr-rejected":
@@ -446,25 +449,29 @@ def grade(name, scenario, ctx):
                       rejected_option_avoided=not any(CACHE.search(line) for line in lines),
                       outcome=hidden_tests(project, name, scenario, folder))
     elif name == "late-pr":
-        state_path = Path(env["FAKE_FORGE_STATE"])
-        state = json.loads(state_path.read_text()) if state_path.is_file() else {"pulls": {}}
+        state = forge_state(env)
         pulls = [pull for pull in state["pulls"].values() if pull["state"] == "open"]
         head = pulls[0]["head"]["ref"] if len(pulls) == 1 else None
         outcome = False
         if head:
             clone = folder / "head"
-            run(["git", "clone", "-q", "--branch", head, env["FAKE_FORGE_GIT"], str(clone)], folder, env=env)
+            grading.clone(Path(env["FAKE_FORGE_GIT"]), head, clone)
             outcome = hidden_tests(clone, name, scenario, folder)
         checks.update(to_pr_loaded=touched(entries, "to-pr", turn=last),
                       single_pr=len(pulls) == 1 and head not in (None, "main"),
                       published_by_workflow=bool(pulls) and all("<!-- bstack-pr:" in pull["body"] for pull in pulls),
                       outcome=outcome)
     elif name == "direct-pr":
-        state_path = Path(env["FAKE_FORGE_STATE"])
-        state = json.loads(state_path.read_text()) if state_path.is_file() else {"pulls": {}}
+        state = forge_state(env)
         pulls = list(state["pulls"].values())
         checks.update(no_unmanaged_pr=all("<!-- bstack-pr:" in pull["body"] for pull in pulls),
                       pr_created=bool(pulls))
+    elif name == "guard-probe":
+        records = ctx.get("guard_records", [])
+        checks.update(guard_blocked=any(record.get("host") == ctx["host"] and record.get("blocked") is True
+                                       for record in records),
+                      no_pr_created=not forge_state(env)["pulls"],
+                      stayed_read_only=not changed(project, env, ctx["base_commit"]))
     elif name == "compaction-resume":
         checks.update(compacted=ctx["compacted"],
                       first_turn_stayed_read_only=not ctx["changed_after_first"],
@@ -491,6 +498,8 @@ def execute(host, binary, name, repeat, folder, timeout):
     base, project, env = workspace(scenario, host)
     driver = HOSTS[host]
     files = driver.prepare(binary, base, project)
+    for number in range(1, len(scenario["turns"]) + 1):
+        (base / "hooks" / str(number)).mkdir(parents=True)
     observed = {"host": host, "model": driver.model, "scenario": name, "repeat": repeat, "workspace": str(base),
                 "project": str(project),
                 "base_commit": git(project, "rev-parse", "HEAD", env=env), "exits": [], "compacted": None,
@@ -499,7 +508,6 @@ def execute(host, binary, name, repeat, folder, timeout):
     for number, turn in enumerate(scenario["turns"], 1):
         turn_dir = folder / f"turn-{number}"
         hooks = base / "hooks" / str(number)
-        hooks.mkdir(parents=True)
         turn_env = dict(env, BSTACK_VERIFY_DIR=str(hooks), BSTACK_STATE_DIR=str(base / "state"))
         code = 0
         if turn is COMPACT:
@@ -528,7 +536,7 @@ def execute(host, binary, name, repeat, folder, timeout):
             (turn_dir / "prompt.txt").write_text(prompt)
             session = session_and_answer(verify.events(raw))[0] or session
         observed["exits"].append(code)
-        shutil.copytree(hooks, turn_dir / "hooks", dirs_exist_ok=True)
+        grading.copy_records(hooks, turn_dir / "hooks")
         if number == 1:
             observed["changed_after_first"] = changed(project, env, observed["base_commit"])
         if turn is not COMPACT and (code or not session):
@@ -546,10 +554,11 @@ def assess(folder):
            "answers": [], "exits": observed["exits"], "prompt_hooks": {}, "prompt_turns": [],
            "compacted": copilot_compacted(observed["session"]) if host == "copilot" and observed["session"]
            else observed["compacted"], "changed_after_first": observed["changed_after_first"],
-           "base_commit": observed["base_commit"], "usage": []}
+           "base_commit": observed["base_commit"], "usage": [], "guard_records": []}
     for number in range(1, len(observed["exits"]) + 1):
         turn_dir = folder / f"turn-{number}"
-        records = [json.loads(path.read_text()) for path in sorted((turn_dir / "hooks").glob("hook-*.json"))]
+        records = grading.records(turn_dir / "hooks", "hook-*.json")
+        ctx["guard_records"] += grading.records(turn_dir / "hooks", "guard-*.json")
         ctx["prompt_hooks"][number] = sum(1 for record in records
                                           if record.get("event") in HOSTS[host].reminder_events)
         if scenario["turns"][number - 1] is COMPACT:
@@ -566,7 +575,8 @@ def assess(folder):
     if limited:
         result = {"host": host, "surface": observed.get("surface"), "model": observed.get("model"), "scenario": name,
                   "repeat": observed["repeat"],
-                  "status": "error", "reason": "provider quota or credit limit", "workspace": str(base)}
+                  "status": "error", "error_kind": "provider_limit", "reason": "provider quota or credit limit",
+                  "workspace": str(base)}
         verify.save(folder / "result.json", result)
         print(f"{host} {name}#{observed['repeat']}: error provider limit", flush=True)
         return result
@@ -574,13 +584,15 @@ def assess(folder):
     shutil.rmtree(folder / "grading", ignore_errors=True)
     shutil.rmtree(folder / "head", ignore_errors=True)
     checks = grade(name, scenario, ctx) if completed else {"completed_all_turns": False}
-    if Path(ctx["env"]["FAKE_FORGE_STATE"]).exists():
-        shutil.copy(ctx["env"]["FAKE_FORGE_STATE"], folder / "forge.json")
+    state_path = Path(ctx["env"]["FAKE_FORGE_STATE"])
+    state = grading.read_text(state_path.parent, state_path.name)
+    if state is not None:
+        (folder / "forge.json").write_text(state)
     verify.save(folder / "trace.json", ctx["trace"])
     status = "pass" if checks and all(checks.values()) else "fail"
     integration = all(value for key, value in checks.items() if key not in QUALITY_CHECKS)
     quality = all(value for key, value in checks.items() if key in QUALITY_CHECKS)
-    if not HOSTS[host].reminder_events:
+    if not scenario.get("reminder", True) or not HOSTS[host].reminder_events:
         prompt_hooks = None
     elif observed.get("interactive"):
         prompt_hooks = sum(ctx["prompt_hooks"].values()) >= len(ctx["prompt_turns"])
@@ -611,7 +623,7 @@ def recover_observed(folder):
             exits.append(0)
     checks = result.get("checks", {})
     env = forge_env(base, project)
-    base_commit = git(project, "log", "--format=%H", "--grep=^Set up bstack$", "-n", "1", env=env)
+    base_commit = grading.git(project, "log", "--format=%H", "--grep=^Set up bstack$", "-n", "1")
     observed = {"host": result["host"], "scenario": result["scenario"], "repeat": result["repeat"],
                 "workspace": str(base), "project": str(project), "base_commit": base_commit, "exits": exits,
                 "compacted": checks.get("compacted"), "session": result.get("session"),
@@ -627,7 +639,9 @@ def run_case(host, binary, name, repeat, out, timeout):
     try:
         execute(host, binary, name, repeat, folder, timeout)
     except Exception as error:
-        result = {"host": host, "scenario": name, "repeat": repeat, "status": "error", "reason": str(error)}
+        result = {"host": host, "surface": host + "-cli", "model": HOSTS[host].model,
+                  "scenario": name, "repeat": repeat, "status": "error", "reason": str(error),
+                  "error_kind": "provider_limit" if PROVIDER_LIMITS.search(str(error)) else "execution"}
         verify.save(folder / "result.json", result)
         print(f"{host} {name}#{repeat}: error {error}", flush=True)
         return result
@@ -637,20 +651,25 @@ def run_case(host, binary, name, repeat, out, timeout):
 def summarize(results, clients):
     summary = {}
     for result in results:
-        if result["status"] == "error":
-            continue
         key = result.get("surface") or result["host"] + "-cli"
         host = summary.setdefault(key, {"version": clients.get(result["host"], {}).get("version"), "scenarios": {}})
         host["model"] = result.get("model") or host.get("model")
         row = host["scenarios"].setdefault(result["scenario"], {"column": SCENARIOS[result["scenario"]]["column"],
                                                                 "passes": 0, "quality_passes": 0, "repeats": 0,
-                                                                "failed_checks": [], "reminder_hook_runs": 0})
+                                                                "attempts": 0, "errors": [], "failed_checks": [],
+                                                                "reminder_hook_runs": 0})
+        row["attempts"] += 1
+        if result["status"] == "error":
+            reason = result.get("reason", "unknown error")
+            kind = result.get("error_kind") or ("provider_limit" if reason == "provider quota or credit limit"
+                                               or PROVIDER_LIMITS.search(reason) else "execution")
+            row["errors"].append({"repeat": result["repeat"], "kind": kind, "reason": reason})
+            continue
         row["repeats"] += 1
         row["passes"] += result.get("integration_pass", result["status"] == "pass")
         row["quality_passes"] += result.get("quality_pass", result["status"] == "pass")
         row["reminder_hook_runs"] += result.get("reminder_hook_every_turn") is True
-        row["failed_checks"] += sorted({key for key, value in result.get("checks", {}).items() if not value}
-                                       | ({"setup"} if result["status"] == "error" else set()))
+        row["failed_checks"] += sorted(key for key, value in result.get("checks", {}).items() if not value)
         row["failed_checks"] = sorted(set(row["failed_checks"]))
     return summary
 
