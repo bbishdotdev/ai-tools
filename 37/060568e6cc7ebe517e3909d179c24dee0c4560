@@ -1,0 +1,65 @@
+bstack/shared/skills/verify-bstack/behavior/interactive.py
+  s_822e08e34bda62::t_ad0469886ee7a8 300-301,318-319
+bstack/package/transport.py
+  s_822e08e34bda62::t_a2a7089bb3efdf 107
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_822e08e34bda62::t_196182af9074b9 641,649-653,722,768
+bstack/package/test_transport.py
+  s_822e08e34bda62::t_a2a7089bb3efdf 41-44,46-47
+bstack/shared/tests/test_behavior_grading_containment.py
+  s_822e08e34bda62::t_ad0469886ee7a8 2,149-176
+  s_822e08e34bda62::t_d4eae2ba619527 177
+bstack/release/skills-sh/install-bstack/scripts/install.py
+  s_822e08e34bda62::t_58a59f8e45f65a 107
+bstack/shared/tests/test_behavior_error_recording.py
+  s_822e08e34bda62::t_128071f91e388f 4,50-61,106-148
+  s_822e08e34bda62::t_a9fabff07f1970 149
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_50f0e416cbd559 11
+bstack/INSTALL.md
+  s_822e08e34bda62::t_9806248b616b27 37,40,168,247
+bstack/README.md
+  s_822e08e34bda62::t_ebb1c38b0b82e2 11
+bstack/docs/PORTABILITY-AUDIT.md
+  s_822e08e34bda62::t_455c2e9f5c3894 27
+bstack/package/selection.json
+  s_822e08e34bda62::t_a08d517549d4a5 4
+bstack/package/templates/README.md
+  s_822e08e34bda62::t_50aa6f5e6fb511 43,52,73,75
+bstack/package/templates/download.md
+  s_822e08e34bda62::t_e475f25699cba0 17
+bstack/package/templates/install.md
+  s_822e08e34bda62::t_5485c54e31f064 18,46
+bstack/release-notes/3.1.0.md
+  s_822e08e34bda62::t_c74375e851939a 1-43
+bstack/release/README.md
+  s_822e08e34bda62::t_b96cc252d2627c 3
+bstack/release/bstack/README.md
+  s_822e08e34bda62::t_6fe3e26a96415c 3,43,52,73,75
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_5fe48499f33889 41,43,1621,1958,1960,2757
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_3111e1d5302c70 297,314
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_822e08e34bda62::t_2fff08ad5da1e3 18,46
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_822e08e34bda62::t_e84157777f136b 297,314
+bstack/shared/skills/verify-bstack/features/behavior.md
+  s_822e08e34bda62::t_34c4cf45c6f008 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "37060568e6cc7ebe517e3909d179c24dee0c4560",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
