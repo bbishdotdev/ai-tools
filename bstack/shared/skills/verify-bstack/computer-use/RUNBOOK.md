@@ -9,12 +9,14 @@ Read this whole file and [SURFACES.md](SURFACES.md) before you touch anything.
 ## 1. Ground rules
 
 1. **One action, then look.** After every click, keypress, or typed line, take a screenshot and confirm the screen changed the way you expected before the next action. If it did not, stop and reassess. Do not chain several actions blind.
-2. **Only touch what this runbook names.** Work only in the terminal you open, the app under test, and file dialogs those apps open. Do not close, move, or type into any other window. The user's own Claude app and other sessions may be open; leave them alone except where a step tells you to quit and relaunch an app under test.
-3. **Never handle credentials.** Do not type passwords, tokens, or API keys. Do not sign in, sign out, or switch accounts. If an app asks you to sign in, or shows a quota, billing, or plan error, stop that surface and record it as `blocked` (see section 7).
-4. **Do not change settings** except the trust and hook approvals this runbook lists. Do not change models, permission modes, or themes unless a step says so.
-5. **Type prompts exactly.** Copy each prompt character for character from the case's `CASE.md`, including backticks. Do not add context, hints, or follow-ups. Never mention tests, grading, bstack, or this runbook to the agent under test.
-6. **Approve or deny by the rule in section 5,** never by what seems helpful.
-7. **Do not commit, push, or open real pull requests yourself.** The cases use a fake local GitHub; nothing you do should reach github.com.
+2. **Check focus before typing.** Before typing into a terminal, run `$EV focus 'ghostty|kitty|alacritty'` or take a screenshot. Click dialog buttons with the mouse, not Return, especially right before typing a command: a stray keypress can land in the app under test and start a turn.
+3. **Only touch what this runbook names.** Work only in the terminal you open, the app under test, and file dialogs those apps open. Do not close, move, or type into any other window. The user's own Claude app and other sessions may be open; leave them alone except where a step tells you to quit and relaunch an app under test.
+4. **Never handle credentials.** Do not type passwords, tokens, or API keys. Do not sign in, sign out, or switch accounts. If an app asks you to sign in, or shows a quota, billing, or plan error, stop that surface and record it as `blocked` (see section 7).
+5. **Do not change settings** except the trust and hook approvals this runbook lists. Do not change models, permission modes, or themes unless a step says so.
+6. **Type prompts exactly.** Copy each prompt character for character from the case's `CASE.md`, including backticks. Do not add context, hints, or follow-ups. Never mention tests, grading, bstack, or this runbook to the agent under test.
+7. **Approve or deny by the rule in section 5,** never by what seems helpful.
+8. **Do not commit, push, or open real pull requests yourself.** The cases use a fake local GitHub; nothing you do should reach github.com.
+9. **A case you broke is invalid, not failed.** If a keystroke landed in the wrong window or you skipped a step, finish the case, log it with `--result invalid`, and note why. The maintainer reruns it in a fresh run.
 
 ## 2. One-time setup
 
@@ -48,7 +50,7 @@ Read this whole file and [SURFACES.md](SURFACES.md) before you touch anything.
 
    ```sh
    export RUN=<the run folder printed above>
-   export EV="python3 $HOME/Work/ai-tools/bstack/shared/skills/verify-bstack/behavior/evidence.py"
+   export EV="python3 $HOME/Work/ai-tools/bstack/engineering/create-verification-skill/scripts/evidence.py"
    ```
 
 Amp has no compaction, so `amp-tui` has no `compaction-resume` case. That is expected.

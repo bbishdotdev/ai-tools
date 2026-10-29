@@ -7,7 +7,7 @@ Headless runs prove bstack works when a CLI is scripted. Developers use desktop 
 The roles are split on purpose:
 
 - **The harness prepares.** `behavior/interactive.py prepare` builds each case: a disposable project with bstack installed, the fake GitHub forge, and a `launch.sh` that starts the app or terminal UI with the case environment. Each case also gets a `CASE.md` with the exact prompts.
-- **The agent drives.** It follows [the runbook](../computer-use/RUNBOOK.md) and [surface notes](../computer-use/SURFACES.md). It performs the steps, applies a fixed approval rule, and records screenshots and a step log with `behavior/evidence.py`.
+- **The agent drives.** It follows [the runbook](../computer-use/RUNBOOK.md) and [surface notes](../computer-use/SURFACES.md). It performs the steps, applies a fixed approval rule, and records screenshots and a step log with the [computer-use kit](../../../../engineering/create-verification-skill/computer-use/README.md)'s evidence helper.
 - **The harness grades.** `behavior/interactive.py grade` reads the transcript each app writes to disk, plus the hook records, forge state, and project files, then runs the headless checks. The agent never judges pass or fail from screenshots.
 
 Transcript sources, confirmed for the terminal UIs:
@@ -35,4 +35,4 @@ Maintainers fold `SURFACE-NOTES.md` back into SURFACES.md, replacing **(verify)*
 
 These runs are not jailed. The approval rule and the fake forge keep them inside `/tmp/work-…` and away from GitHub, so supervise the first run on a new machine. Each desktop app must start fresh from `launch.sh`, because a running instance ignores the case environment. That means the Claude desktop app, which may be hosting the user's own session, must be quit with the user's consent. A Codex agent cannot test the Codex desktop app it runs inside. The interactive grader counts reminder hooks per case rather than per turn. First-turn read-only checks rely on transcript edit calls, so a shell-based write in that turn is not caught. VS Code and Copilot are out of scope until a paid Copilot plan is available.
 
-The same three pieces, prepared cases, a driven runbook, and a code grader, are meant for other end-to-end checks too. Provenance capture is a candidate: add scenarios and graders, and reuse the runbook's evidence protocol.
+This feature is an instance of the general [computer-use kit](../../../../engineering/create-verification-skill/computer-use/README.md), which any project verifier can use.

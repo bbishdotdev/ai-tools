@@ -29,6 +29,8 @@ Create `.agents/skills/verify-<app>/SKILL.md` with valid `name` and `description
 - **Evidence:** capture both the action and its visible result. Check persisted or external effects from a second view when relevant. Name a private, disposable artifact location.
 - **Cleanup:** remove test state and stop the run's instance while retaining the proof artifacts.
 
+When the user path runs through a desktop app, editor panel, or interactive terminal that no headless driver reaches, build that part with the [computer-use kit](computer-use/README.md): a harness, a shared probe set, one script per surface, and a handoff for a computer-use agent, graded by code.
+
 If a helper script is needed, save it beside this skill and show its exact command in the skill. Do not ask an agent to rewrite the helper from prose each time.
 
 Create `features/README.md` as the feature index. During ordinary feature work, start with the changed feature's user path and only the nearby smoke path needed to prove it. A full product feature map is a separate audit. Give each mapped feature a short file with `Sub-features`, `How to get to it (user POV)`, `Driving it with <harness>`, and `Gotchas`. Every path listed as verified needs an observed result; a different entry point cannot stand in for it.
