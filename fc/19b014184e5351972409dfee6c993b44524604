@@ -1,0 +1,33 @@
+bstack/shared/skills/verify-bstack/behavior/interactive.py
+  s_822e08e34bda62::t_ad0469886ee7a8 300-301,318-319
+bstack/package/transport.py
+  s_822e08e34bda62::t_a2a7089bb3efdf 107
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_822e08e34bda62::t_196182af9074b9 641,649-653,722,768
+bstack/package/test_transport.py
+  s_822e08e34bda62::t_a2a7089bb3efdf 41-44,46-47
+bstack/shared/tests/test_behavior_grading_containment.py
+  s_822e08e34bda62::t_ad0469886ee7a8 2,149-176
+  s_822e08e34bda62::t_d4eae2ba619527 177
+bstack/release/skills-sh/install-bstack/scripts/install.py
+  s_822e08e34bda62::t_58a59f8e45f65a 107
+bstack/shared/tests/test_behavior_error_recording.py
+  s_822e08e34bda62::t_128071f91e388f 4,50-61,106-148
+  s_822e08e34bda62::t_a9fabff07f1970 149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc19b014184e5351972409dfee6c993b44524604",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
