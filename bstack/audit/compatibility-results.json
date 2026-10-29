@@ -1,0 +1,1394 @@
+{
+  "hosts": {
+    "amp-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Amp CLI",
+      "model": "low",
+      "not_applicable": [
+        "compaction-resume"
+      ],
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": "0.0.1793059276-g2394d3 (released 2026-10-27T00:01:16.000Z, 2d ago)"
+    },
+    "amp-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Amp terminal UI",
+      "not_applicable": [
+        "compaction-resume"
+      ],
+      "scenarios": {},
+      "surface": "tui"
+    },
+    "claude-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Claude Code CLI",
+      "model": "claude-sonnet-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": "2.1.296 (Claude Code)"
+    },
+    "claude-desktop": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Claude Code desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "claude-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Claude Code terminal UI",
+      "scenarios": {},
+      "surface": "tui"
+    },
+    "codex-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Codex CLI",
+      "model": "gpt-reserve",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 2,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": "codex-cli 0.162.1"
+    },
+    "codex-desktop": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Codex desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "codex-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Codex terminal UI",
+      "scenarios": {},
+      "surface": "tui"
+    },
+    "copilot-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "GitHub Copilot CLI",
+      "model": "auto",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [
+            {
+              "kind": "provider_limit",
+              "reason": "provider quota or credit limit",
+              "repeat": 1
+            }
+          ],
+          "failed_checks": [],
+          "passes": 0,
+          "quality_passes": 0,
+          "reminder_hook_runs": 0,
+          "repeats": 0,
+          "run": "20261029T051223Z-behavior-019305"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        }
+      },
+      "surface": "cli",
+      "version": "GitHub Copilot CLI 1.0.104."
+    },
+    "cursor-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Cursor CLI",
+      "model": "composer-2.5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T121932Z-behavior-0de0ed"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T121932Z-behavior-0de0ed"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": "2026.10.22-27dcf5f"
+    },
+    "cursor-desktop": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Cursor desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "cursor-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Cursor terminal UI",
+      "scenarios": {},
+      "surface": "tui"
+    },
+    "grok-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Grok CLI",
+      "model": "grok-4.7",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 0,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      },
+      "surface": "cli",
+      "version": "grok 1.0.70 (f50904eaee6c) [stable]"
+    },
+    "grok-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "Grok terminal UI",
+      "scenarios": {},
+      "surface": "tui"
+    },
+    "opencode-cli": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "OpenCode CLI",
+      "model": "opencode/claude-haiku-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-78005c"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-78005c"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 2,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-78005c"
+        }
+      },
+      "surface": "cli",
+      "version": "1.18.35"
+    },
+    "opencode-desktop": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "OpenCode desktop",
+      "scenarios": {},
+      "surface": "desktop"
+    },
+    "opencode-tui": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "OpenCode terminal UI",
+      "scenarios": {},
+      "surface": "tui"
+    },
+    "vscode-copilot": {
+      "bindings": [
+        "skills",
+        "auto",
+        "pr",
+        "hooks"
+      ],
+      "label": "VS Code with Copilot",
+      "scenarios": {},
+      "surface": "desktop"
+    }
+  },
+  "models": {
+    "amp-cli|low": {
+      "host": "amp-cli",
+      "model": "low",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "claude-cli|claude-sonnet-5-5": {
+      "host": "claude-cli",
+      "model": "claude-sonnet-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "codex-cli|gpt-reserve": {
+      "host": "codex-cli",
+      "model": "gpt-reserve",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 2,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "copilot-cli|auto": {
+      "host": "copilot-cli",
+      "model": "auto",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [
+            {
+              "kind": "provider_limit",
+              "reason": "provider quota or credit limit",
+              "repeat": 1
+            }
+          ],
+          "failed_checks": [],
+          "passes": 0,
+          "quality_passes": 0,
+          "reminder_hook_runs": 0,
+          "repeats": 0,
+          "run": "20261029T051223Z-behavior-019305"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 2,
+          "quality_passes": 2,
+          "reminder_hook_runs": 2,
+          "repeats": 2,
+          "run": "20261027T034253Z-behavior-e50a17"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T034253Z-behavior-e50a17"
+        }
+      }
+    },
+    "cursor-cli|claude-sonnet-5-thinking-high": {
+      "host": "cursor-cli",
+      "model": "claude-sonnet-5-thinking-high",
+      "scenarios": {
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T121932Z-behavior-0de0ed"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T121932Z-behavior-0de0ed"
+        }
+      }
+    },
+    "cursor-cli|composer-2.5": {
+      "host": "cursor-cli",
+      "model": "composer-2.5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [
+            "instructions_recovered"
+          ],
+          "passes": 2,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [
+            "verifier_covers_feature",
+            "verifier_ran"
+          ],
+          "passes": 2,
+          "quality_passes": 0,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "grok-cli|grok-4.7": {
+      "host": "grok-cli",
+      "model": "grok-4.7",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 0,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 1,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "opencode-cli|opencode/claude-haiku-5-5": {
+      "host": "opencode-cli",
+      "model": "opencode/claude-haiku-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [
+            "adr_read"
+          ],
+          "passes": 2,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "compaction-resume": {
+          "column": "hooks",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "direct-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T061138Z-behavior-052933"
+        },
+        "explicit-skill": {
+          "column": "skills",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [
+            "workflow_loaded"
+          ],
+          "passes": 1,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "guard-probe": {
+          "attempts": 3,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261029T051332Z-behavior-290c5f"
+        },
+        "late-pr": {
+          "column": "pr",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-209bd6"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "opencode-cli|opencode/claude-sonnet-5-5": {
+      "host": "opencode-cli",
+      "model": "opencode/claude-sonnet-5-5",
+      "scenarios": {
+        "adr-rejected": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-78005c"
+        },
+        "feature-verifier": {
+          "column": "auto",
+          "failed_checks": [],
+          "passes": 3,
+          "quality_passes": 3,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-78005c"
+        },
+        "misleading-bug": {
+          "column": "auto",
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 3,
+          "quality_passes": 2,
+          "reminder_hook_runs": 3,
+          "repeats": 3,
+          "run": "20261027T115254Z-behavior-78005c"
+        }
+      }
+    }
+  },
+  "updated": "2026-10-29"
+}

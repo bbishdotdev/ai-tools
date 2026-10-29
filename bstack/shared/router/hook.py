@@ -19,6 +19,9 @@ INJECT_EVENTS = {
     "claude": {"SessionStart", "UserPromptSubmit", "SubagentStart"},
     "cursor": {"sessionStart", "postToolUse"},
     "grok": {"PostToolUse"},
+    "copilot": {"sessionStart", "userPromptSubmitted", "subagentStart"},
+    "opencode": {"chat.system.transform", "session.compacting"},
+    "amp": {"agent.start"},
 }
 AFTER_TOOL = {"cursor": "postToolUse", "grok": "PostToolUse"}
 
@@ -26,6 +29,12 @@ AFTER_TOOL = {"cursor": "postToolUse", "grok": "PostToolUse"}
 def identity(host, payload):
     if host == "grok":
         return payload.get("sessionId"), payload.get("promptId")
+    if host == "copilot":
+        return payload.get("sessionId"), None
+    if host == "opencode":
+        return payload.get("sessionID"), None
+    if host == "amp":
+        return payload.get("threadId"), None
     return (payload.get("session_id", payload.get("conversation_id")),
             payload.get("turn_id", payload.get("generation_id")))
 
@@ -88,9 +97,22 @@ def claim_turn(host, session, turn):
         return None if inserted.rowcount else "duplicate_turn"
 
 
+def tool_summary(payload):
+    tool = payload.get("tool_name", payload.get("toolName"))
+    detail = payload.get("tool_input", payload.get("toolInput", payload.get("toolArgs")))
+    if not isinstance(detail, dict):
+        return tool, None
+    target = next((detail[key] for key in ("file_path", "filePath", "path", "target_file", "command", "cmd")
+                   if isinstance(detail.get(key), str)), None)
+    return tool, target[:2000] if target else None
+
+
 def build_output(host, payload, receipt=None):
     event = event_name(payload, host)
     text = TEMPLATE.read_text().strip().format(router_path=ROUTER)
+    if payload.get("source") == "compact":
+        text = (f"Context was just compacted. Before continuing, reread {ROUTER} and the playbook it selected; "
+                "the summary does not replace them. Continue the active workflow within the user's scope.")
     if receipt:
         label = "After-tool verification receipt" if event == AFTER_TOOL.get(host) else "Verification receipt for this event"
         text += f" {label}: {receipt}."
@@ -99,17 +121,22 @@ def build_output(host, payload, receipt=None):
         return ({"continue": True} if event == "beforeSubmitPrompt" else {}), None
     if host == "cursor":
         return {"additional_context": text}, text
+    if host in ("copilot", "opencode", "amp"):
+        return {"additionalContext": text}, text
     return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}}, text
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", required=True, choices=INJECT_EVENTS)
+    parser.add_argument("--event", help="Event name for hosts whose payload omits it")
     args = parser.parse_args()
     try:
         payload = json.load(sys.stdin)
         if not isinstance(payload, dict):
             raise ValueError("Hook input must be an object")
+        if args.event and not event_name(payload, args.host):
+            payload["hook_event_name"] = args.event
         if os.environ.get("GROK_HOOK_EVENT") and args.host != "grok":
             # Grok invokes compatible hooks but discards context for these events.
             print("{}")
@@ -151,6 +178,8 @@ def main():
                 "injection_supported": context is not None,
                 "context_chars": len(context or ""),
                 "router_sha256": hashlib.sha256(ROUTER.read_bytes()).hexdigest(),
+                "tool": tool_summary(payload)[0],
+                "tool_target": tool_summary(payload)[1],
             }
             (destination / f"hook-{receipt}.json").write_text(json.dumps(record, indent=2) + "\n")
         print(json.dumps(output))

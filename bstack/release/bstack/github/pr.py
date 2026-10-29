@@ -324,22 +324,26 @@ def visual_section(body):
     return rest[:end.start()] if end else rest
 
 
-def micro_change(scan):
+SMALL_CHANGE_FILES = 2
+SMALL_CHANGE_LINES = 30
+
+
+def small_change(scan):
     files = scan.get("comparison", {}).get("files", [])
-    if len(files) != 1:
-        return False
-    patch = files[0].get("patch")
-    return isinstance(patch, str) and len(re.findall(r"(?m)^@@[ \t]", patch)) == 1
+    return (0 < len(files) <= SMALL_CHANGE_FILES
+            and all(isinstance(item.get("patch"), str) and isinstance(item.get("changes"), int) for item in files)
+            and sum(item["changes"] for item in files) <= SMALL_CHANGE_LINES)
 
 
 def validate_visual(scan, body):
     section = visual_section(body)
     if section is not None and not has_visual(section):
         fail("invalid_visual", "A legacy For visual nerds section needs an image or Mermaid diagram; remove an empty section")
-    if micro_change(scan):
+    if small_change(scan):
         return
     if not has_visual(body):
-        fail("visual_required", "A multi-file or multi-hunk PR needs an image or Mermaid diagram")
+        fail("visual_required", f"A PR over {SMALL_CHANGE_FILES} files or {SMALL_CHANGE_LINES} changed lines "
+                                "needs an image or Mermaid diagram")
 
 
 def prose_word_count(body):
@@ -713,6 +717,68 @@ def publish_bundle(directory, write=False, gh=None):
                 "media": state.get("mediaResult", "none")}
 
 
+def refresh_bundle(directory, previous, write=False, gh=None):
+    directory, previous = Path(directory).resolve(), Path(previous).resolve()
+    bundle, scan, state = load_bundle(directory)
+    old_bundle, _, old_state = load_bundle(previous)
+    if not old_state.get("pr"):
+        fail("missing_pr", "The previous bundle has no published PR to refresh")
+    if any(bundle[key] != old_bundle[key] for key in ("repo", "host", "base", "head")):
+        fail("target_changed", "The new bundle targets a different repository, base, or head")
+    if state["attempted"]:
+        fail("bundle_used", "This bundle was already published; prepare a new bundle")
+    number = old_state["pr"]["number"]
+    if not write:
+        return {"status": "plan", "pr": old_state["pr"]["url"], "bundle": str(directory),
+                "retainDraft": bundle["retainDraft"],
+                "steps": ["Confirm the PR is still owned by the previous bundle and unedited",
+                          "Check branch SHAs and all other open PRs against the new scan",
+                          "Return the PR to draft when required, then replace the body and attach media without promoting it"]}
+    gh = gh or GitHub(bundle["repo"], bundle["host"])
+    fresh, pr = publication_freshness(gh, scan, old_bundle, old_state, number)
+    if fresh and bundle["retainDraft"] and not pr["draft"]:
+        mutation(gh, ["pr", "ready", str(number), "--repo", bundle["repo"], "--undo"], directory, state, "returning_to_draft")
+        pr = gh.pr(number)
+        check_owned_body(pr, old_bundle, old_state)
+        if not pr["draft"]:
+            fail("draft_restore_failed", "The refreshed review requires draft, but draft status could not be verified", pr=pr["url"])
+        fresh, pr = publication_freshness(gh, scan, old_bundle, old_state, number)
+    if not fresh:
+        return {"status": "review_stale", "pr": pr["url"],
+                "message": "Target SHAs or other open PRs changed since the new scan; rescan before refreshing"}
+    event(directory, state, "refreshing", attempted=True)
+    mutation(gh, ["pr", "edit", str(number), "--repo", bundle["repo"], "--body-file",
+                  str(directory / "body.fallback.md")], directory, state, "refreshing")
+    actual = gh.pr(number)
+    check_owned_body(actual, bundle, state)
+    if actual["body"] != (directory / "body.fallback.md").read_text():
+        fail("refresh_failed", "The refreshed body could not be verified", pr=actual["url"])
+    event(directory, state, "refreshed", pr={"number": number, "url": actual["url"]}, lastBodyHash=digest(actual["body"]))
+    event(previous, old_state, "superseded", status="superseded", supersededBy=str(directory))
+    media = read_json(directory / "media.json")
+    if media:
+        if gh.attachments_supported():
+            result, actual = edit_body(gh, directory, bundle, state, actual, directory / "body.media.md", attach=True)
+            if result.returncode or not generated_media_body(actual["body"], directory):
+                _, actual = edit_body(gh, directory, bundle, state, actual, directory / "body.fallback.md")
+                state["mediaResult"] = "fallback_after_upload_failure"
+            else:
+                state["mediaResult"] = "attached"
+        else:
+            state["mediaResult"] = "fallback_attach_unavailable"
+    actual = gh.pr(number)
+    check_owned_body(actual, bundle, state)
+    if bundle["retainDraft"] and not actual["draft"]:
+        mutation(gh, ["pr", "ready", str(number), "--repo", bundle["repo"], "--undo"], directory, state, "returning_to_draft")
+        actual = gh.pr(number)
+        check_owned_body(actual, bundle, state)
+        if not actual["draft"]:
+            fail("draft_restore_failed", "The refreshed review requires draft, but draft status could not be verified", pr=actual["url"])
+    status = "draft" if actual["draft"] else "ready"
+    event(directory, state, "complete", status=status)
+    return {"status": status, "pr": actual["url"], "draft": actual["draft"], "media": state.get("mediaResult", "none")}
+
+
 class Parser(argparse.ArgumentParser):
     def error(self, message):
         fail("validation", message)
@@ -745,6 +811,10 @@ def main(argv=None):
         publish = commands.add_parser("publish", help="Plan, or explicitly publish, a saved bundle")
         publish.add_argument("--bundle", type=Path, required=True)
         publish.add_argument("--write", action="store_true")
+        refresh = commands.add_parser("refresh", help="Replace an owned PR's body from a newly prepared bundle")
+        refresh.add_argument("--bundle", type=Path, required=True)
+        refresh.add_argument("--from", dest="previous", type=Path, required=True)
+        refresh.add_argument("--write", action="store_true")
         args = parser.parse_args(argv)
         if args.command == "scan":
             result = scan_repository(GitHub(args.repo, args.host), args.base, args.head, args.out)
@@ -764,6 +834,8 @@ def main(argv=None):
         elif args.command == "prepare":
             result = prepare_bundle(args.scan, args.review, args.title, args.body, args.out, args.media, args.draft,
                                     args.length_exception, args.author_model)
+        elif args.command == "refresh":
+            result = refresh_bundle(args.bundle, args.previous, args.write)
         else:
             result = publish_bundle(args.bundle, args.write)
         print(canonical({"ok": True, "value": result}))

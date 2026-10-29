@@ -12,7 +12,7 @@ The project's verification setting is stored in `.bstack/config.json`. Check it 
 
 Use `python3 <project-root>/.bstack/package/scripts/bstack.py verification status --project <project-root>` to read the setting. Replace `status` with `off`, `ask`, or `auto` to change it. Setup can select the mode; upgrades keep the current choice.
 
-For an existing verifier, first check whether the changed behavior is already covered. Update only the affected feature file and driver steps when the user-facing contract changed. A code-only refactor may need a verifier run but no map edit. A removed feature needs its obsolete recipe removed. Run the affected path and keep its evidence. Do not run a full feature-map audit for every change.
+For an existing verifier, first check whether the changed behavior is already covered. Update only the affected feature file and driver steps when the user-facing contract changed. A new user path, such as a new flag or screen, gets its own recipe; updating an existing recipe's expected output does not cover it. A code-only refactor may need a verifier run but no map edit. A removed feature needs its obsolete recipe removed. Run the affected path and keep its evidence. Do not run a full feature-map audit for every change.
 
 For a new product feature with no verifier, use [create-verification-skill](../../engineering/create-verification-skill/SKILL.md) when the setting is `auto`, or offer it when the setting is `ask`. A throwaway prototype, exploration, or tiny copy change does not trigger automatic creation. If the app cannot run or a required account is unavailable, record the exact limit and complete the checks that are possible. Do not call an unrun recipe verified.
 

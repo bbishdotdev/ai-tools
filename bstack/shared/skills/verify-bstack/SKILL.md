@@ -18,11 +18,15 @@ From the ai-tools repository root, run `python3 bstack/shared/router/install.py`
 
 Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py doctor`. This discovers Codex, Claude Code, Cursor, and Grok on PATH and checks executable versions and configuration without starting a model. Authentication is checked by live probes. Missing tools are skipped by automatic discovery; an explicitly requested missing tool is blocked. Cursor can be supplied with `--cursor-bin /path/to/cursor-agent`.
 
-Amp and Copilot are optional core bindings, not part of this four-host live harness yet. Use their native skill listings in an installed project and report the result separately. Package `doctor` checks BStack files; it does not prove those hosts loaded the skill or ran a hook.
+This doctor and the `live` probes cover the original four hosts. [Behavior scenarios](features/behavior.md) cover all seven CLIs, including Amp, Copilot, and OpenCode. Package `doctor` checks BStack files; it does not prove a host loaded the skill or ran a hook.
 
 ## Drive
 
 Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py live`. It selects every installed supported CLI and starts independent read-only sessions, resuming each session for two follow-up prompts. This sends test prompts and the instruction files the agent reads to each signed-in provider and spends model usage. The caller must have authorized live verification. Use `--tools claude` or another subset for focused retesting. Codex honors native hook trust; review the three hooks through `/hooks` inside the Codex terminal CLI before testing. Keep normal Codex config discovery. Grok uses its read-only sandbox and only read/search tools, with subagents and web search disabled. Cursor and Grok receive their documented project-trust option for this repository.
+
+For compatibility claims, follow [behavior scenarios](features/behavior.md). `behavior/run.py` drives real work in disposable installed projects and `behavior/matrix.py` renders the README matrix from recorded results.
+
+For desktop apps and interactive terminal UIs, follow [computer-use verification](features/computer-use.md). Hand a computer-use agent [the runbook](computer-use/RUNBOOK.md); `behavior/interactive.py` prepares and grades the cases.
 
 For changes to the Cursor/Grok after-tool fallback, run `python3 bstack/shared/skills/verify-bstack/scripts/fallback.py`. It discovers those two clients and tests dependent reads, once-per-turn emission, resumed turns, and a tool-free response. Use `--tools cursor` or `--tools grok` for a focused retest. Read [the after-tool feature contract](features/after-tool-reminder.md) before interpreting its results.
 

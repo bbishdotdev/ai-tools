@@ -38,10 +38,13 @@ class TransportTests(unittest.TestCase):
     def test_verified_controller_executes_with_project_and_hosts(self):
         self.write_archive()
         digest = hashlib.sha256(self.archive.read_bytes()).hexdigest()
-        self.assertEqual(transport.install(self.archive, self.root, ["codex", "grok"]), 0)
+        with patch.object(transport, "__file__", str(self.root / "scripts/install.py")):
+            (self.root / "assets").mkdir()
+            self.archive.rename(self.root / "assets/bstack.zip")
+            self.assertEqual(transport.main(["--project", str(self.root), "--hosts", "codex", "opencode"]), 0)
         self.assertEqual(json.loads((self.root / "installed.json").read_text()),
-                         ["install", "--project", str(self.root), "--hosts", "codex", "grok"])
-        self.assertEqual(hashlib.sha256(self.archive.read_bytes()).hexdigest(), digest)
+                         ["install", "--project", str(self.root), "--hosts", "codex", "opencode"])
+        self.assertEqual(hashlib.sha256((self.root / "assets/bstack.zip").read_bytes()).hexdigest(), digest)
 
     def test_install_forwards_routing_and_verification_choices(self):
         self.write_archive()

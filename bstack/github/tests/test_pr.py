@@ -45,6 +45,8 @@ class FakeGitHub:
         self.create_does_nothing = False
         self.after_create = None
         self.after_ready = None
+        self.after_undo = None
+        self.undo_does_nothing = False
         self.after_edit = None
         self.fail_next_pulls = False
         self.missing_patch = False
@@ -114,9 +116,12 @@ class FakeGitHub:
                 self.after_edit(self)
         elif command == "ready":
             number = int(args[2])
-            self.raw[number]["draft"] = "--undo" in args
+            if "--undo" not in args or not self.undo_does_nothing:
+                self.raw[number]["draft"] = "--undo" in args
             if self.after_ready and "--undo" not in args:
                 self.after_ready(self)
+            if self.after_undo and "--undo" in args:
+                self.after_undo(self)
         else:
             raise AssertionError(args)
         return subprocess.CompletedProcess(args, result, "https://github.com/acme/tool/pull/99\n", "upload failed" if result else "")
@@ -227,6 +232,103 @@ class PRTests(unittest.TestCase):
         gh, result = self.prepare(skip_reviews=True)
         self.assertEqual(result["assessment"]["missing"], [7])
         self.assertEqual(pr.publish_bundle(self.bundle, True, gh)["status"], "draft")
+        self.assertIn("Missing semantic review", gh.raw[99]["body"])
+
+    def publish_then_prepare_refresh(self, **options):
+        gh, _ = self.prepare(draft=True)
+        self.assertEqual(pr.publish_bundle(self.bundle, True, gh)["status"], "draft")
+        first = self.bundle
+        self.scan_path, self.bundle = self.root / "scan two.json", self.root / "bundle two"
+        self.body_path.write_text("## What changed\n\nRecorded the final results.\n")
+        self.prepare(gh, **options)
+        return gh, first
+
+    def test_refresh_replaces_owned_body_and_keeps_draft(self):
+        gh, first = self.publish_then_prepare_refresh()
+        self.assertEqual(pr.refresh_bundle(self.bundle, first, False)["status"], "plan")
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual((result["status"], result["draft"]), ("draft", True))
+        self.assertEqual(gh.raw[99]["body"], (self.bundle / "body.fallback.md").read_text())
+        self.assertIn("Recorded the final results.", gh.raw[99]["body"])
+        self.assertEqual(pr.read_json(first / "publication.json")["status"], "superseded")
+        self.assertFalse(self.mutations(gh, "create")[1:])
+
+    def test_refresh_refuses_a_body_edited_outside_the_helper(self):
+        gh, first = self.publish_then_prepare_refresh()
+        gh.raw[99]["body"] += "\nEdited by hand.\n"
+        with self.assertRaises(pr.Error) as raised:
+            pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual(raised.exception.code, "body_changed")
+        self.assertIn("Edited by hand.", gh.raw[99]["body"])
+
+    def test_refresh_returns_ready_pr_to_draft_for_incomplete_review(self):
+        gh, first = self.publish_then_prepare_refresh(skip_reviews=True)
+        gh.raw[99]["draft"] = False
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual((result["status"], result["draft"]), ("draft", True))
+        self.assertTrue(gh.raw[99]["draft"])
+        self.assertIn("Missing semantic review", gh.raw[99]["body"])
+        self.assertEqual(pr.read_json(first / "publication.json")["status"], "superseded")
+        calls = len(gh.calls)
+        with self.assertRaises(pr.Error) as raised:
+            pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual(raised.exception.code, "bundle_used")
+        self.assertEqual(len(gh.calls), calls)
+
+    def test_refresh_returns_ready_pr_to_draft_for_flagged_review(self):
+        gh, first = self.publish_then_prepare_refresh(disposition="contradiction")
+        gh.raw[99]["draft"] = False
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual((result["status"], result["draft"]), ("draft", True))
+        self.assertTrue(gh.raw[99]["body"].startswith("> Overlap review needs attention:"))
+
+    def test_refresh_preserves_ready_status_after_a_clear_review(self):
+        gh, first = self.publish_then_prepare_refresh()
+        gh.raw[99]["draft"] = False
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual((result["status"], result["draft"]), ("ready", False))
+        self.assertIn("Recorded the final results.", gh.raw[99]["body"])
+        self.assertFalse(self.mutations(gh, "ready"))
+
+    def test_refresh_verifies_draft_conversion_before_replacing_body_and_can_retry(self):
+        gh, first = self.publish_then_prepare_refresh(skip_reviews=True)
+        gh.raw[99]["draft"] = False
+        original_body = gh.raw[99]["body"]
+        gh.undo_does_nothing = True
+        with self.assertRaises(pr.Error) as raised:
+            pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual(raised.exception.code, "draft_restore_failed")
+        self.assertEqual(gh.raw[99]["body"], original_body)
+        self.assertFalse(pr.read_json(self.bundle / "publication.json")["attempted"])
+        gh.undo_does_nothing = False
+        self.assertEqual(pr.refresh_bundle(self.bundle, first, True, gh)["status"], "draft")
+
+    def test_refresh_rechecks_ownership_after_draft_conversion(self):
+        gh, first = self.publish_then_prepare_refresh(skip_reviews=True)
+        gh.raw[99]["draft"] = False
+        gh.after_undo = lambda fake: fake.raw[99].update(body="Changed outside the helper")
+        with self.assertRaises(pr.Error) as raised:
+            pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual(raised.exception.code, "ownership_changed")
+        self.assertEqual(gh.raw[99]["body"], "Changed outside the helper")
+
+    def test_refresh_rechecks_scan_after_draft_conversion(self):
+        gh, first = self.publish_then_prepare_refresh(skip_reviews=True)
+        gh.raw[99]["draft"] = False
+        original_body = gh.raw[99]["body"]
+        gh.after_undo = lambda fake: fake.refs["head"].update(sha="new-head")
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual(result["status"], "review_stale")
+        self.assertTrue(gh.raw[99]["draft"])
+        self.assertEqual(gh.raw[99]["body"], original_body)
+        self.assertFalse(pr.read_json(self.bundle / "publication.json")["attempted"])
+
+    def test_refresh_restores_draft_if_readied_during_body_update(self):
+        gh, first = self.publish_then_prepare_refresh(skip_reviews=True)
+        gh.after_edit = lambda fake: fake.raw[99].update(draft=False)
+        result = pr.refresh_bundle(self.bundle, first, True, gh)
+        self.assertEqual((result["status"], result["draft"]), ("draft", True))
+        self.assertTrue(gh.raw[99]["draft"])
         self.assertIn("Missing semantic review", gh.raw[99]["body"])
 
     def test_explicit_draft_with_complete_review(self):
@@ -441,9 +543,14 @@ class PRTests(unittest.TestCase):
             self.prepare()
         self.assertEqual(raised.exception.code, "invalid_visual")
 
-    def test_multi_file_change_requires_a_visual(self):
+    def test_small_code_and_test_change_needs_no_visual(self):
         gh = FakeGitHub()
-        gh.compare_files = [FILE, {**FILE, "filename": "other.py"}]
+        gh.compare_files = [{**FILE, "changes": 12}, {**FILE, "filename": "test_shared.py", "changes": 15}]
+        self.assertEqual(self.prepare(gh)[1]["status"], "prepared")
+
+    def test_larger_change_requires_a_visual(self):
+        gh = FakeGitHub()
+        gh.compare_files = [{**FILE, "changes": 20}, {**FILE, "filename": "other.py", "changes": 20}]
         with self.assertRaises(pr.Error) as raised:
             self.prepare(gh)
         self.assertEqual(raised.exception.code, "visual_required")

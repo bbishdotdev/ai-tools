@@ -8,7 +8,7 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 
 ![bstack compatibility across skills, auto mode, PR workflows, and hooks for CLI and desktop tools](assets/compatibility.svg)
 
-**Supported** means bstack has an implemented path. **Partial** means there is a known gap or the app still needs live validation. **Not supported** means bstack has no binding for that capability. This describes bstack integration, not everything the tool itself can do. In particular, [OpenCode](https://opencode.ai/v2/docs/skills/) can discover `.agents/skills` and [`AGENTS.md`](https://opencode.ai/v2/docs/instructions/), but bstack does not yet install an OpenCode hook. The [installation guide](INSTALL.md) covers host selection and checks.
+Each cell comes from [behavior scenarios](shared/skills/verify-bstack/features/behavior.md): a real CLI does ordinary work in a disposable project, and code checks whether bstack's skills, routing, PR workflow, and hooks actually reached the model and got used. **Supported** means that happened in every recorded repeat. **Partial** means a binding exists but a scenario failed or hasn't run, as on desktop apps that still need live validation. **Not supported** means bstack has no binding. How well each host's model did the work once bstack reached it is a separate question, tracked in [model results](audit/model-results.md). The [installation guide](INSTALL.md) covers host selection and checks.
 
 ## What bstack adds
 
