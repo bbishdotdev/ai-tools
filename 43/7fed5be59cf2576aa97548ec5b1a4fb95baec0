@@ -1,0 +1,53 @@
+bstack/release/bstack/github/pr.py
+  s_822e08e34bda62::t_b04858bc6ace2e 733,736,738-745,753,769-771
+  s_822e08e34bda62::t_d7b11a34034e59 754,772-776
+bstack/shared/github/pr_guard.py
+  s_822e08e34bda62::t_fcc7a444efacdb 8,82-86,90-102,115-118
+bstack/github/tests/test_pr.py
+  s_822e08e34bda62::t_82cf33dba3e47d 48-49,119-120,123-124,237,243,264-271,277-313
+  s_822e08e34bda62::t_060e84988b87f6 272-276,314-324
+  s_822e08e34bda62::t_658506e2214109 326-332
+  s_822e08e34bda62::t_505e38d13f7af7 325,333
+bstack/release/bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_b04858bc6ace2e 59
+bstack/engineering/to-pr/SKILL.md
+  s_822e08e34bda62::t_a5d32208aae7ed 59
+bstack/engineering/to-pr/references/publishing.md
+  s_822e08e34bda62::t_a5d32208aae7ed 92,99
+bstack/CHANGELOG.md
+  s_822e08e34bda62::t_952c6c619d90c7 7-11
+bstack/scripts/test_pr_guard.py
+  s_822e08e34bda62::t_fcc7a444efacdb 3,7,60-73
+  s_822e08e34bda62::t_0ab803fe3d0f04 74
+bstack/release/bstack/assets/compatibility.svg
+  s_822e08e34bda62::t_d7b11a34034e59 10,28
+  s_822e08e34bda62::t_360fb446d128ad 19
+bstack/release/bstack/manifest.json
+  s_822e08e34bda62::t_b04858bc6ace2e 1363,1365,1384,1386,2004,2006
+  s_822e08e34bda62::t_360fb446d128ad 51,53
+  s_822e08e34bda62::t_d7b11a34034e59 1603,1605
+bstack/release/bstack/shared/github/pr_guard.py
+  s_822e08e34bda62::t_b04858bc6ace2e 8,82-86,90-102,115-118
+bstack/github/pr.py
+  s_822e08e34bda62::t_060e84988b87f6 754
+  s_822e08e34bda62::t_658506e2214109 772-776
+  s_822e08e34bda62::t_a5d32208aae7ed 733,736,738-745,753,769-771
+bstack/release/bstack/engineering/to-pr/references/publishing.md
+  s_822e08e34bda62::t_b04858bc6ace2e 92,99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "437fed5be59cf2576aa97548ec5b1a4fb95baec0",
+  "prompts": {},
+  "sessions": {
+    "s_822e08e34bda62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b504-4712-7531-8350-112b403db5b7",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
