@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
 
 
@@ -54,6 +56,21 @@ class PullRequestGuardTests(unittest.TestCase):
             result = self.run_guard("cursor", command)
             self.assertEqual(result.returncode, 0)
             self.assertEqual(json.loads(result.stdout), {"permission": "allow"})
+
+    def test_copilot_json_arguments_are_denied_and_recorded_without_command_text(self):
+        with tempfile.TemporaryDirectory() as directory:
+            payload = {"toolName": "bash", "toolArgs": json.dumps({"command": "gh pr create --title private-title"})}
+            result = subprocess.run([sys.executable, "-B", str(GUARD), "--host", "copilot"],
+                                    input=json.dumps(payload), text=True, capture_output=True,
+                                    env=dict(os.environ, BSTACK_VERIFY_DIR=directory))
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(json.loads(result.stdout)["permissionDecision"], "deny")
+            records = list(Path(directory).glob("guard-*.json"))
+            self.assertEqual(len(records), 1)
+            record = json.loads(records[0].read_text())
+            self.assertTrue(record["blocked"])
+            self.assertEqual(record["arguments_type"], "str")
+            self.assertNotIn("private-title", records[0].read_text())
 
     def test_multiline_shell_command_does_not_hide_pr_creation(self):
         command = "echo preparing\ngh pr create --title update"

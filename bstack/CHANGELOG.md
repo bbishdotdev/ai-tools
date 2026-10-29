@@ -4,6 +4,11 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Add native Amp, Copilot, and OpenCode routing and PR guards, plus direct playbook links and compaction reminders. See [PR #23](https://github.com/bbishdotdev/ai-tools/pull/23).
+- Generate compatibility from real developer scenarios, track model quality separately, and record native PR-guard denials. Failed or quota-limited attempts remain visible instead of retaining an old green result.
+- Keep generated-code grading and candidate Git commands in a credential-free, network-isolated maintainer worker. Consumer installation and static PR review need no new system packages.
+- Refresh an owned PR description through `to-pr`, restoring draft status when its new assessment requires it. Truly small PRs, up to two files and 30 changed lines, can omit a visual.
+
 ## Published releases
 
 | Version | Date | Notes |

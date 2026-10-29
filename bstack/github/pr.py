@@ -730,13 +730,19 @@ def refresh_bundle(directory, previous, write=False, gh=None):
     number = old_state["pr"]["number"]
     if not write:
         return {"status": "plan", "pr": old_state["pr"]["url"], "bundle": str(directory),
+                "retainDraft": bundle["retainDraft"],
                 "steps": ["Confirm the PR is still owned by the previous bundle and unedited",
                           "Check branch SHAs and all other open PRs against the new scan",
-                          "Replace the body, attach media, and keep the current draft status"]}
+                          "Return the PR to draft when required, then replace the body and attach media without promoting it"]}
     gh = gh or GitHub(bundle["repo"], bundle["host"])
-    pr = gh.pr(number)
-    check_owned_body(pr, old_bundle, old_state)
-    fresh, _ = freshness(gh, scan, number)
+    fresh, pr = publication_freshness(gh, scan, old_bundle, old_state, number)
+    if fresh and bundle["retainDraft"] and not pr["draft"]:
+        mutation(gh, ["pr", "ready", str(number), "--repo", bundle["repo"], "--undo"], directory, state, "returning_to_draft")
+        pr = gh.pr(number)
+        check_owned_body(pr, old_bundle, old_state)
+        if not pr["draft"]:
+            fail("draft_restore_failed", "The refreshed review requires draft, but draft status could not be verified", pr=pr["url"])
+        fresh, pr = publication_freshness(gh, scan, old_bundle, old_state, number)
     if not fresh:
         return {"status": "review_stale", "pr": pr["url"],
                 "message": "Target SHAs or other open PRs changed since the new scan; rescan before refreshing"}
@@ -744,7 +750,8 @@ def refresh_bundle(directory, previous, write=False, gh=None):
     mutation(gh, ["pr", "edit", str(number), "--repo", bundle["repo"], "--body-file",
                   str(directory / "body.fallback.md")], directory, state, "refreshing")
     actual = gh.pr(number)
-    if not owned(actual, bundle) or actual["body"] != (directory / "body.fallback.md").read_text():
+    check_owned_body(actual, bundle, state)
+    if actual["body"] != (directory / "body.fallback.md").read_text():
         fail("refresh_failed", "The refreshed body could not be verified", pr=actual["url"])
     event(directory, state, "refreshed", pr={"number": number, "url": actual["url"]}, lastBodyHash=digest(actual["body"]))
     event(previous, old_state, "superseded", status="superseded", supersededBy=str(directory))
@@ -759,6 +766,14 @@ def refresh_bundle(directory, previous, write=False, gh=None):
                 state["mediaResult"] = "attached"
         else:
             state["mediaResult"] = "fallback_attach_unavailable"
+    actual = gh.pr(number)
+    check_owned_body(actual, bundle, state)
+    if bundle["retainDraft"] and not actual["draft"]:
+        mutation(gh, ["pr", "ready", str(number), "--repo", bundle["repo"], "--undo"], directory, state, "returning_to_draft")
+        actual = gh.pr(number)
+        check_owned_body(actual, bundle, state)
+        if not actual["draft"]:
+            fail("draft_restore_failed", "The refreshed review requires draft, but draft status could not be verified", pr=actual["url"])
     status = "draft" if actual["draft"] else "ready"
     event(directory, state, "complete", status=status)
     return {"status": status, "pr": actual["url"], "draft": actual["draft"], "media": state.get("mediaResult", "none")}

@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shlex
 import sys
+import uuid
 
 
 HELPER = Path(__file__).resolve().parents[2] / "github/pr.py"
@@ -78,7 +79,25 @@ def shell_command(host, payload):
     if tool not in SHELL_TOOLS:
         return None
     detail = payload.get("tool_input", payload.get("toolInput", payload.get("toolArgs", {})))
+    if isinstance(detail, str):
+        try:
+            detail = json.loads(detail)
+        except ValueError:
+            return None
     return detail.get("command") if isinstance(detail, dict) else None
+
+
+def record_decision(host, payload, command, denied):
+    directory = os.environ.get("BSTACK_VERIFY_DIR")
+    if directory:
+        destination = Path(directory)
+        destination.mkdir(parents=True, exist_ok=True)
+        detail = payload.get("tool_input", payload.get("toolInput", payload.get("toolArgs")))
+        record = {"host": host, "event": "pr_guard", "blocked": denied,
+                  "command_available": isinstance(command, str),
+                  "tool": payload.get("tool_name", payload.get("toolName")),
+                  "arguments_type": type(detail).__name__}
+        (destination / f"guard-{uuid.uuid4().hex}.json").write_text(json.dumps(record) + "\n")
 
 
 def main():
@@ -93,7 +112,10 @@ def main():
     except (ValueError, OSError):
         payload = {}
     command = shell_command(args.host, payload) if isinstance(payload, dict) else None
-    if isinstance(command, str) and bypasses_to_pr(command):
+    denied = isinstance(command, str) and bypasses_to_pr(command)
+    if isinstance(payload, dict):
+        record_decision(args.host, payload, command, denied)
+    if denied:
         if args.host in ("copilot", "opencode", "amp"):
             print(json.dumps({"permissionDecision": "deny", "permissionDecisionReason": MESSAGE}))
             return 0
