@@ -19,7 +19,7 @@ The Hooks column also requires the host's delivering reminder hook on every user
 
 Checks are split in two. Integration checks ask whether bstack's instructions, workflows, and hooks reached the model and were used: router and playbook reads, skill policy reads, ADR reads, verifier upkeep, `to-pr` and helper publication, first-turn scope, hook delivery, and compaction recovery. Quality checks ask whether the model then did the work well: hidden-test outcomes, avoiding the rejected alternative, and correct answers. The matrix uses integration checks from the most recent recorded run of each scenario. `matrix.py` writes one row per host and model to `bstack/audit/model-results.md`, with integration and quality passes in each cell, which is where model recommendations come from. Use `--model host=model` to measure another model on the same host.
 
-A cell is Supported only when every mapped scenario passed its integration checks in every repeat of the recorded run. A binding without that proof is Partial. A host without a binding is Not supported. Matrix colors are never edited by hand.
+A cell is Supported only when every mapped scenario passed its integration checks in every recorded attempt, with no ungraded errors. A binding without that proof is Partial. A host without a binding is Not supported. Matrix colors are never edited by hand.
 
 ## Isolation
 

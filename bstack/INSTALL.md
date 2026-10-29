@@ -34,10 +34,10 @@ There are two steps: skills.sh downloads `install-bstack`; asking your agent to 
 
 ### Install a published version
 
-The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 3.0.0:
+The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 3.1.0:
 
 ```sh
-npx skills add 'bbishdotdev/ai-tools#v3.0.0' --skill install-bstack
+npx skills add 'bbishdotdev/ai-tools#v3.1.0' --skill install-bstack
 ```
 
 Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route updates an installed project just because `main` changes.
@@ -165,7 +165,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workf
 Keep credentials in the CLI's normal login or environment, not in the saved command template.
 If the wrapper executable lives in the project, a relative executable path is resolved from the project root. Use absolute paths for any separate script files passed to that executable.
 
-The headless model launcher covers Codex, Claude Code, Cursor, and Grok. Amp and Copilot have optional project skill bindings, but are not headless review-model adapters. Their native discovery checks are described above.
+The headless model launcher covers Codex, Claude Code, Cursor, and Grok. Amp, Copilot, and OpenCode have native project bindings, but are not shared headless model-launcher or review-model adapters. Their native discovery checks are described above.
 
 ## Installed layout
 
@@ -244,7 +244,7 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD"
 
 Setup preserves other instructions and configuration. Mode and ownership state live in gitignored `.bstack/`. Auto hooks send a short router reminder; they do not add the full engineering corpus to every turn. Start a fresh session after bindings change; disabling auto cannot remove instructions already in a conversation. Checking status or repeating an unchanged mode does not require a fresh session.
 
-When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack keeps its PR creation guard for selected Codex, Claude Code, Cursor, and Grok hosts, so Codex hook trust may still need review. Amp and Copilot have no BStack hook binding yet. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
+When automatic routing is enabled for Codex, review its hooks by opening `codex` in a terminal in the project directory, then entering `/hooks` inside that CLI. `/hooks` is not a desktop chat command. Setup does not grant or inspect hook trust. `auto status` confirms the saved mode, not live hook execution or router delivery. With auto off, bstack keeps its PR creation guard for every selected host, so Codex hook trust may still need review. Amp and OpenCode load their native plugins; Copilot loads its hook configuration after folder trust. See [Codex hook review](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
 
 Cursor and Grok's after-tool reminders do not provide first-tool or tool-free prompt injection.
 

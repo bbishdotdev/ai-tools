@@ -14,7 +14,7 @@ Or run:
 python3 install.py --project /path/to/my-project
 ```
 
-The target project must already exist. Add `--hosts codex claude cursor grok amp copilot` to choose tools; include only the names you need. Without this option, a new installation configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves its current tools. Amp and Copilot support is optional and currently covers project instructions and skill discovery, not BStack hooks.
+The target project must already exist. Add `--hosts codex claude cursor grok amp copilot opencode` to choose tools; include only the names you need. Without this option, a new installation configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves its current tools. Select Amp, Copilot, and OpenCode explicitly to install their native routing and PR-guard bindings.
 
 The installer verifies the package, installs it into your project's `.bstack/package/`, registers its skills, and runs `doctor`. Follow the resulting fresh-session guidance. In Claude desktop, start a new Code chat so the skills appear.
 

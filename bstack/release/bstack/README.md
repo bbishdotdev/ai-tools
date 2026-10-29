@@ -1,6 +1,6 @@
 # bstack
 
-Version 3.0.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
+Version 3.1.0. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
 
 The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
@@ -40,7 +40,7 @@ skills.sh downloads the installer skill; your agent runs it to install the full 
 python3 install.py --project /path/to/my-project
 ```
 
-From a clone or source archive, the same entrypoint is `bstack/release/skills-sh/install-bstack/install.py`. It installs the bundled package and runs `doctor` without Git, npm, skills.sh, or network access. Add `--hosts` followed by the tools you want to choose hosts, including optional `amp` or `copilot`. Without it, a new install configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves the existing selection. Amp and Copilot currently discover skills and project instructions, but have no BStack hook binding.
+From a clone or source archive, the same entrypoint is `bstack/release/skills-sh/install-bstack/install.py`. It installs the bundled package and runs `doctor` without Git, npm, skills.sh, or network access. Add `--hosts` followed by the tools you want to choose hosts, including optional `amp`, `copilot`, or `opencode`. Without it, a new install configures Codex, Claude Code, Cursor, and Grok; an upgrade preserves the existing selection. Amp, Copilot, and OpenCode use native routing and PR-guard bindings. See the [compatibility matrix](assets/compatibility.svg) for recorded support and limits.
 
 If you already have this unpacked runtime package, its controller also supports direct installation:
 
@@ -49,7 +49,7 @@ python3 <package-path>/scripts/bstack.py install --project <project-root>
 python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <project-root>
 ```
 
-Installation creates `.bstack/package/` and direct public entries in `.agents/skills/`. Claude Code, Cursor, and Grok get host-specific links; Amp and Copilot use the shared entries directly. The original source can be removed afterward.
+Installation creates `.bstack/package/` and direct public entries in `.agents/skills/`. Claude Code, Cursor, and Grok get host-specific links; Amp, Copilot, and OpenCode use the shared entries directly. The original source can be removed afterward.
 
 Install into each Git repo where the agent will work. A BStack install in a parent workspace does not automatically bind child repos. For Claude Code, parent instructions may load without the child's skill links or auto hook. A globally available `install-bstack` skill can install this exact bundled package into each repo; then run that repo's `doctor` and start a fresh Code chat. To use a parent package as the source, run its controller's `setup --project <child-repo>` and then use the child package's controller for `auto` and `doctor`.
 
@@ -70,9 +70,9 @@ python3 <project-root>/.bstack/package/scripts/bstack.py auto on --project <proj
 python3 <project-root>/.bstack/package/scripts/bstack.py doctor --project <project-root>
 ```
 
-Start a fresh session after bindings change. Checking status or repeating an unchanged mode does not require a new session. Turning auto off cannot erase existing conversation context. Amp and Copilot can read the project router instruction when auto is on, but no BStack hook refreshes it per turn in those hosts.
+Start a fresh session after bindings change. Checking status or repeating an unchanged mode does not require a new session. Turning auto off cannot erase existing conversation context. Amp, Copilot, and OpenCode use native adapters over the same shared router reminder when auto is on. Their native trust and plugin settings still apply.
 
-For Codex, open `codex` in a terminal in the project directory and enter `/hooks` there to review hook trust. `/hooks` is not a desktop chat command. Setup does not grant or inspect trust, and `auto status` confirms configuration only. A PR creation guard stays bound for selected Codex, Claude Code, Cursor, and Grok hosts even when routing is manual. Amp and Copilot have no BStack guard. If Codex hooks are explicitly disabled, manual setup can complete but that guard cannot run there; automatic Codex routing requires hooks. Cursor and Grok's after-tool reminders do not guarantee first-tool or tool-free delivery. CLI packaging does not establish desktop or native plugin-manager support.
+For Codex, open `codex` in a terminal in the project directory and enter `/hooks` there to review hook trust. `/hooks` is not a desktop chat command. Setup does not grant or inspect trust, and `auto status` confirms configuration only. A PR creation guard stays bound for every selected host even when routing is manual. Its installed binding and a recorded native denial are separate checks. If Codex hooks are explicitly disabled, manual setup can complete but that guard cannot run there; automatic Codex routing requires hooks. Cursor and Grok's after-tool reminders do not guarantee first-tool or tool-free delivery. CLI packaging does not establish desktop or native plugin-manager support.
 
 ## Local planning and tickets
 
