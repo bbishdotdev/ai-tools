@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 from pathlib import Path
 import shutil
@@ -144,6 +145,35 @@ class Boundary(unittest.TestCase):
         (hooks / "hook-large.json").write_text(" " * (1024 * 1024 + 1))
         with self.assertRaisesRegex(RuntimeError, "hook records exceed grading limits"):
             grading.copy_records(hooks, self.root / "oversized-recorded-hooks")
+
+    def test_interactive_guard_probe_preserves_native_guard_records(self):
+        spec = importlib.util.spec_from_file_location("behavior_interactive_containment", BEHAVIOR / "interactive.py")
+        interactive = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(interactive)
+        git(self.project, "init", "-q")
+        git(self.project, "add", "-A")
+        git(self.project, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.com", "commit", "-qm", "base")
+        hooks = self.root / "hooks/interactive"
+        hooks.mkdir(parents=True)
+        (hooks / "hook-native.json").write_text('{"host": "cursor", "event": "sessionStart"}\n')
+        decision = {"host": "cursor", "event": "pr_guard", "blocked": True}
+        (hooks / "guard-native.json").write_text(json.dumps(decision))
+        (self.root / "forge").mkdir()
+        folder = self.root / "interactive-result"
+        folder.mkdir()
+        case = {"host": "cursor", "surface": "cursor-tui", "scenario": "guard-probe", "repeat": 1,
+                "workspace": str(self.root), "project": str(self.project),
+                "base_commit": git(self.project, "rev-parse", "HEAD"),
+                "steps": [{"kind": "prompt", "text": "Run the guard probe."}]}
+        (folder / "case.json").write_text(json.dumps(case))
+        transcript = [[{"type": "text", "part": {"text": "The hook blocked the command."}}]]
+        with mock.patch.dict(interactive.TRANSCRIPTS, {"cursor": lambda case: (transcript, False)}):
+            result = interactive.grade(folder)
+        self.assertEqual(result["status"], "pass", result)
+        self.assertTrue(result["checks"]["guard_blocked"])
+        self.assertEqual(grading.records(folder / "turn-1/hooks", "guard-*.json"), [decision])
+        self.assertEqual(grading.records(folder / "turn-1/hooks", "hook-*.json"),
+                         [{"host": "cursor", "event": "sessionStart"}])
 
 
 if __name__ == "__main__":

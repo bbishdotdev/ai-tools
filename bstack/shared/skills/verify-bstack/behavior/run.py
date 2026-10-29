@@ -638,6 +638,7 @@ def run_case(host, binary, name, repeat, out, timeout):
     folder.mkdir(parents=True)
     try:
         execute(host, binary, name, repeat, folder, timeout)
+        return assess(folder)
     except Exception as error:
         result = {"host": host, "surface": host + "-cli", "model": HOSTS[host].model,
                   "scenario": name, "repeat": repeat, "status": "error", "reason": str(error),
@@ -645,7 +646,11 @@ def run_case(host, binary, name, repeat, out, timeout):
         verify.save(folder / "result.json", result)
         print(f"{host} {name}#{repeat}: error {error}", flush=True)
         return result
-    return assess(folder)
+
+
+def active_case_folders(out):
+    return sorted(path.parent for path in out.glob("*/*/result.json")
+                  if ".interrupted-" not in path.parent.name)
 
 
 def summarize(results, clients):
@@ -714,7 +719,7 @@ def main():
         host, model = override.split("=", 1)
         HOSTS[host].model = model
     if args.regrade:
-        folders = sorted(path.parent for path in args.regrade.glob("*/*/result.json"))
+        folders = active_case_folders(args.regrade)
         for folder in folders:
             if not (folder / "result.original.json").exists():
                 shutil.copy(folder / "result.json", folder / "result.original.json")
@@ -760,7 +765,7 @@ def main():
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
         results = list(pool.map(lambda job: run_case(job[0], clients[job[0]]["binary"], job[1], job[2], out,
                                                      args.timeout), jobs))
-    results = [json.loads(path.read_text()) for path in sorted(out.glob("*/*/result.json"))]
+    results = [json.loads((folder / "result.json").read_text()) for folder in active_case_folders(out)]
     summary = summarize(results, clients)
     verify.save(out / "report.json", {"run": run_id, "results": results, "summary": summary})
     if args.record:

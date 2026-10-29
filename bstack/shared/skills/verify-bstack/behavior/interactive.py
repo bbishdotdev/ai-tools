@@ -297,7 +297,8 @@ TRANSCRIPTS = {"claude": claude_turns, "codex": codex_turns, "opencode": opencod
 def grade(folder):
     case = json.loads((folder / "case.json").read_text())
     hooks = Path(case["workspace"]) / "hooks/interactive"
-    records = sorted(run.grading.records(hooks, "hook-*.json"),
+    files = run.grading.record_files(hooks)
+    records = sorted((record for name, record in files.items() if name.startswith("hook-")),
                      key=lambda record: record.get("observed_at_ns", 0))
     turns, compacted = TRANSCRIPTS[case["host"]](case) if case["host"] in TRANSCRIPTS else hook_turns(case, records)
     if case["host"] == "cursor" and any(record.get("event") == "preCompact" for record in records):
@@ -314,8 +315,8 @@ def grade(folder):
             (turn_dir / "stdout.jsonl").write_text("".join(json.dumps(event) + "\n" for event in turns[position]))
             (turn_dir / "prompt.txt").write_text(step["text"])
         exits.append(0)
-    for record in records:
-        target = folder / "turn-1/hooks" / f"hook-{record.get('receipt') or uuid.uuid4().hex}.json"
+    for name, record in files.items():
+        target = folder / "turn-1/hooks" / name
         target.write_text(json.dumps(record))
     first = turns[0] if turns else []
     model_file = folder / "model.txt"

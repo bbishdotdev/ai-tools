@@ -15,7 +15,6 @@ import zipfile
 
 MAX_FILES = 4096
 MAX_BYTES = 128 * 1024 * 1024
-HOSTS = ("codex", "claude", "cursor", "grok", "amp", "copilot")
 
 
 class InvalidBundle(ValueError):
@@ -105,7 +104,7 @@ def install(archive, project, hosts=None, auto=None, verification=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, default=Path.cwd())
-    parser.add_argument("--hosts", nargs="+", choices=HOSTS,
+    parser.add_argument("--hosts", nargs="+",
                         help="Configure these hosts; otherwise preserve existing hosts or use all on first install")
     parser.add_argument("--auto", choices=("on", "off"), help="Override automatic routing; new projects default on")
     parser.add_argument("--verification", choices=("off", "ask", "auto"),

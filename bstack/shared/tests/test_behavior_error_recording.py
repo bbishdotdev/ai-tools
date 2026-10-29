@@ -1,6 +1,7 @@
 import copy
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -46,6 +47,18 @@ class BehaviorErrorRecordingTests(unittest.TestCase):
         behavior.record(behavior.summarize(results, clients), run_id)
         return json.loads(self.results.read_text())
 
+    def resume(self, out):
+        host = mock.Mock(model="fixture-model", compacts=True)
+        host.binary.return_value = "fixture-cli"
+        argv = ["behavior", "--resume", str(out), "--tools", "codex", "--scenarios", "misleading-bug",
+                "--jobs", "1", "--record"]
+        with mock.patch.object(behavior, "ROOT", self.folder), \
+                mock.patch.dict(behavior.HOSTS, {"codex": host}, clear=True), \
+                mock.patch.object(behavior.subprocess, "run", return_value=subprocess.CompletedProcess(
+                    ["fixture-cli", "--version"], 0, "fixture-version", "")), \
+                mock.patch.object(sys, "argv", argv):
+            return behavior.main()
+
     def test_latest_errors_replace_prior_pass_and_clean_rerun_restores_support(self):
         original = self.seed("codex-cli")
         self.assertEqual(matrix.status(original["hosts"]["codex-cli"], "auto"), "supported")
@@ -89,6 +102,50 @@ class BehaviorErrorRecordingTests(unittest.TestCase):
         self.assertEqual(matrix.status(host, "pr"), "partial")
         self.assertEqual(matrix.status(host, "hooks"), "partial")
         self.assertIn("2 · 2 of 2; 1 provider limit of 3 attempts", matrix.render_models(data))
+
+    def test_assessment_error_finishes_report_and_replaces_prior_support(self):
+        self.seed("codex-cli")
+        out = self.folder / "assessment-run"
+
+        def malformed_observation(host, binary, name, repeat, folder, timeout):
+            (folder / "observed.json").write_text("{")
+
+        with mock.patch.object(behavior, "execute", side_effect=malformed_observation):
+            self.assertEqual(self.resume(out), 1)
+        report = json.loads((out / "report.json").read_text())
+        result = report["results"][0]
+        self.assertEqual((result["host"], result["scenario"], result["status"], result["error_kind"]),
+                         ("codex", "misleading-bug", "error", "execution"))
+        self.assertIn("Expecting property name", result["reason"])
+        recorded = json.loads(self.results.read_text())
+        self.assertEqual(matrix.status(recorded["hosts"]["codex-cli"], "auto"), "partial")
+        row = recorded["hosts"]["codex-cli"]["scenarios"]["misleading-bug"]
+        self.assertEqual((row["attempts"], row["repeats"], len(row["errors"])), (1, 0, 1))
+
+    def test_resume_keeps_archived_error_out_of_current_report_and_record(self):
+        self.seed("codex-cli")
+        out = self.folder / "resume-run"
+        folder = out / "codex/misleading-bug-1"
+        folder.mkdir(parents=True)
+        old = dict(self.passing("codex", "misleading-bug", 1), status="error", reason="old failure")
+        (folder / "result.json").write_text(json.dumps(old))
+        passed = self.passing("codex", "misleading-bug", 1)
+
+        def assess(folder):
+            (folder / "result.json").write_text(json.dumps(passed))
+            return passed
+
+        with mock.patch.object(behavior, "execute"), mock.patch.object(behavior, "assess", side_effect=assess):
+            self.assertEqual(self.resume(out), 0)
+        archives = list((out / "codex").glob("misleading-bug-1.interrupted-*/result.json"))
+        self.assertEqual(len(archives), 1)
+        self.assertEqual(json.loads(archives[0].read_text()), old)
+        report = json.loads((out / "report.json").read_text())
+        self.assertEqual(report["results"], [passed])
+        recorded = json.loads(self.results.read_text())
+        row = recorded["hosts"]["codex-cli"]["scenarios"]["misleading-bug"]
+        self.assertEqual((row["attempts"], row["repeats"], row["errors"]), (1, 1, []))
+        self.assertEqual(matrix.status(recorded["hosts"]["codex-cli"], "auto"), "supported")
 
 
 if __name__ == "__main__":
