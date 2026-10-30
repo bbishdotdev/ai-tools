@@ -6,7 +6,7 @@ My collection of skills, agents, and tools for working with AI coding assistants
 
 | Tool | What it does | Get started |
 | --- | --- | --- |
-| [bstack](bstack/README.md) | An opinionated suite connecting planning, engineering, local work tracking, and optional shared memory across coding assistants. | [Install bstack](bstack/INSTALL.md) |
+| [bstack](bstack/README.md) | An opinionated suite connecting planning, engineering, local work tracking, and optional shared memory across coding assistants. | [Install bstack](bstack/INSTALL.md) · [Guide](https://www.bbish.dev/bstack) |
 
 Shared memory and PR workflows currently ship as part of bstack.
 
