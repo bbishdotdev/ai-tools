@@ -18,7 +18,7 @@ The [planning skills](sdlc/README.md), [engineering workflows](engineering/READM
 
 The package is pinned and installs offline. It also includes [shared memory](shared/memory.md), the `recall` / `reflect` / `automate-me` session tools, and a [project PR policy](shared/references/pr-policy-template.md) that teams can customize. Planning and tickets are local today; GitHub, Jira, and Linear tracker adapters remain future work. GitHub PR publishing already works.
 
-Full docs and overview can be found here: [Bstack Guide](https://www.bbish.dev/bstack)
+Full docs and overview can be found here: ![Bstack Guide](https://www.bbish.dev/bstack)
 
 ## Install
 
