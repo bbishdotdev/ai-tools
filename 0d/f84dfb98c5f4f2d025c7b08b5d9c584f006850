@@ -1,0 +1,46 @@
+bstack/shared/tests/test_behavior_interactive.py
+  s_7ab85060a7ea14::t_4a43190edf2409 1-43
+bstack/shared/skills/verify-bstack/computer-use/SURFACES.md
+  s_7ab85060a7ea14::t_1ac13cf4f82766 99
+  s_7ab85060a7ea14::t_8dd48ef85312e0 7-10,12,82-94,98,100-102,117-129
+  s_7ab85060a7ea14::t_b6fd5077868912 108
+bstack/shared/skills/verify-bstack/behavior/interactive.py
+  s_7ab85060a7ea14::t_d87334462db22d 10,351-352,355-402,417,422,434
+  s_7ab85060a7ea14::t_322702f3adb221 353-354
+  s_7ab85060a7ea14::t_835348c1b163ba 52,57-62,92-93,214-215
+  s_7ab85060a7ea14::t_a327012334332c 344-350,438-447,449-450
+  s_7ab85060a7ea14::t_f34b6a391f2dee 403-414,435
+bstack/shared/skills/verify-bstack/SKILL.md
+  s_7ab85060a7ea14::t_f6b705f3c37ff0 11
+bstack/shared/skills/verify-bstack/features/behavior.md
+  s_7ab85060a7ea14::t_f6b705f3c37ff0 64
+  s_7ab85060a7ea14::t_b6fd5077868912 36
+bstack/shared/skills/verify-bstack/computer-use/RUNBOOK.md
+  s_7ab85060a7ea14::t_1ac13cf4f82766 32,48-49,56,59,76,88,91,118
+  s_7ab85060a7ea14::t_a5c2befbeed1a6 168
+  s_7ab85060a7ea14::t_f6b705f3c37ff0 45,65,169
+  s_7ab85060a7ea14::t_0f1d49ad91fdea 60
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_7ab85060a7ea14::t_5781ed97814a2c 132,484,486-489,494
+  s_7ab85060a7ea14::t_3b7edaafb14f6d 485
+bstack/shared/skills/verify-bstack/features/computer-use.md
+  s_7ab85060a7ea14::t_f6b705f3c37ff0 11-12,25-27
+  s_7ab85060a7ea14::t_a5c2befbeed1a6 39
+  s_7ab85060a7ea14::t_34bc2537f93022 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0df84dfb98c5f4f2d025c7b08b5d9c584f006850",
+  "prompts": {},
+  "sessions": {
+    "s_7ab85060a7ea14": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "795e4f67-e531-43ab-8d12-2635203f3934",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}

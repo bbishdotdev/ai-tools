@@ -1,0 +1,56 @@
+bstack/shared/skills/verify-bstack/computer-use/RUNBOOK.md
+  s_6bff603607ccc7::t_2221c81d848542 12-19,53
+bstack/release/bstack/engineering/create-verification-skill/SKILL.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 32-33
+bstack/engineering/create-verification-skill/computer-use/templates/REPORT.md
+  s_6bff603607ccc7::t_31ffebbc398a58 1-37
+bstack/engineering/create-verification-skill/computer-use/templates/TOOL-SCRIPT.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 3
+  s_6bff603607ccc7::t_e4a8b8fa68ca3f 1-2,4-58
+bstack/release/bstack/manifest.json
+  s_6bff603607ccc7::t_dbb4f3a1a67add 243,245,260-307,316-323
+bstack/engineering/create-verification-skill/computer-use/templates/PROBES.md
+  s_6bff603607ccc7::t_9b1372628d67a6 1-21
+bstack/engineering/create-verification-skill/computer-use/README.md
+  s_6bff603607ccc7::t_b0eba69fe0417b 1-108
+bstack/engineering/create-verification-skill/SKILL.md
+  s_6bff603607ccc7::t_2221c81d848542 31-32
+bstack/release/bstack/engineering/create-verification-skill/computer-use/DRIVERS.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-31
+bstack/release/bstack/engineering/create-verification-skill/computer-use/templates/TOOL-SCRIPT.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-58
+bstack/engineering/create-verification-skill/scripts/evidence.py
+  s_6bff603607ccc7::t_a2252eebbf3f90 1-87
+bstack/engineering/create-verification-skill/computer-use/DRIVERS.md
+  s_6bff603607ccc7::t_ab9dc264547feb 1-31
+bstack/shared/skills/verify-bstack/features/computer-use.md
+  s_6bff603607ccc7::t_2221c81d848542 10,38
+bstack/release/bstack/engineering/create-verification-skill/computer-use/templates/PROBES.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-21
+bstack/engineering/create-verification-skill/computer-use/templates/HANDOFF.md
+  s_6bff603607ccc7::t_9639c55d6819f7 1-36
+bstack/release/bstack/engineering/create-verification-skill/computer-use/templates/REPORT.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-37
+bstack/release/bstack/engineering/create-verification-skill/computer-use/README.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-108
+bstack/release/bstack/engineering/create-verification-skill/computer-use/templates/HANDOFF.md
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-36
+bstack/release/bstack/engineering/create-verification-skill/scripts/evidence.py
+  s_6bff603607ccc7::t_dbb4f3a1a67add 1-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2974ec77ef9135ebee755adea3d84f967cb82be1",
+  "prompts": {},
+  "sessions": {
+    "s_6bff603607ccc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a4c23b0-fbe3-4e2b-a6e1-358d881cafd7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
