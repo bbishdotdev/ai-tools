@@ -8,7 +8,7 @@ metadata:
 
 # Verify bstack
 
-This skill is for bstack maintainers and contributors validating changes. Ordinary consumers do not need to run it. The first verification feature is the layered router reminder. Read [the feature map](features/README.md), then test the installed CLIs. Desktop apps are deferred.
+This skill is for bstack maintainers and contributors validating changes. Ordinary consumers do not need to run it. The first verification feature is the layered router reminder. Read [the feature map](features/README.md), then test the installed CLIs. Desktop apps run through [computer-use verification](features/computer-use.md).
 
 ## Launch
 

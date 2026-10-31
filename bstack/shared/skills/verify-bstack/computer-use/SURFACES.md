@@ -4,10 +4,12 @@ Per-app details for [the runbook](RUNBOOK.md). Items marked **(verify)** are exp
 
 ## Shared conventions
 
-- **Terminal:** Super+Return opens a new terminal on Omarchy.
-- **File dialogs:** many desktop apps open a GTK file chooser. Press **Ctrl+L** to show a location box, type the full project path, then press Enter. Use the path from `CASE.md`, which is under `/tmp/work-…/`.
+- **Terminal:** Super+Return opens a new terminal on Omarchy. Ghostty pastes with **Shift+Insert**. A clipboard provider must stay alive until the paste lands; a short-lived clipboard command pastes nothing.
+- **Small tiles:** new windows can open as a small tile, and the titlebar maximize button may do nothing. **Super+Alt+F** maximizes the focused window.
+- **File dialogs:** many desktop apps open a GTK file chooser. Press **Ctrl+L** to show a location box and type the full project path from `CASE.md`. GTK appends a trailing slash; that is fine. Click **Select** (or **Open**) with the mouse rather than pressing Enter. The first click often only focuses the button, so screenshot and click again if the dialog is still open.
+- **Exact paths:** every fixture project is named `notes`, `meter`, `roster`, and so on, and older workspaces with the same name exist under `/tmp`. Confirm the full `/tmp/work-…/<name>` path, never only the folder name.
 - **Typing a slash prompt:** when you type `/how …` or `$how …`, a suggestion popup often appears. Keep typing the full prompt. If Enter picks a suggestion instead of sending, screenshot the result, make sure the input still holds the full prompt, and press Enter again. Log what happened.
-- **Quitting Electron apps:** **Ctrl+Q** usually quits fully **(verify)**. Closing the window may leave the app in the tray. After quitting, run the `pgrep` check below. It must print nothing before you relaunch.
+- **Quitting Electron apps:** each desktop section below gives the exact quit flow. Helper processes can outlive the window by about twenty seconds. Before relaunching, `status` must not report a `STALE` instance (see the runbook).
 
 ## Claude Code terminal UI (`claude-tui`)
 
@@ -77,28 +79,33 @@ Per-app details for [the runbook](RUNBOOK.md). Items marked **(verify)** are exp
 
 ## Cursor desktop (`cursor-desktop`)
 
-- **Before launch:** quit Cursor fully with Ctrl+Q **(verify)**, then confirm `pgrep -fa '/cursor' | grep -v cursor-agent` prints nothing. A running Cursor ignores the case environment, so the case would be invalid.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. It runs `cursor --new-window .` from the project folder. The window title should show the project folder name.
-- **First run:** a workspace trust dialog ("Do you trust the authors of the files in this folder?") **(verify)**. Choose the trust option.
-- **Open the agent chat:** **Ctrl+L** **(verify)**, or the chat or agent icon in the top right. Make sure the mode selector says **Agent**.
-- **Submit:** type in the chat box, then press Enter.
-- **Approvals:** command cards with "Run" and "Skip" style buttons **(verify)**. Click the one-time run option per the approval rule.
-- **Model:** the model picker under the chat box **(verify)**.
-- **Compaction:** type `/` in the chat box and look for a command named summarize, compress, or compact **(verify)**. Run it, or record that none exists. The grader detects real compaction through bstack's `preCompact` hook.
-- **Quit:** Ctrl+Q **(verify)**.
-- **Transcript (grader):** expected in the same `agent-transcripts` folder as the CLI **(verify)**. After the first desktop case, run `ls ~/.cursor/projects/*/agent-transcripts | tail` and note whether a new folder appeared for this project.
+Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screenshots in that run's `reference/cursor-desktop/`.
+
+- **Before launch:** `status` must say `launched: no` with no `STALE` line. A running Cursor ignores the case environment, so the case would be invalid.
+- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. It runs `cursor --new-window .` from the project folder. The title reads `<name> - Cursor` and the Agent composer is usually already open. No trust dialog appeared.
+- **Project:** hover `README.md` in the Explorer; the tooltip shows the full path. Check that it matches `CASE.md`.
+- **Window:** Super+Alt+F maximizes the tile. **Ctrl+Alt+E** expands the Agent chat. Agent mode was already selected.
+- **Model:** the picker under the composer, for example `Grok 4.7 High Fast`. Do not change it.
+- **Submit:** click the composer, type the prompt, check it, press Enter once. Full `/how …` prompts submitted without picking a suggestion.
+- **Working:** `Planning next moves`, `Thinking`, or `Waiting for subagent`, a tab spinner, and a stop button. Subagent cards change label while they run. **Done:** empty composer, no stop button or spinner, subagent cards say `Completed`, and the answer header says `Worked for <time>`. Starting a new turn collapses the previous turn's tool details.
+- **Approvals:** none appeared in fourteen cases, including `gh pr create`.
+- **Compaction:** click the composer first (after scrolling it loses focus and `/` does nothing), type `/summ`, and click **Summarize** ("Summarize the conversation"). It runs immediately; no Enter. Wait for `Chat context summarized` and idle.
+- **Quit:** Ctrl+Q opens `Quit Cursor?`. Leave `Don't ask again` unchecked and click **Quit** with the mouse.
+- **Transcript (grader):** `~/.cursor/projects/<slug>/agent-transcripts/`, the same as the CLI. Cursor adds context messages (for example `<available_subagent_types>`) after compaction; the grader counts only `<user_query>` messages as turns.
 
 ## OpenCode desktop (`opencode-desktop`)
 
-- **Before launch:** quit it fully, then confirm `pgrep -fa opencode-desktop` prints nothing.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`.
-- **Project:** if it shows a project picker, choose open project or folder and enter the case project path (Ctrl+L in a GTK dialog) **(verify)**. Confirm the project name before sending prompts.
+- **Before launch:** `status` must say `launched: no` with no `STALE` line. Ctrl+Q quits with no dialog.
+- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. The app ignores the launch folder and opens its last project, often `~/Documents/Default Project`.
+- **Project:** click the project selector below the composer, then **Add project**. In the GTK `Open project` dialog press Ctrl+L, type the exact path, and click **Select** (twice if the first click only focuses it). The footer then shows the project path; it must match `CASE.md` exactly.
+- **Project identity:** OpenCode treats repositories with the same `origin` URL as one project and reopens the first path it saw. Cases prepared before the fix in `run.py` all used `acme/notes`, so every `notes` case collapsed into one old project. Newly prepared cases use a unique `acme-<id>/<name>` remote. If the footer still shows another `/tmp/work-…` path, block the surface and note the path.
+- **Model:** shown under the composer, for example `OpenCode / Flint 40B Free`. It may differ between projects. Do not change it.
 - **Submit, approvals, compaction:** expected to match the OpenCode terminal UI **(verify)**.
 - **Transcript (grader):** the same OpenCode database as the terminal UI.
 
 ## Codex desktop (`codex-desktop`)
 
-- **Before launch:** if you are Codex driving from inside the Codex desktop app, do not quit your own app. Record `codex-desktop` as blocked with the reason "driver is the app under test", and the user will run it from another computer-use agent. Otherwise quit fully and confirm `pgrep -fa codex-desktop` prints nothing.
+- **Before launch:** if you are Codex driving from inside the Codex desktop app, do not quit your own app. Record `codex-desktop` as blocked with the reason "driver is the app under test", and the user will run it from another computer-use agent. Otherwise quit fully and confirm `status` shows no `STALE` line.
 - **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`.
 - **Project:** open the case project folder as the workspace for a new thread **(verify)**.
 - **Hooks and trust:** expect the same trust and hook approvals as the terminal UI. If the app offers a hooks review, approve only this project's bstack hooks **(verify)**.
@@ -107,9 +114,17 @@ Per-app details for [the runbook](RUNBOOK.md). Items marked **(verify)** are exp
 
 ## Claude desktop, Code tab (`claude-desktop`)
 
-- **Before launch:** this may be the app the user is talking to Claude in. Ask the user first. Then quit fully (File, then Quit, or Ctrl+Q **(verify)**) and confirm `pgrep -fa claude-desktop` prints nothing.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`.
-- **Project:** open the **Code** tab, start a new session, and choose the case project folder as its working folder (folder picker; Ctrl+L to type the path) **(verify)**.
-- **Submit:** type in the composer, then press Enter. Approval cards appear inline; choose the one-time allow per the approval rule.
-- **Compaction:** `/compact` in the composer.
+Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screenshots in that run's `reference/claude-desktop/`.
+
+- **Before launch:** this may be the app the user is talking to Claude in. Ask the user first. Ctrl+Q quits at once when idle. While a session is working it shows `Claude is still working` with **Quit anyway**, **Wait for Claude**, and **Cancel**; click **Quit anyway** only with the user's OK (the first click may only focus it). Helpers take about twenty seconds to exit; wait until `status` shows no `STALE` line.
+- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. It opens at `New session` and remembers the previous folder, so always select the case folder.
+- **Window:** maximize with Super+Alt+F and collapse the sidebar so unrelated chats stay out of screenshots.
+- **Project:** click the folder selector below the composer, then **Open folder...**. In GTK `Select folder` press Ctrl+L, type the exact path, and click **Select** (twice if needed). A `Trust this workspace?` dialog shows the full path and `Execution allowed by: .claude/settings.json`; check the path and click **Trust workspace**.
+- **Environment:** Claude Desktop puts your login shell's `PATH` ahead of the launch `PATH`. The launch script sets `CLAUDE_ENV_FILE`, which Claude sources before each command, to put the fake `gh` first again. After trusting the workspace, `status` must print `gh: fake forge`.
+- **Model and mode:** for example `Opus 5.5 Medium`, with `Auto` permissions and `Worktree`. Leave them unchanged.
+- **Submit:** click the composer, paste the prompt, check it, press Enter once.
+- **Working:** orange dots, elapsed seconds, a token count, and a square stop button. **Done:** `Type / for commands`, the microphone icon, and no stop button. The parent composer can look idle while a subagent still runs; wait for `Message from subagent` and the parent's final answer.
+- **Approvals:** none appeared in five cases. End-of-turn buttons such as **Commit changes**, **Leave uncommitted**, or **Commit and PR** are agent offers, not approvals; do not click them.
+- **Sign-in requests:** if the agent asks you to run `gh auth login` or shows a **Logged in** button, the fake `gh` was not reached. Do not sign in. Run `status`, log the case `invalid` with its `gh:` line, and stop the surface.
+- **Compaction:** `/compact` in the composer **(verify)**.
 - **Transcript (grader):** the same `~/.claude/projects` files as the terminal UI.

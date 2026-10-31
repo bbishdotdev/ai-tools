@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 import shlex
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -48,9 +49,15 @@ def steps_for(surface, scenario):
 def launch_script(env, project, command):
     exports = "\n".join(f"export {key}={shlex.quote(env[key])}" for key in (
         "PATH", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM", "GIT_EXEC_PATH", "GH_CONFIG_DIR", "FAKE_FORGE_STATE",
-        "FAKE_FORGE_GIT", "FAKE_FORGE_REPO", "BSTACK_VERIFY_DIR", "BSTACK_STATE_DIR"))
+        "FAKE_FORGE_GIT", "FAKE_FORGE_REPO", "BSTACK_VERIFY_DIR", "BSTACK_STATE_DIR", "CLAUDE_ENV_FILE") if key in env)
     return (f"#!/bin/sh\nunset GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN\n{exports}\ncd {shlex.quote(str(project))}\n"
             f"if [ \"$#\" -gt 0 ]; then exec \"$@\"; fi\nexec {command}\n")
+
+
+def claude_env_file(base):
+    path = base / "claude-env.sh"
+    path.write_text(f"export PATH={shlex.quote(str(base / 'bin'))}:\"$PATH\"\n")
+    return path
 
 
 def card(case):
@@ -82,6 +89,8 @@ def prepare(surfaces, scenarios, repeats):
                 (folder / "screens").mkdir(parents=True)
                 base, project, env = run.workspace(run.SCENARIOS[scenario], host)
                 env = dict(env, BSTACK_VERIFY_DIR=str(base / "hooks/interactive"), BSTACK_STATE_DIR=str(base / "state"))
+                if host == "claude":
+                    env["CLAUDE_ENV_FILE"] = str(claude_env_file(base))
                 Path(env["BSTACK_VERIFY_DIR"]).mkdir(parents=True)
                 case = {"surface": surface, "kind": kind, "host": host, "scenario": scenario, "repeat": repeat,
                         "folder": str(folder), "workspace": str(base), "project": str(project),
@@ -202,7 +211,8 @@ def cursor_turns(case):
         for line in path.read_text(errors="replace").splitlines():
             event = json.loads(line)
             content = (event.get("message") or {}).get("content") or []
-            if event.get("role") == "user" and any(c.get("type") == "text" for c in content if isinstance(c, dict)):
+            if event.get("role") == "user" and any("<user_query>" in c.get("text", "")
+                                                   for c in content if isinstance(c, dict) and c.get("type") == "text"):
                 turns.append([])
             elif event.get("role") == "assistant" and turns:
                 for c in content:
@@ -331,13 +341,85 @@ def grade(folder):
     return run.assess(folder)
 
 
+def driver_outcome(folder):
+    results = {json.loads(line).get("result") for line in (folder / "steps.jsonl").read_text().splitlines() if line.strip()}
+    if not results:
+        return "unattempted"
+    return next((name for name in ("invalid", "blocked") if name in results), None)
+
+
+def processes():
+    for entry in Path("/proc").iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+            environ = dict(item.decode(errors="replace").split("=", 1)
+                           for item in (entry / "environ").read_bytes().split(b"\0") if b"=" in item)
+        except (OSError, ValueError):
+            continue
+        if argv[0]:
+            yield int(entry.name), Path(argv[0].decode(errors="replace")).name, environ
+
+
+def resolved_gh(environ):
+    path = environ.get("PATH", "")
+    env_file = environ.get("CLAUDE_ENV_FILE")
+    if env_file and Path(env_file).is_file():
+        path = subprocess.run(["sh", "-c", f'. "$1"; printf %s "$PATH"', "sh", env_file], text=True,
+                              capture_output=True, env={"PATH": path}).stdout
+    return shutil.which("gh", path=path)
+
+
+def status(folder):
+    case = json.loads((folder / "case.json").read_text())
+    marker = str(Path(case["workspace"]) / "hooks/interactive")
+    app = LAUNCH[case["surface"]].split()[0]
+    owned, stale = [], []
+    for pid, name, environ in processes():
+        if environ.get("BSTACK_VERIFY_DIR") == marker:
+            owned.append((pid, name, environ))
+        elif case["kind"] == "desktop" and name == app:
+            stale.append(pid)
+    prompts = sum(step["kind"] == "prompt" for step in case["steps"])
+    try:
+        turns = len(TRANSCRIPTS[case["host"]](case)[0]) if case["host"] in TRANSCRIPTS else None
+    except (OSError, ValueError, KeyError, sqlite3.Error):
+        turns = 0
+    print(f"case:     {case['surface']} {case['scenario']}#{case['repeat']}")
+    print(f"project:  {case['project']}")
+    print(f"launched: {'yes, ' + str(len(owned)) + ' processes carry this case env' if owned else 'no'}")
+    if stale:
+        print(f"STALE:    {app} is running without this case env (pids {' '.join(map(str, sorted(stale)))}). "
+              "Quit it fully before launching; this case would be invalid.")
+    if owned:
+        gh = resolved_gh(max(owned)[2])
+        fake = gh == str(Path(case["workspace"]) / "bin/gh")
+        print(f"gh:       {'fake forge' if fake else 'WRONG: ' + str(gh) + ' (PR steps would hit the real gh)'}")
+    print(f"turns:    {'unknown for this host' if turns is None else f'{turns} of {prompts} prompts found in this project'}")
+    return 0 if owned and not stale else 1
+
+
+def leaks():
+    found = sorted((pid, name, environ["BSTACK_VERIFY_DIR"]) for pid, name, environ in processes()
+                   if environ.get("BSTACK_VERIFY_DIR", "").startswith(tempfile.gettempdir() + "/work-"))
+    for pid, name, marker in found:
+        print(f"LEAK: pid {pid} ({name}) still carries the case environment from {marker.removesuffix('/hooks/interactive')}")
+    if found:
+        print("Quit these apps and relaunch them normally. Until then their git pushes and fetches go to a fake forge.")
+    else:
+        print("No running process carries a case environment.")
+    return int(bool(found))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("prepare", "grade", "surfaces"))
+    parser.add_argument("action", choices=("prepare", "grade", "surfaces", "status"))
     parser.add_argument("--surfaces", nargs="+", choices=SURFACES, default=[])
     parser.add_argument("--scenarios", nargs="+", choices=run.SCENARIOS, default=list(run.SCENARIOS))
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--run", type=Path, help="Interactive run directory to grade")
+    parser.add_argument("--case", type=Path, help="Case folder to report on")
     parser.add_argument("--record", action="store_true")
     args = parser.parse_args()
     if args.action == "surfaces":
@@ -349,11 +431,23 @@ def main():
             parser.error("--surfaces is required for prepare")
         print(prepare(args.surfaces, args.scenarios, args.repeats))
         return 0
+    if args.action == "status":
+        return status(args.case) if args.case else leaks()
     if not args.run:
         parser.error("--run is required for grade")
-    results = [grade(path.parent) for path in sorted(args.run.glob("*/*/case.json"))]
+    results, skipped = [], []
+    for path in sorted(args.run.glob("*/*/case.json")):
+        outcome = driver_outcome(path.parent)
+        if outcome:
+            case = json.loads(path.read_text())
+            skipped.append({"surface": case["surface"], "scenario": case["scenario"], "repeat": case["repeat"],
+                            "outcome": outcome})
+            print(f"{case['host']} {case['scenario']}#{case['repeat']}: {outcome}, not graded")
+            continue
+        results.append(grade(path.parent))
     summary = run.summarize(results, {name: {"version": None} for name in HOSTS})
-    run.verify.save(args.run / "report.json", {"run": args.run.name, "results": results, "summary": summary})
+    run.verify.save(args.run / "report.json", {"run": args.run.name, "results": results, "skipped": skipped,
+                                               "summary": summary})
     if args.record:
         run.record(summary, args.run.name)
     print(args.run / "report.json")
