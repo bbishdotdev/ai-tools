@@ -1,0 +1,49 @@
+bstack/release/bstack/manifest.json
+  s_7ab85060a7ea14::t_0364ab8ba676ab 51,53
+bstack/assets/logos/cursor.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+bstack/assets/logos/grok.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+bstack/assets/logos/opencode.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+bstack/audit/model-results.md
+  s_7ab85060a7ea14::t_7fafb4b196fad8 5,18-19
+bstack/assets/logos/codex.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+bstack/README.md
+  s_7ab85060a7ea14::t_f6b705f3c37ff0 3-4,13
+bstack/assets/logos/amp.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+bstack/assets/compatibility.svg
+  s_7ab85060a7ea14::t_7fafb4b196fad8 10,23-24
+bstack/assets/supported-tools.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1-14
+bstack/audit/compatibility-results.json
+  s_7ab85060a7ea14::t_7fafb4b196fad8 197-245,564-647,1039-1088,1370-1454,1657
+bstack/assets/logos/github-copilot.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+bstack/release/bstack/assets/compatibility.svg
+  s_7ab85060a7ea14::t_0364ab8ba676ab 10,23-24
+bstack/CHANGELOG.md
+  s_7ab85060a7ea14::t_f6b705f3c37ff0 7-10
+bstack/shared/skills/verify-bstack/behavior/matrix.py
+  s_7ab85060a7ea14::t_67e915519ff244 6,13-22,106-139,175,177-178,183
+bstack/assets/logos/claude-code.svg
+  s_7ab85060a7ea14::t_67e915519ff244 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "10085eed40beeb46ed51ced8558924dcd34b9077",
+  "prompts": {},
+  "sessions": {
+    "s_7ab85060a7ea14": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "795e4f67-e531-43ab-8d12-2635203f3934",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
