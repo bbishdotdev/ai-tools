@@ -194,8 +194,55 @@
         "hooks"
       ],
       "label": "Claude Code desktop",
-      "scenarios": {},
-      "surface": "desktop"
+      "model": "Opus 5.5 Medium",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      },
+      "surface": "desktop",
+      "version": null
     },
     "claude-tui": {
       "bindings": [
@@ -514,8 +561,90 @@
         "hooks"
       ],
       "label": "Cursor desktop",
-      "scenarios": {},
-      "surface": "desktop"
+      "model": "Grok 4.7 High Fast",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 1,
+          "quality_passes": 0,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      },
+      "surface": "desktop",
+      "version": null
     },
     "cursor-tui": {
       "bindings": [
@@ -907,6 +1036,56 @@
         }
       }
     },
+    "claude-desktop|Opus 5.5 Medium": {
+      "host": "claude-desktop",
+      "model": "Opus 5.5 Medium",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      }
+    },
     "codex-cli|gpt-reserve": {
       "host": "codex-cli",
       "model": "gpt-reserve",
@@ -1188,6 +1367,91 @@
         }
       }
     },
+    "cursor-desktop|Grok 4.7 High Fast": {
+      "host": "cursor-desktop",
+      "model": "Grok 4.7 High Fast",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 1,
+          "quality_passes": 0,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      }
+    },
     "grok-cli|grok-4.7": {
       "host": "grok-cli",
       "model": "grok-4.7",
@@ -1390,5 +1654,5 @@
       }
     }
   },
-  "updated": "2026-10-29"
+  "updated": "2026-10-31"
 }

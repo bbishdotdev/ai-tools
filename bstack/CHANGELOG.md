@@ -4,6 +4,10 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- The README opens with the supported tools and whether each has CLI or CLI and desktop bindings. `matrix.py` generates the strip with the compatibility matrix.
+- Cursor desktop and Claude Code desktop are now measured: both prove skills and auto mode through computer-use runs. PR workflows and hooks stay Partial until the remaining desktop scenarios run.
+- Desktop verification fixes: Claude Code desktop cases reach the fake `gh`, OpenCode desktop opens each case's own project, Cursor's post-compaction context no longer shifts graded turns, and blocked or unattempted cases are no longer recorded as failures. `interactive.py status` checks a case's launch, environment, and transcript before prompts are graded.
+
 ## Published releases
 
 | Version | Date | Notes |

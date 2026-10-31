@@ -3,12 +3,23 @@
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 
 sys.dont_write_bytecode = True
 from run import RESULTS, ROOT, SCENARIOS
 
 ASSET = ROOT / "bstack/assets/compatibility.svg"
+TOOLS_ASSET = ROOT / "bstack/assets/supported-tools.svg"
+LOGOS = ROOT / "bstack/assets/logos"
+TOOLS = (("Claude Code", "claude-code", ("claude-cli", "claude-desktop")),
+         ("Codex", "codex", ("codex-cli", "codex-desktop")),
+         ("Cursor", "cursor", ("cursor-cli", "cursor-desktop")),
+         ("OpenCode", "opencode", ("opencode-cli", "opencode-desktop")),
+         ("GitHub Copilot", "github-copilot", ("copilot-cli", "vscode-copilot")),
+         ("Grok", "grok", ("grok-cli",)),
+         ("Amp", "amp", ("amp-cli",)))
+SURFACE_PILLS = {"CLI": ("#20262e", "#4a535e", "#c8d1d9"), "CLI + Desktop": ("#132f3a", "#2f7a90", "#bfeaf7")}
 MODELS = ROOT / "bstack/audit/model-results.md"
 ORDER = ("codex-cli", "claude-cli", "cursor-cli", "grok-cli", "amp-cli", "copilot-cli", "opencode-cli",
          "codex-desktop", "claude-desktop", "cursor-desktop", "vscode-copilot", "opencode-desktop",
@@ -92,6 +103,40 @@ def render(data):
         "</g></svg>", ""])
 
 
+def logo(key, x, y, width, height):
+    source = (LOGOS / f"{key}.svg").read_text()
+    view = re.search(r'viewBox="([^"]+)"', source).group(1)
+    body = re.search(r"<svg[^>]*>(.*)</svg>", source, re.S).group(1)
+    return f'<svg x="{x}" y="{y}" width="{width}" height="{height}" viewBox="{view}" fill="#edf1f5">{body}</svg>'
+
+
+def render_tools(data):
+    width, tile, top = 1120, 1072 / len(TOOLS), 70
+    tiles = []
+    for index, (name, key, hosts) in enumerate(TOOLS):
+        bound = [data["hosts"][host] for host in hosts if data["hosts"][host]["bindings"]]
+        surfaces = "CLI + Desktop" if any(host["surface"] == "desktop" for host in bound) else "CLI"
+        fill, stroke, ink = SURFACE_PILLS[surfaces]
+        x, center = 24 + index * tile, 24 + index * tile + tile / 2
+        pill = 7.4 * len(surfaces) + 22
+        tiles.append(f'<g><rect x="{x + 4:.1f}" y="{top}" width="{tile - 8:.1f}" height="146" rx="10" fill="#171c22"/>'
+                     f'{logo(key, f"{center - 32:.1f}", top + 20, 64, 38)}'
+                     f'<text x="{center:.1f}" y="{top + 88}" text-anchor="middle" fill="#edf1f5" font-size="15" '
+                     f'font-weight="600">{name}</text>'
+                     f'<rect x="{center - pill / 2:.1f}" y="{top + 104}" width="{pill:.1f}" height="24" rx="12" '
+                     f'fill="{fill}" stroke="{stroke}"/><text x="{center:.1f}" y="{top + 120}" text-anchor="middle" '
+                     f'fill="{ink}" font-size="12" font-weight="600">{surfaces}</text></g>')
+    names = ", ".join(name for name, _, _ in TOOLS)
+    return "\n".join([
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} 240" role="img" aria-labelledby="tools-title tools-description">',
+        '<title id="tools-title">Tools bstack supports</title>',
+        f'<desc id="tools-description">{names}. Each is marked CLI or CLI plus desktop.</desc>',
+        f'<rect width="{width}" height="240" rx="18" fill="#101318"/>',
+        '<g font-family="Inter, ui-sans-serif, system-ui, sans-serif">',
+        '<text x="34" y="46" fill="#f2f5f8" font-size="21" font-weight="700">Works with</text>',
+        *tiles, "</g></svg>", ""])
+
+
 def render_models(data):
     header = "| Tool | Model | " + " | ".join(QUALITY_SCENARIOS) + " |"
     lines = ["# Model results", "",
@@ -127,13 +172,15 @@ def main():
     parser.add_argument("--check", action="store_true", help="Fail if the committed asset is stale")
     args = parser.parse_args()
     data = json.loads(RESULTS.read_text())
-    svg, models = render(data), render_models(data)
+    svg, models, tools = render(data), render_models(data), render_tools(data)
     if args.check:
-        stale = ASSET.read_text() != svg or not MODELS.exists() or MODELS.read_text() != models
+        stale = (ASSET.read_text() != svg or not MODELS.exists() or MODELS.read_text() != models
+                 or not TOOLS_ASSET.exists() or TOOLS_ASSET.read_text() != tools)
         print("stale" if stale else "current")
         return int(stale)
     ASSET.write_text(svg)
     MODELS.write_text(models)
+    TOOLS_ASSET.write_text(tools)
     for host in data["hosts"].values():
         print(f'{host["label"]:22} ' + "  ".join(f"{key}={status(host, key)}" for key, _ in COLUMNS))
     return 0

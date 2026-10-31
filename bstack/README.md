@@ -1,5 +1,7 @@
 # bstack
 
+![bstack works with Claude Code, Codex, Cursor, OpenCode, and GitHub Copilot in their CLIs and desktop apps, and with Grok and Amp in their CLIs](assets/supported-tools.svg)
+
 bstack is my opinionated suite of skills, agents, and tools for planning, building, and reviewing software. It's part of the [ai-tools collection](../README.md).
 
 It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tree/main/pstack) and [Matt Pocock's skills](https://github.com/mattpocock/skills). Some workflows reuse their work directly, others adapt it, and others draw inspiration from it. Their work is a huge part of the foundation. bstack adds my own skills, preferences, and integrations to connect it all into one stack. [Attribution](ATTRIBUTION.md) records what comes from where.
@@ -8,7 +10,7 @@ It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tr
 
 ![bstack compatibility across skills, auto mode, PR workflows, and hooks for CLI and desktop tools](assets/compatibility.svg)
 
-Each cell comes from [behavior scenarios](shared/skills/verify-bstack/features/behavior.md): a real CLI does ordinary work in a disposable project, and code checks whether bstack's skills, routing, PR workflow, and hooks actually reached the model and got used. **Supported** means each mapped scenario passed its integration checks in every recorded attempt. Ungraded errors keep the affected cell Partial. **Partial** means a binding exists but a scenario failed or hasn't run, as on desktop apps that still need live validation. **Not supported** means bstack has no binding. How well each host's model did the work once bstack reached it is a separate question, tracked in [model results](audit/model-results.md). The [installation guide](INSTALL.md) covers host selection and checks.
+Each cell comes from [behavior scenarios](shared/skills/verify-bstack/features/behavior.md): a real CLI does ordinary work in a disposable project, and code checks whether bstack's skills, routing, PR workflow, and hooks actually reached the model and got used. **Supported** means each mapped scenario passed its integration checks in every recorded attempt. Ungraded errors keep the affected cell Partial. **Partial** means a binding exists but a scenario failed or hasn't run. Desktop apps run the same scenarios through a [computer-use agent](shared/skills/verify-bstack/features/computer-use.md); Cursor and Claude Code desktop have proven skills and auto mode so far, and the rest of the desktop group is still being exercised. In the tool strip above, **CLI + Desktop** means bstack has bindings for that tool's desktop app or editor (VS Code for Copilot); the matrix shows how much of that is proven. **Not supported** means bstack has no binding. How well each host's model did the work once bstack reached it is a separate question, tracked in [model results](audit/model-results.md). The [installation guide](INSTALL.md) covers host selection and checks.
 
 ## What bstack adds
 
