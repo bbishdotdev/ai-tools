@@ -54,7 +54,11 @@ Read this whole file and [SURFACES.md](SURFACES.md) before you touch anything.
    export RUN=<the run folder printed above>
    export EV="python3 $HOME/Work/ai-tools/bstack/engineering/create-verification-skill/scripts/evidence.py"
    export ST="python3 $HOME/Work/ai-tools/bstack/shared/skills/verify-bstack/behavior/interactive.py status --case"
+   launch() { setsid python3 "$HOME/Work/ai-tools/bstack/shared/skills/verify-bstack/behavior/interactive.py" launch --case "$1" >/dev/null 2>&1 & }
+   export LAUNCH=launch
    ```
+
+   `$LAUNCH $C` starts a desktop app under a supervisor. It refuses to start while a stale copy of the app or another case's environment is running. When the app quits, after 90 minutes, or when the supervisor is signalled, it terminates every process carrying that case's environment. If a single case could take longer, call `interactive.py launch --case $C --ttl <minutes>` directly.
 
    `$ST $C` reports on one case: whether processes carrying this case's environment are running, any `STALE` copy of the desktop app without it, which `gh` the agent's shell resolves, and how many of the case's prompts already appear in the app's transcript for this exact project. Run it in your setup terminal on the host. A sandboxed shell can miss or misreport processes.
 
@@ -76,7 +80,7 @@ Set `C` to the case folder, for example `export C=$RUN/claude-tui/misleading-bug
 2. **Start clean.** For a desktop app, fully quit it first (SURFACES.md says how), then run `$ST $C`. It must print `launched: no` and no `STALE` line. A desktop app that is already running ignores the environment the launch script sets, and the case will be invalid.
 3. **Launch.**
    - Terminal UI: open a **new** terminal (Super+Return) and run `sh $C/launch.sh`. The UI takes over that terminal.
-   - Desktop app: in your setup terminal run `setsid sh $C/launch.sh >/dev/null 2>&1 &`. Wait for the window, then screenshot.
+   - Desktop app: in your setup terminal run `$LAUNCH $C`. Wait for the window, then screenshot. If nothing opens, run `$ST $C`; the supervisor refused because something was still running.
    Record it:
 
    ```sh
@@ -165,7 +169,7 @@ This run also builds the reference guide for future computer-use verification. B
    - how you quit;
    - where SURFACES.md was wrong or vague.
 2. Pick **reference screenshots**, at most five per surface: first-run dialog, an approval prompt, a working state, compaction confirmation, and a finished answer. Copy them to `$RUN/reference/<surface>/` with names that say what they show, and list them with one-line captions in `SURFACE-NOTES.md`. Choose screenshots that show only the app under test. Skip any that show other windows, notifications, account details, or personal data.
-3. **Quit every desktop app under test, even if asked to leave one open.** A desktop app launched from `launch.sh` keeps the case environment in every later session: a fake git identity, a fake `gh`, and a git remote helper that silently sends every `https://` push and fetch to the case's fake forge. Real work done in it never reaches GitHub. Then run `python3 bstack/shared/skills/verify-bstack/behavior/interactive.py status` with no `--case`. It must print `No running process carries a case environment.` If it lists a `LEAK`, quit that app. For Claude desktop, ask the user to relaunch it from their normal launcher; never relaunch it yourself from your terminal.
+3. **Quit every desktop app under test, even if asked to leave one open.** A desktop app launched from `launch.sh` keeps the case environment in every later session: a fake git identity, a fake `gh`, and a git remote helper that silently sends every `https://` push and fetch to the case's fake forge. Real work done in it never reaches GitHub. Then run `python3 bstack/shared/skills/verify-bstack/behavior/interactive.py status` with no `--case`. It must print `No running process carries a case environment.` If it lists a `LEAK`, quit that app or run `interactive.py stop`, which terminates every process carrying a case environment. For Claude desktop, ask the user to relaunch it from their normal launcher; never relaunch it yourself from your terminal.
 4. In your final message to the user, give the `$RUN` path, the grader's per-case lines, every blocked surface with its reason, and the five most important corrections for SURFACES.md.
 
 The maintainer folds `SURFACE-NOTES.md` back into SURFACES.md and curates `reference/` screenshots into the guide, so the next agent starts with what you learned.

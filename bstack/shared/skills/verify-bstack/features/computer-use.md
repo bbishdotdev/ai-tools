@@ -36,7 +36,13 @@ Maintainers fold `SURFACE-NOTES.md` back into SURFACES.md, replacing **(verify)*
 
 ## Limits
 
-A desktop app launched from `launch.sh` keeps that case's environment in every session it opens until it quits, including the fake git identity and a remote helper that sends every `https://` push and fetch to the case's fake forge. Never do real work in it. In round 1 the Claude desktop app was left open at the user's request, and two days of real pushes from it went to a fake forge while reporting success. The runbook now ends every run by quitting the apps under test and running `interactive.py status` with no case, which lists any process that still carries a case environment.
+A desktop app launched from `launch.sh` keeps that case's environment in every session it opens until it quits, including the fake git identity and a remote helper that sends every `https://` push and fetch to the case's fake forge. Never do real work in it. In round 1 the Claude desktop app was left open at the user's request, and two days of real pushes from it went to a fake forge while reporting success. Three layers now prevent a repeat:
+
+- `interactive.py launch` owns each desktop app's lifetime. It refuses to start while a stale app or another case environment is running. When the app quits, after a time limit (90 minutes by default), or when the supervisor is signalled, it terminates every process carrying that case's environment.
+- The fake forge refuses to work outside its workspace. Its git remote helper and its `gh` fail with an explanation when called from any other repository, so a leaked environment can no longer report a fake push as a success. Inside the workspace they behave as before, so the agent under test sees no difference.
+- Every run ends with `interactive.py status` with no case, which lists any process still carrying a case environment; `interactive.py stop` terminates them.
+
+A separate app profile per case would isolate the environment completely, but it would need a fresh sign-in, which the driver may not do, and would move the transcripts the grader reads.
 
 These runs are not jailed. The approval rule and the fake forge keep them inside `/tmp/work-…` and away from GitHub, so supervise the first run on a new machine. Each desktop app must start fresh from `launch.sh`, because a running instance ignores the case environment. That means the Claude desktop app, which may be hosting the user's own session, must be quit with the user's consent. A Codex agent cannot test the Codex desktop app it runs inside. The interactive grader counts reminder hooks per case rather than per turn. First-turn read-only checks rely on transcript edit calls, so a shell-based write in that turn is not caught. VS Code and Copilot are out of scope until a paid Copilot plan is available.
 

@@ -8,10 +8,12 @@ from pathlib import Path
 import re
 import shlex
 import shutil
+import signal
 import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.parse
 import uuid
 
@@ -400,13 +402,65 @@ def status(folder):
     return 0 if owned and not stale else 1
 
 
+def case_marker(environ):
+    marker = environ.get("BSTACK_VERIFY_DIR", "")
+    return marker if marker.startswith(tempfile.gettempdir() + "/work-") else None
+
+
+def carriers(markers=None):
+    return sorted((pid, name, case_marker(environ)) for pid, name, environ in processes()
+                  if case_marker(environ) and (markers is None or case_marker(environ) in markers)
+                  and pid not in (os.getpid(), os.getppid()))
+
+
+def stop(markers=None, grace=20):
+    found = carriers(markers)
+    for sig, wait in ((signal.SIGTERM, grace), (signal.SIGKILL, 2)):
+        for pid, _, _ in found:
+            try:
+                os.kill(pid, sig)
+            except ProcessLookupError:
+                pass
+        deadline = time.monotonic() + wait
+        while (found := carriers(markers)) and time.monotonic() < deadline:
+            time.sleep(0.5)
+        if not found:
+            break
+    for pid, name, marker in found:
+        print(f"still running: pid {pid} ({name}) from {marker.removesuffix('/hooks/interactive')}")
+    return int(bool(found))
+
+
+def launch(folder, ttl):
+    case = json.loads((folder / "case.json").read_text())
+    marker = str(Path(case["workspace"]) / "hooks/interactive")
+    app = LAUNCH[case["surface"]].split()[0]
+    stale = [pid for pid, name, environ in processes() if case["kind"] == "desktop" and name == app
+             and case_marker(environ) is None]
+    if carriers() or stale:
+        print("Refusing to launch: another app is still running with a case environment, or "
+              f"{app} is already running without this one. Run `interactive.py status`, quit it, then retry.")
+        return 1
+    child = subprocess.Popen(["sh", str(folder / "launch.sh")], start_new_session=True,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(sig, lambda *_: sys.exit(1))
+    deadline = time.monotonic() + ttl * 60
+    try:
+        while time.monotonic() < deadline and (child.poll() is None or carriers({marker})):
+            time.sleep(5)
+    finally:
+        stop({marker})
+    return 0
+
+
 def leaks():
-    found = sorted((pid, name, environ["BSTACK_VERIFY_DIR"]) for pid, name, environ in processes()
-                   if environ.get("BSTACK_VERIFY_DIR", "").startswith(tempfile.gettempdir() + "/work-"))
+    found = carriers()
     for pid, name, marker in found:
         print(f"LEAK: pid {pid} ({name}) still carries the case environment from {marker.removesuffix('/hooks/interactive')}")
     if found:
-        print("Quit these apps and relaunch them normally. Until then their git pushes and fetches go to a fake forge.")
+        print("Quit these apps or run `interactive.py stop`, then relaunch them normally. Until then their git pushes "
+              "and fetches fail against a fake forge.")
     else:
         print("No running process carries a case environment.")
     return int(bool(found))
@@ -414,12 +468,13 @@ def leaks():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("prepare", "grade", "surfaces", "status"))
+    parser.add_argument("action", choices=("prepare", "grade", "surfaces", "status", "launch", "stop"))
     parser.add_argument("--surfaces", nargs="+", choices=SURFACES, default=[])
     parser.add_argument("--scenarios", nargs="+", choices=run.SCENARIOS, default=list(run.SCENARIOS))
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--run", type=Path, help="Interactive run directory to grade")
-    parser.add_argument("--case", type=Path, help="Case folder to report on")
+    parser.add_argument("--case", type=Path, help="Case folder to report on, launch, or stop")
+    parser.add_argument("--ttl", type=float, default=90, help="Minutes before launch stops the app it started")
     parser.add_argument("--record", action="store_true")
     args = parser.parse_args()
     if args.action == "surfaces":
@@ -433,6 +488,14 @@ def main():
         return 0
     if args.action == "status":
         return status(args.case) if args.case else leaks()
+    if args.action == "launch":
+        if not args.case:
+            parser.error("--case is required for launch")
+        return launch(args.case, args.ttl)
+    if args.action == "stop":
+        if not args.case:
+            return stop()
+        return stop({str(Path(json.loads((args.case / "case.json").read_text())["workspace"]) / "hooks/interactive")})
     if not args.run:
         parser.error("--run is required for grade")
     results, skipped = [], []

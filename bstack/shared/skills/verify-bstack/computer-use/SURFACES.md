@@ -82,7 +82,7 @@ Per-app details for [the runbook](RUNBOOK.md). Items marked **(verify)** are exp
 Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screenshots in that run's `reference/cursor-desktop/`.
 
 - **Before launch:** `status` must say `launched: no` with no `STALE` line. A running Cursor ignores the case environment, so the case would be invalid.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. It runs `cursor --new-window .` from the project folder. The title reads `<name> - Cursor` and the Agent composer is usually already open. No trust dialog appeared.
+- **Launch:** `$LAUNCH $C`. It runs `cursor --new-window .` from the project folder. The title reads `<name> - Cursor` and the Agent composer is usually already open. No trust dialog appeared.
 - **Project:** hover `README.md` in the Explorer; the tooltip shows the full path. Check that it matches `CASE.md`.
 - **Window:** Super+Alt+F maximizes the tile. **Ctrl+Alt+E** expands the Agent chat. Agent mode was already selected.
 - **Model:** the picker under the composer, for example `Grok 4.7 High Fast`. Do not change it.
@@ -96,7 +96,7 @@ Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screensho
 ## OpenCode desktop (`opencode-desktop`)
 
 - **Before launch:** `status` must say `launched: no` with no `STALE` line. Ctrl+Q quits with no dialog.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. The app ignores the launch folder and opens its last project, often `~/Documents/Default Project`.
+- **Launch:** `$LAUNCH $C`. The app ignores the launch folder and opens its last project, often `~/Documents/Default Project`.
 - **Project:** click the project selector below the composer, then **Add project**. In the GTK `Open project` dialog press Ctrl+L, type the exact path, and click **Select** (twice if the first click only focuses it). The footer then shows the project path; it must match `CASE.md` exactly.
 - **Project identity:** OpenCode treats repositories with the same `origin` URL as one project and reopens the first path it saw. Cases prepared before the fix in `run.py` all used `acme/notes`, so every `notes` case collapsed into one old project. Newly prepared cases use a unique `acme-<id>/<name>` remote. If the footer still shows another `/tmp/work-…` path, block the surface and note the path.
 - **Model:** shown under the composer, for example `OpenCode / Flint 40B Free`. It may differ between projects. Do not change it.
@@ -106,7 +106,7 @@ Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screensho
 ## Codex desktop (`codex-desktop`)
 
 - **Before launch:** if you are Codex driving from inside the Codex desktop app, do not quit your own app. Record `codex-desktop` as blocked with the reason "driver is the app under test", and the user will run it from another computer-use agent. Otherwise quit fully and confirm `status` shows no `STALE` line.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`.
+- **Launch:** `$LAUNCH $C`.
 - **Project:** open the case project folder as the workspace for a new thread **(verify)**.
 - **Hooks and trust:** expect the same trust and hook approvals as the terminal UI. If the app offers a hooks review, approve only this project's bstack hooks **(verify)**.
 - **Submit:** type in the composer, then press Enter. **Compaction:** `/compact` in the composer **(verify)**.
@@ -117,7 +117,7 @@ Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screensho
 Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screenshots in that run's `reference/claude-desktop/`.
 
 - **Before launch:** this may be the app the user is talking to Claude in. Ask the user first. Ctrl+Q quits at once when idle. While a session is working it shows `Claude is still working` with **Quit anyway**, **Wait for Claude**, and **Cancel**; click **Quit anyway** only with the user's OK (the first click may only focus it). Helpers take about twenty seconds to exit; wait until `status` shows no `STALE` line.
-- **Launch:** `setsid sh $C/launch.sh >/dev/null 2>&1 &`. It opens at `New session` and remembers the previous folder, so always select the case folder.
+- **Launch:** `$LAUNCH $C`. It opens at `New session` and remembers the previous folder, so always select the case folder.
 - **Window:** maximize with Super+Alt+F and collapse the sidebar so unrelated chats stay out of screenshots.
 - **Project:** click the folder selector below the composer, then **Open folder...**. In GTK `Select folder` press Ctrl+L, type the exact path, and click **Select** (twice if needed). A `Trust this workspace?` dialog shows the full path and `Execution allowed by: .claude/settings.json`; check the path and click **Trust workspace**.
 - **Environment:** Claude Desktop puts your login shell's `PATH` ahead of the launch `PATH`. The launch script sets `CLAUDE_ENV_FILE`, which Claude sources before each command, to put the fake `gh` first again. After trusting the workspace, `status` must print `gh: fake forge`.

@@ -150,6 +150,16 @@ def workspace(scenario, host):
     return base, project, env
 
 
+REMOTE_SHIM = """#!/bin/sh
+workspace=$(dirname "$FAKE_FORGE_GIT")
+case "$(cd "${GIT_DIR:-.}" && pwd -P)/" in
+  "$workspace"/*) exec git remote-ext "$1" "%S $FAKE_FORGE_GIT" ;;
+esac
+echo "fake-forge: refusing to reach $2 from $(pwd -P). This process still carries the bstack test environment from $workspace, so nothing would reach the real remote. Quit the app and relaunch it normally." >&2
+exit 128
+"""
+
+
 def git_exec_path(base):
     real = Path(run(["git", "--exec-path"], base).stdout.strip())
     shim = base / "git-core"
@@ -158,7 +168,7 @@ def git_exec_path(base):
         if entry.name not in ("git-remote-https", "git-remote-http"):
             (shim / entry.name).symlink_to(entry)
     for name in ("git-remote-https", "git-remote-http"):
-        (shim / name).write_text('#!/bin/sh\nexec git remote-ext "$1" "%S $FAKE_FORGE_GIT"\n')
+        (shim / name).write_text(REMOTE_SHIM)
         (shim / name).chmod(0o755)
     return shim
 
