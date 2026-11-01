@@ -898,9 +898,9 @@
           "failed_checks": [],
           "passes": 1,
           "quality_passes": 1,
-          "reminder_hook_runs": 0,
+          "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T125602Z-interactive-eec0df"
+          "run": "20261101T215711Z-interactive-9f80dc"
         },
         "direct-pr": {
           "attempts": 1,
@@ -953,23 +953,20 @@
           "failed_checks": [],
           "passes": 1,
           "quality_passes": 1,
-          "reminder_hook_runs": 0,
+          "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T125602Z-interactive-eec0df"
+          "run": "20261101T215711Z-interactive-9f80dc"
         },
         "misleading-bug": {
           "attempts": 1,
           "column": "auto",
           "errors": [],
-          "failed_checks": [
-            "outcome",
-            "workflow_loaded"
-          ],
-          "passes": 0,
-          "quality_passes": 0,
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
           "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T142657Z-interactive-082b9c"
+          "run": "20261101T215711Z-interactive-9f80dc"
         }
       },
       "surface": "desktop",
@@ -1769,9 +1766,9 @@
           "failed_checks": [],
           "passes": 1,
           "quality_passes": 1,
-          "reminder_hook_runs": 0,
+          "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T125602Z-interactive-eec0df"
+          "run": "20261101T215711Z-interactive-9f80dc"
         },
         "direct-pr": {
           "attempts": 1,
@@ -1824,23 +1821,20 @@
           "failed_checks": [],
           "passes": 1,
           "quality_passes": 1,
-          "reminder_hook_runs": 0,
+          "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T125602Z-interactive-eec0df"
+          "run": "20261101T215711Z-interactive-9f80dc"
         },
         "misleading-bug": {
           "attempts": 1,
           "column": "auto",
           "errors": [],
-          "failed_checks": [
-            "outcome",
-            "workflow_loaded"
-          ],
-          "passes": 0,
-          "quality_passes": 0,
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
           "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T142657Z-interactive-082b9c"
+          "run": "20261101T215711Z-interactive-9f80dc"
         }
       }
     }

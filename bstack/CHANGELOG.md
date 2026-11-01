@@ -4,7 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- VS Code with Copilot is now measured: skills and PR workflows are Supported, auto mode and hooks Partial.
+- VS Code with Copilot is now measured: skills, auto mode, and PR workflows are Supported; hooks stay Partial pending one rerun.
 - The router and its reminder say task size is no exemption: a one-line fix still opens its playbook.
 - Copilot hooks now work in VS Code. VS Code runs the Copilot binding with its own event names and terminal tool, so the router reminder and PR guard were silently skipped there.
 - The README opens with the supported tools and whether each has CLI or CLI and desktop bindings. `matrix.py` generates the strip with the compatibility matrix.

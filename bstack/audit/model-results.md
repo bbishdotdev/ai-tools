@@ -17,4 +17,4 @@ Last recorded: 2026-11-01.
 | OpenCode CLI | `opencode/claude-sonnet-5-5` | 3 · 2 of 3 | 3 · 3 of 3 | 3 · 3 of 3 | - | - | - |
 | Claude Code desktop | `Opus 5.5 Medium` | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | - | - | - |
 | Cursor desktop | `Grok 4.7 High Fast` | 1 · 0 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 |
-| VS Code with Copilot | `Auto (Balance)` | 0 · 0 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 |
+| VS Code with Copilot | `Auto (Balance)` | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 |

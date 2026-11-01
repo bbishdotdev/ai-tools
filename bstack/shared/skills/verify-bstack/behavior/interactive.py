@@ -492,7 +492,8 @@ def grade(folder):
         target.write_text(json.dumps(record))
     first = turns[0] if turns else []
     model_file = folder / "model.txt"
-    model = model_file.read_text().strip() if model_file.is_file() and model_file.read_text().strip() else "unreported"
+    model_lines = model_file.read_text().strip().splitlines() if model_file.is_file() else []
+    model = model_lines[0].strip() if model_lines else "unreported"
     observed = {"host": case["host"], "surface": case["surface"], "model": model, "scenario": case["scenario"],
                 "repeat": case["repeat"], "workspace": case["workspace"], "project": case["project"],
                 "base_commit": case["base_commit"], "exits": exits, "compacted": compacted, "interactive": True,
