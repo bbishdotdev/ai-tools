@@ -1,0 +1,88 @@
+bstack/audit/model-results.md
+  s_7ab85060a7ea14::t_f30bc56d8f8003 5
+  s_7ab85060a7ea14::t_3b5212fc585da8 20
+bstack/release/bstack/manifest.json
+  s_7ab85060a7ea14::t_393258bd4e12ef 1711,1713,2060,2062
+  s_7ab85060a7ea14::t_5ecf64faaf9386 51,53,1719,1721,2298,2300
+bstack/assets/compatibility.svg
+  s_7ab85060a7ea14::t_f30bc56d8f8003 10,25
+bstack/shared/skills/verify-bstack/features/computer-use.md
+  s_d1a3940668e410::t_3e711817ba064f 14
+  s_d1a3940668e410::t_346a94eda9b421 24,28-29,50
+bstack/release/bstack/runtime/reminder.txt
+  s_7ab85060a7ea14::t_5ecf64faaf9386 1
+bstack/shared/router/hook.py
+  s_7ab85060a7ea14::t_395b5e257b2891 22,33,124
+bstack/shared/router/test_hook.py
+  s_7ab85060a7ea14::t_603f7a5fcabfc0 72-87
+bstack/shared/skills/verify-bstack/computer-use/SURFACES.md
+  s_d1a3940668e410::t_8b2e7db5bfcb95 115-121,123-124,130-131
+  s_d1a3940668e410::t_d874547101ef64 128
+  s_7ab85060a7ea14::t_e1688e8acdb9d3 122,125-127
+  s_d1a3940668e410::t_167927f773fee5 129
+bstack/shared/github/pr_guard.py
+  s_7ab85060a7ea14::t_395b5e257b2891 72,119-122,124
+bstack/CHANGELOG.md
+  s_7ab85060a7ea14::t_1c4331ba5307b3 9
+  s_7ab85060a7ea14::t_25e239b7bfcf89 7
+  s_7ab85060a7ea14::t_6f64f21c325e98 8
+bstack/release/bstack/shared/github/pr_guard.py
+  s_7ab85060a7ea14::t_393258bd4e12ef 72,119-122,124
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_7ab85060a7ea14::t_5ecf64faaf9386 23
+bstack/shared/skills/verify-bstack/computer-use/RUNBOOK.md
+  s_d1a3940668e410::t_346a94eda9b421 39,44
+bstack/scripts/test_pr_guard.py
+  s_7ab85060a7ea14::t_603f7a5fcabfc0 75-87
+bstack/README.md
+  s_7ab85060a7ea14::t_25e239b7bfcf89 13
+bstack/release/bstack/runtime/reminder.py
+  s_7ab85060a7ea14::t_393258bd4e12ef 22,33,124
+bstack/shared/router/reminder.txt
+  s_7ab85060a7ea14::t_5ecf64faaf9386 1
+bstack/release/bstack/assets/compatibility.svg
+  s_7ab85060a7ea14::t_5ecf64faaf9386 10,25
+bstack/audit/compatibility-results.json
+  s_7ab85060a7ea14::t_3b5212fc585da8 881,1750,1752,1758-1759,1761,1763,1785,1787,1789,1798,1809,1816,1820,1829
+  s_7ab85060a7ea14::t_f30bc56d8f8003 882-976,1749,1751,1753-1757,1760,1762,1764-1784,1786,1788,1790-1797,1799-1808,1810-1815,1817-1819,1821-1828,1830-1845,1848
+bstack/shared/tests/test_behavior_interactive.py
+  s_d1a3940668e410::t_782e4f8195b92b 104-115
+  s_d1a3940668e410::t_3dc83ac319c9c5 116,120-149
+  s_d1a3940668e410::t_ba474be77c23ad 161
+  s_d1a3940668e410::t_92b1525b66170f 46-103,150-160,162-170
+  s_d1a3940668e410::t_2a51c33873bbdf 117-119
+bstack/shared/skills/verify-bstack/behavior/interactive.py
+  s_d1a3940668e410::t_96784b7ed0a074 429,432-433,436-438
+  s_d1a3940668e410::t_22f27086f49423 27,34,292-344,391-427,430-431,434-435,439-444,464-467,474-475,548-549
+  s_d1a3940668e410::t_1f28c10b341778 349,365,371,373-374,376,379
+  s_d1a3940668e410::t_8590c9a87c6703 345-348,350-361,364,366,368-369,372,375,377-378,380-390,428
+  s_d1a3940668e410::t_22acbf25e417fc 362-363,367,370
+bstack/shared/skills/verify-bstack/behavior/hosts.py
+  s_7ab85060a7ea14::t_39b49d742735d4 147
+bstack/shared/skills/bstack-router/SKILL.md
+  s_7ab85060a7ea14::t_5ecf64faaf9386 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1820f25bf8aa3d21cbdc1f46558cb66bba6777c9",
+  "prompts": {},
+  "sessions": {
+    "s_7ab85060a7ea14": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "795e4f67-e531-43ab-8d12-2635203f3934",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_d1a3940668e410": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a182a5-caef-79d3-abf3-fa0be6d1366d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
