@@ -48,9 +48,9 @@
     {
       "mode": 420,
       "path": "assets/compatibility.svg",
-      "sha256": "7bab6afc6a8bda1118b0888b60695809e4c9eb4de1ec45eed3931efec8f764a9",
+      "sha256": "0af839512b9276ee3d30ca420b2340a6368139b9602f7179960a85a7fb1f4ece",
       "source": "bstack/assets/compatibility.svg",
-      "source_sha256": "7bab6afc6a8bda1118b0888b60695809e4c9eb4de1ec45eed3931efec8f764a9",
+      "source_sha256": "0af839512b9276ee3d30ca420b2340a6368139b9602f7179960a85a7fb1f4ece",
       "transforms": []
     },
     {
@@ -1708,17 +1708,17 @@
     {
       "mode": 493,
       "path": "runtime/reminder.py",
-      "sha256": "b65ed3c89c8f5146e499169677e76127a1a90a18334cab5bb2c9137de435b0d2",
+      "sha256": "9e247f2be18c853f322e3b418f6c06a44a6f03ebcfe797068a5d6c58faf959ae",
       "source": "bstack/shared/router/hook.py",
-      "source_sha256": "b65ed3c89c8f5146e499169677e76127a1a90a18334cab5bb2c9137de435b0d2",
+      "source_sha256": "9e247f2be18c853f322e3b418f6c06a44a6f03ebcfe797068a5d6c58faf959ae",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "runtime/reminder.txt",
-      "sha256": "2ed02d8bdcf0a2d5869dbce09788ed4fdaefd453cfae7504fc487f0ef64918cc",
+      "sha256": "267451a2207255d909244f1bc7ad283bc33c62727f82239160697b4daee8c261",
       "source": "bstack/shared/router/reminder.txt",
-      "source_sha256": "2ed02d8bdcf0a2d5869dbce09788ed4fdaefd453cfae7504fc487f0ef64918cc",
+      "source_sha256": "267451a2207255d909244f1bc7ad283bc33c62727f82239160697b4daee8c261",
       "transforms": []
     },
     {
@@ -2057,9 +2057,9 @@
     {
       "mode": 420,
       "path": "shared/github/pr_guard.py",
-      "sha256": "044dfd99f5c6bd223ecce1c5f5b7c7b6842257804137f6cc3aacc80517b69dec",
+      "sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
       "source": "bstack/shared/github/pr_guard.py",
-      "source_sha256": "044dfd99f5c6bd223ecce1c5f5b7c7b6842257804137f6cc3aacc80517b69dec",
+      "source_sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
       "transforms": []
     },
     {
@@ -2295,9 +2295,9 @@
     {
       "mode": 420,
       "path": "shared/router/WORKFLOW.md",
-      "sha256": "413a448827bfa7c1b7f72496f14e83e19c98801e51cc08dbcbe9c7c1a81f2c7a",
+      "sha256": "2cb45aa4ea2a4e91ae00fea95e587253d3bc009af3499fa55ce442e7f87f2436",
       "source": "bstack/shared/skills/bstack-router/SKILL.md",
-      "source_sha256": "5eac46d12f96354f7831756ab371b72ef567469991364dd0266419625eefdd0f",
+      "source_sha256": "c4f3d988d06115e818ad58347b89e91eabbc2f85f5c17bf091bbde76efe82bde",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",

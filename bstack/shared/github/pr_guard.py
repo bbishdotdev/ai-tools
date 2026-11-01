@@ -69,7 +69,7 @@ def bypasses_to_pr(source):
     return False
 
 
-SHELL_TOOLS = ("Bash", "Shell", "bash", "shell", "run_terminal_command")
+SHELL_TOOLS = ("Bash", "Shell", "bash", "shell", "run_terminal_command", "run_in_terminal")
 
 
 def shell_command(host, payload):
@@ -116,8 +116,12 @@ def main():
     if isinstance(payload, dict):
         record_decision(args.host, payload, command, denied)
     if denied:
+        decision = {"permissionDecision": "deny", "permissionDecisionReason": MESSAGE}
+        if payload.get("hook_event_name") == "PreToolUse" and args.host == "copilot":
+            print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", **decision}}))
+            return 0
         if args.host in ("copilot", "opencode", "amp"):
-            print(json.dumps({"permissionDecision": "deny", "permissionDecisionReason": MESSAGE}))
+            print(json.dumps(decision))
             return 0
         print(MESSAGE, file=sys.stderr)
         return 2

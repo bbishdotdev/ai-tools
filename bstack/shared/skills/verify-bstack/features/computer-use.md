@@ -11,7 +11,7 @@ The roles are split on purpose:
 - **The harness grades.** `behavior/interactive.py grade` reads the transcript each app writes to disk, plus the hook records, forge state, and project files, then runs the headless checks. The agent never judges pass or fail from screenshots. A case whose step log is empty, or that the agent logged as `blocked` or `invalid`, is reported but not graded or recorded; a missing attempt is not a failed attempt.
 - **The harness checks the setup.** `behavior/interactive.py status --case <folder>` reads `/proc` and the transcript stores. It reports whether the app is running with the case environment, any stale instance that would ignore it, which `gh` the agent's shell resolves, and how many prompts reached this exact project. The agent runs it before launch, after first-run dialogs, and after the first prompt.
 
-Transcript sources, confirmed for the terminal UIs:
+Transcript sources used by the harness:
 
 | Host | Source |
 | --- | --- |
@@ -21,8 +21,11 @@ Transcript sources, confirmed for the terminal UIs:
 | Grok | `~/.grok/sessions/<encoded path>/*/chat_history.jsonl` |
 | Amp | `amp threads export`, matched by working directory |
 | OpenCode | `opencode export`, found through OpenCode's session database |
+| VS Code with Copilot Chat | `~/.config/Code/User/workspaceStorage/*/chatSessions/*.{json,jsonl}`, matched through `workspace.json` |
 
 Cursor desktop and Claude Code desktop write to the same stores, confirmed in run `20261029T125650Z-interactive-200a52`. Cursor adds context messages after compaction, so only its `<user_query>` messages start a turn. A case without a readable transcript grades as incomplete, never as a pass.
+
+VS Code uses the `vscode-copilot` surface and launches with `code --new-window .`. Its reader reconstructs native JSONL session updates, counts completed requests matching the scripted prompts, and combines Markdown answer fragments around inline references. Compaction requires native summary metadata; sending `/compact` alone is not proof.
 
 Desktop apps can rewrite the case environment. Claude Code desktop puts the login shell's `PATH` ahead of the launch `PATH`, so Claude cases also export `CLAUDE_ENV_FILE`, which Claude sources before every command, to keep the fake `gh` first. OpenCode identifies a project by its `origin` URL, so each workspace gets a unique `acme-<id>/<name>` remote.
 
@@ -44,6 +47,6 @@ A desktop app launched from `launch.sh` keeps that case's environment in every s
 
 A separate app profile per case would isolate the environment completely, but it would need a fresh sign-in, which the driver may not do, and would move the transcripts the grader reads.
 
-These runs are not jailed. The approval rule and the fake forge keep them inside `/tmp/work-…` and away from GitHub, so supervise the first run on a new machine. Each desktop app must start fresh from `launch.sh`, because a running instance ignores the case environment. That means the Claude desktop app, which may be hosting the user's own session, must be quit with the user's consent. A Codex agent cannot test the Codex desktop app it runs inside. The interactive grader counts reminder hooks per case rather than per turn. First-turn read-only checks rely on transcript edit calls, so a shell-based write in that turn is not caught. VS Code and Copilot are out of scope until a paid Copilot plan is available.
+These runs are not jailed. The approval rule and the fake forge keep them inside `/tmp/work-…` and away from GitHub, so supervise the first run on a new machine. Each desktop app must start fresh from `launch.sh`, because a running instance ignores the case environment. That means the Claude desktop app, which may be hosting the user's own session, must be quit with the user's consent. A Codex agent cannot test the Codex desktop app it runs inside. The interactive grader counts reminder hooks per case rather than per turn. First-turn read-only checks rely on transcript edit calls, so a shell-based write in that turn is not caught. VS Code requires an existing Copilot sign-in and available credits; the driver must not configure either.
 
 This feature is an instance of the general [computer-use kit](../../../../engineering/create-verification-skill/computer-use/README.md), which any project verifier can use.

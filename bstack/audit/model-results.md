@@ -2,7 +2,7 @@
 
 How each model did with bstack on each host. Each cell is `integration · quality of repeats`. Integration means the model loaded and followed bstack's routing, workflows, and hooks. Quality means it then did the work well: hidden tests, avoiding rejected alternatives, verifier coverage, and correct answers. Errors are ungraded attempts and appear separately from completed repeats. The compatibility matrix uses the most recent integration result per host.
 
-Last recorded: 2026-10-31.
+Last recorded: 2026-11-01.
 
 | Tool | Model | misleading-bug | feature-verifier | adr-rejected | late-pr | direct-pr | compaction-resume |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -17,3 +17,4 @@ Last recorded: 2026-10-31.
 | OpenCode CLI | `opencode/claude-sonnet-5-5` | 3 · 2 of 3 | 3 · 3 of 3 | 3 · 3 of 3 | - | - | - |
 | Claude Code desktop | `Opus 5.5 Medium` | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | - | - | - |
 | Cursor desktop | `Grok 4.7 High Fast` | 1 · 0 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 |
+| VS Code with Copilot | `Auto (Balance)` | 0 · 0 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 | 1 · 1 of 1 |

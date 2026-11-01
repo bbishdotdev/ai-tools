@@ -36,12 +36,12 @@ Read this whole file and [SURFACES.md](SURFACES.md) before you touch anything.
    python3 bstack/shared/skills/verify-bstack/behavior/interactive.py surfaces
    ```
 
-4. Prepare the cases. This builds a throwaway project per case with bstack installed, a fake GitHub remote, and a launch script. Leave out VS Code and Copilot for now.
+4. Prepare the cases. This builds a throwaway project per case with bstack installed, a fake GitHub remote, and a launch script. VS Code with Copilot Chat uses `vscode-copilot`; include it when requested and already signed in with available credits.
 
    ```sh
    python3 bstack/shared/skills/verify-bstack/behavior/interactive.py prepare \
      --surfaces claude-tui codex-tui cursor-tui grok-tui amp-tui opencode-tui \
-                claude-desktop codex-desktop cursor-desktop opencode-desktop \
+                claude-desktop codex-desktop cursor-desktop opencode-desktop vscode-copilot \
      --scenarios explicit-skill misleading-bug feature-verifier adr-rejected late-pr direct-pr guard-probe compaction-resume
    ```
 

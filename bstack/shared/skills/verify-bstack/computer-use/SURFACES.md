@@ -112,6 +112,23 @@ Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screensho
 - **Submit:** type in the composer, then press Enter. **Compaction:** `/compact` in the composer **(verify)**.
 - **Transcript (grader):** the same `~/.codex/sessions` rollouts as the terminal UI.
 
+## VS Code with Copilot Chat (`vscode-copilot`)
+
+Controls observed with VS Code 1.143.1 and bundled Copilot 0.71.0 in run `20261101T125602Z-interactive-eec0df`. Control availability does not establish bstack compatibility; use that run's graded results.
+
+- **Before launch:** fully quit VS Code. `pgrep -x code` must print nothing and `status` must say `launched: no` with no `STALE` line. The Hyprland window class is `com.microsoft.VSCode`.
+- **Launch:** `$LAUNCH $C`, which runs `code --new-window .`. A current Copilot sign-in and available credits are prerequisites. The driver must not sign in or change billing.
+- **Trust:** new case folders open in Restricted Mode. Click **Manage** in the banner, then **Trust** in Workspace Trust. Confirm **You trust this folder** and the exact case path in bold under Trusted Folders & Workspaces. Close the panel with its X. Hovering README.md in Explorer also reveals the full path.
+- **Window:** maximize the app tile with Super+Alt+F. Click the Chat panel's maximize icon to expand the conversation. Its width can reset between launches, and expanding can drop composer focus: click the composer before pasting.
+- **Model:** the composer shows **Auto | Balance**, and the conversation reports the selected model after submission. Record both when Auto is selected; it can select a different model per case. Leave Agent mode and Default permissions unchanged.
+- **Submit:** paste the complete prompt into the composer, check it, and press Enter once. A full `/how …` prompt resolves to a skill token and submits without a second Enter.
+- **Working:** a blue animated glyph, **Working**, **Reasoning**, or **Considering**, with a square stop button. Subagents can show **1 subagent running**. **Done:** **Completed … steps in …**, final answer, and the send arrow replacing the stop button. Wait ten seconds before the next step. **1 confirmation pending** is an approval wait, not a stall; the ten-minute stall rule means unchanged UI with nothing awaiting the driver. `status` counts only completed requests, so it reads 0 of 1 while the first prompt is still running.
+- **Approvals:** **Run bash command?** shows the command and working-directory description. Click the main **Allow** button for one-time approval, or **Skip** to deny. Do not select persistent choices in the dropdown. **Keep** and **Undo** above the composer are edit-review actions, not command approvals. Approval buttons move when todo or edit-review bars appear; expand long commands before clicking.
+- **Hooks:** VS Code runs bstack's `.github/hooks/bstack.json` natively once the folder is trusted, with its own event names (`SessionStart`, `UserPromptSubmit`, `PreToolUse`) and `run_in_terminal` as the shell tool. Hook receipts land in `<case workspace>/hooks/interactive/`, beside the project; two appear after the first prompt. A PR-guard denial shows **Blocked by hook** in the timeline, often before any approval prompt. The exact denial text is in the native transcript's tool result, not the final answer. The **Claude Code hooks are available for this workspace. Enable** notice is a separate setting; leave it unchanged.
+- **Compaction:** type `/compact` in the composer and press Enter once. The app shows **Compacting conversation...**, then **Compacted conversation.** Wait ten seconds before the next prompt. The native transcript contains summary metadata; sending the command alone is not proof. Auto selected a different model for compaction in this run.
+- **Quit:** Ctrl+Q exits without a dialog when idle. During a running session it asks **A session is in progress. Are you sure you want to exit?**, with **The session will stop if you exit.** Click **Yes** to finish a timed-out case. Check processes again before relaunching.
+- **Transcript (grader):** `~/.config/Code/User/workspaceStorage/*/chatSessions/*.{json,jsonl}`, matched by the exact folder URI in that workspace's `workspace.json`. JSONL stores state updates, not one message per line. Markdown answer fragments around inline references must be joined before grading.
+
 ## Claude desktop, Code tab (`claude-desktop`)
 
 Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screenshots in that run's `reference/claude-desktop/`.

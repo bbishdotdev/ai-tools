@@ -878,8 +878,102 @@
         "hooks"
       ],
       "label": "VS Code with Copilot",
-      "scenarios": {},
-      "surface": "desktop"
+      "model": "Auto (Balance)",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T125602Z-interactive-eec0df"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T125602Z-interactive-eec0df"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T125602Z-interactive-eec0df"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [
+            "outcome",
+            "workflow_loaded"
+          ],
+          "passes": 0,
+          "quality_passes": 0,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        }
+      },
+      "surface": "desktop",
+      "version": null
     }
   },
   "models": {
@@ -1652,7 +1746,104 @@
           "run": "20261027T115254Z-behavior-78005c"
         }
       }
+    },
+    "vscode-copilot|Auto (Balance)": {
+      "host": "vscode-copilot",
+      "model": "Auto (Balance)",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T125602Z-interactive-eec0df"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T125602Z-interactive-eec0df"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T125602Z-interactive-eec0df"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [
+            "outcome",
+            "workflow_loaded"
+          ],
+          "passes": 0,
+          "quality_passes": 0,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        }
+      }
     }
   },
-  "updated": "2026-10-31"
+  "updated": "2026-11-01"
 }

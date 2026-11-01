@@ -24,12 +24,14 @@ from hosts import HOME, HOSTS
 SURFACES = {
     "codex-desktop": ("codex", "desktop"), "claude-desktop": ("claude", "desktop"),
     "cursor-desktop": ("cursor", "desktop"), "opencode-desktop": ("opencode", "desktop"),
+    "vscode-copilot": ("copilot", "desktop"),
     "codex-tui": ("codex", "tui"), "claude-tui": ("claude", "tui"), "cursor-tui": ("cursor", "tui"),
     "grok-tui": ("grok", "tui"), "amp-tui": ("amp", "tui"), "opencode-tui": ("opencode", "tui"),
 }
 LAUNCH = {
     "codex-desktop": "codex-desktop", "claude-desktop": "claude-desktop", "cursor-desktop": "cursor --new-window .",
     "opencode-desktop": "opencode-desktop", "codex-tui": "codex", "claude-tui": "claude", "cursor-tui": "cursor-agent",
+    "vscode-copilot": "code --new-window .",
     "grok-tui": "grok", "amp-tui": "amp", "opencode-tui": "opencode",
 }
 PROMPT_BOUNDARY = {"cursor": {"beforeSubmitPrompt"}, "grok": {"UserPromptSubmit"}}
@@ -287,6 +289,159 @@ def amp_turns(case):
     return turns, False
 
 
+def vscode_session(path):
+    if path.suffix == ".json":
+        return json.loads(path.read_text())
+    state = None
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        entry = json.loads(line)
+        if entry["kind"] == 0:
+            state = entry["v"]
+            continue
+        if state is None or not entry.get("k"):
+            raise ValueError("VS Code session log has no initial state or property path")
+        target = state
+        for key in entry["k"][:-1]:
+            target = target[key]
+        key = entry["k"][-1]
+        if entry["kind"] == 1:
+            target[key] = entry["v"]
+        elif entry["kind"] == 2:
+            values = target.get(key, []) if isinstance(target, dict) else target[key]
+            if "i" in entry:
+                values = values[:entry["i"]]
+            target[key] = values + entry.get("v", [])
+        elif entry["kind"] == 3:
+            if isinstance(target, dict):
+                target.pop(key, None)
+            else:
+                target[key] = None
+        else:
+            raise ValueError("Unknown VS Code session log operation")
+    if not isinstance(state, dict):
+        raise ValueError("VS Code session log has no object state")
+    return state
+
+
+def vscode_tool(call):
+    name = call.get("name", "").removeprefix("copilot_")
+    args = call.get("arguments", {})
+    if isinstance(args, str):
+        try:
+            args = json.loads(args)
+        except ValueError:
+            args = {"command": args}
+    edits = {"create_file", "replace_string_in_file", "multi_replace_string_in_file", "insert_edit_into_file",
+             "edit_notebook_file", "apply_patch", "createFile", "replaceString", "applyPatch"}
+    if name in edits:
+        if isinstance(args, dict) and isinstance(args.get("replacements"), list):
+            return [normalized("Edit", item) for item in args["replacements"]]
+        return [normalized("Edit", args)]
+    return [normalized(name, args)]
+
+
+def vscode_serialized_tool(part):
+    detail = part.get("toolSpecificData") or {}
+    if detail.get("kind") == "terminal":
+        command = (detail.get("commandLine") or {}).get("original")
+        if isinstance(command, str) and isinstance((detail.get("terminalCommandState") or {}).get("exitCode"), int):
+            return [tool_event("Bash", {"command": command})]
+    if detail.get("kind") == "input" and detail.get("rawInput") is not None:
+        return vscode_tool({"name": part.get("toolId", ""), "arguments": detail["rawInput"]})
+    if part.get("toolId", "").removeprefix("copilot_") in ("readFile", "read_file", "Read"):
+        message = part.get("pastTenseMessage") or {}
+        if isinstance(message, dict):
+            return [tool_event("Read", {"file_path": uri["path"]}) for uri in message.get("uris", {}).values()
+                    if isinstance(uri, dict) and uri.get("scheme") == "file" and isinstance(uri.get("path"), str)]
+    return []
+
+
+def vscode_tools(metadata, response):
+    calls = [dict(call, id=call.get("id", "").split("__vscode", 1)[0])
+             for round in metadata.get("toolCallRounds", []) for call in round.get("toolCalls", [])]
+    by_id = {call["id"]: call for call in calls if call.get("id")}
+    indexes = {call["id"]: index for index, call in enumerate(calls) if call.get("id")}
+    parts = [part for part in response if isinstance(part, dict) and part.get("kind") == "toolInvocationSerialized"]
+    serialized = {part.get("toolCallId", "").split("__vscode", 1)[0] for part in parts}
+    seen, events, position = set(), [], 0
+    for part in parts:
+        call_id = part.get("toolCallId", "").split("__vscode", 1)[0]
+        if call_id and call_id in seen:
+            continue
+        if call_id:
+            seen.add(call_id)
+        if call_id in by_id:
+            for call in calls[position:indexes[call_id]]:
+                if call.get("id") not in serialized:
+                    events.extend(vscode_tool(call))
+            position = max(position, indexes[call_id] + 1)
+        confirmation = part.get("isConfirmed")
+        denied = confirmation is False or isinstance(confirmation, dict) and confirmation.get("type") in (0, 5)
+        if not part.get("isComplete") or (part.get("summary") or {}).get("kind") == "incomplete" or denied or part.get("resultError"):
+            continue
+        events.extend(vscode_tool(by_id[call_id]) if call_id in by_id else vscode_serialized_tool(part))
+    for call in calls[position:]:
+        if call.get("id") not in serialized:
+            events.extend(vscode_tool(call))
+    return events
+
+
+def vscode_turns(case):
+    expected = [step["text"] for step in case["steps"] if step["kind"] == "prompt"]
+    storage = HOME / ".config/Code/User/workspaceStorage"
+    best, best_compacted = [], False
+    for workspace in storage.glob("*/workspace.json"):
+        folder = json.loads(workspace.read_text()).get("folder", "")
+        uri = urllib.parse.urlparse(folder)
+        if uri.scheme != "file" or uri.netloc not in ("", "localhost") or urllib.parse.unquote(uri.path) != case["project"]:
+            continue
+        sessions = workspace.parent / "chatSessions"
+        files = {path.stem: path for path in sessions.glob("*.json")}
+        files.update({path.stem: path for path in sessions.glob("*.jsonl")})
+        for path in sorted(files.values(), key=lambda item: item.stat().st_mtime):
+            if path.stat().st_mtime < case["prepared_epoch"]:
+                continue
+            session = vscode_session(path)
+            turns, compacted = [], False
+            for request in session.get("requests", []):
+                result = request.get("result") or {}
+                if request.get("modelState", {}).get("value") != 1 or result.get("errorDetails") or request.get("isCanceled"):
+                    break
+                metadata = result.get("metadata") or {}
+                summaries = metadata.get("summaries") or [metadata.get("summary")]
+                compacted |= any(isinstance(item, dict) and item.get("toolCallRoundId") and item.get("text")
+                                 for item in summaries)
+                message = request.get("message") or {}
+                prompt = message.get("text", "") if isinstance(message, dict) else message
+                if prompt.strip() == "/compact":
+                    continue
+                if len(turns) >= len(expected) or prompt.strip() != expected[len(turns)]:
+                    continue
+                for round in metadata.get("toolCallRounds", []):
+                    if round.get("summary"):
+                        compacted = True
+                response = request.get("response") or []
+                if isinstance(response, str):
+                    response = [response]
+                events = vscode_tools(metadata, response)
+                text = []
+                for part in response:
+                    if isinstance(part, str):
+                        text.append(part)
+                    elif isinstance(part, dict) and part.get("kind") in (None, "markdownContent"):
+                        content = part.get("content") if part.get("kind") == "markdownContent" else part
+                        if isinstance(content, dict) and isinstance(content.get("value"), str):
+                            text.append(content["value"])
+                if text:
+                    events.append(text_event("".join(text)))
+                turns.append(events)
+            if len(turns) > len(best) or len(turns) == len(best) and compacted:
+                best, best_compacted = turns, bool(compacted)
+    return best, best_compacted
+
+
 def hook_turns(case, records):
     host = case["host"]
     turns, compacted = [], False
@@ -306,13 +461,18 @@ TRANSCRIPTS = {"claude": claude_turns, "codex": codex_turns, "opencode": opencod
                "cursor": cursor_turns, "grok": grok_turns}
 
 
+def transcript_reader(case):
+    return vscode_turns if case["surface"] == "vscode-copilot" else TRANSCRIPTS.get(case["host"])
+
+
 def grade(folder):
     case = json.loads((folder / "case.json").read_text())
     hooks = Path(case["workspace"]) / "hooks/interactive"
     files = run.grading.record_files(hooks)
     records = sorted((record for name, record in files.items() if name.startswith("hook-")),
                      key=lambda record: record.get("observed_at_ns", 0))
-    turns, compacted = TRANSCRIPTS[case["host"]](case) if case["host"] in TRANSCRIPTS else hook_turns(case, records)
+    reader = transcript_reader(case)
+    turns, compacted = reader(case) if reader else hook_turns(case, records)
     if case["host"] == "cursor" and any(record.get("event") == "preCompact" for record in records):
         compacted = True
     prompt_indexes = [index for index, step in enumerate(case["steps"], 1) if step["kind"] == "prompt"]
@@ -385,7 +545,8 @@ def status(folder):
             stale.append(pid)
     prompts = sum(step["kind"] == "prompt" for step in case["steps"])
     try:
-        turns = len(TRANSCRIPTS[case["host"]](case)[0]) if case["host"] in TRANSCRIPTS else None
+        reader = transcript_reader(case)
+        turns = len(reader(case)[0]) if reader else None
     except (OSError, ValueError, KeyError, sqlite3.Error):
         turns = 0
     print(f"case:     {case['surface']} {case['scenario']}#{case['repeat']}")
