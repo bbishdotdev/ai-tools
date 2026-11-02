@@ -222,14 +222,12 @@
           "attempts": 1,
           "column": "pr",
           "errors": [],
-          "failed_checks": [
-            "pr_created"
-          ],
-          "passes": 0,
+          "failed_checks": [],
+          "passes": 1,
           "quality_passes": 1,
           "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261102T021617Z-interactive-7b738d"
+          "run": "20261102T173356Z-interactive-5345ae"
         },
         "explicit-skill": {
           "attempts": 1,
@@ -1214,14 +1212,12 @@
           "attempts": 1,
           "column": "pr",
           "errors": [],
-          "failed_checks": [
-            "pr_created"
-          ],
-          "passes": 0,
+          "failed_checks": [],
+          "passes": 1,
           "quality_passes": 1,
           "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261102T021617Z-interactive-7b738d"
+          "run": "20261102T173356Z-interactive-5345ae"
         },
         "explicit-skill": {
           "attempts": 1,
