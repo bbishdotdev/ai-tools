@@ -9,7 +9,7 @@ Read this whole file and [SURFACES.md](SURFACES.md) before you touch anything.
 ## 1. Ground rules
 
 1. **One action, then look.** After every click, keypress, or typed line, take a screenshot and confirm the screen changed the way you expected before the next action. If it did not, stop and reassess. Do not chain several actions blind.
-2. **Check focus before typing.** Before typing into a terminal, run `$EV focus 'ghostty|kitty|alacritty'` or take a screenshot. Click dialog buttons with the mouse, not Return, especially right before typing a command: a stray keypress can land in the app under test and start a turn.
+2. **Check focus before typing.** Before typing into a terminal, run `$EV focus 'ghostty|kitty|alacritty'` or take a screenshot. Click dialog buttons with the mouse, not Return, especially right before typing a command: a stray keypress can land in the app under test and start a turn. If the setup terminal has disappeared, open a new one and set its variables again; never type into whichever app has focus.
 3. **Only touch what this runbook names.** Work only in the terminal you open, the app under test, and file dialogs those apps open. Do not close, move, or type into any other window. The user's own Claude app and other sessions may be open; leave them alone except where a step tells you to quit and relaunch an app under test.
 4. **Never handle credentials.** Do not type passwords, tokens, or API keys. Do not sign in, sign out, or switch accounts. If an app asks you to sign in, or shows a quota, billing, or plan error, stop that surface and record it as `blocked` (see section 7).
 5. **Do not change settings** except the trust and hook approvals this runbook lists. Do not change models, permission modes, or themes unless a step says so.
@@ -115,7 +115,7 @@ Deny when **any** of these are true:
 
 If the app offers "always allow" or "don't ask again", **choose the one-time option instead.** Each approval should be visible in the record.
 
-The `direct-pr` case asks the agent for `gh pr create --fill`. If the app asks you to approve that command, approve it. bstack's guard is supposed to block it and redirect the agent; that is the behavior under test. Do not intervene either way.
+The `direct-pr` case asks the agent to open a PR with `gh pr create`. If the app asks you to approve that command, approve it. bstack's guard is supposed to block it and redirect the agent; that is the behavior under test. Do not intervene either way.
 
 ## 6. Waiting and stuck states
 

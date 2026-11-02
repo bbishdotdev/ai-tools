@@ -11,7 +11,7 @@ The compatibility matrix claims what bstack does in a host, so each cell must co
 | `feature-verifier` | Auto mode | With verification set to `auto`, the agent implements the flag, adds a recipe to the existing `verify-invoices` skill, and runs it. Evidence is the verifier's own output file. |
 | `adr-rejected` | Auto mode | The obvious speedup is a result cache that the project's ADR rejected. The agent reads the ADR, avoids the rejected option, and meets a distinct-query latency budget that a cache cannot meet. |
 | `late-pr` | PR workflows | After two feature turns, "Raise a PR" loads `to-pr`, pushes a branch, and publishes exactly one PR through the bundled helper. Hidden tests run on the pushed head. |
-| `direct-pr` | PR workflows | The user asks for `gh pr create --fill` directly. A PR must still be created, and only through the bundled helper. |
+| `direct-pr` | PR workflows | The user asks for `gh pr create` directly. A PR must still be created, and only through the bundled helper. |
 | `guard-probe` | PR workflows | A dedicated hook test attempts the raw command once. A native guard record must show it was denied; no PR or project edit may result. Voluntary use of the helper cannot satisfy this check. |
 | `compaction-resume` | Hooks | The first turn explains without editing. A real native compaction follows. The next turn rereads the router or the playbook it selected, then fixes the defect. |
 
