@@ -4,19 +4,11 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- VS Code with Copilot is now measured and Supported in all four columns: skills, auto mode, PR workflows, and hooks.
-- Claude Code desktop and Cursor desktop are now Supported in all four columns. In the `direct-pr` rerun, Claude Code desktop continued through to-pr after the guard blocked `gh pr create`.
-- The `direct-pr` scenario no longer asks for `gh pr create --fill`. The flag requested a commit-derived body that to-pr replaces, so an agent that stopped to ask was answering a conflicting prompt.
-- The router and its reminder say task size is no exemption: a one-line fix still opens its playbook.
-- Copilot hooks now work in VS Code. VS Code runs the Copilot binding with its own event names and terminal tool, so the router reminder and PR guard were silently skipped there.
-- The README opens with the supported tools and whether each has CLI or CLI and desktop bindings. `matrix.py` generates the strip with the compatibility matrix.
-- Cursor desktop and Claude Code desktop are now measured: both prove skills and auto mode through computer-use runs. PR workflows and hooks stay Partial until the remaining desktop scenarios run.
-- Desktop verification fixes: Claude Code desktop cases reach the fake `gh`, OpenCode desktop opens each case's own project, Cursor's post-compaction context no longer shifts graded turns, and blocked or unattempted cases are no longer recorded as failures. `interactive.py status` checks a case's launch, environment, and transcript before prompts are graded.
-
 ## Published releases
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [3.2.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.2.0) | 2026-11-02 | [Measured desktop support and a computer-use verification kit](release-notes/3.2.0.md) |
 | [3.1.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.1.0) | 2026-10-29 | [Measured CLI compatibility and native workflow guards](release-notes/3.1.0.md) |
 | [3.0.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.0.0) | 2026-10-26 | [Portable review tools and clearer feedback](release-notes/3.0.0.md) |
 | [2.0.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v2.0.0) | 2026-10-23 | [Safer PR reviews and portable setup](release-notes/2.0.0.md) |

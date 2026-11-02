@@ -18,7 +18,7 @@ Each cell comes from [behavior scenarios](shared/skills/verify-bstack/features/b
 
 The [planning skills](sdlc/README.md), [engineering workflows](engineering/README.md), and [PR tools](engineering/to-pr/SKILL.md) work on their own or together. [Handoffs](shared/skills/handoff/SKILL.md) carry work between sessions; the [ADR process](shared/references/architecture-decisions.md) preserves the few decisions worth keeping. The [local workspace](workspace/README.md) holds Wayfinder maps and Kanban tickets without an external tracker.
 
-The package is pinned and installs offline. It also includes [shared memory](shared/memory.md), the `recall` / `reflect` / `automate-me` session tools, and a [project PR policy](shared/references/pr-policy-template.md) that teams can customize. Planning and tickets are local today; GitHub, Jira, and Linear tracker adapters remain future work. GitHub PR publishing already works.
+The package is pinned and installs offline. It also includes [shared memory](shared/memory.md), the `recall` / `reflect` / `automate-me` session tools, and a [project PR policy](shared/references/pr-policy-template.md) that teams can customize. Project verifiers can also drive desktop apps and interactive terminals through the [computer-use kit](engineering/create-verification-skill/computer-use/README.md), graded by code. Planning and tickets are local today; GitHub, Jira, and Linear tracker adapters remain future work. GitHub PR publishing already works.
 
 Full docs and overview: [bstack guide](https://www.bbish.dev/bstack).
 
