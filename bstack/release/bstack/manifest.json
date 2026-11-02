@@ -48,9 +48,9 @@
     {
       "mode": 420,
       "path": "assets/compatibility.svg",
-      "sha256": "68bb70dbfa26843fceb5391539175181dddbbe920bf8c15128b69153b668954f",
+      "sha256": "86ec62f923792834564fe33c3abe6f86145cbd6ea4bd69a75ced9c43b7966637",
       "source": "bstack/assets/compatibility.svg",
-      "source_sha256": "68bb70dbfa26843fceb5391539175181dddbbe920bf8c15128b69153b668954f",
+      "source_sha256": "86ec62f923792834564fe33c3abe6f86145cbd6ea4bd69a75ced9c43b7966637",
       "transforms": []
     },
     {
@@ -2057,9 +2057,9 @@
     {
       "mode": 420,
       "path": "shared/github/pr_guard.py",
-      "sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
+      "sha256": "a793f30f5dbbf9bff4ac20c5a365205964a9a0a44eb8b252c2ac44f25b503393",
       "source": "bstack/shared/github/pr_guard.py",
-      "source_sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
+      "source_sha256": "a793f30f5dbbf9bff4ac20c5a365205964a9a0a44eb8b252c2ac44f25b503393",
       "transforms": []
     },
     {

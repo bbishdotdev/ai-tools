@@ -9,8 +9,9 @@ import uuid
 
 
 HELPER = Path(__file__).resolve().parents[2] / "github/pr.py"
-MESSAGE = (f"Use bstack's to-pr skill before creating a PR or replacing its body. Run its helper's scan, prepare, "
-           f"then publish steps: python3 {HELPER}")
+MESSAGE = (f"Use bstack's to-pr skill before creating a PR or replacing its body. A request to open this PR covers "
+           f"to-pr, so continue with it rather than asking again, unless the user ruled out other routes. Run its "
+           f"helper's scan, prepare, then publish steps: python3 {HELPER}")
 
 
 def commands(source):
