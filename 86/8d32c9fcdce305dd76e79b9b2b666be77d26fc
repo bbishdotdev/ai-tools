@@ -1,0 +1,41 @@
+bstack/shared/skills/verify-bstack/computer-use/SURFACES.md
+  s_7ab85060a7ea14::t_fc2e165c3d61ad 134,141,144-145,147
+bstack/shared/github/pr_guard.py
+  s_7ab85060a7ea14::t_7f3e8175b0fa6b 12-14
+bstack/assets/compatibility.svg
+  s_d1a3940668e410::t_14fcdac04aaea8 23
+bstack/release/bstack/assets/compatibility.svg
+  s_7ab85060a7ea14::t_fc2e165c3d61ad 23
+bstack/audit/compatibility-results.json
+  s_d1a3940668e410::t_9122a0f15f9707 210-233,256-277,1191-1214,1237-1258
+bstack/audit/model-results.md
+  s_d1a3940668e410::t_14fcdac04aaea8 18
+bstack/release/bstack/manifest.json
+  s_7ab85060a7ea14::t_fc2e165c3d61ad 51,53,2060,2062
+bstack/release/bstack/shared/github/pr_guard.py
+  s_7ab85060a7ea14::t_fc2e165c3d61ad 12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "868d32c9fcdce305dd76e79b9b2b666be77d26fc",
+  "prompts": {},
+  "sessions": {
+    "s_7ab85060a7ea14": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "795e4f67-e531-43ab-8d12-2635203f3934",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    },
+    "s_d1a3940668e410": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a182a5-caef-79d3-abf3-fa0be6d1366d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
