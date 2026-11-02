@@ -664,6 +664,17 @@
           "repeats": 1,
           "run": "20261029T125650Z-interactive-200a52"
         },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261102T135300Z-interactive-0d4f0b"
+        },
         "late-pr": {
           "attempts": 1,
           "column": "pr",
@@ -1608,6 +1619,17 @@
           "reminder_hook_runs": 1,
           "repeats": 1,
           "run": "20261029T125650Z-interactive-200a52"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261102T135300Z-interactive-0d4f0b"
         },
         "late-pr": {
           "attempts": 1,
