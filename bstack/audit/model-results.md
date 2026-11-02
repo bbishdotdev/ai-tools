@@ -2,7 +2,7 @@
 
 How each model did with bstack on each host. Each cell is `integration · quality of repeats`. Integration means the model loaded and followed bstack's routing, workflows, and hooks. Quality means it then did the work well: hidden tests, avoiding rejected alternatives, verifier coverage, and correct answers. Errors are ungraded attempts and appear separately from completed repeats. The compatibility matrix uses the most recent integration result per host.
 
-Last recorded: 2026-11-01.
+Last recorded: 2026-11-02.
 
 | Tool | Model | misleading-bug | feature-verifier | adr-rejected | late-pr | direct-pr | compaction-resume |
 | --- | --- | --- | --- | --- | --- | --- | --- |

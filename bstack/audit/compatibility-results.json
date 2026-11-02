@@ -920,9 +920,9 @@
           "failed_checks": [],
           "passes": 1,
           "quality_passes": 1,
-          "reminder_hook_runs": 0,
+          "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T125602Z-interactive-eec0df"
+          "run": "20261102T001457Z-interactive-9af105"
         },
         "feature-verifier": {
           "attempts": 1,
@@ -1788,9 +1788,9 @@
           "failed_checks": [],
           "passes": 1,
           "quality_passes": 1,
-          "reminder_hook_runs": 0,
+          "reminder_hook_runs": 1,
           "repeats": 1,
-          "run": "20261101T125602Z-interactive-eec0df"
+          "run": "20261102T001457Z-interactive-9af105"
         },
         "feature-verifier": {
           "attempts": 1,
@@ -1839,5 +1839,5 @@
       }
     }
   },
-  "updated": "2026-11-01"
+  "updated": "2026-11-02"
 }
