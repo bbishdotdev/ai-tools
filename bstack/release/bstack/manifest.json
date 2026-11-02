@@ -2057,9 +2057,9 @@
     {
       "mode": 420,
       "path": "shared/github/pr_guard.py",
-      "sha256": "a793f30f5dbbf9bff4ac20c5a365205964a9a0a44eb8b252c2ac44f25b503393",
+      "sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
       "source": "bstack/shared/github/pr_guard.py",
-      "source_sha256": "a793f30f5dbbf9bff4ac20c5a365205964a9a0a44eb8b252c2ac44f25b503393",
+      "source_sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
       "transforms": []
     },
     {
