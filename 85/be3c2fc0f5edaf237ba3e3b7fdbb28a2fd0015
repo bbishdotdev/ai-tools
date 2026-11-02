@@ -1,0 +1,37 @@
+bstack/INSTALL.md
+  s_2c2de63dc6b1ca::t_3f33cf4cdfdce8 37,40
+bstack/README.md
+  s_2c2de63dc6b1ca::t_14404be6ee5eeb 21
+bstack/release-notes/3.2.0.md
+  s_2c2de63dc6b1ca::t_7c53a749040e53 1-38
+bstack/package/selection.json
+  s_2c2de63dc6b1ca::t_3f33cf4cdfdce8 4
+bstack/CHANGELOG.md
+  s_2c2de63dc6b1ca::t_7c53a749040e53 11
+bstack/release/README.md
+  s_2c2de63dc6b1ca::t_25f8a23e154fbc 3
+bstack/release/bstack/README.md
+  s_2c2de63dc6b1ca::t_62edf4bd3476fc 3
+bstack/release/bstack/manifest.json
+  s_2c2de63dc6b1ca::t_919d9085111237 41,1677,2014,2016,2813
+bstack/release/bstack/shared/bstack-guide/assets/overview.html
+  s_2c2de63dc6b1ca::t_336203d18f2dce 314
+bstack/shared/skills/bstack-guide/assets/overview.html
+  s_2c2de63dc6b1ca::t_880f217fc3f659 314
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "85be3c2fc0f5edaf237ba3e3b7fdbb28a2fd0015",
+  "prompts": {},
+  "sessions": {
+    "s_2c2de63dc6b1ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5340e47-e147-4eea-b6a6-779185139de3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
