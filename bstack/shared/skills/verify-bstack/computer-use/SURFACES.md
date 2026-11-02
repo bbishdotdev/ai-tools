@@ -131,17 +131,18 @@ Controls observed with VS Code 1.143.1 and bundled Copilot 0.71.0 in run `202611
 
 ## Claude desktop, Code tab (`claude-desktop`)
 
-Confirmed in run `20261029T125650Z-interactive-200a52`, with reference screenshots in that run's `reference/claude-desktop/`.
+Confirmed in runs `20261029T125650Z-interactive-200a52` and `20261102T004444Z-interactive-71017f`, with reference screenshots in each run's `reference/claude-desktop/`.
 
 - **Before launch:** this may be the app the user is talking to Claude in. Ask the user first. Ctrl+Q quits at once when idle. While a session is working it shows `Claude is still working` with **Quit anyway**, **Wait for Claude**, and **Cancel**; click **Quit anyway** only with the user's OK (the first click may only focus it). Helpers take about twenty seconds to exit; wait until `status` shows no `STALE` line.
 - **Launch:** `$LAUNCH $C`. It opens at `New session` and remembers the previous folder, so always select the case folder.
 - **Window:** maximize with Super+Alt+F and collapse the sidebar so unrelated chats stay out of screenshots.
 - **Project:** click the folder selector below the composer, then **Open folder...**. In GTK `Select folder` press Ctrl+L, type the exact path, and click **Select** (twice if needed). A `Trust this workspace?` dialog shows the full path and `Execution allowed by: .claude/settings.json`; check the path and click **Trust workspace**.
 - **Environment:** Claude Desktop puts your login shell's `PATH` ahead of the launch `PATH`. The launch script sets `CLAUDE_ENV_FILE`, which Claude sources before each command, to put the fake `gh` first again. After trusting the workspace, `status` must print `gh: fake forge`.
-- **Model and mode:** for example `Opus 5.5 Medium`, with `Auto` permissions and `Worktree`. Leave them unchanged.
+- **Model and mode:** for example `Opus 5.5 Medium`, with `Auto` permissions. **Worktree** is a checkbox, not the mode label; leave it and the permissions unchanged.
 - **Submit:** click the composer, paste the prompt, check it, press Enter once.
 - **Working:** orange dots, elapsed seconds, a token count, and a square stop button. **Done:** `Type / for commands`, the microphone icon, and no stop button. The parent composer can look idle while a subagent still runs; wait for `Message from subagent` and the parent's final answer.
-- **Approvals:** none appeared in five cases. End-of-turn buttons such as **Commit changes**, **Leave uncommitted**, or **Commit and PR** are agent offers, not approvals; do not click them.
+- **Approvals:** none appeared in nine cases. End-of-turn buttons such as **Commit changes**, **Leave uncommitted**, **Commit and PR**, **Use to-pr flow**, or **I'll run --fill** are agent offers, not approvals; do not click them. A guard denial alone does not complete a PR workflow; the grader checks forge state.
+- **PR panel:** a PR published to the fake forge can fail to attach to Claude's PR panel. Leave the error in place, do not follow the link or repair the integration, and let the grader read forge state.
 - **Sign-in requests:** if the agent asks you to run `gh auth login` or shows a **Logged in** button, the fake `gh` was not reached. Do not sign in. Run `status`, log the case `invalid` with its `gh:` line, and stop the surface.
-- **Compaction:** `/compact` in the composer **(verify)**.
+- **Compaction:** type `/compact` in the composer. The first Enter selects the command and shows an optional instructions placeholder; the second Enter starts it. Wait for `Compacting session`, then `Compacted session · saved <amount> tokens`, and wait ten seconds before the next prompt.
 - **Transcript (grader):** the same `~/.claude/projects` files as the terminal UI.
