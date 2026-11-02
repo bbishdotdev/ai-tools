@@ -72,6 +72,19 @@ class PullRequestGuardTests(unittest.TestCase):
             self.assertEqual(record["arguments_type"], "str")
             self.assertNotIn("private-title", records[0].read_text())
 
+    def test_vscode_terminal_tool_is_denied_in_its_hook_format(self):
+        def guard(command):
+            payload = {"hook_event_name": "PreToolUse", "session_id": "vs-1", "tool_name": "run_in_terminal",
+                       "tool_input": {"command": command, "explanation": "Create the PR", "isBackground": False}}
+            result = subprocess.run([sys.executable, "-B", str(GUARD), "--host", "copilot"],
+                                    input=json.dumps(payload), text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            return json.loads(result.stdout)
+        decision = guard("gh pr create --fill")["hookSpecificOutput"]
+        self.assertEqual((decision["hookEventName"], decision["permissionDecision"]), ("PreToolUse", "deny"))
+        self.assertIn("to-pr", decision["permissionDecisionReason"])
+        self.assertEqual(guard("gh pr view 3"), {})
+
     def test_multiline_shell_command_does_not_hide_pr_creation(self):
         command = "echo preparing\ngh pr create --title update"
         for host in ("codex", "claude", "cursor", "grok"):

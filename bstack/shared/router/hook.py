@@ -19,7 +19,7 @@ INJECT_EVENTS = {
     "claude": {"SessionStart", "UserPromptSubmit", "SubagentStart"},
     "cursor": {"sessionStart", "postToolUse"},
     "grok": {"PostToolUse"},
-    "copilot": {"sessionStart", "userPromptSubmitted", "subagentStart"},
+    "copilot": {"sessionStart", "userPromptSubmitted", "subagentStart", "SessionStart", "UserPromptSubmit", "SubagentStart"},
     "opencode": {"chat.system.transform", "session.compacting"},
     "amp": {"agent.start"},
 }
@@ -30,7 +30,7 @@ def identity(host, payload):
     if host == "grok":
         return payload.get("sessionId"), payload.get("promptId")
     if host == "copilot":
-        return payload.get("sessionId"), None
+        return payload.get("sessionId", payload.get("session_id")), None
     if host == "opencode":
         return payload.get("sessionID"), None
     if host == "amp":
@@ -121,7 +121,7 @@ def build_output(host, payload, receipt=None):
         return ({"continue": True} if event == "beforeSubmitPrompt" else {}), None
     if host == "cursor":
         return {"additional_context": text}, text
-    if host in ("copilot", "opencode", "amp"):
+    if host in ("copilot", "opencode", "amp") and not event[0].isupper():
         return {"additionalContext": text}, text
     return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}}, text
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record computer-use evidence for one prepared case: window screenshots, a step log, and notes."""
+"""Record computer-use evidence in one folder: focus checks, window screenshots, a step log, and notes."""
 import argparse
 from datetime import datetime, timezone
 import json
@@ -8,9 +8,19 @@ import re
 import subprocess
 
 
+def active_window():
+    return json.loads(subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True,
+                                     check=True).stdout or "{}")
+
+
+def focused(expected):
+    window = active_window()
+    label = f"{window.get('class', '')} {window.get('title', '')}"
+    return bool(re.search(expected, label, re.IGNORECASE)), label.strip()
+
+
 def active_window_geometry():
-    window = json.loads(subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True,
-                                       check=True).stdout or "{}")
+    window = active_window()
     if not window.get("size"):
         return None, None
     (x, y), (width, height) = window["at"], window["size"]
@@ -41,21 +51,27 @@ def step(case, intent, action, observed, result, screenshot):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    capture = commands.add_parser("shot", help="Screenshot the active window into the case's screens/ folder")
+    capture = commands.add_parser("shot", help="Screenshot the active window into the folder's screens/")
     capture.add_argument("case", type=Path)
     capture.add_argument("slug")
     capture.add_argument("--full", action="store_true", help="Capture the whole screen instead of the active window")
-    logging = commands.add_parser("step", help="Append one action to the case's steps.jsonl")
+    logging = commands.add_parser("step", help="Append one action to the folder's steps.jsonl")
     logging.add_argument("case", type=Path)
     logging.add_argument("--intent", required=True)
     logging.add_argument("--action", required=True)
     logging.add_argument("--observed", required=True)
-    logging.add_argument("--result", choices=("ok", "retry", "blocked", "failed"), default="ok")
+    logging.add_argument("--result", choices=("ok", "retry", "blocked", "failed", "invalid"), default="ok")
     logging.add_argument("--shot", default=None, help="Screenshot path returned by `shot`")
-    noting = commands.add_parser("note", help="Append a finding to the case's notes.md")
+    checking = commands.add_parser("focus", help="Exit 1 unless the focused window's class or title matches")
+    checking.add_argument("expected", help="Regular expression, for example 'ghostty|alacritty' or 'Cursor'")
+    noting = commands.add_parser("note", help="Append a finding to the folder's notes.md")
     noting.add_argument("case", type=Path)
     noting.add_argument("text")
     args = parser.parse_args()
+    if args.command == "focus":
+        matched, label = focused(args.expected)
+        print(json.dumps({"focused": label, "matches": matched}))
+        return 0 if matched else 1
     if args.command == "shot":
         path, window = shot(args.case, args.slug, args.full)
         print(json.dumps({"screenshot": str(path), "window": window}))

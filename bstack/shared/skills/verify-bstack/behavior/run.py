@@ -129,7 +129,7 @@ def workspace(scenario, host):
     fakebin.mkdir()
     (fakebin / "gh").write_text(f"#!{sys.executable}\n" + (HERE / "fake_gh.py").read_text().split("\n", 2)[2])
     (fakebin / "gh").chmod(0o755)
-    repo = "acme/" + project.name
+    repo = f"acme-{base.name.removeprefix('work-').replace('_', '-').lower()}/{project.name}"
     env.update(PATH=f"{fakebin}{os.pathsep}{env['PATH']}", GH_CONFIG_DIR=str(base / "gh-config"),
                FAKE_FORGE_STATE=str(forge / "state.json"), FAKE_FORGE_GIT=str(bare), FAKE_FORGE_REPO=repo)
     git(base, "init", "-q", "--bare", str(bare), env=env)
@@ -150,6 +150,16 @@ def workspace(scenario, host):
     return base, project, env
 
 
+REMOTE_SHIM = """#!/bin/sh
+workspace=$(dirname "$FAKE_FORGE_GIT")
+case "$(cd "${GIT_DIR:-.}" && pwd -P)/" in
+  "$workspace"/*) exec git remote-ext "$1" "%S $FAKE_FORGE_GIT" ;;
+esac
+echo "fake-forge: refusing to reach $2 from $(pwd -P). This process still carries the bstack test environment from $workspace, so nothing would reach the real remote. Quit the app and relaunch it normally." >&2
+exit 128
+"""
+
+
 def git_exec_path(base):
     real = Path(run(["git", "--exec-path"], base).stdout.strip())
     shim = base / "git-core"
@@ -158,7 +168,7 @@ def git_exec_path(base):
         if entry.name not in ("git-remote-https", "git-remote-http"):
             (shim / entry.name).symlink_to(entry)
     for name in ("git-remote-https", "git-remote-http"):
-        (shim / name).write_text('#!/bin/sh\nexec git remote-ext "$1" "%S $FAKE_FORGE_GIT"\n')
+        (shim / name).write_text(REMOTE_SHIM)
         (shim / name).chmod(0o755)
     return shim
 
@@ -481,11 +491,17 @@ def grade(name, scenario, ctx):
     return checks
 
 
+def fake_repo(project):
+    url = subprocess.run(["git", "-C", str(project), "config", "--get", "remote.origin.url"], capture_output=True,
+                         text=True).stdout.strip()
+    return url.removeprefix("https://github.com/").removesuffix(".git")
+
+
 def forge_env(base, project):
     env = dict(os.environ, GIT_CONFIG_GLOBAL=str(base / "gitconfig"), GIT_CONFIG_NOSYSTEM="1",
                GIT_EXEC_PATH=str(base / "git-core"), GH_CONFIG_DIR=str(base / "gh-config"),
                FAKE_FORGE_STATE=str(base / "forge/state.json"), FAKE_FORGE_GIT=str(base / "remote.git"),
-               FAKE_FORGE_REPO="acme/" + project.name)
+               FAKE_FORGE_REPO=fake_repo(project))
     env["PATH"] = f"{base / 'bin'}{os.pathsep}{env['PATH']}"
     for name in ("GH_TOKEN", "GITHUB_TOKEN", "GH_ENTERPRISE_TOKEN"):
         env.pop(name, None)

@@ -144,7 +144,7 @@ HOSTS = {
     "grok": Grok("grok", ("grok",), "grok", "/", ("PostToolUse",), (".grok",), "grok-4.7"),
     "cursor": Cursor("cursor", ("cursor-agent", "agent"), "cursor", "/", ("postToolUse", "sessionStart"),
                      (".cursor", ".config/cursor", ".local/share/cursor-agent"), "composer-2.5"),
-    "copilot": Copilot("copilot", ("copilot",), "copilot", "/", ("userPromptSubmitted",), (".copilot",), "auto"),
+    "copilot": Copilot("copilot", ("copilot",), "copilot", "/", ("userPromptSubmitted", "UserPromptSubmit"), (".copilot",), "auto"),
     "amp": Amp("amp", ("amp",), "amp", "/", ("agent.start",), (".amp", ".local/share/amp", ".cache/amp", ".config/amp"), "low",
                compacts=False),
     "opencode": OpenCode("opencode", ("opencode",), "opencode", "/", ("chat.system.transform",),

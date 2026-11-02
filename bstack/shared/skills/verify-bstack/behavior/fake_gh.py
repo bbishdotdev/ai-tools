@@ -13,6 +13,11 @@ STATE = Path(os.environ["FAKE_FORGE_STATE"])
 BARE = os.environ["FAKE_FORGE_GIT"]
 REPO = os.environ["FAKE_FORGE_REPO"]
 HOST = "github.com"
+WORKSPACE = Path(BARE).resolve().parent
+
+if not Path.cwd().resolve().is_relative_to(WORKSPACE):
+    sys.exit(f"fake-forge: refusing `gh {' '.join(sys.argv[1:])}` from {Path.cwd()}. This process still carries the bstack "
+             f"test environment from {WORKSPACE}, so nothing would reach GitHub. Quit the app and relaunch it normally.")
 
 
 def git(*args):

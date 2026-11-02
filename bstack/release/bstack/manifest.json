@@ -48,9 +48,9 @@
     {
       "mode": 420,
       "path": "assets/compatibility.svg",
-      "sha256": "1b637f352e5efe062731ca802518a81e891a5f3d61f5d99d8e7464c2691ad53b",
+      "sha256": "68bb70dbfa26843fceb5391539175181dddbbe920bf8c15128b69153b668954f",
       "source": "bstack/assets/compatibility.svg",
-      "source_sha256": "1b637f352e5efe062731ca802518a81e891a5f3d61f5d99d8e7464c2691ad53b",
+      "source_sha256": "68bb70dbfa26843fceb5391539175181dddbbe920bf8c15128b69153b668954f",
       "transforms": []
     },
     {
@@ -240,9 +240,9 @@
     {
       "mode": 420,
       "path": "engineering/create-verification-skill/SKILL.md",
-      "sha256": "993e1ac4f52d4d29d9667d3eefcf052b0b495766cc6ceb00086ce103f6c83382",
+      "sha256": "26dedb312e05024a66618cac754de21e1ec5c65ca130fe3b80fdbb28ca1ed0a4",
       "source": "bstack/engineering/create-verification-skill/SKILL.md",
-      "source_sha256": "e685d3a740dc2015b5d26b1dafaffa0b4f23c00ffc12fb6f314823aecdd4a312",
+      "source_sha256": "5ca72be0e785dcb9c1fe32db5b96ec83fc8b936405c668a0b377536790284a35",
       "transforms": [
         "public-skill-invocation-policy"
       ]
@@ -259,10 +259,66 @@
     },
     {
       "mode": 420,
+      "path": "engineering/create-verification-skill/computer-use/DRIVERS.md",
+      "sha256": "926e1b81af91b1996c483251cad4c9041002adb08bc3441f1322cda2292b00f6",
+      "source": "bstack/engineering/create-verification-skill/computer-use/DRIVERS.md",
+      "source_sha256": "926e1b81af91b1996c483251cad4c9041002adb08bc3441f1322cda2292b00f6",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/create-verification-skill/computer-use/README.md",
+      "sha256": "d44e72955bc579c39686f31b9720e331e237194987e405ea84c5ec54f1987fe7",
+      "source": "bstack/engineering/create-verification-skill/computer-use/README.md",
+      "source_sha256": "d44e72955bc579c39686f31b9720e331e237194987e405ea84c5ec54f1987fe7",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/create-verification-skill/computer-use/templates/HANDOFF.md",
+      "sha256": "6739f98b7c208d9cf21af02f16c16abaf0ab6df2937f1f74c493def2ae84c21d",
+      "source": "bstack/engineering/create-verification-skill/computer-use/templates/HANDOFF.md",
+      "source_sha256": "6739f98b7c208d9cf21af02f16c16abaf0ab6df2937f1f74c493def2ae84c21d",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/create-verification-skill/computer-use/templates/PROBES.md",
+      "sha256": "b0fae7962d6a580f1f8574eece00ae212945f15e8aee2f3c411881f4ff5d0602",
+      "source": "bstack/engineering/create-verification-skill/computer-use/templates/PROBES.md",
+      "source_sha256": "b0fae7962d6a580f1f8574eece00ae212945f15e8aee2f3c411881f4ff5d0602",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/create-verification-skill/computer-use/templates/REPORT.md",
+      "sha256": "80f545f805be7c15aac50fbb7ef05abf72cb2784e29ad163e8e8d4a8094e223e",
+      "source": "bstack/engineering/create-verification-skill/computer-use/templates/REPORT.md",
+      "source_sha256": "80f545f805be7c15aac50fbb7ef05abf72cb2784e29ad163e8e8d4a8094e223e",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/create-verification-skill/computer-use/templates/TOOL-SCRIPT.md",
+      "sha256": "e2dbb63ea06fcc3293943143941ce802e11542a6e70842403876909aa37ebb85",
+      "source": "bstack/engineering/create-verification-skill/computer-use/templates/TOOL-SCRIPT.md",
+      "source_sha256": "e2dbb63ea06fcc3293943143941ce802e11542a6e70842403876909aa37ebb85",
+      "transforms": []
+    },
+    {
+      "mode": 420,
       "path": "engineering/create-verification-skill/scripts/bind.py",
       "sha256": "a6bf855182916ebb42aab0d26bdd44196353887f650b1d7843c2a8216072ca35",
       "source": "bstack/engineering/create-verification-skill/scripts/bind.py",
       "source_sha256": "a6bf855182916ebb42aab0d26bdd44196353887f650b1d7843c2a8216072ca35",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/create-verification-skill/scripts/evidence.py",
+      "sha256": "788e4e500d34a257eb4af315a3b57c26991146b4e6ee21310d33657323c05252",
+      "source": "bstack/engineering/create-verification-skill/scripts/evidence.py",
+      "source_sha256": "788e4e500d34a257eb4af315a3b57c26991146b4e6ee21310d33657323c05252",
       "transforms": []
     },
     {
@@ -1652,17 +1708,17 @@
     {
       "mode": 493,
       "path": "runtime/reminder.py",
-      "sha256": "b65ed3c89c8f5146e499169677e76127a1a90a18334cab5bb2c9137de435b0d2",
+      "sha256": "9e247f2be18c853f322e3b418f6c06a44a6f03ebcfe797068a5d6c58faf959ae",
       "source": "bstack/shared/router/hook.py",
-      "source_sha256": "b65ed3c89c8f5146e499169677e76127a1a90a18334cab5bb2c9137de435b0d2",
+      "source_sha256": "9e247f2be18c853f322e3b418f6c06a44a6f03ebcfe797068a5d6c58faf959ae",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "runtime/reminder.txt",
-      "sha256": "2ed02d8bdcf0a2d5869dbce09788ed4fdaefd453cfae7504fc487f0ef64918cc",
+      "sha256": "267451a2207255d909244f1bc7ad283bc33c62727f82239160697b4daee8c261",
       "source": "bstack/shared/router/reminder.txt",
-      "source_sha256": "2ed02d8bdcf0a2d5869dbce09788ed4fdaefd453cfae7504fc487f0ef64918cc",
+      "source_sha256": "267451a2207255d909244f1bc7ad283bc33c62727f82239160697b4daee8c261",
       "transforms": []
     },
     {
@@ -2001,9 +2057,9 @@
     {
       "mode": 420,
       "path": "shared/github/pr_guard.py",
-      "sha256": "044dfd99f5c6bd223ecce1c5f5b7c7b6842257804137f6cc3aacc80517b69dec",
+      "sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
       "source": "bstack/shared/github/pr_guard.py",
-      "source_sha256": "044dfd99f5c6bd223ecce1c5f5b7c7b6842257804137f6cc3aacc80517b69dec",
+      "source_sha256": "66ee38d64f17d33970764b83f9e122ee2ea8166352f5aca3aaea07d47d3797b9",
       "transforms": []
     },
     {
@@ -2239,9 +2295,9 @@
     {
       "mode": 420,
       "path": "shared/router/WORKFLOW.md",
-      "sha256": "413a448827bfa7c1b7f72496f14e83e19c98801e51cc08dbcbe9c7c1a81f2c7a",
+      "sha256": "2cb45aa4ea2a4e91ae00fea95e587253d3bc009af3499fa55ce442e7f87f2436",
       "source": "bstack/shared/skills/bstack-router/SKILL.md",
-      "source_sha256": "5eac46d12f96354f7831756ab371b72ef567469991364dd0266419625eefdd0f",
+      "source_sha256": "c4f3d988d06115e818ad58347b89e91eabbc2f85f5c17bf091bbde76efe82bde",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",

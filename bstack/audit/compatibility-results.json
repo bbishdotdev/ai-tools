@@ -194,8 +194,55 @@
         "hooks"
       ],
       "label": "Claude Code desktop",
-      "scenarios": {},
-      "surface": "desktop"
+      "model": "Opus 5.5 Medium",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      },
+      "surface": "desktop",
+      "version": null
     },
     "claude-tui": {
       "bindings": [
@@ -514,8 +561,90 @@
         "hooks"
       ],
       "label": "Cursor desktop",
-      "scenarios": {},
-      "surface": "desktop"
+      "model": "Grok 4.7 High Fast",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 1,
+          "quality_passes": 0,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      },
+      "surface": "desktop",
+      "version": null
     },
     "cursor-tui": {
       "bindings": [
@@ -749,8 +878,99 @@
         "hooks"
       ],
       "label": "VS Code with Copilot",
-      "scenarios": {},
-      "surface": "desktop"
+      "model": "Auto (Balance)",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T215711Z-interactive-9f80dc"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261102T001457Z-interactive-9af105"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T215711Z-interactive-9f80dc"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T215711Z-interactive-9f80dc"
+        }
+      },
+      "surface": "desktop",
+      "version": null
     }
   },
   "models": {
@@ -904,6 +1124,56 @@
           "reminder_hook_runs": 3,
           "repeats": 3,
           "run": "20261027T052458Z-behavior-68e09d"
+        }
+      }
+    },
+    "claude-desktop|Opus 5.5 Medium": {
+      "host": "claude-desktop",
+      "model": "Opus 5.5 Medium",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
         }
       }
     },
@@ -1188,6 +1458,91 @@
         }
       }
     },
+    "cursor-desktop|Grok 4.7 High Fast": {
+      "host": "cursor-desktop",
+      "model": "Grok 4.7 High Fast",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [
+            "outcome"
+          ],
+          "passes": 1,
+          "quality_passes": 0,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261029T125650Z-interactive-200a52"
+        }
+      }
+    },
     "grok-cli|grok-4.7": {
       "host": "grok-cli",
       "model": "grok-4.7",
@@ -1388,7 +1743,101 @@
           "run": "20261027T115254Z-behavior-78005c"
         }
       }
+    },
+    "vscode-copilot|Auto (Balance)": {
+      "host": "vscode-copilot",
+      "model": "Auto (Balance)",
+      "scenarios": {
+        "adr-rejected": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "compaction-resume": {
+          "attempts": 1,
+          "column": "hooks",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T215711Z-interactive-9f80dc"
+        },
+        "direct-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "explicit-skill": {
+          "attempts": 1,
+          "column": "skills",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261102T001457Z-interactive-9af105"
+        },
+        "feature-verifier": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "guard-probe": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 0,
+          "repeats": 1,
+          "run": "20261101T142657Z-interactive-082b9c"
+        },
+        "late-pr": {
+          "attempts": 1,
+          "column": "pr",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T215711Z-interactive-9f80dc"
+        },
+        "misleading-bug": {
+          "attempts": 1,
+          "column": "auto",
+          "errors": [],
+          "failed_checks": [],
+          "passes": 1,
+          "quality_passes": 1,
+          "reminder_hook_runs": 1,
+          "repeats": 1,
+          "run": "20261101T215711Z-interactive-9f80dc"
+        }
+      }
     }
   },
-  "updated": "2026-10-29"
+  "updated": "2026-11-02"
 }

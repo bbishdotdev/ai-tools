@@ -7,10 +7,13 @@ import os
 from pathlib import Path
 import re
 import shlex
+import shutil
+import signal
 import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.parse
 import uuid
 
@@ -21,12 +24,14 @@ from hosts import HOME, HOSTS
 SURFACES = {
     "codex-desktop": ("codex", "desktop"), "claude-desktop": ("claude", "desktop"),
     "cursor-desktop": ("cursor", "desktop"), "opencode-desktop": ("opencode", "desktop"),
+    "vscode-copilot": ("copilot", "desktop"),
     "codex-tui": ("codex", "tui"), "claude-tui": ("claude", "tui"), "cursor-tui": ("cursor", "tui"),
     "grok-tui": ("grok", "tui"), "amp-tui": ("amp", "tui"), "opencode-tui": ("opencode", "tui"),
 }
 LAUNCH = {
     "codex-desktop": "codex-desktop", "claude-desktop": "claude-desktop", "cursor-desktop": "cursor --new-window .",
     "opencode-desktop": "opencode-desktop", "codex-tui": "codex", "claude-tui": "claude", "cursor-tui": "cursor-agent",
+    "vscode-copilot": "code --new-window .",
     "grok-tui": "grok", "amp-tui": "amp", "opencode-tui": "opencode",
 }
 PROMPT_BOUNDARY = {"cursor": {"beforeSubmitPrompt"}, "grok": {"UserPromptSubmit"}}
@@ -48,9 +53,15 @@ def steps_for(surface, scenario):
 def launch_script(env, project, command):
     exports = "\n".join(f"export {key}={shlex.quote(env[key])}" for key in (
         "PATH", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM", "GIT_EXEC_PATH", "GH_CONFIG_DIR", "FAKE_FORGE_STATE",
-        "FAKE_FORGE_GIT", "FAKE_FORGE_REPO", "BSTACK_VERIFY_DIR", "BSTACK_STATE_DIR"))
+        "FAKE_FORGE_GIT", "FAKE_FORGE_REPO", "BSTACK_VERIFY_DIR", "BSTACK_STATE_DIR", "CLAUDE_ENV_FILE") if key in env)
     return (f"#!/bin/sh\nunset GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN\n{exports}\ncd {shlex.quote(str(project))}\n"
             f"if [ \"$#\" -gt 0 ]; then exec \"$@\"; fi\nexec {command}\n")
+
+
+def claude_env_file(base):
+    path = base / "claude-env.sh"
+    path.write_text(f"export PATH={shlex.quote(str(base / 'bin'))}:\"$PATH\"\n")
+    return path
 
 
 def card(case):
@@ -82,6 +93,8 @@ def prepare(surfaces, scenarios, repeats):
                 (folder / "screens").mkdir(parents=True)
                 base, project, env = run.workspace(run.SCENARIOS[scenario], host)
                 env = dict(env, BSTACK_VERIFY_DIR=str(base / "hooks/interactive"), BSTACK_STATE_DIR=str(base / "state"))
+                if host == "claude":
+                    env["CLAUDE_ENV_FILE"] = str(claude_env_file(base))
                 Path(env["BSTACK_VERIFY_DIR"]).mkdir(parents=True)
                 case = {"surface": surface, "kind": kind, "host": host, "scenario": scenario, "repeat": repeat,
                         "folder": str(folder), "workspace": str(base), "project": str(project),
@@ -202,7 +215,8 @@ def cursor_turns(case):
         for line in path.read_text(errors="replace").splitlines():
             event = json.loads(line)
             content = (event.get("message") or {}).get("content") or []
-            if event.get("role") == "user" and any(c.get("type") == "text" for c in content if isinstance(c, dict)):
+            if event.get("role") == "user" and any("<user_query>" in c.get("text", "")
+                                                   for c in content if isinstance(c, dict) and c.get("type") == "text"):
                 turns.append([])
             elif event.get("role") == "assistant" and turns:
                 for c in content:
@@ -275,6 +289,159 @@ def amp_turns(case):
     return turns, False
 
 
+def vscode_session(path):
+    if path.suffix == ".json":
+        return json.loads(path.read_text())
+    state = None
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        entry = json.loads(line)
+        if entry["kind"] == 0:
+            state = entry["v"]
+            continue
+        if state is None or not entry.get("k"):
+            raise ValueError("VS Code session log has no initial state or property path")
+        target = state
+        for key in entry["k"][:-1]:
+            target = target[key]
+        key = entry["k"][-1]
+        if entry["kind"] == 1:
+            target[key] = entry["v"]
+        elif entry["kind"] == 2:
+            values = target.get(key, []) if isinstance(target, dict) else target[key]
+            if "i" in entry:
+                values = values[:entry["i"]]
+            target[key] = values + entry.get("v", [])
+        elif entry["kind"] == 3:
+            if isinstance(target, dict):
+                target.pop(key, None)
+            else:
+                target[key] = None
+        else:
+            raise ValueError("Unknown VS Code session log operation")
+    if not isinstance(state, dict):
+        raise ValueError("VS Code session log has no object state")
+    return state
+
+
+def vscode_tool(call):
+    name = call.get("name", "").removeprefix("copilot_")
+    args = call.get("arguments", {})
+    if isinstance(args, str):
+        try:
+            args = json.loads(args)
+        except ValueError:
+            args = {"command": args}
+    edits = {"create_file", "replace_string_in_file", "multi_replace_string_in_file", "insert_edit_into_file",
+             "edit_notebook_file", "apply_patch", "createFile", "replaceString", "applyPatch"}
+    if name in edits:
+        if isinstance(args, dict) and isinstance(args.get("replacements"), list):
+            return [normalized("Edit", item) for item in args["replacements"]]
+        return [normalized("Edit", args)]
+    return [normalized(name, args)]
+
+
+def vscode_serialized_tool(part):
+    detail = part.get("toolSpecificData") or {}
+    if detail.get("kind") == "terminal":
+        command = (detail.get("commandLine") or {}).get("original")
+        if isinstance(command, str) and isinstance((detail.get("terminalCommandState") or {}).get("exitCode"), int):
+            return [tool_event("Bash", {"command": command})]
+    if detail.get("kind") == "input" and detail.get("rawInput") is not None:
+        return vscode_tool({"name": part.get("toolId", ""), "arguments": detail["rawInput"]})
+    if part.get("toolId", "").removeprefix("copilot_") in ("readFile", "read_file", "Read"):
+        message = part.get("pastTenseMessage") or {}
+        if isinstance(message, dict):
+            return [tool_event("Read", {"file_path": uri["path"]}) for uri in message.get("uris", {}).values()
+                    if isinstance(uri, dict) and uri.get("scheme") == "file" and isinstance(uri.get("path"), str)]
+    return []
+
+
+def vscode_tools(metadata, response):
+    calls = [dict(call, id=call.get("id", "").split("__vscode", 1)[0])
+             for round in metadata.get("toolCallRounds", []) for call in round.get("toolCalls", [])]
+    by_id = {call["id"]: call for call in calls if call.get("id")}
+    indexes = {call["id"]: index for index, call in enumerate(calls) if call.get("id")}
+    parts = [part for part in response if isinstance(part, dict) and part.get("kind") == "toolInvocationSerialized"]
+    serialized = {part.get("toolCallId", "").split("__vscode", 1)[0] for part in parts}
+    seen, events, position = set(), [], 0
+    for part in parts:
+        call_id = part.get("toolCallId", "").split("__vscode", 1)[0]
+        if call_id and call_id in seen:
+            continue
+        if call_id:
+            seen.add(call_id)
+        if call_id in by_id:
+            for call in calls[position:indexes[call_id]]:
+                if call.get("id") not in serialized:
+                    events.extend(vscode_tool(call))
+            position = max(position, indexes[call_id] + 1)
+        confirmation = part.get("isConfirmed")
+        denied = confirmation is False or isinstance(confirmation, dict) and confirmation.get("type") in (0, 5)
+        if not part.get("isComplete") or (part.get("summary") or {}).get("kind") == "incomplete" or denied or part.get("resultError"):
+            continue
+        events.extend(vscode_tool(by_id[call_id]) if call_id in by_id else vscode_serialized_tool(part))
+    for call in calls[position:]:
+        if call.get("id") not in serialized:
+            events.extend(vscode_tool(call))
+    return events
+
+
+def vscode_turns(case):
+    expected = [step["text"] for step in case["steps"] if step["kind"] == "prompt"]
+    storage = HOME / ".config/Code/User/workspaceStorage"
+    best, best_compacted = [], False
+    for workspace in storage.glob("*/workspace.json"):
+        folder = json.loads(workspace.read_text()).get("folder", "")
+        uri = urllib.parse.urlparse(folder)
+        if uri.scheme != "file" or uri.netloc not in ("", "localhost") or urllib.parse.unquote(uri.path) != case["project"]:
+            continue
+        sessions = workspace.parent / "chatSessions"
+        files = {path.stem: path for path in sessions.glob("*.json")}
+        files.update({path.stem: path for path in sessions.glob("*.jsonl")})
+        for path in sorted(files.values(), key=lambda item: item.stat().st_mtime):
+            if path.stat().st_mtime < case["prepared_epoch"]:
+                continue
+            session = vscode_session(path)
+            turns, compacted = [], False
+            for request in session.get("requests", []):
+                result = request.get("result") or {}
+                if request.get("modelState", {}).get("value") != 1 or result.get("errorDetails") or request.get("isCanceled"):
+                    break
+                metadata = result.get("metadata") or {}
+                summaries = metadata.get("summaries") or [metadata.get("summary")]
+                compacted |= any(isinstance(item, dict) and item.get("toolCallRoundId") and item.get("text")
+                                 for item in summaries)
+                message = request.get("message") or {}
+                prompt = message.get("text", "") if isinstance(message, dict) else message
+                if prompt.strip() == "/compact":
+                    continue
+                if len(turns) >= len(expected) or prompt.strip() != expected[len(turns)]:
+                    continue
+                for round in metadata.get("toolCallRounds", []):
+                    if round.get("summary"):
+                        compacted = True
+                response = request.get("response") or []
+                if isinstance(response, str):
+                    response = [response]
+                events = vscode_tools(metadata, response)
+                text = []
+                for part in response:
+                    if isinstance(part, str):
+                        text.append(part)
+                    elif isinstance(part, dict) and part.get("kind") in (None, "markdownContent"):
+                        content = part.get("content") if part.get("kind") == "markdownContent" else part
+                        if isinstance(content, dict) and isinstance(content.get("value"), str):
+                            text.append(content["value"])
+                if text:
+                    events.append(text_event("".join(text)))
+                turns.append(events)
+            if len(turns) > len(best) or len(turns) == len(best) and compacted:
+                best, best_compacted = turns, bool(compacted)
+    return best, best_compacted
+
+
 def hook_turns(case, records):
     host = case["host"]
     turns, compacted = [], False
@@ -294,13 +461,18 @@ TRANSCRIPTS = {"claude": claude_turns, "codex": codex_turns, "opencode": opencod
                "cursor": cursor_turns, "grok": grok_turns}
 
 
+def transcript_reader(case):
+    return vscode_turns if case["surface"] == "vscode-copilot" else TRANSCRIPTS.get(case["host"])
+
+
 def grade(folder):
     case = json.loads((folder / "case.json").read_text())
     hooks = Path(case["workspace"]) / "hooks/interactive"
     files = run.grading.record_files(hooks)
     records = sorted((record for name, record in files.items() if name.startswith("hook-")),
                      key=lambda record: record.get("observed_at_ns", 0))
-    turns, compacted = TRANSCRIPTS[case["host"]](case) if case["host"] in TRANSCRIPTS else hook_turns(case, records)
+    reader = transcript_reader(case)
+    turns, compacted = reader(case) if reader else hook_turns(case, records)
     if case["host"] == "cursor" and any(record.get("event") == "preCompact" for record in records):
         compacted = True
     prompt_indexes = [index for index, step in enumerate(case["steps"], 1) if step["kind"] == "prompt"]
@@ -320,7 +492,8 @@ def grade(folder):
         target.write_text(json.dumps(record))
     first = turns[0] if turns else []
     model_file = folder / "model.txt"
-    model = model_file.read_text().strip() if model_file.is_file() and model_file.read_text().strip() else "unreported"
+    model_lines = model_file.read_text().strip().splitlines() if model_file.is_file() else []
+    model = model_lines[0].strip() if model_lines else "unreported"
     observed = {"host": case["host"], "surface": case["surface"], "model": model, "scenario": case["scenario"],
                 "repeat": case["repeat"], "workspace": case["workspace"], "project": case["project"],
                 "base_commit": case["base_commit"], "exits": exits, "compacted": compacted, "interactive": True,
@@ -331,13 +504,139 @@ def grade(folder):
     return run.assess(folder)
 
 
+def driver_outcome(folder):
+    results = {json.loads(line).get("result") for line in (folder / "steps.jsonl").read_text().splitlines() if line.strip()}
+    if not results:
+        return "unattempted"
+    return next((name for name in ("invalid", "blocked") if name in results), None)
+
+
+def processes():
+    for entry in Path("/proc").iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+            environ = dict(item.decode(errors="replace").split("=", 1)
+                           for item in (entry / "environ").read_bytes().split(b"\0") if b"=" in item)
+        except (OSError, ValueError):
+            continue
+        if argv[0]:
+            yield int(entry.name), Path(argv[0].decode(errors="replace")).name, environ
+
+
+def resolved_gh(environ):
+    path = environ.get("PATH", "")
+    env_file = environ.get("CLAUDE_ENV_FILE")
+    if env_file and Path(env_file).is_file():
+        path = subprocess.run(["sh", "-c", f'. "$1"; printf %s "$PATH"', "sh", env_file], text=True,
+                              capture_output=True, env={"PATH": path}).stdout
+    return shutil.which("gh", path=path)
+
+
+def status(folder):
+    case = json.loads((folder / "case.json").read_text())
+    marker = str(Path(case["workspace"]) / "hooks/interactive")
+    app = LAUNCH[case["surface"]].split()[0]
+    owned, stale = [], []
+    for pid, name, environ in processes():
+        if environ.get("BSTACK_VERIFY_DIR") == marker:
+            owned.append((pid, name, environ))
+        elif case["kind"] == "desktop" and name == app:
+            stale.append(pid)
+    prompts = sum(step["kind"] == "prompt" for step in case["steps"])
+    try:
+        reader = transcript_reader(case)
+        turns = len(reader(case)[0]) if reader else None
+    except (OSError, ValueError, KeyError, sqlite3.Error):
+        turns = 0
+    print(f"case:     {case['surface']} {case['scenario']}#{case['repeat']}")
+    print(f"project:  {case['project']}")
+    print(f"launched: {'yes, ' + str(len(owned)) + ' processes carry this case env' if owned else 'no'}")
+    if stale:
+        print(f"STALE:    {app} is running without this case env (pids {' '.join(map(str, sorted(stale)))}). "
+              "Quit it fully before launching; this case would be invalid.")
+    if owned:
+        gh = resolved_gh(max(owned)[2])
+        fake = gh == str(Path(case["workspace"]) / "bin/gh")
+        print(f"gh:       {'fake forge' if fake else 'WRONG: ' + str(gh) + ' (PR steps would hit the real gh)'}")
+    print(f"turns:    {'unknown for this host' if turns is None else f'{turns} of {prompts} prompts found in this project'}")
+    return 0 if owned and not stale else 1
+
+
+def case_marker(environ):
+    marker = environ.get("BSTACK_VERIFY_DIR", "")
+    return marker if marker.startswith(tempfile.gettempdir() + "/work-") else None
+
+
+def carriers(markers=None):
+    return sorted((pid, name, case_marker(environ)) for pid, name, environ in processes()
+                  if case_marker(environ) and (markers is None or case_marker(environ) in markers)
+                  and pid not in (os.getpid(), os.getppid()))
+
+
+def stop(markers=None, grace=20):
+    found = carriers(markers)
+    for sig, wait in ((signal.SIGTERM, grace), (signal.SIGKILL, 2)):
+        for pid, _, _ in found:
+            try:
+                os.kill(pid, sig)
+            except ProcessLookupError:
+                pass
+        deadline = time.monotonic() + wait
+        while (found := carriers(markers)) and time.monotonic() < deadline:
+            time.sleep(0.5)
+        if not found:
+            break
+    for pid, name, marker in found:
+        print(f"still running: pid {pid} ({name}) from {marker.removesuffix('/hooks/interactive')}")
+    return int(bool(found))
+
+
+def launch(folder, ttl):
+    case = json.loads((folder / "case.json").read_text())
+    marker = str(Path(case["workspace"]) / "hooks/interactive")
+    app = LAUNCH[case["surface"]].split()[0]
+    stale = [pid for pid, name, environ in processes() if case["kind"] == "desktop" and name == app
+             and case_marker(environ) is None]
+    if carriers() or stale:
+        print("Refusing to launch: another app is still running with a case environment, or "
+              f"{app} is already running without this one. Run `interactive.py status`, quit it, then retry.")
+        return 1
+    child = subprocess.Popen(["sh", str(folder / "launch.sh")], start_new_session=True,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(sig, lambda *_: sys.exit(1))
+    deadline = time.monotonic() + ttl * 60
+    try:
+        while time.monotonic() < deadline and (child.poll() is None or carriers({marker})):
+            time.sleep(5)
+    finally:
+        stop({marker})
+    return 0
+
+
+def leaks():
+    found = carriers()
+    for pid, name, marker in found:
+        print(f"LEAK: pid {pid} ({name}) still carries the case environment from {marker.removesuffix('/hooks/interactive')}")
+    if found:
+        print("Quit these apps or run `interactive.py stop`, then relaunch them normally. Until then their git pushes "
+              "and fetches fail against a fake forge.")
+    else:
+        print("No running process carries a case environment.")
+    return int(bool(found))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("prepare", "grade", "surfaces"))
+    parser.add_argument("action", choices=("prepare", "grade", "surfaces", "status", "launch", "stop"))
     parser.add_argument("--surfaces", nargs="+", choices=SURFACES, default=[])
     parser.add_argument("--scenarios", nargs="+", choices=run.SCENARIOS, default=list(run.SCENARIOS))
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--run", type=Path, help="Interactive run directory to grade")
+    parser.add_argument("--case", type=Path, help="Case folder to report on, launch, or stop")
+    parser.add_argument("--ttl", type=float, default=90, help="Minutes before launch stops the app it started")
     parser.add_argument("--record", action="store_true")
     args = parser.parse_args()
     if args.action == "surfaces":
@@ -349,11 +648,31 @@ def main():
             parser.error("--surfaces is required for prepare")
         print(prepare(args.surfaces, args.scenarios, args.repeats))
         return 0
+    if args.action == "status":
+        return status(args.case) if args.case else leaks()
+    if args.action == "launch":
+        if not args.case:
+            parser.error("--case is required for launch")
+        return launch(args.case, args.ttl)
+    if args.action == "stop":
+        if not args.case:
+            return stop()
+        return stop({str(Path(json.loads((args.case / "case.json").read_text())["workspace"]) / "hooks/interactive")})
     if not args.run:
         parser.error("--run is required for grade")
-    results = [grade(path.parent) for path in sorted(args.run.glob("*/*/case.json"))]
+    results, skipped = [], []
+    for path in sorted(args.run.glob("*/*/case.json")):
+        outcome = driver_outcome(path.parent)
+        if outcome:
+            case = json.loads(path.read_text())
+            skipped.append({"surface": case["surface"], "scenario": case["scenario"], "repeat": case["repeat"],
+                            "outcome": outcome})
+            print(f"{case['host']} {case['scenario']}#{case['repeat']}: {outcome}, not graded")
+            continue
+        results.append(grade(path.parent))
     summary = run.summarize(results, {name: {"version": None} for name in HOSTS})
-    run.verify.save(args.run / "report.json", {"run": args.run.name, "results": results, "summary": summary})
+    run.verify.save(args.run / "report.json", {"run": args.run.name, "results": results, "skipped": skipped,
+                                               "summary": summary})
     if args.record:
         run.record(summary, args.run.name)
     print(args.run / "report.json")

@@ -69,6 +69,22 @@ class HookProtocol(unittest.TestCase):
                              {"copilot": ("userPromptSubmitted", "s1"), "opencode": ("chat.system.transform", "s2"),
                               "amp": ("agent.start", "T-3")})
 
+    def test_vscode_runs_the_copilot_binding_with_its_own_event_names(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env = dict(os.environ, BSTACK_VERIFY_DIR=directory, BSTACK_STATE_DIR=str(Path(directory) / "state"))
+            for binding, event in (("sessionStart", "SessionStart"), ("userPromptSubmitted", "UserPromptSubmit")):
+                with self.subTest(event=event):
+                    payload = {"hook_event_name": event, "session_id": "vs-1", "prompt": "fix it"}
+                    result = subprocess.run(["python3", str(SCRIPT), "--host", "copilot", "--event", binding],
+                                            input=json.dumps(payload), text=True, capture_output=True, env=env)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    output = json.loads(result.stdout)["hookSpecificOutput"]
+                    self.assertEqual(output["hookEventName"], event)
+                    self.assertIn("bstack-router/SKILL.md", output["additionalContext"])
+            records = [json.loads(p.read_text()) for p in Path(directory).glob("hook-*.json")]
+            self.assertEqual(sorted((r["event"], r["session_id"]) for r in records),
+                             [("SessionStart", "vs-1"), ("UserPromptSubmit", "vs-1")])
+
     def test_invalid_payload_is_visible_failure(self):
         with tempfile.TemporaryDirectory() as directory:
             result = self.invoke("codex", [], directory)
