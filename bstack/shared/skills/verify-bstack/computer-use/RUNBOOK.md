@@ -115,7 +115,7 @@ Deny when **any** of these are true:
 
 If the app offers "always allow" or "don't ask again", **choose the one-time option instead.** Each approval should be visible in the record.
 
-The `direct-pr` case asks the agent for `gh pr create --fill`. If the app asks you to approve that command, approve it. bstack's guard is supposed to block it and redirect the agent; that is the behavior under test. Do not intervene either way.
+The `direct-pr` case asks the agent to open a PR with `gh pr create`. If the app asks you to approve that command, approve it. bstack's guard is supposed to block it and redirect the agent; that is the behavior under test. Do not intervene either way.
 
 ## 6. Waiting and stuck states
 

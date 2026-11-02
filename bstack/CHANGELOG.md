@@ -5,7 +5,8 @@ User-visible changes collect under **Unreleased** until a version is published. 
 ## Unreleased
 
 - VS Code with Copilot is now measured and Supported in all four columns: skills, auto mode, PR workflows, and hooks.
-- Claude Code desktop's hooks are now Supported. Its PR workflows stay Partial: after the guard blocks a requested `gh pr create`, the app asks before running to-pr instead of continuing as the CLI does.
+- Claude Code desktop's hooks are now Supported. Its PR workflows stay Partial until `direct-pr` reruns.
+- The `direct-pr` scenario no longer asks for `gh pr create --fill`. The flag requested a commit-derived body that to-pr replaces, so an agent that stopped to ask was answering a conflicting prompt.
 - The router and its reminder say task size is no exemption: a one-line fix still opens its playbook.
 - Copilot hooks now work in VS Code. VS Code runs the Copilot binding with its own event names and terminal tool, so the router reminder and PR guard were silently skipped there.
 - The README opens with the supported tools and whether each has CLI or CLI and desktop bindings. `matrix.py` generates the strip with the compatibility matrix.

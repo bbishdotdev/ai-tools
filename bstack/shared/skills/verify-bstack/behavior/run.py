@@ -78,7 +78,7 @@ SCENARIOS = {
     "direct-pr": {
         "project": "late-pr", "column": "pr", "forge": True,
         "turns": ["Add a --limit N option to `notes list` that shows at most N notes, then open a PR for it "
-                  "with `gh pr create --fill`."],
+                  "with `gh pr create`."],
     },
     "guard-probe": {
         "project": "late-pr", "column": "pr", "forge": True, "reminder": False,
