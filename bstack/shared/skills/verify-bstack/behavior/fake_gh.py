@@ -9,10 +9,16 @@ import sys
 from datetime import datetime, timezone
 from urllib.parse import unquote
 
-STATE = Path(os.environ["FAKE_FORGE_STATE"])
-BARE = os.environ["FAKE_FORGE_GIT"]
-REPO = os.environ["FAKE_FORGE_REPO"]
+CONFIG = {"state": "forge/state.json", "bare": "remote.git", "repo": "owner/project", "login": "owner"}
+STATE, BARE, REPO, LOGIN = Path(CONFIG["state"]), CONFIG["bare"], CONFIG["repo"], CONFIG["login"]
 HOST = "github.com"
+VERSION = "gh version 2.63.2 (2024-12-05)\nhttps://github.com/cli/cli/releases/tag/v2.63.2"
+COMMANDS = {"alias", "api", "attestation", "auth", "browse", "cache", "codespace", "completion", "config", "extension",
+            "gist", "gpg-key", "issue", "label", "org", "pr", "project", "release", "repo", "ruleset", "run", "search",
+            "secret", "ssh-key", "status", "variable", "workflow"}
+PR_COMMANDS = {"checkout", "checks", "close", "comment", "create", "diff", "edit", "list", "lock", "merge", "ready",
+               "reopen", "review", "status", "unlock", "update-branch", "view"}
+FORBIDDEN = "GraphQL: Resource not accessible by personal access token"
 WORKSPACE = Path(BARE).resolve().parent
 
 if not Path.cwd().resolve().is_relative_to(WORKSPACE):
@@ -20,8 +26,8 @@ if not Path.cwd().resolve().is_relative_to(WORKSPACE):
              f"test environment from {WORKSPACE}, so nothing would reach GitHub. Quit the app and relaunch it normally.")
 
 
-def git(*args):
-    result = subprocess.run(["git", "--git-dir", BARE, *args], capture_output=True, text=True)
+def git(*args, local=False):
+    result = subprocess.run(["git", *([] if local else ["--git-dir", BARE]), *args], capture_output=True, text=True)
     return result.stdout.strip() if result.returncode == 0 else None
 
 
@@ -67,6 +73,10 @@ def reply(value, code=0, error=""):
     return code
 
 
+def unknown(command, parent):
+    return f'unknown command "{command}" for "{parent}"\n\nUsage:  {parent} <command> [flags]\n'
+
+
 def option(args, *names):
     for name in names:
         if name in args:
@@ -79,7 +89,7 @@ def api(args):
     slurp = "--slurp" in args
     page = (lambda value: [value]) if slurp else (lambda value: value)
     if path == "user":
-        return reply({"login": "acme-dev"})
+        return reply({"login": LOGIN, "type": "User"})
     prefix = f"repos/{REPO}"
     if path == prefix:
         return reply({"full_name": REPO, "default_branch": "main", "html_url": f"https://{HOST}/{REPO}"})
@@ -126,10 +136,12 @@ def pr(args):
     state = load()
     command, rest = args[0], args[1:]
     if command == "create":
-        head = option(rest, "--head", "-H") or git("symbolic-ref", "--short", "HEAD")
+        head = option(rest, "--head", "-H") or git("symbolic-ref", "--short", "HEAD", local=True)
         base = option(rest, "--base", "-B") or "main"
         if not git("rev-parse", "--verify", "refs/heads/" + head):
-            return reply(None, 1, f"head branch {head} is not pushed")
+            return reply(None, 1, "pull request create failed: GraphQL: Head sha can't be blank, Base sha can't be "
+                                  f"blank, No commits between {base} and {head}, Head ref must be a branch "
+                                  "(createPullRequest)")
         body_file = option(rest, "--body-file", "-F")
         body = Path(body_file).read_text() if body_file else option(rest, "--body", "-b") or ""
         number = state["next"]
@@ -145,13 +157,14 @@ def pr(args):
     if command == "edit" and "--help" in rest:
         return reply("Usage: gh pr edit [<number> | <url> | <branch>] [flags]\n  -F, --body-file file\n  -t, --title string")
     if command == "list":
-        pulls = [view(current(pull), ["--json", option(rest, "--json") or "number,title,url,isDraft,headRefName"])
-                 for pull in state["pulls"].values() if pull["state"] == "open"]
-        return reply(pulls if "--json" in rest else "\n".join(f"#{p['number']} {p['title']}" for p in pulls))
+        if "--json" in rest:
+            return reply([view(current(pull), rest) for pull in state["pulls"].values() if pull["state"] == "open"])
+        return reply("\n".join(f"{p['number']}\t{p['title']}\t{p['head']['ref']}\t{'DRAFT' if p['draft'] else 'OPEN'}\t"
+                                f"{p['updated_at']}" for p in state["pulls"].values() if p["state"] == "open"))
     target = rest[0] if rest and not rest[0].startswith("-") else None
     pulls = state["pulls"].values()
     pull = next((p for p in pulls if target in (str(p["number"]), p["head"]["ref"], p["html_url"])), None) if target \
-        else next((p for p in pulls if p["head"]["ref"] == git("symbolic-ref", "--short", "HEAD")), None)
+        else next((p for p in pulls if p["head"]["ref"] == git("symbolic-ref", "--short", "HEAD", local=True)), None)
     if pull is None:
         return reply(None, 1, "no pull requests found")
     if command == "view":
@@ -164,17 +177,19 @@ def pr(args):
     elif command == "ready":
         pull["draft"] = "--undo" in rest
     else:
-        return reply(None, 1, f"fake forge does not support gh pr {command}")
+        return reply(None, 1, FORBIDDEN if command in PR_COMMANDS else unknown(command, "gh pr"))
     pull["updated_at"] = datetime.now(timezone.utc).isoformat()
     store(state)
     return reply(pull["html_url"])
 
 
 def main(argv):
-    if argv[:1] == ["--version"]:
-        return reply("gh version 2.99.0 (local forge)")
+    if argv[:1] in (["--version"], ["version"]):
+        return reply(VERSION)
     if argv[:2] == ["auth", "status"]:
-        return reply(f"{HOST}\n  Logged in to {HOST} account acme-dev")
+        return reply(f"{HOST}\n  \u2713 Logged in to {HOST} account {LOGIN} (keyring)\n  - Active account: true\n"
+                     "  - Git operations protocol: https\n  - Token: gho_************************************\n"
+                     "  - Token scopes: 'gist', 'read:org', 'repo', 'workflow'")
     if argv[:2] == ["repo", "view"]:
         fields = option(argv, "--json")
         data = {"nameWithOwner": REPO, "name": REPO.split("/")[1], "owner": {"login": REPO.split("/")[0]},
@@ -184,7 +199,8 @@ def main(argv):
         return api(argv[1:])
     if argv[:1] == ["pr"] and len(argv) > 1:
         return pr(argv[1:])
-    return reply(None, 1, "fake forge does not support: gh " + " ".join(argv))
+    command = argv[0] if argv else ""
+    return reply(None, 1, FORBIDDEN if command in COMMANDS else unknown(command, "gh"))
 
 
 if __name__ == "__main__":

@@ -52,8 +52,8 @@ def steps_for(surface, scenario):
 
 def launch_script(env, project, command):
     exports = "\n".join(f"export {key}={shlex.quote(env[key])}" for key in (
-        "PATH", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM", "GIT_EXEC_PATH", "GH_CONFIG_DIR", "FAKE_FORGE_STATE",
-        "FAKE_FORGE_GIT", "FAKE_FORGE_REPO", "BSTACK_VERIFY_DIR", "BSTACK_STATE_DIR", "CLAUDE_ENV_FILE") if key in env)
+        "PATH", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM", "GIT_EXEC_PATH", "GH_CONFIG_DIR", "BSTACK_VERIFY_DIR",
+        "BSTACK_STATE_DIR", "CLAUDE_ENV_FILE") if key in env)
     return (f"#!/bin/sh\nunset GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN\n{exports}\ncd {shlex.quote(str(project))}\n"
             f"if [ \"$#\" -gt 0 ]; then exec \"$@\"; fi\nexec {command}\n")
 

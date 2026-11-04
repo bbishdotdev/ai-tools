@@ -181,14 +181,13 @@ class FakeForgeContainmentTests(unittest.TestCase):
         bare = self.workspace / "remote.git"
         clean = dict(os.environ, GIT_CONFIG_GLOBAL="/dev/null", GIT_CONFIG_NOSYSTEM="1")
         git(self.workspace, "init", "-q", "--bare", str(bare), env=clean)
-        self.env = dict(clean, GIT_EXEC_PATH=str(interactive.run.git_exec_path(self.workspace)),
-                        FAKE_FORGE_GIT=str(bare), FAKE_FORGE_STATE=str(self.workspace / "state.json"),
-                        FAKE_FORGE_REPO="acme/notes")
+        self.gh = interactive.run.fake_gh(self.workspace, "jlin/notes", "jlin") / "gh"
+        self.env = dict(clean, GIT_EXEC_PATH=str(interactive.run.git_exec_path(self.workspace)))
         for repo in (self.workspace / "notes", self.outside / "real"):
             repo.mkdir()
             git(repo, "init", "-q", "-b", "main", env=clean)
             git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "x", env=clean)
-            git(repo, "remote", "add", "origin", "https://github.com/acme/notes.git", env=clean)
+            git(repo, "remote", "add", "origin", "https://github.com/jlin/notes.git", env=clean)
 
     def test_push_reaches_the_fake_only_from_inside_the_workspace(self):
         self.assertEqual(git(self.workspace / "notes", "push", "-q", "origin", "main", env=self.env).returncode, 0)
@@ -198,8 +197,7 @@ class FakeForgeContainmentTests(unittest.TestCase):
 
     def test_fake_gh_refuses_outside_the_workspace(self):
         def gh(cwd):
-            return subprocess.run([sys.executable, str(BEHAVIOR / "fake_gh.py"), "pr", "list"], cwd=cwd, env=self.env,
-                                  capture_output=True, text=True)
+            return subprocess.run([str(self.gh), "pr", "list"], cwd=cwd, env=self.env, capture_output=True, text=True)
         self.assertEqual(gh(self.workspace / "notes").returncode, 0)
         outside = gh(self.outside / "real")
         self.assertNotEqual(outside.returncode, 0)
