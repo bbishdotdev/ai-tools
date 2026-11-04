@@ -1,0 +1,39 @@
+bstack/shared/tests/test_behavior_interactive.py
+  s_2c2de63dc6b1ca::t_9053a24ece318f 190
+  s_2c2de63dc6b1ca::t_33a3666d18800b 184-185,200
+bstack/shared/tests/test_behavior_grading_containment.py
+  s_2c2de63dc6b1ca::t_9053a24ece318f 179-230
+bstack/shared/skills/verify-bstack/behavior/run.py
+  s_2c2de63dc6b1ca::t_385736bf4f8062 411-412,461-462
+  s_2c2de63dc6b1ca::t_dfb519856e1cd6 120,122
+  s_2c2de63dc6b1ca::t_6a0c07b5a9e6ff 414-415,460,463,745
+  s_2c2de63dc6b1ca::t_a1c6f32bf87b9b 133,169-181
+  s_2c2de63dc6b1ca::t_c8fa12de36a223 478-479
+  s_2c2de63dc6b1ca::t_8b0873e633382a 13,23,123,132,152-153,155-157,164-168,182-183,192-193
+  s_2c2de63dc6b1ca::t_339f0be03fcd2d 52-54,406-410,413,416-422,428,453-454,458-459,464-477,480-489,491,521,527,532,534,536,541,554,619-620,636,654-655,671-672,733
+bstack/shared/skills/verify-bstack/features/behavior.md
+  s_2c2de63dc6b1ca::t_7d616d13bbb090 36-40
+bstack/shared/skills/verify-bstack/behavior/fake_gh.py
+  s_2c2de63dc6b1ca::t_a716d590dcc6f2 29-30,139,167
+  s_2c2de63dc6b1ca::t_385736bf4f8062 142-144
+  s_2c2de63dc6b1ca::t_28c03c9983746e 160-163
+  s_2c2de63dc6b1ca::t_4baac5de4145b0 12-13,15-21,76-79,92,180,187-188,190-192,202-203
+bstack/shared/skills/verify-bstack/behavior/interactive.py
+  s_2c2de63dc6b1ca::t_c8fa12de36a223 55-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "57c593ba4b9696c75df49bc736c2ed7b29221727",
+  "prompts": {},
+  "sessions": {
+    "s_2c2de63dc6b1ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5340e47-e147-4eea-b6a6-779185139de3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
