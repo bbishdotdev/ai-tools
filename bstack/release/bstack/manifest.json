@@ -1708,9 +1708,9 @@
     {
       "mode": 420,
       "path": "runtime/opencode-plugin.js",
-      "sha256": "afb0bbad50e8d60308bdc4ad40044d4ed1d0bd9360dce76ecebf69904a14aab3",
+      "sha256": "99cab9e63c3880ee1de77c91f7ebc444d9c9f7938d5163aacfe136208e5c5cae",
       "source": "bstack/shared/router/opencode-plugin.js",
-      "source_sha256": "afb0bbad50e8d60308bdc4ad40044d4ed1d0bd9360dce76ecebf69904a14aab3",
+      "source_sha256": "99cab9e63c3880ee1de77c91f7ebc444d9c9f7938d5163aacfe136208e5c5cae",
       "transforms": []
     },
     {
@@ -1732,9 +1732,9 @@
     {
       "mode": 420,
       "path": "scripts/bstack.py",
-      "sha256": "f56507f3d0c737a9ea9dc4647cc3035f52cd281dc34bece09357631e51c404cc",
+      "sha256": "253822aebf20f3d81c0cd288308b14e404bf48850cc39aa602d999752e954086",
       "source": "bstack/package/runtime.py",
-      "source_sha256": "f56507f3d0c737a9ea9dc4647cc3035f52cd281dc34bece09357631e51c404cc",
+      "source_sha256": "253822aebf20f3d81c0cd288308b14e404bf48850cc39aa602d999752e954086",
       "transforms": []
     },
     {
@@ -2065,9 +2065,9 @@
     {
       "mode": 420,
       "path": "shared/github/attribution.py",
-      "sha256": "e31ed534350cecba7f84c71e31b2ae7c4a601b58bc62cb6f5d6b2ed6e87154d0",
+      "sha256": "022fc9617800ef5ef08cf03c85795c622726ebcb3454a0a40f4b72a4860928db",
       "source": "bstack/shared/github/attribution.py",
-      "source_sha256": "e31ed534350cecba7f84c71e31b2ae7c4a601b58bc62cb6f5d6b2ed6e87154d0",
+      "source_sha256": "022fc9617800ef5ef08cf03c85795c622726ebcb3454a0a40f4b72a4860928db",
       "transforms": []
     },
     {

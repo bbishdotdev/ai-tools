@@ -42,7 +42,7 @@ export const Bstack = async ({ client, directory }) => ({
       ).map((message) => `${message.info.providerID}/${message.info.modelID}`))
       if (models.size === 1) decision = run(GUARD, { ...payload, response_model: [...models][0] })
     } catch {}
-    output.args = decision.modifiedArgs
+    output.args.command = decision.modifiedArgs.command
   },
   ...(AUTO
     ? {

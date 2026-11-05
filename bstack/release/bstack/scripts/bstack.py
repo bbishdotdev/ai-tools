@@ -61,7 +61,8 @@ def session_guidance(auto, hosts, changed=False, codex_disabled=False):
     if "amp" in hosts:
         notices.append("Amp loads `.amp/plugins/bstack.ts` from this project. Check it with `amp plugins list`.")
     if "opencode" in hosts:
-        notices.append("OpenCode loads `.opencode/plugins/bstack.js` from this project; `--pure` skips it.")
+        notices.append("OpenCode 1.x loads `.opencode/plugins/bstack.js`; check `opencode debug config`. "
+                       "Its `--pure` flag skips plugins. OpenCode 2.x loads `.opencode/plugins/bstack/index.js`.")
     if "copilot" in hosts:
         notices.append("Copilot runs `.github/hooks/bstack.json` only in a trusted folder. Trust the project when "
                        "Copilot asks, or pass `--trust-folder` for one prompt-mode session.")

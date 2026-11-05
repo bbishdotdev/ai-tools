@@ -10,7 +10,13 @@ HOSTS = {"codex", "claude", "cursor", "grok", "copilot", "opencode", "amp"}
 EVIDENCE = {"response-model", "selected-model", "explicit", "unavailable"}
 MODEL = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}")
 ALIASES = {"auto", "default", "low", "smart", "rush", "deep", "free", "high", "ultra", "balanced", "balance"}
-TOKEN = re.compile(r'''[ \t\r]+|\n|&&|;|(?:[^\s;&|<>()'"`\\]+|'[^']*'|"(?:[^"\\]|\\.)*"|\\[^\n])+''')
+TOKEN = re.compile(
+    r'''(?P<space>[ \t]+|\\\n)|(?P<separator>\n|&&|;)|'''
+    r'''(?P<redirect>[0-9]*(?:>&|<&)[0-9-]+|[0-9]*(?:>>?|<)(?![<&>]))|'''
+    r'''(?P<word>(?:[^\s;&|<>(){}'"`\\]+|'[^']*'|"(?:[^"\\]|\\[\s\S])*"|\\[\s\S])+)'''
+)
+SHELL_KEYWORDS = {"!", "[[", "]]", "if", "then", "else", "elif", "fi", "case", "esac", "for", "select",
+                  "while", "until", "do", "done", "function", "time", "coproc", "in"}
 
 
 class ExistingContext(ValueError):
@@ -74,39 +80,70 @@ def resolve(context=None, explicit=None):
     return automatic
 
 
+def literal_word(raw):
+    value, quote, index = [], None, 0
+    while index < len(raw):
+        character = raw[index]
+        if character == quote:
+            quote = None
+        elif quote == "'":
+            value.append(character)
+        elif character == "\\":
+            index += 1
+            if index == len(raw):
+                return None
+            escaped = raw[index]
+            if quote == '"' and escaped not in '\\"$`\n':
+                value.append("\\")
+            if escaped != "\n":
+                value.append(escaped)
+        elif quote is None and character in "'\"":
+            quote = character
+        elif character in "$`" or quote is None and character in "*?[]~":
+            return None
+        else:
+            value.append(character)
+        index += 1
+    return "".join(value) if quote is None else None
+
+
 def helper_positions(command, helper, cwd):
     if not isinstance(command, str) or len(command) > 131072:
         return []
-    tokens, position = [], 0
+    groups, position, redirect_target = [[]], 0, False
     for match in TOKEN.finditer(command):
         if match.start() != position:
             return []
         position = match.end()
         raw = match.group()
-        if raw.strip() == "" and raw != "\n":
+        if match.lastgroup == "space":
             continue
-        if raw in (";", "&&", "\n"):
-            tokens.append((raw, match.end(), True))
+        if match.lastgroup == "separator":
+            if redirect_target:
+                return []
+            groups.append([])
             continue
-        try:
-            values = shlex.split(raw)
-        except ValueError:
+        if match.lastgroup == "redirect":
+            if redirect_target:
+                return []
+            redirect_target = "&" not in raw
+            continue
+        if raw.startswith("#"):
             return []
-        if len(values) != 1 or "$" in raw or "`" in raw:
-            return []
-        tokens.append((values[0], match.end(), False))
-    if position != len(command):
+        value = literal_word(raw)
+        if redirect_target:
+            redirect_target = False
+            if value is not None:
+                continue
+        groups[-1].append((value, match.end(), raw))
+    if position != len(command) or redirect_target:
         return []
-    groups, group = [], []
-    for token in tokens:
-        if token[2]:
-            groups.append(group)
-            group = []
-        else:
-            group.append(token)
-    groups.append(group)
+    if any(group and group[0][2].replace("\\\n", "") in SHELL_KEYWORDS for group in groups):
+        return []
     found = []
     for group in groups:
+        if any(value is None for value, _, _ in group):
+            continue
         if len(group) < 3 or Path(group[0][0]).name not in ("python", "python3"):
             continue
         path = Path(group[1][0])

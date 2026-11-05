@@ -73,7 +73,9 @@ A separate worktree, cloud session, or SSH host can have a different filesystem.
 
 ### Check a host after installation
 
-Run the installed `doctor` first, then start a fresh session in the project. For Amp, run `amp skills list --json` there and look for a BStack entry such as `how`; Amp's own `reload_skills` tool can rescan an existing thread. For Copilot CLI, run `copilot skill list`; in VS Code with Copilot, open the Skills customization view or type `/skills` in a Local chat. These are native discovery checks, not proof of automatic routing. Amp loads `.amp/plugins/bstack.ts`; `amp plugins list` should show it active. Copilot runs `.github/hooks/bstack.json` only after you trust the folder. OpenCode loads `.opencode/plugins/bstack.js`; `opencode debug config` lists it, and `--pure` skips it. Check the [compatibility matrix](README.md#tool-compatibility) for what has been exercised.
+Run the installed `doctor` first, then start a fresh session in the project. For Amp, run `amp skills list --json` there and look for a BStack entry such as `how`; Amp's own `reload_skills` tool can rescan an existing thread. For Copilot CLI, run `copilot skill list`; in VS Code with Copilot, open the Skills customization view or type `/skills` in a Local chat. These are native discovery checks, not proof of automatic routing. Amp loads `.amp/plugins/bstack.ts`; `amp plugins list` should show it active. Copilot runs `.github/hooks/bstack.json` only after you trust the folder.
+
+OpenCode 1.x loads `.opencode/plugins/bstack.js`; check `opencode debug config`. Its `--pure` flag skips plugins. OpenCode 2.x loads `.opencode/plugins/bstack/index.js`. The installed `doctor` checks both files. Check the [compatibility matrix](README.md#tool-compatibility) for what has been exercised.
 
 ## From a download or clone
 
