@@ -1,0 +1,109 @@
+bstack/github/pr.py
+  s_d1a3940668e410::t_68b196b2263e3c 23-25,384,387,389-390,393,399-403,486,493,820,846
+  s_d1a3940668e410::t_aa89024688846a 22
+  s_d1a3940668e410::t_58f6465729eee4 386
+bstack/engineering/to-pr/references/publishing.md
+  s_d1a3940668e410::t_ea35be73a832f2 78,83-84
+  s_d1a3940668e410::t_58f6465729eee4 82
+bstack/package/test_runtime.py
+  s_d1a3940668e410::t_0fa0facdfd3970 55,240-241
+  s_d1a3940668e410::t_68b196b2263e3c 58-59
+  s_d1a3940668e410::t_ea35be73a832f2 263,272
+bstack/shared/skills/verify-bstack/features/pull-requests.md
+  s_d1a3940668e410::t_05927b4d7867cf 21-24
+bstack/shared/github/pr_guard.py
+  s_d1a3940668e410::t_aa89024688846a 10
+  s_d1a3940668e410::t_9ca7aacdadfb55 11,140-145,149,156,158-159
+  s_d1a3940668e410::t_68b196b2263e3c 12-13,80,94-111
+  s_d1a3940668e410::t_ac863648d5e320 112-113
+bstack/package/selection.json
+  s_d1a3940668e410::t_68b196b2263e3c 121-122
+bstack/shared/github/attribution_hosts.py
+  s_d1a3940668e410::t_9ca7aacdadfb55 24-25
+  s_d1a3940668e410::t_13653f2db83e6f 1-14,16-17,19-21,23,26-129,134-162,164-188
+  s_d1a3940668e410::t_58f6465729eee4 163
+  s_d1a3940668e410::t_b4819426982d72 15,18,22,130-133
+bstack/release/bstack/runtime/opencode-plugin-v2.js
+  s_d1a3940668e410::t_9de46db91382ad 40-41
+  s_d1a3940668e410::t_f6ba89aac78aac 1-39,42-55
+bstack/release/bstack/runtime/opencode-plugin.js
+  s_d1a3940668e410::t_b10041e7c9d874 24,26-28,30-38,41-45
+  s_d1a3940668e410::t_9de46db91382ad 39-40
+bstack/package/runtime.py
+  s_d1a3940668e410::t_0fa0facdfd3970 303-305,407-409
+  s_d1a3940668e410::t_9ca7aacdadfb55 394-395
+bstack/github/tests/test_pr.py
+  s_d1a3940668e410::t_58f6465729eee4 612
+bstack/release/bstack/shared/github/attribution.py
+  s_d1a3940668e410::t_9de46db91382ad 16-19,62,118
+  s_d1a3940668e410::t_b10041e7c9d874 1-15,20-61,63-117,119-127
+bstack/release/bstack/manifest.json
+  s_d1a3940668e410::t_9de46db91382ad 1703,1705,1711,1713,1735,1737,2068,2070,2076,2078
+  s_d1a3940668e410::t_f6ba89aac78aac 80,131,151,172,193,214,235,255,340,361,382,423,444,504,524,558,985,1021,1041,1062,1083,1120,1311,1348,1369,1390,1411,1432,1469,1501,1643,1702,1704,1775,1796,1817,1839,1861,1883,1905,1943,1965,1994,2014,2060,2106,2365,2386,2407
+  s_d1a3940668e410::t_b10041e7c9d874 1419,1421,1440,1442,1677,1695,1697-1701,2065-2067,2069,2071-2075,2077,2079-2080
+  s_d1a3940668e410::t_2cb5c3b7f897d1 1659,1661,2084,2086
+bstack/release/bstack/shared/github/attribution_hosts.py
+  s_d1a3940668e410::t_b10041e7c9d874 1-14,16-17,19-21,23,26-129,134-188
+  s_d1a3940668e410::t_9de46db91382ad 15,18,22,24-25,130-133
+bstack/shared/router/opencode-plugin-v2.js
+  s_d1a3940668e410::t_b4819426982d72 40-41
+  s_d1a3940668e410::t_0fa0facdfd3970 1-39,42-55
+bstack/scripts/package.py
+  s_d1a3940668e410::t_0fa0facdfd3970 417
+bstack/release/bstack/engineering/to-pr/SKILL.md
+  s_d1a3940668e410::t_b10041e7c9d874 43
+bstack/release/bstack/engineering/to-pr/references/publishing.md
+  s_d1a3940668e410::t_b10041e7c9d874 78,82-84
+bstack/shared/router/install.py
+  s_d1a3940668e410::t_9ca7aacdadfb55 43-46
+  s_d1a3940668e410::t_ea35be73a832f2 18-22,31-32,41-42,47-48,143-144
+  s_d1a3940668e410::t_05927b4d7867cf 6,52-64,115-116,124-129
+  s_d1a3940668e410::t_00d6495e05c4c4 49-51
+bstack/engineering/to-pr/SKILL.md
+  s_d1a3940668e410::t_ea35be73a832f2 43
+bstack/release/bstack/github/pr.py
+  s_d1a3940668e410::t_2cb5c3b7f897d1 22
+  s_d1a3940668e410::t_b10041e7c9d874 23-25,384,386-387,389-390,393,399-403,486,493,820,846
+bstack/shared/github/attribution.py
+  s_d1a3940668e410::t_16b07c62485554 1-15,20-61,63-88,90-96,98-101,103-113,115-116,119-127
+  s_d1a3940668e410::t_b4819426982d72 62
+  s_d1a3940668e410::t_293b04da842e22 89,97,102,114,117
+  s_d1a3940668e410::t_9ca7aacdadfb55 16-19,118
+bstack/release/bstack/shared/github/pr_guard.py
+  s_d1a3940668e410::t_b10041e7c9d874 12-13,80,94-111
+  s_d1a3940668e410::t_2cb5c3b7f897d1 10
+  s_d1a3940668e410::t_9de46db91382ad 11,140-145,149,156,158-159
+  s_d1a3940668e410::t_e1993694d708bc 112-113
+bstack/github/tests/test_attribution.py
+  s_d1a3940668e410::t_f5c6cb5387e480 1-5,7-97,99-141,154-163,237-252
+  s_d1a3940668e410::t_9ca7aacdadfb55 149-150,166-174
+  s_d1a3940668e410::t_346c3e70bad029 6,142-148,151-153,164-165,175-236
+  s_d1a3940668e410::t_58f6465729eee4 98
+bstack/shared/router/amp-plugin.ts
+  s_d1a3940668e410::t_293b04da842e22 24,27-43
+bstack/release/bstack/scripts/bstack.py
+  s_d1a3940668e410::t_9de46db91382ad 394-395
+  s_d1a3940668e410::t_f6ba89aac78aac 303-305,407-409
+bstack/shared/router/opencode-plugin.js
+  s_d1a3940668e410::t_ea35be73a832f2 26
+  s_d1a3940668e410::t_293b04da842e22 24,27-28,30-38,41-45
+  s_d1a3940668e410::t_b4819426982d72 39-40
+bstack/release/bstack/runtime/amp-plugin.ts
+  s_d1a3940668e410::t_b10041e7c9d874 24,27-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "281bed2d84cdfb768b360c2681cb3452b20c5cdd",
+  "prompts": {},
+  "sessions": {
+    "s_d1a3940668e410": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a182a5-caef-79d3-abf3-fa0be6d1366d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
