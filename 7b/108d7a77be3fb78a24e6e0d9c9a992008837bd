@@ -1,0 +1,39 @@
+bstack/release/bstack/manifest.json
+  s_d1a3940668e410::t_16e2ade6fd4237 1711,1713,1735,1737,2068,2070
+bstack/release/bstack/runtime/opencode-plugin.js
+  s_d1a3940668e410::t_16e2ade6fd4237 45
+bstack/package/runtime.py
+  s_d1a3940668e410::t_f074c6f5b6f446 65
+  s_d1a3940668e410::t_2741f04fea07b8 64
+bstack/shared/router/opencode-plugin.js
+  s_d1a3940668e410::t_88e609c06e9995 45
+bstack/release/bstack/scripts/bstack.py
+  s_d1a3940668e410::t_16e2ade6fd4237 64-65
+bstack/shared/github/attribution.py
+  s_d1a3940668e410::t_560701615d39c7 13-17,141
+  s_d1a3940668e410::t_a1e16a98404425 18-19,83-109,113,119,121-124,126-131,133-139,145-146
+  s_d1a3940668e410::t_c30c0e7758486b 140
+bstack/INSTALL.md
+  s_d1a3940668e410::t_2741f04fea07b8 76-77
+  s_d1a3940668e410::t_f074c6f5b6f446 78
+bstack/release/bstack/shared/github/attribution.py
+  s_d1a3940668e410::t_16e2ade6fd4237 13-19,83-109,113,119,121-124,126-131,133-141,145-146
+bstack/shared/skills/verify-bstack/features/pull-requests.md
+  s_d1a3940668e410::t_e3bc8cb1ba260a 23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7b108d7a77be3fb78a24e6e0d9c9a992008837bd",
+  "prompts": {},
+  "sessions": {
+    "s_d1a3940668e410": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a182a5-caef-79d3-abf3-fa0be6d1366d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
