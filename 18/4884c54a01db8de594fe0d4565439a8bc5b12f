@@ -1,0 +1,21 @@
+bstack/github/tests/test_attribution.py
+  s_d1a3940668e410::t_cccf6cd77d648a 107-108,113-150
+  s_d1a3940668e410::t_7f35dc660af4e8 244-245,247-248
+  s_d1a3940668e410::t_d437c1ef116ceb 151
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "184884c54a01db8de594fe0d4565439a8bc5b12f",
+  "prompts": {},
+  "sessions": {
+    "s_d1a3940668e410": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a182a5-caef-79d3-abf3-fa0be6d1366d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
