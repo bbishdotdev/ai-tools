@@ -300,8 +300,9 @@ def existing_pr_templates(project):
 
 
 SKILL_HELPERS = {"to-pr": "github/pr.py"}
-PLUGINS = {"opencode": (".opencode/plugins/bstack.js", "runtime/opencode-plugin.js"),
-           "amp": (".amp/plugins/bstack.ts", "runtime/amp-plugin.ts")}
+PLUGINS = {"opencode": ((".opencode/plugins/bstack.js", "runtime/opencode-plugin.js"),
+                        (".opencode/plugins/bstack/index.js", "runtime/opencode-plugin-v2.js")),
+           "amp": ((".amp/plugins/bstack.ts", "runtime/amp-plugin.ts"),)}
 
 
 def plugin_source(template, host, invocation, project_arg, guard, auto):
@@ -390,7 +391,8 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
             target = ".codex/hooks.json" if host == "codex" else ".claude/settings.json"
             add(target, {"kind": "json", "entries": entries, "defaults": {}})
         elif host == "cursor":
-            entries = {"beforeShellExecution": [{"command": guard, "timeout": 5}]}
+            entries = {"beforeShellExecution": [{"command": guard, "timeout": 5}],
+                       "preToolUse": [{"matcher": "Shell", "command": guard, "timeout": 5}]}
             if auto:
                 handler = {"command": command, "timeout": 5}
                 entries.update({e: [handler] for e in ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")})
@@ -402,9 +404,9 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
                                 for event in ("sessionStart", "userPromptSubmitted", "subagentStart")})
             add(".github/hooks/bstack.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
         elif host in PLUGINS:
-            target, template = PLUGINS[host]
-            add(target, {"kind": "file", "text": plugin_source(
-                (capsule_root() / template).read_text(), host, invocation, project_arg, guard, auto)})
+            for target, template in PLUGINS[host]:
+                add(target, {"kind": "file", "text": plugin_source(
+                    (capsule_root() / template).read_text(), host, invocation, project_arg, guard, auto)})
         elif host == "grok":
             guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
             entries = {"PreToolUse": [guard_handler]}

@@ -118,6 +118,8 @@
     "shared/adr.py",
     "shared/pr_policy.py",
     "shared/github/pr_guard.py",
+    "shared/github/attribution.py",
+    "shared/github/attribution_hosts.py",
     "workspace/cli.py",
     "workspace/README.md",
     "workspace/OPERATIONS.md",

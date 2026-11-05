@@ -52,9 +52,11 @@ class RuntimeTests(unittest.TestCase):
         shutil.copyfile(SOURCE / "runtime.py", root / "scripts/bstack.py")
         shutil.copyfile(BSTACK / "shared/router/hook.py", root / "runtime/reminder.py")
         shutil.copyfile(BSTACK / "shared/router/reminder.txt", root / "runtime/reminder.txt")
-        for template in ("opencode-plugin.js", "amp-plugin.ts"):
+        for template in ("opencode-plugin.js", "opencode-plugin-v2.js", "amp-plugin.ts"):
             shutil.copyfile(BSTACK / "shared/router" / template, root / "runtime" / template)
         shutil.copyfile(BSTACK / "shared/github/pr_guard.py", root / "shared/github/pr_guard.py")
+        for name in ("attribution.py", "attribution_hosts.py"):
+            shutil.copyfile(BSTACK / "shared/github" / name, root / "shared/github" / name)
         shutil.copyfile(BSTACK / "shared/references/verification-policy.md", root / "shared/references/verification-policy.md")
         (root / "shared/router/WORKFLOW.md").write_text("# Fixture router\n")
         (root / BASELINE_PATH).write_text(BASELINE)
@@ -235,7 +237,8 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(set(copilot["hooks"]), {"preToolUse", "sessionStart", "userPromptSubmitted", "subagentStart"})
         self.assertIn("--host copilot", copilot["hooks"]["preToolUse"][0]["bash"])
         self.assertIn("--event userPromptSubmitted", copilot["hooks"]["userPromptSubmitted"][0]["bash"])
-        for relative, host in ((".amp/plugins/bstack.ts", "amp"), (".opencode/plugins/bstack.js", "opencode")):
+        for relative, host in ((".amp/plugins/bstack.ts", "amp"), (".opencode/plugins/bstack.js", "opencode"),
+                               (".opencode/plugins/bstack/index.js", "opencode")):
             source = (self.project / relative).read_text()
             self.assertIn(f"hook --host {host}", source)
             self.assertIn(f"pr_guard.py' --host {host}", source)
@@ -257,7 +260,7 @@ class RuntimeTests(unittest.TestCase):
                            "cursor": "beforeShellExecution", "grok": "PreToolUse"}
         for host, relative in paths.items():
             value = json.loads((self.project / relative).read_text())
-            self.assertEqual(set(value["hooks"]), {expected_events[host]})
+            self.assertEqual(set(value["hooks"]), {expected_events[host], "preToolUse"} if host == "cursor" else {expected_events[host]})
             entry = value["hooks"][expected_events[host]][0]
             command = entry["command"] if host == "cursor" else entry["hooks"][0]["command"]
             self.assertIn(f"pr_guard.py' --host {host}", command)
@@ -266,7 +269,7 @@ class RuntimeTests(unittest.TestCase):
         self.run_cli("auto", "off")
         for host, relative in paths.items():
             value = json.loads((self.project / relative).read_text())
-            self.assertEqual(set(value["hooks"]), {expected_events[host]})
+            self.assertEqual(set(value["hooks"]), {expected_events[host], "preToolUse"} if host == "cursor" else {expected_events[host]})
 
     def test_verification_setting_defaults_ask_and_survives_upgrade(self):
         installed = self.run_cli("install")

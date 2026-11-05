@@ -3,6 +3,7 @@
 import argparse
 import json
 from pathlib import Path
+import shlex
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -14,7 +15,11 @@ def command(host):
         return 'python3 "$(git rev-parse --show-toplevel)/bstack/shared/router/hook.py" --host codex'
     if host == "grok":
         return 'python3 "${GROK_WORKSPACE_ROOT}/bstack/shared/router/hook.py" --host grok'
-    return "python3 bstack/shared/router/hook.py --host cursor"
+    return f"python3 bstack/shared/router/hook.py --host {host}"
+
+
+def guard_command(host):
+    return command(host).replace("bstack/shared/router/hook.py", "bstack/shared/github/pr_guard.py")
 
 
 def configurations():
@@ -23,6 +28,8 @@ def configurations():
         handler = {"type": "command", "command": command(host), "timeout": 5}
         events = {name: [{"hooks": [handler.copy()]}] for name in
                   ("SessionStart", "UserPromptSubmit", "SubagentStart")}
+        events["PreToolUse"] = [{"matcher": "Bash", "hooks": [
+            {"type": "command", "command": guard_command(host), "timeout": 5}]}]
         result[path] = {"hooks": events}
     result[".cursor/hooks.json"] = {"version": 1, "hooks": {
         name: [{"command": command("cursor"), "timeout": 5}]
@@ -31,6 +38,30 @@ def configurations():
     result[".grok/hooks/bstack.json"] = {"hooks": {name: [{"hooks": [
         {"type": "command", "command": command("grok"), "timeout": 5}
     ]}] for name in ("UserPromptSubmit", "PostToolUse")}}
+    result[".grok/hooks/bstack.json"]["hooks"]["PreToolUse"] = [{"matcher": "Bash", "hooks": [
+        {"type": "command", "command": guard_command("grok"), "timeout": 5}]}]
+    result[".cursor/hooks.json"]["hooks"].update({
+        "beforeShellExecution": [{"command": guard_command("cursor"), "timeout": 5}],
+        "preToolUse": [{"matcher": "Shell", "command": guard_command("cursor"), "timeout": 5}],
+    })
+    result[".github/hooks/bstack.json"] = {"version": 1, "hooks": {"preToolUse": [
+        {"type": "command", "bash": guard_command("copilot"), "timeoutSec": 5}]}}
+    return result
+
+
+def plugin_files():
+    result = {}
+    for host, target, template in (
+        ("amp", ".amp/plugins/bstack.ts", "amp-plugin.ts"),
+        ("opencode", ".opencode/plugins/bstack.js", "opencode-plugin.js"),
+        ("opencode", ".opencode/plugins/bstack/index.js", "opencode-plugin-v2.js"),
+    ):
+        hook = f"python3 {shlex.quote(str(ROOT / 'bstack/shared/router/hook.py'))} --host {host}"
+        guard = f"python3 {shlex.quote(str(ROOT / 'bstack/shared/github/pr_guard.py'))} --host {host}"
+        result[target] = (Path(__file__).with_name(template).read_text()
+                          .replace("__BSTACK_HOOK__", json.dumps(hook))
+                          .replace("__BSTACK_GUARD__", json.dumps(guard))
+                          .replace("__BSTACK_AUTO__", "true"))
     return result
 
 
@@ -81,7 +112,8 @@ def destination(relative, *, link=False):
 def install(apply=False):
     links = development_links()
     configs = configurations()
-    for relative in (".codex/config.toml", *configs, ".cursor/rules/bstack-router.mdc"):
+    plugins = plugin_files()
+    for relative in (".codex/config.toml", *configs, *plugins, ".cursor/rules/bstack-router.mdc"):
         destination(relative)
     for relative, target in links.items():
         path = destination(relative, link=True)
@@ -89,6 +121,12 @@ def install(apply=False):
             raise ValueError(f"Existing entry would be replaced: {path}")
 
     writes = {}
+    for relative, source in plugins.items():
+        path = destination(relative)
+        if path.exists() and path.read_text() != source:
+            raise ValueError(f"Review changed plugin before replacing: {path}")
+        if not path.exists():
+            writes[relative] = source
     config = ROOT / ".codex/config.toml"
     if not config.exists():
         writes[".codex/config.toml"] = "# Activate this project layer so Codex discovers sibling hooks.json.\n[features]\nhooks = true\n"
@@ -102,7 +140,8 @@ def install(apply=False):
         for event, groups in wanted["hooks"].items():
             existing = hooks.setdefault(event, [])
             if groups[0] not in existing:
-                own = [g for g in existing if "bstack/shared/router/hook.py" in json.dumps(g)]
+                own = [g for g in existing if any(name in json.dumps(g) for name in
+                       ("bstack/shared/router/hook.py", "bstack/shared/github/pr_guard.py"))]
                 if own:
                     raise ValueError(f"Review changed bstack hook instead of duplicating: {path}:{event}")
                 existing.extend(groups)
