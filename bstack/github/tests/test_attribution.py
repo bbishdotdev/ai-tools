@@ -104,10 +104,50 @@ class AttributionTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertEqual((self.root / "cwd.txt").read_text().strip(), str(self.root))
         self.assertEqual((self.root / "context.txt").read_text(), "")
-        self.assertTrue((self.root / "compound/bundle.json").is_file())
+        bundle = json.loads((self.root / "compound/bundle.json").read_text())
+        self.assertEqual(bundle["attribution"]["model"], "model-current")
         self.assertEqual(helper_positions("echo ';' " + self.command("never"), guard.HELPER, "/"), [])
         self.assertEqual(helper_positions("python3 bstack/github/pr.py prepare", guard.HELPER, "/"), [])
         self.assertEqual(helper_positions("cat <<'EOF'\n" + self.command("never") + "\nEOF", guard.HELPER, "/"), [])
+
+    def test_literal_shell_forms_keep_attribution_and_argument_values(self):
+        forms = (
+            ("quoted", lambda command: command.replace("'Fix ; preserve shell'", "'Fix `$VALUE` title'"), "Fix `$VALUE` title"),
+            ("continued", lambda command: command.replace(" prepare ", " pre\\\npare "), "Fix ; preserve shell"),
+            ("redirect", lambda command: command + " 2>&1", "Fix ; preserve shell"),
+            ("variable-elsewhere", lambda command: command + '\nVARIABLE=present\nprintf "%s" "$VARIABLE"', "Fix ; preserve shell"),
+        )
+        for name, transform, title in forms:
+            with self.subTest(form=name):
+                command = transform(self.command(name))
+                payload = self.payload("claude", command)
+                self.evidence("claude", payload)
+                response = guard.attributed_input("claude", payload, command)
+                self.assertIsNotNone(response)
+                changed = response["hookSpecificOutput"]["updatedInput"]["command"]
+                result = subprocess.run(["/bin/bash", "-c", changed], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                bundle = json.loads((self.root / name / "bundle.json").read_text())
+                self.assertEqual(bundle["attribution"]["model"], "fixture-response")
+                self.assertEqual(bundle["title"], title)
+                if name == "variable-elsewhere":
+                    self.assertTrue(result.stdout.endswith("present"))
+
+    def test_shell_expansion_and_nested_shell_syntax_are_not_rewritten(self):
+        command = self.command("unsupported")
+        forms = (
+            command.replace("'Fix ; preserve shell'", '"$VARIABLE"'),
+            command.replace("'Fix ; preserve shell'", '"$(printf title)"'),
+            command.replace("'Fix ; preserve shell'", "*.md"),
+            "{ :; " + command + "; }",
+            "if true; then\n" + command + "\nfi",
+            "# " + command,
+            "cat <<'EOF'\n" + command + "\nEOF",
+            command + " | cat",
+        )
+        for source in forms:
+            with self.subTest(command=source):
+                self.assertEqual(helper_positions(source, guard.HELPER, "/"), [])
 
     def test_claude_uses_the_exact_call_and_subagent_not_the_latest_message(self):
         payload = self.payload("claude", self.command("child"))
@@ -201,10 +241,11 @@ if (input.kind === "amp") {
   const hooks = await plugin.Bstack({directory:input.cwd,client:{session:{messages:async () => ({data:[
     {info:{role:"assistant",sessionID:"session",providerID:"provider",modelID:"plugin-model"},parts:[{type:"tool",callID:"call"}]},
   ]})}}})
-  const output = {args:{command,keep:"preserved"}}
+  const args = {command,keep:"preserved"}
+  const output = {args}
   await hooks["tool.execute.before"]({tool:"bash",sessionID:"session",callID:"call"},output)
-  if (output.args.keep !== "preserved") throw new Error("OpenCode lost native input")
-  changed = output.args.command
+  if (args.keep !== "preserved") throw new Error("OpenCode lost native input")
+  changed = args.command
 } else {
   await plugin.default.setup({
     tool:{hook:async (name, callback) => {callbacks[name]=callback}},
