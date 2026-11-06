@@ -21,11 +21,28 @@ function reminder(event, sessionID) {
   return run(`${HOOK} --event ${event}`, { hook_event_name: event, sessionID }).additionalContext
 }
 
-export const Bstack = async () => ({
+export const Bstack = async ({ client, directory }) => ({
   "tool.execute.before": async (input, output) => {
-    if (input.tool !== "bash") return
-    const decision = run(GUARD, { toolName: "bash", toolArgs: { command: output.args?.command ?? "" } })
+    if (!["bash", "shell"].includes(input.tool)) return
+    const payload = { toolName: "bash", toolArgs: output.args, sessionID: input.sessionID, callID: input.callID, cwd: directory }
+    let decision = run(GUARD, payload)
     if (decision.permissionDecision === "deny") throw new Error(decision.permissionDecisionReason)
+    if (!decision.modifiedArgs) return
+    try {
+      const result = await client.session.messages({
+        path: { id: input.sessionID },
+        query: { limit: 20 },
+        signal: AbortSignal.timeout(1500),
+      })
+      const models = new Set((result.data ?? []).filter((message) =>
+        message.info.role === "assistant" && message.info.sessionID === input.sessionID &&
+        typeof message.info.providerID === "string" && message.info.providerID.length > 0 &&
+        typeof message.info.modelID === "string" && message.info.modelID.length > 0 &&
+        message.parts.some((part) => part.type === "tool" && part.callID === input.callID)
+      ).map((message) => `${message.info.providerID}/${message.info.modelID}`))
+      if (models.size === 1) decision = run(GUARD, { ...payload, response_model: [...models][0] })
+    } catch {}
+    output.args.command = decision.modifiedArgs.command
   },
   ...(AUTO
     ? {

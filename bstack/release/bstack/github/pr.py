@@ -19,6 +19,10 @@ import sys
 import uuid
 from urllib.parse import quote
 
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shared/github"))
+from attribution import resolve as resolve_attribution
+
 VERSION = 1
 MAX_PRS = 500
 MAX_BYTES = 50 * 1024 * 1024
@@ -377,21 +381,26 @@ def validate_brief(body, length_exception=None):
     return words
 
 
-def model_signature(model):
+def model_signature(model, evidence=None):
     if model is None:
-        return "<sub><i>🤖 BStack PR · Model not reported by host</i></sub>"
-    if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/+-]{0,79}", model):
+        return "<sub><i>🤖 BStack PR · Model attribution unavailable</i></sub>"
+    if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/+-]{0,159}", model):
         fail("invalid_model", "Use the exact model ID reported by the host, without prose or markup")
-    return f"<sub><i>🤖 BStack PR · Prepared with {model}</i></sub>"
+    qualifier = " (host-selected model)" if evidence == "selected-model" else ""
+    return f"<sub><i>🤖 BStack PR · Prepared with {model}{qualifier}</i></sub>"
 
 
-def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False, length_exception=None, author_model=None):
+def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=None, draft=False, length_exception=None, author_model=None, host_context=None):
     scan = validate_scan(read_json(scan_path))
     review = read_json(review_path)
     assessment = review_scan(scan, review)
     text_value(title, "Title")
     body = text_value(Path(body_path).read_text(), "Body")
-    signature = model_signature(author_model)
+    try:
+        attribution = resolve_attribution(host_context, author_model)
+    except ValueError as error:
+        fail("invalid_model", str(error))
+    signature = model_signature(attribution.model, attribution.evidence)
     validate_visual(scan, body)
     media = read_json(media_path) if media_path else []
     if not isinstance(media, list):
@@ -474,14 +483,14 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
               "base": scan["base"], "head": scan["head"], "scanId": scan["scanId"], "title": title,
               "marker": marker, "requestedDraft": draft, "retainDraft": draft or bool(assessment["findings"]) or not assessment["complete"],
               "assessment": assessment, "bodyWords": words, "lengthException": length_exception,
-              "authorModel": author_model,
+              "authorModel": attribution.model, "attribution": attribution.record(),
               "files": {str(path.relative_to(directory)): hashlib.sha256(path.read_bytes()).hexdigest()
                                                     for path in directory.rglob("*") if path.is_file()}}
     write_json(directory / "bundle.json", bundle, True)
     save_state(directory, {"version": VERSION, "status": "prepared", "attempted": False, "pr": None, "events": []})
     return {"status": "prepared", "bundle": str(directory), "scanId": scan["scanId"],
             "retainDraft": bundle["retainDraft"], "assessment": assessment, "media": len(media_records),
-            "bodyWords": words, "lengthException": length_exception}
+            "bodyWords": words, "lengthException": length_exception, "attribution": attribution.record()}
 
 
 def load_bundle(directory):
@@ -808,6 +817,7 @@ def main(argv=None):
         prepare.add_argument("--draft", action="store_true")
         prepare.add_argument("--length-exception")
         prepare.add_argument("--author-model")
+        prepare.add_argument("--host-context", help=argparse.SUPPRESS)
         publish = commands.add_parser("publish", help="Plan, or explicitly publish, a saved bundle")
         publish.add_argument("--bundle", type=Path, required=True)
         publish.add_argument("--write", action="store_true")
@@ -833,7 +843,7 @@ def main(argv=None):
                 result = scan_summary(value, args.scan)
         elif args.command == "prepare":
             result = prepare_bundle(args.scan, args.review, args.title, args.body, args.out, args.media, args.draft,
-                                    args.length_exception, args.author_model)
+                                    args.length_exception, args.author_model, args.host_context)
         elif args.command == "refresh":
             result = refresh_bundle(args.bundle, args.previous, args.write)
         else:

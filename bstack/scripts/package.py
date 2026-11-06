@@ -414,6 +414,7 @@ def assemble(root=ROOT):
                            ("bstack/shared/router/hook.py", ENTRYPOINTS["reminder"]),
                            ("bstack/shared/router/reminder.txt", "runtime/reminder.txt"),
                            ("bstack/shared/router/opencode-plugin.js", "runtime/opencode-plugin.js"),
+                           ("bstack/shared/router/opencode-plugin-v2.js", "runtime/opencode-plugin-v2.js"),
                            ("bstack/shared/router/amp-plugin.ts", "runtime/amp-plugin.ts")):
         assets[target] = source_asset(source, root)
     skills = {skill: mapping[upstream + "/skills/" + skill + "/SKILL.md"] for skill in selection["skills"]}

@@ -7,6 +7,10 @@ import shlex
 import sys
 import uuid
 
+sys.dont_write_bytecode = True
+from attribution import ExistingContext, attach, helper_positions
+from attribution_hosts import arguments, capture
+
 
 HELPER = Path(__file__).resolve().parents[2] / "github/pr.py"
 MESSAGE = (f"Use bstack's to-pr skill before creating a PR or replacing its body. Run its helper's scan, prepare, "
@@ -73,7 +77,7 @@ SHELL_TOOLS = ("Bash", "Shell", "bash", "shell", "run_terminal_command", "run_in
 
 
 def shell_command(host, payload):
-    if host == "cursor":
+    if host == "cursor" and "command" in payload:
         return payload.get("command")
     tool = payload.get("tool_name", payload.get("toolName"))
     if tool not in SHELL_TOOLS:
@@ -85,6 +89,26 @@ def shell_command(host, payload):
         except ValueError:
             return None
     return detail.get("command") if isinstance(detail, dict) else None
+
+
+def attributed_input(host, payload, command):
+    if not isinstance(command, str) or host == "cursor" and payload.get("hook_event_name") != "preToolUse":
+        return None
+    cwd = payload.get("cwd") or next(iter(payload.get("workspace_roots") or []), str(Path.cwd()))
+    positions = helper_positions(command, HELPER, cwd)
+    if not positions:
+        return None
+    attribution = capture(host, payload)
+    detail = arguments(payload.get("tool_input", payload.get("toolInput", payload.get("toolArgs"))))
+    updated = {**detail, "command": attach(command, positions, attribution)}
+    if host == "cursor":
+        return {"updated_input": updated}
+    if host in ("opencode", "amp") or host == "copilot" and payload.get("tool_name") != "run_in_terminal":
+        return {"modifiedArgs": updated}
+    decision = {"hookEventName": "PreToolUse", "updatedInput": updated}
+    if host == "codex":
+        decision["permissionDecision"] = "allow"
+    return {"hookSpecificOutput": decision}
 
 
 def record_decision(host, payload, command, denied):
@@ -113,19 +137,26 @@ def main():
         payload = {}
     command = shell_command(args.host, payload) if isinstance(payload, dict) else None
     denied = isinstance(command, str) and bypasses_to_pr(command)
+    message, rewritten = MESSAGE, None
+    if not denied and isinstance(payload, dict):
+        try:
+            rewritten = attributed_input(args.host, payload, command)
+        except ExistingContext as error:
+            denied, message = True, str(error)
     if isinstance(payload, dict):
         record_decision(args.host, payload, command, denied)
     if denied:
-        decision = {"permissionDecision": "deny", "permissionDecisionReason": MESSAGE}
+        decision = {"permissionDecision": "deny", "permissionDecisionReason": message}
         if payload.get("hook_event_name") == "PreToolUse" and args.host == "copilot":
             print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", **decision}}))
             return 0
         if args.host in ("copilot", "opencode", "amp"):
             print(json.dumps(decision))
             return 0
-        print(MESSAGE, file=sys.stderr)
+        print(message, file=sys.stderr)
         return 2
-    print(json.dumps({"permission": "allow"} if args.host == "cursor" else {}))
+    ordinary = {"permission": "allow"} if args.host == "cursor" and isinstance(command, str) else {}
+    print(json.dumps(rewritten if rewritten is not None else ordinary))
     return 0
 
 

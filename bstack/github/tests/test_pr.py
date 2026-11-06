@@ -609,7 +609,7 @@ class PRTests(unittest.TestCase):
 
     def test_pr_signature_reports_model_without_accepting_markup(self):
         self.prepare()
-        self.assertIn("<sub><i>🤖 BStack PR · Model not reported by host</i></sub>",
+        self.assertIn("<sub><i>🤖 BStack PR · Model attribution unavailable</i></sub>",
                       (self.bundle / "body.fallback.md").read_text())
         signed = self.root / "signed"
         pr.prepare_bundle(self.scan_path, self.review_path, "New", self.body_path, signed,
