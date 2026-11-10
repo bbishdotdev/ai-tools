@@ -1648,9 +1648,9 @@
     {
       "mode": 420,
       "path": "engineering/worktree-cleanup/scripts/audit.py",
-      "sha256": "979ab164c6cd1534a428b85ad6735514d966fbb40639a6fa559461dddec1dc9c",
+      "sha256": "c4dea7bf61406a18e5a925967c1a7de75ffb404acdfe38253bf65f96487f1102",
       "source": "bstack/engineering/worktree-cleanup/scripts/audit.py",
-      "source_sha256": "979ab164c6cd1534a428b85ad6735514d966fbb40639a6fa559461dddec1dc9c",
+      "source_sha256": "c4dea7bf61406a18e5a925967c1a7de75ffb404acdfe38253bf65f96487f1102",
       "transforms": []
     },
     {
