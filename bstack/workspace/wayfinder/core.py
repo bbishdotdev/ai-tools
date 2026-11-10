@@ -410,8 +410,11 @@ class Transaction:
         view["status"], view["ready"] = status, status == "Ready"
         return view
 
-    def map_view(self, mapping):
-        questions = [self.question_view(q) for q in self.questions.values() if q["mapId"] == mapping["id"]]
+    def map_questions(self, mapping):
+        return [self.question_view(q) for q in self.questions.values() if q["mapId"] == mapping["id"]]
+
+    def map_view(self, mapping, questions=None):
+        questions = self.map_questions(mapping) if questions is None else questions
         counts = {"total": len(questions), "resolved": 0, "ready": 0, "blocked": 0, "waiting": 0, "reviewing": 0}
         for q in questions:
             counts["resolved"] += q["state"] == "resolved"
@@ -435,8 +438,8 @@ class Transaction:
         if op == "map.read":
             fields(data, {"mapId"}, {"mapId"})
             mapping = self.get_map(data["mapId"])
-            return {"map": self.map_view(mapping), "questions": [self.question_view(q) for q in self.questions.values()
-                    if q["mapId"] == mapping["id"]], "relationships": self.relationships(mapping["id"])}
+            questions = self.map_questions(mapping)
+            return {"map": self.map_view(mapping, questions), "questions": questions, "relationships": self.relationships(mapping["id"])}
         if op == "question.read":
             fields(data, {"questionId"}, {"questionId"})
             question = self.get_question(data["questionId"])

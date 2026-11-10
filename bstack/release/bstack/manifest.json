@@ -2548,9 +2548,9 @@
     {
       "mode": 420,
       "path": "workspace/wayfinder/core.py",
-      "sha256": "dba284a26d9d0d0ba9c2a00172fefd46bffc424714c241240fce2d4308dee2cc",
+      "sha256": "a52b7f33011b9438b7c6696aa47cd52783bdc746fcc8015fb29350c8f3d53eb7",
       "source": "bstack/workspace/wayfinder/core.py",
-      "source_sha256": "dba284a26d9d0d0ba9c2a00172fefd46bffc424714c241240fce2d4308dee2cc",
+      "source_sha256": "a52b7f33011b9438b7c6696aa47cd52783bdc746fcc8015fb29350c8f3d53eb7",
       "transforms": []
     },
     {
