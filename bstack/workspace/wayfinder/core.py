@@ -354,7 +354,9 @@ class Transaction:
         self.change_seq = db.execute("SELECT change_seq FROM workspace").fetchone()[0]
         self.maps = {row[0]: json.loads(row[1]) for row in db.execute("SELECT id,data FROM maps")}
         self.questions = {row[0]: json.loads(row[1]) for row in db.execute("SELECT id,data FROM questions")}
-        self.edges = {(row[0], row[1], row[2]) for row in db.execute("SELECT kind,source,target FROM relationships")}
+        self.edges, self.blockers = set(), {}
+        for edge in db.execute("SELECT kind,source,target FROM relationships"):
+            self.link(edge)
         self.changed_maps, self.changed_questions = set(), set()
         from .kanban import Kanban
         self.kanban = Kanban(self)
@@ -375,8 +377,18 @@ class Transaction:
         claim = question.get("lease")
         return claim if claim and claim["expiresAt"] > self.now else None
 
+    def link(self, edge):
+        self.edges.add(edge)
+        if edge[0] == "blocks":
+            self.blockers.setdefault(edge[2], set()).add(edge[1])
+
+    def unlink(self, edge):
+        self.edges.remove(edge)
+        if edge[0] == "blocks":
+            self.blockers[edge[2]].remove(edge[1])
+
     def prerequisites(self, identifier):
-        return sorted(source for kind, source, target in self.edges if kind == "blocks" and target == identifier)
+        return sorted(self.blockers.get(identifier, ()))
 
     def question_view(self, question):
         view = {key: value for key, value in question.items() if key not in {"lease", "fence", "reviewed"}}
@@ -641,12 +653,12 @@ class Transaction:
                 fail("cycle", "Relationship would create a cycle")
             if len(self.edges) + len(self.kanban.edges) >= 50000:
                 fail("validation", "Workspace relationship limit reached")
-            self.edges.add(edge)
+            self.link(edge)
             self.db.execute("INSERT INTO relationships VALUES (?,?,?,?)", (mapping["id"], *edge))
         else:
             if edge not in self.edges:
                 fail("not_found", "Relationship not found")
-            self.edges.remove(edge)
+            self.unlink(edge)
             self.db.execute("DELETE FROM relationships WHERE kind=? AND source=? AND target=?", edge)
         if kind == "blocks":
             self.invalidate({target_id} | self.descendants([target_id]))
