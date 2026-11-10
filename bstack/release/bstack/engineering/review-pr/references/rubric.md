@@ -1,6 +1,6 @@
 # Review standard
 
-Apply the [baseline](../../../shared/references/baseline-agents.md), [architecture decision policy](../../../shared/references/architecture-decisions.md), shared [PR standards](../../../shared/references/pr-standards.md), and [unslop](../../../shared/unslop/SKILL.md). Read applicable current project decisions from the pinned target tree, alongside the base/head snapshots. Missing ADRs do not require creating one.
+Apply the [baseline](../../../shared/references/baseline-agents.md), [architecture decision policy](../../../shared/references/architecture-decisions.md), shared [PR standards](../../../shared/references/pr-standards.md), and [unslop](../../../shared/unslop/INSTRUCTIONS.md). Read applicable current project decisions from the pinned target tree, alongside the base/head snapshots. Missing ADRs do not require creating one.
 
 The runner supplies validated project PR criteria from the pinned target revision. Use relevant critical behavior and review focus as extra checks, not as permission to relax this rubric. Read relevant listed standards from `target/`; a missing consequential standard makes coverage incomplete. A human-review path match is a publication gate, not a finding or a reason to invent a defect. Policy edits on the proposed head do not change this review's rules.
 
@@ -23,7 +23,7 @@ An unresolved material coverage gap makes the review incomplete. It is not evide
 
 ## Write the public review
 
-Apply [bro's plain-language standard](../../bro/SKILL.md) before returning public text: restate it simply and concisely, like one developer talking to another. Assume the author knows the feature but has not studied the reviewer's internals.
+Apply [bro's plain-language standard](../../bro/INSTRUCTIONS.md) before returning public text: restate it simply and concisely, like one developer talking to another. Assume the author knows the feature but has not studied the reviewer's internals.
 
 - `title`: name the problem or impact in familiar words. Avoid function names and variable names.
 - `explanation`: one or two short sentences explaining what can happen and why it matters. Usually 25-45 words is enough. Pick the main cause and consequence; do not recap every supporting fact. Keep exact flags, error text, internal names, byte limits, and investigative history in evidence reasons or private decisions unless essential to understand the impact. Explain a necessary technical term in familiar words.

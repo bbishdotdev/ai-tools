@@ -35,7 +35,8 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(set(manifest["public_skills"]), expected)
         public_files = {path for path in self.assets if path.endswith("/SKILL.md")}
         paths = {"bstack/" + record["path"] for record in manifest["public_skills"].values()}
-        self.assertEqual(public_files, paths | {"skills-sh/install-bstack/SKILL.md"})
+        self.assertEqual(public_files, {"bstack/SKILL.md", "skills-sh/install-bstack/SKILL.md"})
+        self.assertTrue(paths <= set(self.assets))
         implicit = set(json.loads((package.ROOT / "package/selection.json").read_text())["implicit_skills"])
         for name, record in manifest["public_skills"].items():
             entry = self.assets["bstack/" + record["path"]].data.decode()
@@ -47,7 +48,7 @@ class PackageTests(unittest.TestCase):
         self.assertFalse(any("automations/" in path or "benny" in path for path in self.assets))
         self.assertFalse(any("/content/" in path or "engineering/skills/" in path for path in self.assets))
         self.assertFalse(any("principles/" in path for path in public_files))
-        self.assertEqual(manifest["entrypoints"]["mode"], "engineering/poteto-mode/SKILL.md")
+        self.assertEqual(manifest["entrypoints"]["mode"], "engineering/poteto-mode/INSTRUCTIONS.md")
 
     def test_installer_allows_agent_selection(self):
         skill = self.assets[package.TRANSPORT + "/SKILL.md"].data.decode()
@@ -56,6 +57,35 @@ class PackageTests(unittest.TestCase):
         self.assertNotIn("user-invocable: false", header)
         policy = self.assets[package.TRANSPORT + "/agents/openai.yaml"].data.decode()
         self.assertIn("allow_implicit_invocation: true", policy)
+
+    def test_folder_installer_is_the_only_discoverable_entry_and_survives_source_removal(self):
+        with tempfile.TemporaryDirectory(prefix="bstack folder distribution ") as directory:
+            root = Path(directory)
+            release, project = root / "release", root / "project"
+            package.build(release)
+            project.mkdir()
+            transport = project / ".agents/skills/bstack"
+            shutil.copytree(release / "bstack", transport)
+            self.assertEqual([str(path.relative_to(transport)) for path in transport.rglob("SKILL.md")], ["SKILL.md"])
+            manifest = json.loads((transport / "manifest.json").read_text())
+            self.assertIn("name: bstack\n", (transport / "SKILL.md").read_text())
+            self.assertNotIn("bstack", manifest["public_skills"])
+            shutil.rmtree(release)
+            before = {str(path.relative_to(transport)): path.read_bytes() for path in transport.rglob("*") if path.is_file()}
+            installed = subprocess.run([sys.executable, "-B", str(transport / "scripts/bstack.py"), "install",
+                                        "--project", str(project), "--hosts", "claude"], capture_output=True, text=True)
+            self.assertEqual(installed.returncode, 0, installed.stderr)
+            self.assertEqual({str(path.relative_to(transport)): path.read_bytes() for path in transport.rglob("*") if path.is_file()}, before)
+            self.assertEqual(json.loads((project / ".bstack/package/manifest.json").read_text()), manifest)
+            discovered = [path.parent.name for path in (project / ".agents/skills").rglob("SKILL.md")]
+            self.assertEqual(set(discovered), {"bstack", *manifest["public_skills"]})
+            self.assertEqual(len(discovered), len(set(discovered)))
+            shutil.rmtree(transport)
+            controller = project / ".bstack/package/scripts/bstack.py"
+            doctor = subprocess.run([sys.executable, "-B", str(controller), "doctor", "--project", str(project)],
+                                   capture_output=True, text=True)
+            self.assertEqual(doctor.returncode, 0, doctor.stderr)
+            self.assertEqual(json.loads(doctor.stdout)["hook_commands"]["status"], "passed")
 
     def test_transport_reinstall_preserves_hosts_and_routing(self):
         with tempfile.TemporaryDirectory(prefix="bstack transport upgrade ") as directory:
@@ -122,7 +152,7 @@ class PackageTests(unittest.TestCase):
         index = json.loads(self.assets["bstack/index.json"].data)
         self.assertEqual(index["skills"]["poteto-mode"], package.ENTRYPOINTS["mode"])
         self.assertEqual(index["skills"]["unslop"], package.UNSLOP)
-        self.assertEqual(index["skills"]["setup-pstack"], "shared/setup-bstack/SKILL.md")
+        self.assertEqual(index["skills"]["setup-pstack"], "shared/setup-bstack/INSTRUCTIONS.md")
         adapted = self.assets["bstack/" + package.UNSLOP]
         self.assertEqual(adapted.source, "bstack/shared/skills/unslop/SKILL.md")
         self.assertIn("Then write it like Brenden would say it out loud.", adapted.data.decode())
@@ -132,11 +162,11 @@ class PackageTests(unittest.TestCase):
     def test_concrete_parent_paths_rewritten_and_authoring_examples_preserved(self):
         prefix = "bstack/engineering/"
         rationale = self.assets[prefix + "architect/references/rationale-template.md"].data.decode()
-        self.assertIn("(../SKILL.md#phase-a-ground-the-problem)", rationale)
-        self.assertIn("(../../arena/SKILL.md)", rationale)
+        self.assertIn("(../INSTRUCTIONS.md#phase-a-ground-the-problem)", rationale)
+        self.assertIn("(../../arena/INSTRUCTIONS.md)", rationale)
         authoring = self.assets[prefix + "poteto-mode/playbooks/authoring-a-skill.md"].data.decode()
         self.assertIn("authoring SKILL.md files", authoring)
-        creator = self.assets[prefix + "create-verification-skill/SKILL.md"].data.decode()
+        creator = self.assets[prefix + "create-verification-skill/INSTRUCTIONS.md"].data.decode()
         self.assertIn(".agents/skills/verify-<app>/SKILL.md", creator)
         self.assertNotIn(".cursor/skills/verify-<app>/SKILL.md", creator)
         quarantined = json.loads((package.ROOT / "package/selection.json").read_text())["quarantined_playbooks"]
@@ -150,18 +180,18 @@ class PackageTests(unittest.TestCase):
             self.assertTrue((package.ROOT / f"upstream/pstack/skills/poteto-mode/playbooks/{name}.md").is_file())
         self.assertFalse(any(prefix + "poteto-mode/scripts/" in path for path in self.assets))
         self.assertIn("resolve-pr", mode)
-        self.assertIn(prefix + "worktree-cleanup/SKILL.md", self.assets)
+        self.assertIn(prefix + "worktree-cleanup/INSTRUCTIONS.md", self.assets)
 
     def test_all_dependency_links_resolve_and_missing_leaf_fails(self):
         self.assertEqual(package.closure_errors(self.assets), [])
         broken = dict(self.assets)
-        del broken["bstack/engineering/how/SKILL.md"]
+        del broken["bstack/engineering/how/INSTRUCTIONS.md"]
         errors = package.closure_errors(broken)
         self.assertTrue(any("Unresolved workflow index target" in error for error in errors), errors)
 
     def test_sdlc_owned_sources_and_workspace_are_portable(self):
         index = json.loads(self.assets["bstack/index.json"].data)
-        self.assertEqual(index["skills"]["wayfinder"], "sdlc/wayfinder/SKILL.md")
+        self.assertEqual(index["skills"]["wayfinder"], "sdlc/wayfinder/INSTRUCTIONS.md")
         self.assertEqual(index["skills"]["setup-matt-pocock-skills"], package.ENTRYPOINTS["setup"])
         self.assertEqual(index["playbooks"]["prototype"], "engineering/prototype/WORKFLOW.md")
         self.assertEqual(index["workspace"]["cli"], "workspace/cli.py")
@@ -265,11 +295,11 @@ class PackageTests(unittest.TestCase):
                              for path in self.assets))
         self.assertNotIn("bstack/shared/memory/scripts/install.py", self.assets)
         self.assertNotIn("bstack/shared/memory/scripts/status.py", self.assets)
-        self.assertIn("memory setup", self.assets["bstack/shared/setup-bstack/SKILL.md"].data.decode())
+        self.assertIn("memory setup", self.assets["bstack/shared/setup-bstack/INSTRUCTIONS.md"].data.decode())
 
     def test_owned_pr_replaces_opening_playbook_and_ships_helper(self):
         index = json.loads(self.assets["bstack/index.json"].data)
-        self.assertEqual(index["skills"]["to-pr"], "engineering/to-pr/SKILL.md")
+        self.assertEqual(index["skills"]["to-pr"], "engineering/to-pr/INSTRUCTIONS.md")
         self.assertEqual(index["playbooks"]["opening-a-pr"], index["skills"]["to-pr"])
         self.assertEqual(index["pull_requests"]["cli"], "github/pr.py")
         self.assertIn("bstack/" + index["pull_requests"]["template"], self.assets)
@@ -277,7 +307,7 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(self.assets["bstack/github/pr.py"].data,
                          (package.ROOT / "github/pr.py").read_bytes())
         router = self.assets["bstack/shared/router/WORKFLOW.md"].data.decode()
-        self.assertIn("../../engineering/to-pr/SKILL.md", router)
+        self.assertIn("../../engineering/to-pr/INSTRUCTIONS.md", router)
         for path, asset in self.assets.items():
             if path.endswith(".md"):
                 self.assertNotIn("playbooks/opening-a-pr.md", asset.data.decode(), path)
@@ -332,7 +362,7 @@ class PackageTests(unittest.TestCase):
 
     def test_source_relocation_keeps_runtime_paths_and_provenance(self):
         prefix = "bstack/engineering/"
-        imported = self.assets[prefix + "how/SKILL.md"]
+        imported = self.assets[prefix + "how/INSTRUCTIONS.md"]
         self.assertEqual(imported.source, "bstack/upstream/pstack/skills/how/SKILL.md")
         self.assertEqual(imported.source_sha256, package.sha((package.ROOT.parent / imported.source).read_bytes()))
         router = self.assets[package.BUNDLE + "/" + package.ROUTER].data.decode()
@@ -341,7 +371,7 @@ class PackageTests(unittest.TestCase):
 
     def test_canonical_attribution_links_resolve_without_source_checkout(self):
         text = self.assets["bstack/ATTRIBUTION.md"].data.decode()
-        self.assertIn("shared/unslop/SKILL.md", text)
+        self.assertIn("shared/unslop/INSTRUCTIONS.md", text)
         self.assertIn("https://github.com/cursor/plugins/blob/e31650eea443aaea1e84cc15d88c13f40080b275/pstack/README.md", text)
         self.assertIn("(`bstack/pstack-provenance.json`, source repository only)", text)
         self.assertIn("(`bstack/engineering/prototype/REVIEW.md`, source repository only)", text)

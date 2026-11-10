@@ -27,4 +27,4 @@ Store the authoritative Markdown with `spec.create` or `spec.update`, linking th
 
 For acceptance, acquire the spec claim and read each declared question's current accepted answer. Use the [shared request helper](../../shared/references/workspace-requests.md) to call `spec.approve` with the spec and question receipts as bases and actual decision authority as input. Code derives the exact `questionSources`; do not recreate that logic. Use prior explicit approval when it covers this body; otherwise present the draft for approval. A settled subset is sufficient and does not require finishing the whole map. Missing answers or stale sources keep the spec unapproved.
 
-Return the spec reference and whether it is draft or approved. Approval preserves an immutable revision and may feed [to-tickets](../to-tickets/SKILL.md); it is not permission to implement.
+Return the spec reference and whether it is draft or approved. Approval preserves an immutable revision and may feed [to-tickets](../to-tickets/INSTRUCTIONS.md); it is not permission to implement.

@@ -20,24 +20,24 @@ The default method runs the bundled Python installer. It requires no skills.sh o
 
 ```sh
 python3 bstack/shared/skills/verify-bstack/scripts/installation.py \
-  --methods offline symlink copy --skills-cli /path/to/skills/bin/cli.mjs
+  --methods offline folder-symlink folder-copy symlink copy --skills-cli /path/to/skills/bin/cli.mjs
 ```
 
 The supplied CLI must be skills@1.7.0. Without `--skills-cli`, explicitly selected skills.sh methods use `npx --yes skills@1.7.0`. Record installer output to regular files, not a pipe that can truncate JSON. The harness uses project scope and project paths containing spaces.
 
-Each method must deliver the same canonical package manifest and hashed files under `.bstack/package/`, all public skill bindings from that manifest, complete local references, and notices. Principles remain internal. The skills.sh transport contains one installer skill; its archive must remain unchanged after installation. Delete the temporary source before setup, doctor, or model execution. This proves independence from that staged source. Separately reject model reads from the development checkout.
+Each method must deliver the same canonical package manifest and hashed files under `.bstack/package/`, all public skill bindings from that manifest, complete local references, and notices. Principles remain internal. The folder methods copy the complete `bstack` entry without an archive; the archive methods copy `install-bstack`. Only the package root is a discoverable `SKILL.md`; bundled public bodies use `INSTRUCTIONS.md`. Distributor-owned files must remain unchanged after installation. Delete the temporary source before setup, doctor, or model execution. This proves independence from that staged source. Separately reject model reads from the development checkout.
 
-The packaged installation driver also runs from a transferred canonical package for offline checks. Distributor checks require the complete release including its transport archive. Suppress Python bytecode writes before importing its helpers so verification does not mutate the integrity-checked package.
+The packaged installation driver also runs from a transferred canonical package for offline checks. Folder checks also work from a complete transferred package. Archive distributor checks require the full release including its transport archive. Suppress Python bytecode writes before importing its helpers so verification does not mutate the integrity-checked package.
 
 ## Live CLI behavior
 
-Add `--live` only when model usage is authorized. The verifier discovers installed Codex, Claude Code, Cursor, and Grok CLIs. An explicit missing client is an error; otherwise unavailable clients are not selected. `--live-method offline` uses the offline-installed project; choose `symlink` or `copy` to drive another selected method.
+Add `--live` only when model usage is authorized. The verifier discovers installed Codex, Claude Code, Cursor, and Grok CLIs. An explicit missing client is an error; otherwise unavailable clients are not selected. `--live-method offline` uses the offline-installed project; choose `folder-symlink`, `folder-copy`, `symlink`, or `copy` to drive another selected method.
 
 Use `--phases direct manual` for focused entry checks; the full suite also exercises `default-off auto-1 auto-2 after-off`. The driver explicitly turns routing off before `default-off`, because fresh installs now start with it on. Native discovery metadata, when emitted by a CLI, is reported separately from filesystem checks.
 
 The probes are read-only. They classify example tasks, read per-turn fixture values, and report a router-specific policy. They do not implement the examples or execute full engineering workflows.
 
-1. Run setup and doctor for every installed project after removing the staged release. Verify all public bindings and host links.
+1. Run setup and doctor for every installed project after removing the staged release. Verify all public bindings and host links, then require `hook_commands.status` to pass. Those probes start the actual selected commands, including Claude's private launchers, without receipts or reminder state. They do not prove native loading or trust.
 2. Invoke `how` directly and observe successful reads of the packaged skill and bstack policy without loading the upstream router or delegating. Separately invoke manual Poteto Mode and observe its installed-router read. Explicitly turn auto off, then check a fresh ordinary engineering prompt: no router read or routing-hook receipt.
 3. Enable automatic mode twice. Run a fresh turn and a resumed turn with different routing cases and unique file values. Require session continuity, successful current fixture reads, the correct bstack policy, and a current native hook receipt when supported and trusted.
 4. Disable twice and run another fresh engineering prompt. Check that automatic bindings and receipts are absent while normal advice remains available.
@@ -48,7 +48,7 @@ Codex native hook trust is inspected separately without changing it. Untrusted o
 
 ## Lifecycle and limits
 
-Runtime tests cover collisions, preservation of unrelated configuration, exact safe block adoption after cloning, mode persistence, package upgrades, rollback, symlink boundaries, private-work retention, legacy offline migration, unowned distributor conflicts, and removal of the verified package and its owned bindings. Archive tests reject malformed paths, types, hashes, modes, and file sets before controller execution. Builder tests cover deterministic files/modes, dependency rewrites, custom overrides, complete source records, and stale or altered release detection.
+Runtime tests also exercise a chosen virtual environment against a broken `python3` on PATH, preserve that interpreter across doctor and mode changes, reject missing runtimes, migrate legacy settings, and execute guard allow/deny behavior for all seven hosts. They verify narrow Git ignores and visible tracked mixed settings. Runtime tests cover collisions, preservation of unrelated configuration, exact safe block adoption after cloning, mode persistence, package upgrades, rollback, symlink boundaries, private-work retention, legacy offline migration, unowned distributor conflicts, and removal of the verified package and its owned bindings. Archive tests reject malformed paths, types, hashes, modes, and file sets before controller execution. Builder tests cover deterministic files/modes, dependency rewrites, custom overrides, complete source records, and stale or altered release detection.
 
 The baseline lifecycle is exercised through the installed CLI: new and existing instruction files receive the bundled rules regardless of auto mode, upgrades replace only the owned block, and uninstall preserves surrounding project guidance. Exact older pointer-only blocks migrate without ownership state. Project text can be added outside the block; changing or removing the block itself must fail `doctor` and setup without mutation. These checks simulate instruction edits, not a live host's native init or model adherence to the rules.
 

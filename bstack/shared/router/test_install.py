@@ -24,7 +24,7 @@ class InstallTests(unittest.TestCase):
         paths += ["release/bstack/engineering/" + name for name in SELECTION["skills"] if not name.startswith("principle-")]
         paths += ["release/bstack/shared/" + name for name in ("setup-bstack", "bstack-auto")]
         for relative in paths:
-            entry = root / "bstack" / relative / "SKILL.md"
+            entry = root / "bstack" / relative / ("INSTRUCTIONS.md" if relative.startswith("release/") else "SKILL.md")
             entry.parent.mkdir(parents=True, exist_ok=True)
             entry.write_text("Fixture skill\n")
 
@@ -43,6 +43,26 @@ class InstallTests(unittest.TestCase):
             self.assertIn("keep-me", settings.read_text())
             self.assertEqual((root / ".agents/skills/unslop").readlink(), Path("../../bstack/shared/skills/unslop"))
             self.assertEqual(install.install(), [])
+
+    def test_release_wrappers_migrate_only_exact_previous_development_links(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(install, "ROOT", Path(folder)):
+            root = Path(folder)
+            self.prepare(root)
+            previous = root / ".agents/skills/how"
+            previous.parent.mkdir(parents=True)
+            previous.symlink_to("../../bstack/release/bstack/engineering/how")
+            install.install(True)
+            self.assertEqual(previous.readlink(), Path("../../.bstack/development/skills/how"))
+            entry = (previous / "SKILL.md").read_text()
+            self.assertIn(str(root / "bstack/release/bstack/engineering/how/INSTRUCTIONS.md"), entry)
+            self.assertTrue((root / ".claude/skills/how/SKILL.md").is_file())
+            self.assertEqual(install.install(), [])
+            previous.unlink()
+            previous.symlink_to("../../custom/how")
+            before = self.snapshot(root)
+            with self.assertRaisesRegex(ValueError, "Existing entry would be replaced"):
+                install.install(True)
+            self.assertEqual(self.snapshot(root), before)
 
     def test_refuse_changed_rule(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(install, "ROOT", Path(folder)):

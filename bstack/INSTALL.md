@@ -6,9 +6,35 @@ The controller requires Python 3.11+ on macOS or Linux. It installs the full col
 
 | If you have... | Use... |
 | --- | --- |
+| A complete release folder | [Install the folder](#distribute-the-complete-folder), with no archive required |
 | Access to skills.sh | [Install the installer skill](#with-skillssh), then ask your agent to install bstack |
 | A release ZIP or a clone | [Run the bundled installer](#from-a-download-or-clone) without skills.sh |
 | An existing installation | [Update with a newer installer](#update-migrate-and-remove) |
+
+## Distribute the complete folder
+
+Copy `bstack/release/bstack/` intact into a repository or skill catalog. Its root `SKILL.md` is named `bstack`, so an importer can expose `/bstack` or `$bstack` as the setup entry. All required package files travel inside that folder. Individual bundled workflows use `INSTRUCTIONS.md`; recursive skill discovery sees only the installer until setup creates the project's public skills.
+
+From a target project, a folder-aware distributor can install that one entry:
+
+```sh
+npx skills@1.7.0 add /path/to/bstack --skill bstack --agent codex claude-code
+```
+
+Then invoke `/bstack` or `$bstack`. A distributor must copy the whole folder, including `manifest.json`, `scripts/`, and its other resources. Copying only `SKILL.md` is insufficient. The same setup works directly with a supported interpreter:
+
+```sh
+python3.12 /path/to/bstack/scripts/bstack.py install --project /path/to/project
+python3.12 /path/to/project/.bstack/package/scripts/bstack.py doctor --project /path/to/project
+```
+
+Use any available Python 3.11 or newer. Setup saves the exact interpreter path for every generated hook and validates it before changing the project. `doctor`, `auto`, and `verification` preserve that selection even when invoked through another interpreter. Rerun setup with a supported interpreter if the saved one moves or is removed. Virtual environments retain their own executable path.
+
+The distributor owns its folder. BStack validates and copies that package into `.bstack/package/`, which the project controller owns. These copies are intentional: removing or updating the distributor's folder cannot silently change a configured project. Setup reports both locations, the installed version and manifest hash, and whether it copied the source. Running setup from the installed package reuses that copy. BStack does not search other managers' directories or delete their installations.
+
+Every developer runs setup after cloning or opening a new worktree. Commit the portable instruction blocks, `.gitignore`, and project PR template as appropriate. Setup ignores only its generated skill entries and dedicated adapter files; it preserves unrelated host files. Mixed host settings remain visible, and the `sharing` report identifies tracked generated paths. An ignore rule cannot hide a file already tracked by Git.
+
+Claude hooks use `.claude/settings.local.json` and private launch scripts in `.bstack/hooks/`. Their portable native commands select the active checkout when a fresh Claude session starts, including a worktree that inherits its main checkout's local settings. Setup migrates only hooks recorded as owned in the old `.claude/settings.json`, preserving all other settings. Start a fresh session in each checkout; changing worktrees inside an existing Claude session is not covered by this setup check.
 
 ## With skills.sh
 
@@ -109,7 +135,7 @@ Or ask your agent to read `bstack/release/skills-sh/install-bstack/SKILL.md` and
 
 ### Local skills.sh sources
 
-skills.sh copies skill folders, so the release includes a dedicated `install-bstack` transport skill containing an archive of the complete package. The installer unpacks that archive into the same canonical layout as the offline route.
+The complete folder route above needs no archive. The release also includes a dedicated `install-bstack` transport skill containing an archive of the complete package. The installer unpacks that archive into the same canonical layout as the offline route.
 
 For a local checkout, the following explicit commands use the skills.sh version tested by the verification harness. Run them from the consumer project and select the hosts you need:
 
@@ -142,7 +168,7 @@ If another tool changes or removes a managed block, `doctor` reports it and setu
 
 ## Check optional model workflows
 
-Normal `doctor` checks the package and bindings, then lists which CLI launchers it can find. It doesn't spend model calls or block basic BStack use when an optional CLI is missing. Before a model-backed workflow, check the one you plan to use:
+Normal `doctor` checks package integrity and owned bindings before starting each selected host's exact hook command in a harmless probe mode. It checks imports and the saved Python runtime without routing, model calls, or verification receipts. Native host loading, trust, and reminder delivery remain separate checks. It then lists which CLI launchers it can find. It doesn't spend model calls or block basic BStack use when an optional CLI is missing. Before a model-backed workflow, check the one you plan to use:
 
 ```sh
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr
@@ -176,23 +202,23 @@ your-project/
   .bstack/
     package/
       engineering/
-        how/SKILL.md
-        architect/SKILL.md
-        poteto-mode/SKILL.md
+        how/INSTRUCTIONS.md
+        architect/INSTRUCTIONS.md
+        poteto-mode/INSTRUCTIONS.md
         principles/              # Internal, loaded on demand
         ...
       sdlc/
-        wayfinder/SKILL.md
-        to-spec/SKILL.md
-        to-tickets/SKILL.md
+        wayfinder/INSTRUCTIONS.md
+        to-spec/INSTRUCTIONS.md
+        to-tickets/INSTRUCTIONS.md
         ...
       shared/
         router/                  # Internal bstack policy
-        unslop/SKILL.md
-        setup-bstack/SKILL.md
-        bstack-auto/SKILL.md
-        verify-bstack/SKILL.md
-        handoff/SKILL.md
+        unslop/INSTRUCTIONS.md
+        setup-bstack/INSTRUCTIONS.md
+        bstack-auto/INSTRUCTIONS.md
+        verify-bstack/INSTRUCTIONS.md
+        handoff/INSTRUCTIONS.md
         memory/                  # Optional user-runtime payload, not a project skill
         workflow.py
         references/
@@ -262,7 +288,7 @@ Planning and tickets each default to local and have [independent provider settin
 
 Project verification has its own setting. `ask` proposes the affected `verify-<app>` change during feature or bug work, `auto` maintains that path as part of authorized work, and `off` leaves the verifier alone unless requested. New installs default to `ask`; upgrades preserve the prior choice. These settings do not change normal test expectations. Use `python3 .bstack/package/scripts/bstack.py verification status --project "$PWD"` to inspect it. The [verification policy](shared/references/verification-policy.md) describes when to create, update, or skip a verifier. The [setup map](shared/references/setup-requirements.md) explains optional tools only when a workflow needs them.
 
-The installer checks the owned package, preserves auto preference and selected hosts, runs `doctor`, and rolls back on installation errors. Modified or unowned files stop the update. Read the result before starting a new agent session; `doctor` checks files and bindings, not live skill selection or hook delivery. The installed version is in `.bstack/package/manifest.json`.
+The installer checks the owned package, preserves auto preference and selected hosts, runs `doctor`, and rolls back on installation errors. Modified or unowned files stop the update. Read the result before starting a new agent session; `doctor` checks files, bindings, and command startup; fresh native sessions establish skill selection and hook delivery. The installed version is in `.bstack/package/manifest.json`.
 
 Existing offline installs under `.agents/skills/poteto-mode/` migrate to `.bstack/package/` after their integrity and ownership checks pass. Existing third-party-distributed Poteto Mode folders are not adopted or deleted; resolve those conflicts through their distributor before installing the new package.
 

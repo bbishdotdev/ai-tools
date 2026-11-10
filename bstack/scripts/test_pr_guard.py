@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os
+import shlex
 from pathlib import Path
 import subprocess
 import sys
@@ -41,7 +42,8 @@ class PullRequestGuardTests(unittest.TestCase):
                 decision = json.loads(denied.stdout)
                 self.assertEqual(decision["permissionDecision"], "deny")
                 self.assertIn("to-pr", decision["permissionDecisionReason"])
-                helper = decision["permissionDecisionReason"].rsplit("python3 ", 1)[1]
+                runtime, helper = shlex.split(decision["permissionDecisionReason"].split("then publish steps: ", 1)[1])
+                self.assertEqual(runtime, os.path.abspath(sys.executable))
                 self.assertTrue(Path(helper).is_file(), helper)
                 allowed = subprocess.run(
                     [sys.executable, "-B", str(GUARD), "--host", host],

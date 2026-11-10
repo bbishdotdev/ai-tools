@@ -11,7 +11,7 @@ metadata:
 
 Use this when changing the model. Merely reading a glossary for vocabulary does not need this workflow. Read [decision authority](../../shared/references/decision-authority.md) and the relevant existing `CONTEXT.md`, `CONTEXT-MAP.md`, and ADRs before proposing changes.
 
-Challenge terms that conflict with the glossary. Separate overloaded concepts, propose a canonical name, and test boundaries with concrete edge cases. Check claims about current behavior against code. Use [how](../../engineering/how/SKILL.md) for nontrivial code facts; use [architect](../../engineering/architect/SKILL.md) through [bstack policy](../../shared/router/WORKFLOW.md) when consequential alternatives need comparison. Do not rerun adequate grounding.
+Challenge terms that conflict with the glossary. Separate overloaded concepts, propose a canonical name, and test boundaries with concrete edge cases. Check claims about current behavior against code. Use [how](../../engineering/how/INSTRUCTIONS.md) for nontrivial code facts; use [architect](../../engineering/architect/INSTRUCTIONS.md) through [bstack policy](../../shared/router/WORKFLOW.md) when consequential alternatives need comparison. Do not rerun adequate grounding.
 
 The user settles product meaning and ADR choices unless they delegated that scope. Describe code/document contradictions without silently choosing which is correct. Record agreed terms as they land using [the glossary format](CONTEXT-FORMAT.md). Keep the glossary free of implementation plans.
 

@@ -18,7 +18,7 @@ From the ai-tools repository root, run `python3 bstack/shared/router/install.py`
 
 Run `python3 bstack/shared/skills/verify-bstack/scripts/verify.py doctor`. This discovers Codex, Claude Code, Cursor, and Grok on PATH and checks executable versions and configuration without starting a model. Authentication is checked by live probes. Missing tools are skipped by automatic discovery; an explicitly requested missing tool is blocked. Cursor can be supplied with `--cursor-bin /path/to/cursor-agent`.
 
-This doctor and the `live` probes cover the original four hosts. [Behavior scenarios](features/behavior.md) cover all seven CLIs, including Amp, Copilot, and OpenCode. Package `doctor` checks BStack files; it does not prove a host loaded the skill or ran a hook.
+This doctor and the `live` probes cover the original four hosts. [Behavior scenarios](features/behavior.md) cover all seven CLIs, including Amp, Copilot, and OpenCode. Package `doctor` checks BStack files and exact hook command startup after ownership checks; it does not prove a host loaded the skill or ran a hook.
 
 ## Drive
 

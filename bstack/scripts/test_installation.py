@@ -178,7 +178,7 @@ class InstalledPackageTests(unittest.TestCase):
         self.project = Path(self.temp.name)
         self.bundle = self.project / '.bstack/package'
         self.bundle.mkdir(parents=True)
-        files = {'engineering/how/SKILL.md': '# How\n## Step 1. Assess Complexity\n## Output Format\n',
+        files = {'SKILL.md': '---\nname: bstack\n---\nInstall the package.\n', 'engineering/how/INSTRUCTIONS.md': '# How\n## Step 1. Assess Complexity\n## Output Format\n',
                  'engineering/poteto-mode/WORKFLOW.md': '## Principles\n## Playbooks\n',
                  'index.json': json.dumps({'upstream_router': 'engineering/poteto-mode/WORKFLOW.md'}),
                  'shared/router/WORKFLOW.md': '## Select and continue\ninherit-parent\n## Capabilities and authorization\n'}
@@ -188,14 +188,14 @@ class InstalledPackageTests(unittest.TestCase):
             target.write_text(content)
             target.chmod(0o644)
         self.manifest = {'schema_version': 2, 'name': 'bstack', 'version': 'test',
-                         'public_skills': {'how': {'path': 'engineering/how/SKILL.md', 'description': 'Explain code', 'implicit': False}},
+                         'public_skills': {'how': {'path': 'engineering/how/INSTRUCTIONS.md', 'description': 'Explain code', 'implicit': False}},
                          'entrypoints': {'router': 'shared/router/WORKFLOW.md', 'index': 'index.json'}, 'files': [
                              {'path': name, 'mode': 0o644, 'sha256': hashlib.sha256(content.encode()).hexdigest()}
                              for name, content in files.items()]}
         self.save_manifest()
         self.wrapper = self.project / '.agents/skills/how/SKILL.md'
         self.wrapper.parent.mkdir(parents=True)
-        self.wrapper.write_text('---\nname: how\ndisable-model-invocation: true\n---\nRead ' + str(self.bundle / 'engineering/how/SKILL.md'))
+        self.wrapper.write_text('---\nname: how\ndisable-model-invocation: true\n---\nRead ' + str(self.bundle / 'engineering/how/INSTRUCTIONS.md'))
         policy = self.wrapper.parent / 'agents/openai.yaml'
         policy.parent.mkdir()
         policy.write_text('policy:\n  allow_implicit_invocation: false\n')
@@ -210,7 +210,7 @@ class InstalledPackageTests(unittest.TestCase):
     def test_canonical_manifest_and_public_bindings_match(self):
         integrity = inspect_bundle(self.bundle)
         self.assertEqual(integrity['hash_failures'], [])
-        self.assertEqual(integrity['packaged_public_skills'], ['engineering/how/SKILL.md'])
+        self.assertEqual(integrity['packaged_public_skills'], ['SKILL.md'])
         bindings = inspect_bindings(self.project, self.bundle, ['codex', 'claude', 'cursor', 'grok'])
         self.assertEqual(bindings['failures'], [])
         self.assertEqual(bindings['filesystem_skill_names'], ['how'])
@@ -228,9 +228,9 @@ class InstalledPackageTests(unittest.TestCase):
         extra = self.bundle / 'engineering/principles/example/SKILL.md'
         extra.parent.mkdir(parents=True)
         extra.write_text('# Internal')
-        (self.bundle / 'engineering/how/SKILL.md').chmod(0o755)
+        (self.bundle / 'engineering/how/INSTRUCTIONS.md').chmod(0o755)
         failures = inspect_bundle(self.bundle)['hash_failures']
-        self.assertIn('engineering/how/SKILL.md', failures)
+        self.assertIn('engineering/how/INSTRUCTIONS.md', failures)
         self.assertIn('unlisted: engineering/principles/example/SKILL.md', failures)
         self.assertIn('public skill paths do not match manifest', failures)
 
@@ -250,7 +250,7 @@ class InstalledPackageTests(unittest.TestCase):
         self.assertFalse(result['passed'])
         self.assertFalse(result['checks']['installed_how_read'])
         self.assertFalse(result['checks']['installed_router_read'])
-        for index, name in enumerate(('engineering/how/SKILL.md', 'shared/router/WORKFLOW.md')):
+        for index, name in enumerate(('engineering/how/INSTRUCTIONS.md', 'shared/router/WORKFLOW.md')):
             target = self.bundle / name
             stream.extend([{'type': 'assistant', 'message': {'content': [
                 {'type': 'tool_use', 'id': str(index), 'name': 'Read', 'input': {'file_path': str(target)}}]}},

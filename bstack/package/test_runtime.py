@@ -3,6 +3,8 @@
 import hashlib
 import importlib.util
 import json
+import os
+import shlex
 from pathlib import Path
 import shutil
 import stat
@@ -86,14 +88,14 @@ class RuntimeTests(unittest.TestCase):
         }
         (root / "manifest.json").write_text(json.dumps(manifest))
 
-    def run_cli(self, *args, success=True, project=None, capsule=None, payload=None):
+    def run_cli(self, *args, success=True, project=None, capsule=None, payload=None, executable=None, env=None):
         project = project or self.project
         if capsule is None:
             installed = project / ".bstack/package"
             capsule = installed if args[0] not in ("install", "setup") and installed.exists() else self.capsule
-        result = subprocess.run([sys.executable, str(capsule / "scripts/bstack.py"), *args,
+        result = subprocess.run([str(executable or sys.executable), str(capsule / "scripts/bstack.py"), *args,
                                  "--project", str(project)], input=json.dumps(payload) if payload else None,
-                                text=True, capture_output=True, cwd=self.root)
+                                text=True, capture_output=True, cwd=self.root, env=env)
         if success:
             self.assertEqual(result.returncode, 0, result.stderr)
             return json.loads(result.stdout)
@@ -109,6 +111,169 @@ class RuntimeTests(unittest.TestCase):
     def files(self):
         return {str(p.relative_to(self.project)): ("link", p.readlink().as_posix()) if p.is_symlink() else ("file", p.read_bytes())
                 for p in self.project.rglob("*") if p.is_file() or p.is_symlink()}
+
+    def test_unsupported_selected_interpreter_fails_before_installation_writes(self):
+        executable = self.root / "unsupported-python"
+        executable.write_text("#!/bin/sh\nprintf '[3, 9, 0]\\n'\n")
+        executable.chmod(0o755)
+        spec = importlib.util.spec_from_file_location("runtime_preflight", SOURCE / "runtime.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        before = self.files()
+        with mock.patch.object(module.sys, "executable", str(executable)):
+            with self.assertRaisesRegex(module.Conflict, "Python 3.11 or newer"):
+                module.install_offline(self.project, self.capsule)
+        self.assertEqual(self.files(), before)
+
+    def test_saved_runtime_survives_path_changes_and_other_controller_interpreters(self):
+        venv = self.root / "chosen runtime"
+        subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(venv)], check=True, capture_output=True)
+        chosen = venv / "bin/python3"
+        expected = subprocess.check_output([str(chosen), "-c", "import sys; print(sys.prefix)"], text=True).strip()
+        self.assertEqual(expected, str(venv))
+        poisoned = self.root / "old runtime"
+        poisoned.mkdir()
+        (poisoned / "python3").write_text("#!/bin/sh\nexit 27\n")
+        (poisoned / "python3").chmod(0o755)
+        env = {**os.environ, "PATH": str(poisoned) + os.pathsep + os.environ["PATH"]}
+        installed = self.run_cli("install", "--hosts", "codex", "claude", "cursor", "grok", "amp", "copilot", "opencode",
+                                 executable=chosen, env=env)
+        self.assertEqual(installed["python"], str(chosen))
+        self.assertNotEqual(chosen.resolve(), chosen)
+        before = self.files()
+        receipts = self.root / "receipts"
+        doctor = self.run_cli("doctor", env={**env, "BSTACK_VERIFY_DIR": str(receipts)})
+        self.assertEqual(self.files(), before)
+        self.assertFalse(receipts.exists())
+        self.assertEqual(doctor["python"], str(chosen))
+        self.assertEqual({check["host"] for check in doctor["hook_commands"]["checks"]}, set(installed["hosts"]))
+        for mode in (("auto", "off"), ("verification", "auto"), ("auto", "on")):
+            self.assertEqual(self.run_cli(*mode, env=env)["python"], str(chosen))
+        chosen.unlink()
+        before = self.files()
+        self.assertIn("runtime cannot start", self.run_cli("doctor", success=False, env=env).stderr)
+        self.run_cli("auto", "off", success=False, env=env)
+        self.assertEqual(self.files(), before)
+        self.assertEqual(self.run_cli("setup")["python"], os.path.abspath(sys.executable))
+        self.assertEqual(self.run_cli("doctor")["hook_commands"]["status"], "passed")
+
+    def test_doctor_rejects_changed_bindings_before_running_any_command(self):
+        self.run_cli("install", "--hosts", "claude")
+        marker = self.root / "should not run"
+        self.write(".bstack/hooks/guard.sh", "touch " + shlex.quote(str(marker)) + "\n")
+        failure = self.run_cli("doctor", success=False)
+        self.assertIn("Managed file changed", failure.stderr)
+        self.assertFalse(marker.exists())
+
+    def test_setup_migrates_legacy_runtime_and_shared_claude_hooks_preserving_other_settings(self):
+        self.run_cli("install", "--hosts", "claude")
+        state_path = self.project / ".bstack/config.json"
+        state = json.loads(state_path.read_text())
+        record = state["managed"].pop(".claude/settings.local.json")
+        local = self.project / ".claude/settings.local.json"
+        old = json.loads(local.read_text())
+        for event, handlers in record["entries"].items():
+            command = (f"python3 {shlex.quote(str(self.project / '.bstack/package/shared/github/pr_guard.py'))} --host claude"
+                       if event == "PreToolUse" else f"python3 {shlex.quote(str(self.project / '.bstack/package/scripts/bstack.py'))} hook --host claude")
+            handlers[0]["hooks"][0]["command"] = command
+            old["hooks"][event] = handlers
+        other = {"hooks": [{"type": "command", "command": "printf preserved"}]}
+        old["hooks"]["Stop"] = [other]
+        old["permissions"] = {"allow": ["Read"]}
+        self.write(".claude/settings.json", json.dumps(old))
+        local.write_text(json.dumps({"env": {"KEEP": "yes"}}))
+        state["managed"][".claude/settings.json"] = record
+        del state["python"]
+        state_path.write_text(json.dumps(state))
+        self.assertIn("no saved Python", self.run_cli("doctor", success=False).stderr)
+        self.run_cli("setup")
+        self.assertEqual(json.loads((self.project / ".claude/settings.json").read_text()),
+                         {"hooks": {"Stop": [other]}, "permissions": {"allow": ["Read"]}})
+        self.assertEqual(json.loads(local.read_text())["env"], {"KEEP": "yes"})
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+
+    def test_all_host_commands_allow_ordinary_tools_and_deny_unprepared_prs(self):
+        self.run_cli("install", "--hosts", "codex", "claude", "cursor", "grok", "amp", "copilot", "opencode")
+        checks = self.run_cli("doctor")["hook_commands"]["checks"]
+        for check in checks:
+            if check["purpose"] != "guard":
+                continue
+            for command, denied in (("printf harmless", False), ("gh pr create --title test --body test", True)):
+                with self.subTest(host=check["host"], denied=denied):
+                    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+                    result = subprocess.run(check["command"], shell=True, input=json.dumps(payload), text=True,
+                                            capture_output=True, cwd=self.project,
+                                            env={**os.environ, "CLAUDE_PROJECT_DIR": str(self.project)})
+                    if denied and check["host"] in ("amp", "copilot", "opencode"):
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(json.loads(result.stdout)["permissionDecision"], "deny")
+                    else:
+                        self.assertEqual(result.returncode, 2 if denied else 0, result.stderr)
+        self.run_cli("auto", "off")
+        reminder = next(check["command"] for check in checks if check["host"] == "claude" and check["purpose"] == "reminder")
+        inactive = subprocess.run(reminder, shell=True, input="{}", text=True, capture_output=True,
+                                  env={**os.environ, "CLAUDE_PROJECT_DIR": str(self.project)})
+        self.assertEqual((inactive.returncode, json.loads(inactive.stdout)), (0, {}))
+        self.run_cli("uninstall")
+        absent = subprocess.run(reminder, shell=True, text=True, capture_output=True,
+                                env={**os.environ, "CLAUDE_PROJECT_DIR": str(self.project)})
+        self.assertEqual((absent.returncode, absent.stdout), (0, ""))
+
+    def test_claude_inherited_command_uses_active_checkout_and_its_auto_setting(self):
+        self.run_cli("install", "--hosts", "claude")
+        reminder = next(check["command"] for check in self.run_cli("doctor")["hook_commands"]["checks"]
+                        if check["purpose"] == "reminder")
+        other = self.root / "worktree"
+        other.mkdir()
+        self.run_cli("install", "--hosts", "claude", "--auto", "off", project=other)
+        env = {**os.environ, "CLAUDE_PROJECT_DIR": str(other)}
+        payload = json.dumps({"hook_event_name": "UserPromptSubmit", "session_id": "active-checkout"})
+        result = subprocess.run(reminder, shell=True, input=payload, text=True, capture_output=True, env=env)
+        self.assertEqual((result.returncode, json.loads(result.stdout)), (0, {}))
+        self.run_cli("auto", "on", project=other)
+        result = subprocess.run(reminder, shell=True, input=payload, text=True, capture_output=True, env=env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        context = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
+        self.assertIn(str(other / ".bstack/package/shared/router/WORKFLOW.md"), context)
+        self.assertNotIn(str(self.project), context)
+        self.assertEqual(self.run_cli("doctor", project=other)["bindings"], "passed")
+        self.run_cli("setup", "--hosts", "codex", project=other)
+        guards = [check["command"] for check in self.run_cli("doctor")["hook_commands"]["checks"]
+                  if check["purpose"] == "guard"]
+        for command in (reminder, *guards):
+            result = subprocess.run(command, shell=True, input=payload, text=True, capture_output=True, env=env)
+            self.assertEqual((result.returncode, json.loads(result.stdout)), (0, {}))
+        self.assertEqual(self.run_cli("doctor", project=other)["bindings"], "passed")
+
+    def test_doctor_imports_reminder_without_emitting_receipts(self):
+        (self.capsule / "runtime/reminder.py").write_text("raise RuntimeError('broken reminder dependency')\n")
+        self.refresh_manifest(self.capsule)
+        self.run_cli("install", "--hosts", "claude")
+        receipts = self.root / "probe receipts"
+        failure = self.run_cli("doctor", success=False, env={**os.environ, "BSTACK_VERIFY_DIR": str(receipts)})
+        self.assertIn("Hook command startup failed for claude reminder", failure.stderr)
+        self.assertFalse(receipts.exists())
+
+    def test_generated_ignores_keep_shared_and_unrelated_files_visible(self):
+        subprocess.run(["git", "init", "--quiet", str(self.project)], check=True)
+        shared = {"version": 1, "enabled": False, "hooks": {"beforeShellExecution": [{"command": "printf keep"}]}}
+        self.write(".cursor/hooks.json", json.dumps(shared))
+        self.write(".grok/hooks/bstack.json", json.dumps({"enabled": False}))
+        self.write(".agents/skills/custom/SKILL.md", "Custom skill\n")
+        self.write(".claude/rules/team.md", "Shared rules\n")
+        subprocess.run(["git", "-C", str(self.project), "add", ".cursor/hooks.json"], check=True)
+        result = self.run_cli("install", "--hosts", "codex", "claude", "cursor", "grok", "amp", "copilot", "opencode")
+        self.assertEqual(result["sharing"]["tracked_generated_paths"], [".cursor/hooks.json"])
+        self.assertEqual(result["sharing"]["mixed_host_settings"], [".cursor/hooks.json", ".grok/hooks/bstack.json"])
+        for path in (".agents/skills/how/SKILL.md", ".claude/skills/how", ".claude/settings.local.json",
+                     ".amp/plugins/bstack.ts", ".github/hooks/bstack.json", ".opencode/plugins/bstack/index.js"):
+            self.assertEqual(subprocess.run(["git", "-C", str(self.project), "check-ignore", "--quiet", path]).returncode, 0, path)
+        for path in ("AGENTS.md", "CLAUDE.md", ".github/pull_request_template.md", ".cursor/hooks.json",
+                     ".agents/skills/custom/SKILL.md", ".claude/rules/team.md", ".grok/hooks/bstack.json"):
+            self.assertEqual(subprocess.run(["git", "-C", str(self.project), "check-ignore", "--quiet", path]).returncode, 1, path)
+        self.run_cli("uninstall")
+        self.assertEqual(json.loads((self.project / ".cursor/hooks.json").read_text()), shared)
+        self.assertEqual((self.project / ".agents/skills/custom/SKILL.md").read_text(), "Custom skill\n")
 
     def test_doctor_with_model_helper_can_run_twice_without_mutating_installed_package(self):
         shutil.copyfile(BSTACK / "shared/model_cli.py", self.capsule / "shared/model_cli.py")
@@ -254,7 +419,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_pr_guard_stays_bound_across_manual_and_automatic_routing(self):
         self.run_cli("install", "--auto", "off")
-        paths = {"codex": ".codex/hooks.json", "claude": ".claude/settings.json",
+        paths = {"codex": ".codex/hooks.json", "claude": ".claude/settings.local.json",
                  "cursor": ".cursor/hooks.json", "grok": ".grok/hooks/bstack.json"}
         expected_events = {"codex": "PreToolUse", "claude": "PreToolUse",
                            "cursor": "beforeShellExecution", "grok": "PreToolUse"}
@@ -263,7 +428,11 @@ class RuntimeTests(unittest.TestCase):
             self.assertEqual(set(value["hooks"]), {expected_events[host], "preToolUse"} if host == "cursor" else {expected_events[host]})
             entry = value["hooks"][expected_events[host]][0]
             command = entry["command"] if host == "cursor" else entry["hooks"][0]["command"]
-            self.assertIn(f"pr_guard.py' --host {host}", command)
+            if host == "claude":
+                self.assertIn("${CLAUDE_PROJECT_DIR}/.bstack/hooks/guard.sh", command)
+                self.assertIn("--host claude", (self.project / ".bstack/hooks/guard.sh").read_text())
+            else:
+                self.assertIn(f"pr_guard.py' --host {host}", command)
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
         self.run_cli("auto", "on")
         self.run_cli("auto", "off")
@@ -812,10 +981,12 @@ class RuntimeTests(unittest.TestCase):
         other.mkdir()
         for name in ("AGENTS.md", ".gitignore"):
             shutil.copyfile(self.project / name, other / name)
+        inherited_ignore = (other / ".gitignore").read_text().replace("# bstack:end", "/.agents/skills/previous-workflow/\n# bstack:end")
+        (other / ".gitignore").write_text(inherited_ignore)
         original = (other / "AGENTS.md").read_text()
         self.assertIn("`.bstack/instructions.md`", original)
         self.assertNotIn(str(self.project), original)
-        self.run_cli("setup", project=other)
+        self.run_cli("setup", "--hosts", "claude", project=other)
         self.assertEqual((other / "AGENTS.md").read_text(), original)
         self.assertTrue((other / ".bstack/config.json").is_file())
         self.assertEqual(self.run_cli("setup", project=other)["changes"], [])
@@ -823,7 +994,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse(self.run_cli("auto", "status")["auto"])
         self.run_cli("uninstall", project=other)
         self.assertEqual((other / "AGENTS.md").read_text(), "Shared project instructions\n")
-        self.assertEqual((other / ".gitignore").read_text(), "node_modules/\n")
+        self.assertEqual((other / ".gitignore").read_text(), inherited_ignore)
 
     def test_fresh_clone_adopts_old_pointer_block_without_ownership_state(self):
         pointer = "<!-- bstack:begin -->\nRead and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n<!-- bstack:end -->\n"
@@ -888,7 +1059,7 @@ class RuntimeTests(unittest.TestCase):
             self.assertFalse(result["fresh_session_required"])
             self.assertEqual(result["native_hook_trust"], "not_applicable")
             self.assertEqual(result["notice"], "")
-        self.assertTrue((self.project / ".claude/settings.json").is_file())
+        self.assertTrue((self.project / ".claude/settings.local.json").is_file())
         self.assertFalse((self.project / ".codex").exists())
         self.assertFalse((self.project / ".cursor").exists())
         self.assertEqual(self.run_cli("hook", "--host", "codex", payload={"hook_event_name": "UserPromptSubmit"}), {})

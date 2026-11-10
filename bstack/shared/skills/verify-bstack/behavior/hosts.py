@@ -94,7 +94,7 @@ class Claude(Host):
     def native(self, binary, base, project, session, prompt):
         args = [binary, "-p", "--model", self.model, "--output-format", "stream-json", "--verbose",
                 "--permission-mode", "bypassPermissions", "--strict-mcp-config",
-                "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "project"]
+                "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "project,local"]
         return args + (["--resume", session] if session else []), prompt
 
 
@@ -134,7 +134,7 @@ class Amp(Host):
 
 class OpenCode(Host):
     def native(self, binary, base, project, session, prompt):
-        command = [binary, "run", "--format", "json", "--dir", str(project), "--auto", "-m", self.model]
+        command = [binary, "run", "--standalone", "--format", "json", "--auto", "-m", self.model]
         return command + (["-s", session] if session else []) + [prompt], None
 
 

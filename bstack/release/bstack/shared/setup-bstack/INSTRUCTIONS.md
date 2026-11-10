@@ -10,23 +10,23 @@ metadata:
 
 If the request is only to enable, update, or check personal memory, go directly to **Optional personal memory** below. Do not reconfigure project bindings or initialize or serve the workspace for that request.
 
-Resolve the installed package from the [controller](../../scripts/bstack.py). Target the Git repository containing the work, even if this skill was discovered from a parent workspace. A parent-only setup does not bind a child repo's Claude skills or auto hook. Run the controller with the requested project and hosts:
+Resolve the installed package from the [controller](../../scripts/bstack.py). Target the Git repository containing the work, even if this skill was discovered from a parent workspace. A parent-only setup does not bind a child repo's Claude skills or auto hook. Choose a Python 3.11+ interpreter and run the controller with the requested project and hosts. Setup validates and saves this exact interpreter for hooks; rerun setup to change or repair that selection:
 
 ```sh
-python3 <absolute-package-path>/scripts/bstack.py setup --project <project-root> --hosts codex claude cursor grok
+python3.12 <absolute-package-path>/scripts/bstack.py setup --project <project-root> --hosts codex claude cursor grok
 ```
 
-Setup creates direct public skill entries and project instructions. New projects start with automatic engineering routing on and project verification set to `ask`. Upgrades keep both choices. Use `--auto off` for manual routing or `--verification off|ask|auto` to choose how project verifiers are maintained. Explain these choices when changing them: auto routing picks relevant engineering workflows for ordinary prompts; verification `ask` proposes a verifier change before making it, while `auto` maintains affected verifier paths during feature or bug work. Run `doctor --project <project-root>` to check package integrity and bindings. This check does not prove that a host loaded or trusted its hooks.
+Setup creates direct public skill entries and project instructions. Run it separately in each checkout. Its `sharing` report lists mixed host settings and tracked generated files; ignores do not hide tracked edits. Claude uses local settings and private launch scripts, and only previously owned hooks migrate from shared settings. New projects start with automatic engineering routing on and project verification set to `ask`. Upgrades keep both choices. Use `--auto off` for manual routing or `--verification off|ask|auto` to choose how project verifiers are maintained. Explain these choices when changing them: auto routing picks relevant engineering workflows for ordinary prompts; verification `ask` proposes a verifier change before making it, while `auto` maintains affected verifier paths during feature or bug work. Run `doctor --project <project-root>` to check package integrity, owned bindings, and harmless startup probes of the generated commands. This check does not prove that a host loaded or trusted its hooks.
 
 If Codex has `[features] hooks = false`, the default auto setup stops with a clear choice: enable hooks or pass `--auto off`. Manual setup can finish with that setting, but its Codex PR creation guard cannot run until hooks are enabled. Do not silently change an explicit host setting.
 
 When the source controller belongs to a parent BStack install, `setup` copies that exact package into the child repo. Use the child's own `.bstack/package/scripts/bstack.py` for subsequent `auto` and `doctor` commands. Start a fresh Claude Code desktop Code chat rooted in the child after changing bindings.
 
-When project setup and `doctor` succeed, recommend `bstack-guide` as a short introduction. If the user asked for a walkthrough as part of setup, read the installed `shared/bstack-guide/SKILL.md` and give it. If new bindings require a fresh session, recommend invoking the guide there. Skip this recommendation for a memory-only request.
+When project setup and `doctor` succeed, recommend `bstack-guide` as a short introduction. If the user asked for a walkthrough as part of setup, read the installed `shared/bstack-guide/INSTRUCTIONS.md` and give it. If new bindings require a fresh session, recommend invoking the guide there. Skip this recommendation for a memory-only request.
 
 The seven-rule [baseline](../references/baseline-agents.md) is written into managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`, including new files. Existing project text and shared symlinks are preserved. Baseline rules apply independently of auto mode. Do not run a host's `/init` automatically. Offer optional project-specific guidance outside the blocks after setup; installation does not depend on it. If the user requests that guidance or a native init, preserve the blocks and run `doctor` afterward. A changed or missing block must be restored from its exact record in `.bstack/config.json` while preserving new project text; setup refuses to overwrite that conflict.
 
-If the user wants project-specific PR priorities or human-review paths, offer [configure-pr](../configure-pr/SKILL.md). Its committed policy is optional. Setup does not create an empty policy file or copy one from the package without a request.
+If the user wants project-specific PR priorities or human-review paths, offer [configure-pr](../configure-pr/INSTRUCTIONS.md). Its committed policy is optional. Setup does not create an empty policy file or copy one from the package without a request.
 
 For local planning and tickets, initialize the project's workspace before creating optional role or adapter configuration:
 

@@ -108,7 +108,7 @@ def verify_worker(config, work, project):
         ("shared/references/baseline-agents.md",),
         ("shared/references/architecture-decisions.md",),
         ("shared/references/pr-standards.md",),
-        ("shared/skills/unslop/SKILL.md", "shared/unslop/SKILL.md"),
+        ("shared/skills/unslop/SKILL.md", "shared/unslop/INSTRUCTIONS.md"),
         ("upstream/pstack/skills/principle-boundary-discipline/SKILL.md",
          "engineering/principles/principle-boundary-discipline/WORKFLOW.md"),
     )

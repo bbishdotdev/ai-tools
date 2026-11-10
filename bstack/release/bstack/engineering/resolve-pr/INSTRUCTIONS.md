@@ -9,7 +9,7 @@ metadata:
 
 # Resolve PR feedback
 
-Reach a sound disposition for each distinct concern. A reviewer comment is a claim to check, not an instruction to implement. Apply [bstack's router](../../shared/router/WORKFLOW.md), [shared PR standards](../../shared/references/pr-standards.md), relevant ADRs, and [unslop](../../shared/unslop/SKILL.md). This is the author's follow-up workflow; [review-pr](../review-pr/SKILL.md) remains an independent, read-only assessment.
+Reach a sound disposition for each distinct concern. A reviewer comment is a claim to check, not an instruction to implement. Apply [bstack's router](../../shared/router/WORKFLOW.md), [shared PR standards](../../shared/references/pr-standards.md), relevant ADRs, and [unslop](../../shared/unslop/INSTRUCTIONS.md). This is the author's follow-up workflow; [review-pr](../review-pr/INSTRUCTIONS.md) remains an independent, read-only assessment.
 
 ## Assess the feedback
 
@@ -31,4 +31,4 @@ For a code fix, push the verified change before replying. For a response-only re
 
 For GitHub, [the helper contract](references/github.md) keeps the assessment on a pinned snapshot and previews replies before an authorized write. If the PR or feedback changed, refresh the snapshot and reassess affected concerns. On another forge, use a configured equivalent; the GitHub helper does not claim support for it. Do not publish replies from a stale assessment. An explicit request to resolve feedback on this PR permits applicable fixes and replies, but not merging it.
 
-The final report should be short: which concerns were resolved by code or explanation, what was declined or deferred and why, checks that ran, unanswered human decisions, and which replies actually posted. A later [review-pr](../review-pr/SKILL.md) run can assess a code delta when a fresh independent review is warranted; do not run its full model process after every reply by default.
+The final report should be short: which concerns were resolved by code or explanation, what was declined or deferred and why, checks that ran, unanswered human decisions, and which replies actually posted. A later [review-pr](../review-pr/INSTRUCTIONS.md) run can assess a code delta when a fresh independent review is warranted; do not run its full model process after every reply by default.

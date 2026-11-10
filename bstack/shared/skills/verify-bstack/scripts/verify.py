@@ -137,7 +137,7 @@ def cli_command(tool, binary, session):
         args = [binary, "-p", "--output-format", "stream-json", "--verbose",
                 "--permission-mode", "dontAsk", "--tools", "Read,Glob,Grep",
                 "--allowedTools", "Read,Glob,Grep", "--strict-mcp-config",
-                "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "project"]
+                "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "project,local"]
         return args + (["--resume", session] if session else [])
     if tool == "grok":
         args = [binary, "--output-format", "streaming-messages-json", "--cwd", str(ROOT),

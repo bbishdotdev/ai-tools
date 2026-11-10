@@ -97,6 +97,19 @@ class AttributionTests(unittest.TestCase):
                     self.assertIn("Prepared with " + model, (self.root / host / "body.fallback.md").read_text())
                     self.assertEqual("host-selected model" in (self.root / host / "body.fallback.md").read_text(), host in ("codex", "cursor", "opencode"))
 
+    def test_versioned_absolute_python_keeps_native_attribution(self):
+        executable = self.root / f"python3.{sys.version_info.minor}"
+        executable.symlink_to(sys.executable)
+        command = self.command("versioned").replace(shlex.quote(sys.executable), shlex.quote(str(executable)), 1)
+        payload = self.payload("codex", command)
+        payload["model"] = "selected-versioned-runtime"
+        response = guard.attributed_input("codex", payload, command)
+        updated = response["hookSpecificOutput"]["updatedInput"]["command"]
+        result = subprocess.run(["/bin/bash", "-c", updated], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        bundle = json.loads((self.root / "versioned/bundle.json").read_text())
+        self.assertEqual(bundle["authorModel"], "selected-versioned-runtime")
+
     def test_compound_command_preserves_shell_state_and_does_not_export_attribution(self):
         command = f"cd {shlex.quote(str(self.root))} && {self.command('compound')} ; pwd > cwd.txt\nprintenv BSTACK_PR_TOOL_CONTEXT > context.txt"
         rewritten = attach(command, helper_positions(command, guard.HELPER, "/"), reported("codex", "model-current", "selected-model"))

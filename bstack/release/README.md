@@ -20,6 +20,10 @@ skills.sh downloads the [installer skill](skills-sh/install-bstack/SKILL.md); yo
 
 For reuse across projects, add `-g` to install only the installer skill at user scope. Invoke it from each target project; the full bstack package remains project-local.
 
+## Distribute the complete folder
+
+Copy `bstack/` intact into a skill catalog and select its `bstack` entry, then invoke `/bstack` or `$bstack`. Only its root `SKILL.md` is discoverable. Setup creates the project skills from bundled instruction files. No archive is required. Run `python3.12 bstack/scripts/bstack.py install --project <project-root>` directly if preferred, using any Python 3.11+ interpreter. Each checkout gets its own private package and saved runtime.
+
 ## Install this release offline
 
 From this release directory, run `python3 skills-sh/install-bstack/install.py --project <project-root>`. Add `--hosts` with the tools you want. The installer creates `.bstack/package/`, binds the public skills, and runs `doctor`. This route needs no npm, skills.sh, Git, or network access.

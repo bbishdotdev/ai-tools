@@ -21,20 +21,21 @@ ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = "bstack"
 TRANSPORT = "skills-sh/install-bstack"
 ROUTER = "shared/router/WORKFLOW.md"
-UNSLOP = "shared/unslop/SKILL.md"
+UNSLOP = "shared/unslop/INSTRUCTIONS.md"
 LINK = re.compile(r"(\[[^\]\n]*\]\()([^\s)]+)(\))")
 CODE = re.compile(r"`([^`\n]+)`")
 PSTACK_PATH = re.compile(r"(?<![\w/])pstack/(?:skills|agents)/[A-Za-z0-9_./-]+")
 SUPPORT_PATH = re.compile(r"(?<![\w/.])(?:scripts|references|playbooks)/[A-Za-z0-9_./-]+")
 ENTRYPOINTS = {
-    "mode": "engineering/poteto-mode/SKILL.md",
+    "installer": "SKILL.md",
+    "mode": "engineering/poteto-mode/INSTRUCTIONS.md",
     "router": ROUTER,
     "unslop": UNSLOP,
-    "setup": "shared/setup-bstack/SKILL.md",
+    "setup": "shared/setup-bstack/INSTRUCTIONS.md",
     "index": "index.json",
     "controller": "scripts/bstack.py",
     "reminder": "runtime/reminder.py",
-    "verification": "shared/verify-bstack/SKILL.md",
+    "verification": "shared/verify-bstack/INSTRUCTIONS.md",
     "workspace": "workspace/cli.py",
     "workflow": "shared/workflow.py",
     "model_cli": "shared/model_cli.py",
@@ -100,12 +101,16 @@ def package_path(source, upstream):
         path = PurePosixPath("engineering") / ("principles" if name.startswith("principle-") else "") / tail
         if path.name == "SKILL.md" and (name.startswith("principle-") or name == "poteto-mode"):
             path = path.with_name("WORKFLOW.md")
+        elif path.name == "SKILL.md":
+            path = path.with_name("INSTRUCTIONS.md")
         return str(path)
     if source.startswith(upstream + "/agents/"):
         return "engineering/agents/" + source[len(upstream + "/agents/"):]
     path = PurePosixPath(source.replace("sdlc/skills/", "sdlc/", 1).replace("shared/skills/", "shared/", 1).replace("shared/bstack-router/", "shared/router/", 1))
     if str(path) == "shared/router/SKILL.md":
         path = path.with_name("WORKFLOW.md")
+    elif path.name == "SKILL.md":
+        path = path.with_name("INSTRUCTIONS.md")
     return str(path)
 
 
@@ -213,7 +218,7 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
         changed.append("rewrite-skill-root-support-paths")
     text = rewritten
     if destination == "engineering/typescript-best-practices/references/patterns.md":
-        text = text.replace("in `SKILL.md`", "in `../SKILL.md`")
+        text = text.replace("in `SKILL.md`", "in `../INSTRUCTIONS.md`")
         changed.append("rewrite-known-parent-workflow-reference")
     if not source.startswith("upstream/"):
         rewritten = re.sub(r"(?m)^(  attribution:) .+$", r"\1 " + relative_target(destination, "ATTRIBUTION.md"), text)
@@ -237,7 +242,7 @@ def transform_markdown(asset, source, destination, mapping, policy=False):
         else:
             text = banner + text
         changed.append("bind-bstack-policy")
-    if source.endswith("/SKILL.md") and destination.endswith("/WORKFLOW.md"):
+    if source.endswith("/SKILL.md") and destination.endswith(("/WORKFLOW.md", "/INSTRUCTIONS.md")):
         changed.append("private-workflow-filename")
     return replace(asset, data=text.encode(), transforms=asset.transforms + tuple(changed))
 
@@ -373,7 +378,7 @@ def assemble(root=ROOT):
         "../LICENSE": "LICENSE",
         "layers.json": "layers.json",
         prototype_source: "engineering/prototype/WORKFLOW.md",
-        pr_source: "engineering/to-pr/SKILL.md",
+        pr_source: "engineering/to-pr/INSTRUCTIONS.md",
     })
     for manifest in (sources["matt-pocock-sdlc"], sources["matt-pocock-handoff"], sources["matt-pocock-dependencies"]):
         for entry in manifest["files"]:
@@ -401,9 +406,10 @@ def assemble(root=ROOT):
             asset = transform_markdown(asset, source, destination, mapping, policy=source.startswith(upstream + "/"))
         assets[destination] = asset
 
-    for template, target in (("SKILL.md", ENTRYPOINTS["mode"]), ("README.md", "README.md"),
+    for template, target in (("SKILL.md", ENTRYPOINTS["mode"]), ("folder-install.md", ENTRYPOINTS["installer"]),
+                             ("README.md", "README.md"),
                              ("setup.md", ENTRYPOINTS["setup"]),
-                             ("auto.md", "shared/bstack-auto/SKILL.md"),
+                             ("auto.md", "shared/bstack-auto/INSTRUCTIONS.md"),
                              ("verify.md", ENTRYPOINTS["verification"])):
         asset = source_asset("bstack/package/templates/" + template, root)
         data = asset.data.decode().replace("@VERSION@", selection["version"]).replace("@PSTACK_COMMIT@", pinned["commit"])
@@ -422,7 +428,7 @@ def assemble(root=ROOT):
     skills.update({"poteto-mode": ENTRYPOINTS["mode"], "bstack-router": ROUTER, "unslop": UNSLOP,
                    "setup-pstack": ENTRYPOINTS["setup"], "setup-bstack": ENTRYPOINTS["setup"],
                    "setup-matt-pocock-skills": ENTRYPOINTS["setup"],
-                   "bstack-auto": "shared/bstack-auto/SKILL.md",
+                   "bstack-auto": "shared/bstack-auto/INSTRUCTIONS.md",
                    "verify-bstack": ENTRYPOINTS["verification"]})
     public = {}
     public_names = [name for name in selection["skills"] if not name.startswith("principle-")]
@@ -503,6 +509,11 @@ def assemble(root=ROOT):
         "After `doctor` succeeds, the agent explains how to turn routing off or back on. Python 3.11+ on POSIX is required.\n\n"
         "For reuse across projects, add `-g` to install only the installer skill at user scope. "
         "Invoke it from each target project; the full bstack package remains project-local.\n\n"
+        "## Distribute the complete folder\n\n"
+        "Copy `bstack/` intact into a skill catalog and select its `bstack` entry, then invoke `/bstack` or `$bstack`. "
+        "Only its root `SKILL.md` is discoverable. Setup creates the project skills from bundled instruction files. "
+        "No archive is required. Run `python3.12 bstack/scripts/bstack.py install --project <project-root>` directly "
+        "if preferred, using any Python 3.11+ interpreter. Each checkout gets its own private package and saved runtime.\n\n"
         "## Install this release offline\n\n"
         "From this release directory, run `python3 skills-sh/install-bstack/install.py --project <project-root>`. "
         "Add `--hosts` with the tools you want. The installer creates `.bstack/package/`, binds the public skills, "
@@ -524,7 +535,9 @@ def closure_errors(release):
     directories = {str(parent) for path in paths for parent in PurePosixPath(path).parents}
     manifest = json.loads(release[BUNDLE + "/manifest.json"].data)
     exposed = {path for path in paths if PurePosixPath(path).name == "SKILL.md"}
-    expected = {BUNDLE + "/" + record["path"] for record in manifest["public_skills"].values()} | {TRANSPORT + "/SKILL.md"}
+    expected = {BUNDLE + "/SKILL.md", TRANSPORT + "/SKILL.md"}
+    if not {BUNDLE + "/" + record["path"] for record in manifest["public_skills"].values()} <= paths:
+        errors.append("Missing public skill instruction files")
     if exposed != expected:
         errors.append("Public skill catalog does not match discoverable entries")
     for path, asset in release.items():
