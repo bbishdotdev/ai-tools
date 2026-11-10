@@ -1,0 +1,23 @@
+bstack/engineering/worktree-cleanup/scripts/audit.py
+  s_2c2de63dc6b1ca::t_9a117bfe74ef69 49,51
+bstack/release/bstack/engineering/worktree-cleanup/scripts/audit.py
+  s_2c2de63dc6b1ca::t_4ec8704781e9c3 49,51
+bstack/release/bstack/manifest.json
+  s_2c2de63dc6b1ca::t_b407a3600a8747 1651,1653
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d669db87deffaa18f0ab67b176850c04ae46ed24",
+  "prompts": {},
+  "sessions": {
+    "s_2c2de63dc6b1ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5340e47-e147-4eea-b6a6-779185139de3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
