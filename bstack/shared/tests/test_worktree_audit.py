@@ -39,6 +39,27 @@ class WorktreeAuditTests(unittest.TestCase):
             self.assertGreater(items[str(secondary)]["tracked_or_untracked"], 0)
             self.assertEqual(git(root, "worktree", "list", "--porcelain"), before)
 
+    def test_unverifiable_unpushed_history_holds_the_checkout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "main"
+            secondary = Path(directory) / "feature"
+            root.mkdir()
+            git(root, "init", "-q")
+            git(root, "config", "user.email", "test@example.com")
+            git(root, "config", "user.name", "Test")
+            (root / "file.txt").write_text("baseline\n")
+            git(root, "add", "file.txt")
+            git(root, "commit", "-qm", "baseline")
+            git(root, "worktree", "add", "-qb", "feature", str(secondary))
+            (secondary / "file.txt").write_text("feature\n")
+            git(secondary, "commit", "-qam", "feature")
+            stale = root / ".git/refs/remotes/origin/stale"
+            stale.parent.mkdir(parents=True)
+            stale.write_text("0123456789abcdef0123456789abcdef01234567\n")
+            items = {item["path"]: item for item in audit_module.audit(root)["worktrees"]}
+            self.assertEqual(items[str(secondary)]["state"], "hold")
+            self.assertTrue(items[str(secondary)]["error"])
+
 
 if __name__ == "__main__":
     unittest.main()
