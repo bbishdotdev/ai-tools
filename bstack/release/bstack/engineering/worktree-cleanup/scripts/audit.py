@@ -46,8 +46,9 @@ def audit(repo):
                 item["error"] = str(error)
         try:
             item["unpushed_commits"] = int(git(path, "rev-list", "--count", "HEAD", "--not", "--remotes"))
-        except ValueError:
+        except ValueError as error:
             item["unpushed_commits"] = None
+            item["error"] = str(error)
         item["state"] = "hold" if item["primary"] or item["locked"] or item.get("error") or item["tracked_or_untracked"] or item["ignored"] or item["unpushed_commits"] else "needs usage check"
         entries.append(item)
     return {"repository": str(root), "worktrees": entries,
