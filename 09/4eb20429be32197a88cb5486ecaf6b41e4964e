@@ -1,0 +1,19 @@
+bstack/shared/tests/test_worktree_audit.py
+  s_2c2de63dc6b1ca::t_137c32900cf3ed 42-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "094eb20429be32197a88cb5486ecaf6b41e4964e",
+  "prompts": {},
+  "sessions": {
+    "s_2c2de63dc6b1ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5340e47-e147-4eea-b6a6-779185139de3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
