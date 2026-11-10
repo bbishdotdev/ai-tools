@@ -92,6 +92,12 @@ def new_id(prefix):
     return prefix + "_" + uuid.uuid4().hex
 
 
+def answer_source(question):
+    answer = question["answer"] if question["state"] == "resolved" else None
+    return {"questionId": question["id"], "answerId": answer["id"] if answer else None,
+            "revision": answer["revision"] if answer else None}
+
+
 def _has_git_marker(project):
     device = project.stat().st_dev
     for candidate in (project, *project.parents):
@@ -324,7 +330,9 @@ class Workspace:
                         db.execute("SAVEPOINT mutation")
                         try:
                             value = tx.mutate(op, envelope["input"], actor)
-                            tx.kanban.invalidate_question_changes()
+                            changed = tx.changed_sources()
+                            if changed:
+                                tx.kanban.invalidate_question_changes(changed)
                             tx.flush(actor)
                             seq = db.execute("UPDATE workspace SET change_seq=change_seq+1 RETURNING change_seq").fetchone()[0]
                             result = {"ok": True, "changeSeq": seq, "value": value}
@@ -357,9 +365,20 @@ class Transaction:
         self.edges, self.blockers = set(), {}
         for edge in db.execute("SELECT kind,source,target FROM relationships"):
             self.link(edge)
+        self.sources = {key: answer_source(question) for key, question in self.questions.items()}
         self.changed_maps, self.changed_questions = set(), set()
-        from .kanban import Kanban
-        self.kanban = Kanban(self)
+        self.board = None
+
+    @property
+    def kanban(self):
+        if self.board is None:
+            from .kanban import Kanban
+            self.board = Kanban(self)
+        return self.board
+
+    def changed_sources(self):
+        return {key for key in self.changed_questions
+                if key in self.sources and self.sources[key] != answer_source(self.questions[key])}
 
     def get_map(self, identifier):
         identity(identifier, "mapId")
@@ -740,7 +759,8 @@ class Transaction:
         return {result_key: view(question), **result}
 
     def flush(self, actor):
-        self.kanban.flush(actor)
+        if self.board is not None:
+            self.board.flush(actor)
         for identifier in self.changed_maps:
             mapping = self.maps[identifier]
             self.db.execute("INSERT INTO maps VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data", (identifier, canonical(mapping)))
