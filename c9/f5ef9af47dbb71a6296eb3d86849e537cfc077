@@ -1,0 +1,27 @@
+bstack/release/bstack/manifest.json
+  s_2c2de63dc6b1ca::t_2fac333a054866 2551,2553,2559,2561
+bstack/release/bstack/workspace/wayfinder/core.py
+  s_2c2de63dc6b1ca::t_9da795b8d950f5 95-100,333-335,368,370-381,762-763
+bstack/release/bstack/workspace/wayfinder/kanban.py
+  s_2c2de63dc6b1ca::t_2957542664df35 4,87,196
+bstack/workspace/wayfinder/core.py
+  s_2c2de63dc6b1ca::t_91e4325541eb19 95-100,333-335,368,370-381,762-763
+bstack/workspace/wayfinder/kanban.py
+  s_2c2de63dc6b1ca::t_036b4aa7920b1b 4,87,196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c9f5ef9af47dbb71a6296eb3d86849e537cfc077",
+  "prompts": {},
+  "sessions": {
+    "s_2c2de63dc6b1ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5340e47-e147-4eea-b6a6-779185139de3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
