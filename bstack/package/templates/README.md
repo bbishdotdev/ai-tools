@@ -14,9 +14,24 @@ Partial means a known gap or pending live validation; not supported means no bst
 
 ## Install
 
-Python 3.11+ on macOS or Linux is required. Both routes install the same bundled package.
+Python 3.11+ on macOS or Linux is required. Folder and archive routes install the same bundled package.
 
 Setup adds the seven-rule [baseline](shared/references/baseline-agents.md) directly to managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`. It creates missing files and preserves existing project text and shared symlinks. The baseline applies with auto mode off. Add project-specific guidance outside the blocks; native tool init is optional and never runs automatically. Run `doctor` after an init to detect changed or missing blocks. Updates and uninstall touch only the owned blocks.
+
+### Use this complete folder
+
+This folder is also the `bstack` installer skill. Copy it intact into a skill catalog, install that one entry, then invoke `/bstack` or `$bstack` in the target project. It needs no ZIP. Bundled workflow bodies use `INSTRUCTIONS.md`, leaving only the root `SKILL.md` visible to recursive discovery. Setup creates the public skill entries after it owns the installed package.
+
+```sh
+python3.12 /path/to/bstack/scripts/bstack.py install --project /path/to/project
+python3.12 /path/to/project/.bstack/package/scripts/bstack.py doctor --project /path/to/project
+```
+
+Choose any available Python 3.11+ interpreter. Setup validates and saves that exact executable for hooks; later status and mode changes preserve it. If it disappears, rerun setup with a supported interpreter. Doctor checks owned files before probing actual command startup, and keeps native trust and delivery separate.
+
+Each checkout gets its own `.bstack/package/` and bindings. The distributor keeps its original folder; removing it does not break the installed copy. Setup reports both locations and the package manifest hash. Commit portable project instructions, `.gitignore`, and a new PR template as appropriate. The `.bstack/` ignore block stays stable; a separate shared-policy block holds narrow generated-path rules and preserves visibility exceptions. Review `sharing` for mixed settings and visible or tracked generated paths. Doctor reports policy maintenance without changing files or treating it as broken bindings. Uninstall preserves shared ignore policy for the team to revise; ignores do not hide tracked edits.
+
+Claude uses portable commands in `.claude/settings.local.json` backed by private launch scripts for this checkout. Only owned hooks migrate from the older shared settings destination. Start a fresh native session in the target checkout, including worktrees; switching worktrees inside an existing Claude session is not part of this guarantee.
 
 ### With skills.sh
 
@@ -59,11 +74,11 @@ A skills.sh distributor uses the separate `install-bstack` transport skill, whos
 
 Start where the work is. Ask "How do I use bstack?" or invoke `bstack-guide` for a short walkthrough. Its [offline visual guide](shared/bstack-guide/assets/overview.html) has a searchable catalog, Cmd/Ctrl+K palette, and manual-versus-auto routing explainer. Use `how` or `why` to understand code, `bro` to restate the last answer plainly, `poteto-mode` to select an engineering workflow, `grill-me` or `wayfinder` to explore a plan, `prototype` to compare designs, `to-spec` and `to-tickets` to organize accepted work, and `implement` when the request is ready to build. The PR entries are `to-pr`, `review-pr`, and `resolve-pr`. No full sequence is required.
 
-Some workflows need more than the host running your chat. [review-pr](engineering/review-pr/SKILL.md), for example, currently calls authenticated GitHub, Codex, and Claude Code CLIs for its model-backed run. Installing bstack does not sign in to those services. Reviewers can search the whole pinned repository through bundled restricted tools, including unchanged callers. Static review needs no separate OS worker or system packages. These are tool restrictions, not an OS sandbox; optional app and test execution requires a separate credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md).
+Some workflows need more than the host running your chat. [review-pr](engineering/review-pr/INSTRUCTIONS.md), for example, currently calls authenticated GitHub, Codex, and Claude Code CLIs for its model-backed run. Installing bstack does not sign in to those services. Reviewers can search the whole pinned repository through bundled restricted tools, including unchanged callers. Static review needs no separate OS worker or system packages. These are tool restrictions, not an OS sandbox; optional app and test execution requires a separate credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md).
 
 Invoke a public skill with the host's command prefix. Codex uses `$how`; slash-command hosts use `/how`. Use `poteto-mode` when you want the router to select a complete engineering workflow. The [index](index.json) resolves internal dependencies; the [manifest](manifest.json) lists public skills and exact installed files.
 
-The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. A small set of skills, including `triage`, `prototype`, and the PR entries, can be discovered from ordinary requests; the rest stay explicitly invoked or routed. `bstack-guide` can answer questions about using the stack. The customized [unslop](shared/unslop/SKILL.md) remains active for prose. `bstack-auto on`, `off`, and `status` control automatic engineering routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
+The baseline and package pointer live in project instructions. Public discovery entries point the agent to bundled instructions, which call for only the dependencies the task needs. A small set of skills, including `triage`, `prototype`, and the PR entries, can be discovered from ordinary requests; the rest stay explicitly invoked or routed. `bstack-guide` can answer questions about using the stack. The customized [unslop](shared/unslop/INSTRUCTIONS.md) remains active for prose. `bstack-auto on`, `off`, and `status` control automatic engineering routing with the host's skill prefix. Auto hooks carry a short router reminder, not the whole skill corpus. A bare invocation shows the mode choices without changing anything. The same commands are available from the controller:
 
 ```sh
 python3 <project-root>/.bstack/package/scripts/bstack.py auto on --project <project-root>
@@ -100,11 +115,11 @@ Upgrades keep the existing setting. A full verifier audit is a separate explicit
 
 ## Pull requests
 
-Use [to-pr](engineering/to-pr/SKILL.md) for authorized PR delivery. It reuses the completed implementation and review, produces a short visual briefing, and checks all open work for duplicate or conflicting intent. Flagged or incomplete reviews publish as drafts with linked notices.
+Use [to-pr](engineering/to-pr/INSTRUCTIONS.md) for authorized PR delivery. It reuses the completed implementation and review, produces a short visual briefing, and checks all open work for duplicate or conflicting intent. Flagged or incomplete reviews publish as drafts with linked notices.
 
-Use [review-pr](engineering/review-pr/SKILL.md) for an independent assessment. Use [resolve-pr](engineering/resolve-pr/SKILL.md) on the author's side to check feedback before fixing or replying. It limits changes to the PR's purpose and keeps unrelated suggestions separate.
+Use [review-pr](engineering/review-pr/INSTRUCTIONS.md) for an independent assessment. Use [resolve-pr](engineering/resolve-pr/INSTRUCTIONS.md) on the author's side to check feedback before fixing or replying. It limits changes to the PR's purpose and keeps unrelated suggestions separate.
 
-For project-specific priorities, invoke [configure-pr](shared/configure-pr/SKILL.md). It maintains an optional committed `bstack-pr-policy.md` at the Git repo root. All three PR workflows use its human-review paths, critical behavior, focus areas and linked standards alongside the shared [PR standards](shared/references/pr-standards.md). Setup does not create an empty policy in consuming projects.
+For project-specific priorities, invoke [configure-pr](shared/configure-pr/INSTRUCTIONS.md). It maintains an optional committed `bstack-pr-policy.md` at the Git repo root. All three PR workflows use its human-review paths, critical behavior, focus areas and linked standards alongside the shared [PR standards](shared/references/pr-standards.md). Setup does not create an empty policy in consuming projects.
 
 The [template](github/pull_request_template.md) and [Python helper](github/pr.py) ship here. Setup copies the template to `.github/pull_request_template.md` when the project has no PR template. That copy belongs to the project: edit it freely, and upgrades or uninstall will leave it alone. Existing templates in the root, `docs`, or `.github` take precedence. Setup reports every existing location and leaves those files untouched. To switch, compare the bundled template with the existing file, save the old contents, and replace the specific file you choose. For a multi-template directory, choose a file to replace or add BStack as a named option. Commit the chosen template to the default branch for GitHub to show it in the PR form. The helper uses authenticated `gh` for pushed branches within the same GitHub repository. It prepares locally, checks freshness, and writes only with explicit `publish --write`. PR-only images try `gh pr edit --attach` first. If upload fails, use the authored diagram fallback and keep a non-micro PR draft until it has a useful visual. Committing an image just to host it requires the user's approval. Other forges need a supported adapter; GitHub PR publishing does not implement the planning or ticket tracker adapters.
 

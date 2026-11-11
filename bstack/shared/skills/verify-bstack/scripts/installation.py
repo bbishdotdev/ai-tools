@@ -61,7 +61,7 @@ def inspect_bundle(bundle):
     failures.extend("unlisted: " + path for path in sorted(actual - seen - {"manifest.json"}))
     public = manifest.get("public_skills", {})
     skills = sorted(str(path.relative_to(bundle)) for path in bundle.rglob("SKILL.md"))
-    if not isinstance(public, dict) or skills != sorted(entry["path"] for entry in public.values()):
+    if not isinstance(public, dict) or skills != ["SKILL.md"] or any(entry["path"] not in seen for entry in public.values()):
         failures.append("public skill paths do not match manifest")
     if any(name.startswith("principle-") for name in public):
         failures.append("internal principles exposed as public skills")
@@ -98,8 +98,9 @@ def inspect_bindings(project, bundle, hosts):
                 failures.append(f"invalid host binding: {host}/{name}")
     discovered = sorted(path.parent.name for path in (project / ".agents/skills").glob("*/SKILL.md"))
     expected = set(manifest["public_skills"])
-    if (project / ".agents/skills/install-bstack/SKILL.md").is_file():
-        expected.add("install-bstack")
+    for installer in ("bstack", "install-bstack"):
+        if (project / ".agents/skills" / installer / "SKILL.md").is_file():
+            expected.add(installer)
     if set(discovered) != expected:
         failures.append("installed public skill names differ from manifest")
     return {"scope": "filesystem bindings, not native CLI registration", "public_entries": entries,
@@ -441,9 +442,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--release", type=Path, default=SOURCE_ROOT if PACKAGED else SOURCE_ROOT / "bstack/release")
     parser.add_argument("--skills-cli", type=Path, help="Pinned skills@1.7.0 bin/cli.mjs; otherwise uses npx")
-    parser.add_argument("--methods", nargs="+", choices=("offline", "symlink", "copy"), default=["offline"],
+    parser.add_argument("--methods", nargs="+", choices=("offline", "symlink", "copy", "folder-symlink", "folder-copy"), default=["offline"],
                         help="Default: offline Python install. skills.sh methods are explicitly optional.")
-    parser.add_argument("--live-method", choices=("offline", "symlink", "copy"),
+    parser.add_argument("--live-method", choices=("offline", "symlink", "copy", "folder-symlink", "folder-copy"),
                         help="Installed project to exercise with models; defaults to first selected method")
     parser.add_argument("--live", action="store_true", help="Spend model usage on installed CLI sessions")
     parser.add_argument("--phases", nargs="+", choices=PHASES,
@@ -488,7 +489,7 @@ def main():
             source_bundle = staged / "bstack"
             source_manifest = hashlib.sha256((source_bundle / "manifest.json").read_bytes()).hexdigest()
             report["source_manifest_sha256"] = source_manifest
-            if any(method != "offline" for method in methods) and not (staged / "skills-sh").is_dir():
+            if any(method in ("symlink", "copy") for method in methods) and not (staged / "skills-sh").is_dir():
                 raise RuntimeError("skills.sh verification needs --release pointing to the full release with skills-sh/")
             projects = {}
             for method in methods:
@@ -507,15 +508,15 @@ def main():
                     command = [sys.executable, str(source_bundle / "scripts/bstack.py"), "install",
                                "--project", str(project), "--hosts", *selected]
                 else:
-                    command = cli + ["add", str(staged / "skills-sh"), "--skill", "install-bstack", "--agent",
+                    command = cli + ["add", str(source_bundle if method.startswith("folder-") else staged / "skills-sh"), "--skill", "bstack" if method.startswith("folder-") else "install-bstack", "--agent",
                                      *[HOST_NAMES[name] for name in selected], "--yes", "--json"]
-                    if method == "copy":
+                    if method in ("copy", "folder-copy"):
                         command.append("--copy")
                 code, raw = run_command(command, project, output / method / "install", env)
                 if code:
                     raise RuntimeError(f"{method} install failed; see saved stdout/stderr")
                 rows = json.loads(raw)
-                if method != "offline" and (not rows or any(row.get("name") != "install-bstack" or row.get("status") != "installed" for row in rows)):
+                if method != "offline" and (not rows or any(row.get("name") != ("bstack" if method.startswith("folder-") else "install-bstack") or row.get("status") != "installed" for row in rows)):
                     raise RuntimeError(f"Unexpected installed transport skills: {rows}")
                 report["installs"].append({"method": method, "project": str(project), "installer_results": rows})
                 projects[method] = (project, project / ".bstack/package")
@@ -524,20 +525,23 @@ def main():
             for method, (target, installed) in projects.items():
                 row = next(item for item in report["installs"] if item["method"] == method)
                 if method != "offline":
-                    locations = [target / ".agents/skills/install-bstack", target / ".claude/skills/install-bstack",
-                                 target / ".grok/skills/install-bstack", target / ".cursor/skills/install-bstack"]
-                    bootstrap = next((path for path in locations if (path / "scripts/install.py").is_file()), None)
+                    skill_name = "bstack" if method.startswith("folder-") else "install-bstack"
+                    locations = [target / directory / "skills" / skill_name
+                                 for directory in (".agents", ".claude", ".grok", ".cursor")]
+                    entrypoint = "scripts/bstack.py" if method.startswith("folder-") else "scripts/install.py"
+                    bootstrap = next((path for path in locations if (path / entrypoint).is_file()), None)
                     if bootstrap is None:
                         raise RuntimeError(f"{method} did not transport install-bstack")
-                    archive = bootstrap / "assets/bstack.zip"
-                    before = hashlib.sha256(archive.read_bytes()).hexdigest()
-                    code, raw = run_command([sys.executable, str(bootstrap / "scripts/install.py"), "--project",
+                    source = bootstrap / ("manifest.json" if method.startswith("folder-") else "assets/bstack.zip")
+                    before = hashlib.sha256(source.read_bytes()).hexdigest()
+                    code, raw = run_command([sys.executable, str(bootstrap / entrypoint),
+                                             *(["install"] if method.startswith("folder-") else []), "--project",
                                              str(target), "--hosts", *selected], target, output / method / "bootstrap", env)
                     if code:
                         raise RuntimeError(f"{method} bootstrap failed: {raw}")
-                    row["transport_archive_preserved"] = before == hashlib.sha256(archive.read_bytes()).hexdigest()
-                    if not row["transport_archive_preserved"]:
-                        raise RuntimeError("Bootstrap changed the distributor-owned archive")
+                    row["transport_preserved"] = before == hashlib.sha256(source.read_bytes()).hexdigest()
+                    if not row["transport_preserved"]:
+                        raise RuntimeError("Bootstrap changed the distributor-owned package")
                     row["bootstrap_results"] = json.loads(raw)
                 integrity = inspect_bundle(installed)
                 if integrity["hash_failures"] or integrity["manifest_sha256"] != source_manifest:

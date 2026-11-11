@@ -22,10 +22,10 @@ Only playbooks listed under `playbooks` in the installed package's `index.json` 
 
 - Use a matching playbook for ordinary engineering tasks. A reported defect routes to [Bug fix](../../engineering/poteto-mode/playbooks/bug-fix.md), measured slowness to [Perf issue](../../engineering/poteto-mode/playbooks/perf-issue.md), and a cited read-only explanation to [Investigation](../../engineering/poteto-mode/playbooks/investigation.md). New behavior routes to [Feature](../../engineering/poteto-mode/playbooks/feature.md). Open the selected playbook before acting on the task. Size is not an exemption: a one-line fix still opens its playbook, which decides what a small change can skip.
 - Use **figure-it-out** for engineering work needing a bespoke execution plan, including large or cross-cutting work whose coordination exceeds a narrower playbook. A one-time migration can need it. Repetition and creation of a reusable skill are not prerequisites. The imported Orchestrate playbook is quarantined until its host lifecycle and helper dependencies are ported.
-- Worktree cleanup routes to the owned [worktree-cleanup](../../engineering/worktree-cleanup/SKILL.md) skill. Audit first; do not infer that an idle branch or missing transcript means a checkout is safe to remove.
-- Requests to recover or learn from prior sessions route to owned [recall](../../engineering/recall/SKILL.md), [reflect](../../engineering/reflect/SKILL.md), or [automate-me](../../engineering/automate-me/SKILL.md) by intent. Read only project-scoped sessions needed for the answer.
-- Ordinary writing, casual conversation, and other requests with no engineering workflow need a normal response. Select no engineering playbook. Apply [bstack's unslop](../unslop/SKILL.md) to prose without loading the upstream engineering corpus.
-- When the user asks how to use bstack or which entry fits their task, use [bstack-guide](../bstack-guide/SKILL.md) without starting an engineering playbook.
+- Worktree cleanup routes to the owned [worktree-cleanup](../../engineering/worktree-cleanup/INSTRUCTIONS.md) skill. Audit first; do not infer that an idle branch or missing transcript means a checkout is safe to remove.
+- Requests to recover or learn from prior sessions route to owned [recall](../../engineering/recall/INSTRUCTIONS.md), [reflect](../../engineering/reflect/INSTRUCTIONS.md), or [automate-me](../../engineering/automate-me/INSTRUCTIONS.md) by intent. Read only project-scoped sessions needed for the answer.
+- Ordinary writing, casual conversation, and other requests with no engineering workflow need a normal response. Select no engineering playbook. Apply [bstack's unslop](../unslop/INSTRUCTIONS.md) to prose without loading the upstream engineering corpus.
+- When the user asks how to use bstack or which entry fits their task, use [bstack-guide](../bstack-guide/INSTRUCTIONS.md) without starting an engineering playbook.
 - Respect explicit skill requests and the requested deliverable. Planning, discussing, classifying, or verifying a route does not authorize executing the described work. A plan-only figure-it-out request stops at the plan.
 - Within that scope, honor the selected playbook's explicit exceptions and skip conditions before generic defaults. Investigation stays read-only; it does not inherit a mandatory PR or prototype step.
 
@@ -35,19 +35,19 @@ Use bstack's owned entries for selected SDLC workflows, including references fro
 
 | Task | Entry |
 | --- | --- |
-| Explore a plan through questions | [grilling](../../sdlc/grilling/SKILL.md), [grill-me](../../sdlc/grill-me/SKILL.md), or [grill-with-docs](../../sdlc/grill-with-docs/SKILL.md) |
-| Establish terminology or an ADR | [domain-modeling](../../sdlc/domain-modeling/SKILL.md) |
-| Organize unresolved decisions across sessions | [wayfinder](../../sdlc/wayfinder/SKILL.md) |
-| Synthesize accepted scope or slice implementation work | [to-spec](../../sdlc/to-spec/SKILL.md), then [to-tickets](../../sdlc/to-tickets/SKILL.md) when needed |
-| Assess incoming work and overlap | [triage](../../sdlc/triage/SKILL.md) |
-| Draft questions for another person | [to-questionnaire](../../sdlc/to-questionnaire/SKILL.md) |
-| Research, prototype, or implement | [research](../../engineering/research/SKILL.md), [prototype](../../engineering/prototype/SKILL.md), [implement](../../engineering/implement/SKILL.md) |
-| Prepare or publish an authorized PR | [to-pr](../../engineering/to-pr/SKILL.md) |
-| Review a PR or recheck its revisions | [review-pr](../../engineering/review-pr/SKILL.md) |
-| Respond to feedback on your PR | [resolve-pr](../../engineering/resolve-pr/SKILL.md) |
-| Configure project PR review priorities | [configure-pr](../configure-pr/SKILL.md) |
-| Create or fully audit a project verifier | [create-verification-skill](../../engineering/create-verification-skill/SKILL.md) or [maintain-verification-skill](../../engineering/maintain-verification-skill/SKILL.md) |
-| Transfer work to a fresh context | [handoff](../handoff/SKILL.md) |
+| Explore a plan through questions | [grilling](../../sdlc/grilling/INSTRUCTIONS.md), [grill-me](../../sdlc/grill-me/INSTRUCTIONS.md), or [grill-with-docs](../../sdlc/grill-with-docs/INSTRUCTIONS.md) |
+| Establish terminology or an ADR | [domain-modeling](../../sdlc/domain-modeling/INSTRUCTIONS.md) |
+| Organize unresolved decisions across sessions | [wayfinder](../../sdlc/wayfinder/INSTRUCTIONS.md) |
+| Synthesize accepted scope or slice implementation work | [to-spec](../../sdlc/to-spec/INSTRUCTIONS.md), then [to-tickets](../../sdlc/to-tickets/INSTRUCTIONS.md) when needed |
+| Assess incoming work and overlap | [triage](../../sdlc/triage/INSTRUCTIONS.md) |
+| Draft questions for another person | [to-questionnaire](../../sdlc/to-questionnaire/INSTRUCTIONS.md) |
+| Research, prototype, or implement | [research](../../engineering/research/INSTRUCTIONS.md), [prototype](../../engineering/prototype/INSTRUCTIONS.md), [implement](../../engineering/implement/INSTRUCTIONS.md) |
+| Prepare or publish an authorized PR | [to-pr](../../engineering/to-pr/INSTRUCTIONS.md) |
+| Review a PR or recheck its revisions | [review-pr](../../engineering/review-pr/INSTRUCTIONS.md) |
+| Respond to feedback on your PR | [resolve-pr](../../engineering/resolve-pr/INSTRUCTIONS.md) |
+| Configure project PR review priorities | [configure-pr](../configure-pr/INSTRUCTIONS.md) |
+| Create or fully audit a project verifier | [create-verification-skill](../../engineering/create-verification-skill/INSTRUCTIONS.md) or [maintain-verification-skill](../../engineering/maintain-verification-skill/INSTRUCTIONS.md) |
+| Transfer work to a fresh context | [handoff](../handoff/INSTRUCTIONS.md) |
 
 Named invocation selects that entry. Within opted-in automatic routing, propose or select the matching phase from the user's task. A sufficient spec or small known task can skip Wayfinder. Planning completion does not authorize implementation. Triage is intake coordination, not a mandatory step between planning and tickets.
 
@@ -57,7 +57,7 @@ Author-side review follow-up selects resolve-pr. Judge each concern against evid
 
 Read [decision authority](../references/decision-authority.md) when deciding who can settle product choices, ADRs, or autonomous grilling. Human decisions remain the default; automatic routing and autonomous decision authority are separate. Use [workspace access](../references/workspace.md) for saved work and [independent work adapters](../references/work-adapters.md) for planning and ticket destinations. Local operation requires no external tracker or model-role setup.
 
-Resolve imported Opening a PR instructions to the owned [to-pr entry](../../engineering/to-pr/SKILL.md), including transitive calls from other playbooks. Use its final overlap check and draft policy instead of upstream's unconditional ready-PR instruction. Resolve imported prototype instructions to the owned prototype entry, Matt's selected SDLC/research/handoff names to the entries above, and Matt's setup dependency to bstack setup. Preserve the approved prototype review loop. At the prototype-to-implementation boundary, write the shared handoff and start a fresh context through a supported host capability. Carry accepted decisions and evidence forward instead of repeating the interview or grounding automatically.
+Resolve imported Opening a PR instructions to the owned [to-pr entry](../../engineering/to-pr/INSTRUCTIONS.md), including transitive calls from other playbooks. Use its final overlap check and draft policy instead of upstream's unconditional ready-PR instruction. Resolve imported prototype instructions to the owned prototype entry, Matt's selected SDLC/research/handoff names to the entries above, and Matt's setup dependency to bstack setup. Preserve the approved prototype review loop. At the prototype-to-implementation boundary, write the shared handoff and start a fresh context through a supported host capability. Carry accepted decisions and evidence forward instead of repeating the interview or grounding automatically.
 
 ## Grounding and design
 
@@ -95,4 +95,4 @@ Use these distinctions when reporting execution:
 
 A skill name in chat, a file read, or a checked box is not proof of correct execution. Keep the deeper **show-me-your-work** audit for its upstream triggers and preserve Eval's examination of actual behavior. Match claims to real traces, artifacts, independent review outputs, and verification results. If the required transcript or independent model family is unavailable, state the missing evidence and narrower check performed. Do not label a self-review as an independent audit.
 
-Always resolve imported **unslop** references to [bstack's customized skill](../unslop/SKILL.md), including explicit paths in upstream instructions. [The layer registry](../../layers.json) records this replacement and the policy's upstream review dependencies. Other imported skills remain on demand. The reminder hook carries this entry's path, not its body; it cannot itself prove that these instructions were followed.
+Always resolve imported **unslop** references to [bstack's customized skill](../unslop/INSTRUCTIONS.md), including explicit paths in upstream instructions. [The layer registry](../../layers.json) records this replacement and the policy's upstream review dependencies. Other imported skills remain on demand. The reminder hook carries this entry's path, not its body; it cannot itself prove that these instructions were followed.

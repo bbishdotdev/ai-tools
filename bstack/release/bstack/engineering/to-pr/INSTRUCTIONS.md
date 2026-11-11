@@ -11,7 +11,7 @@ metadata:
 
 Give the reviewer enough context to judge the change in five minutes or less. Aim for 300–500 words for substantial work; small changes need much less. The helper counts authored prose, including visual fallbacks but excluding generated overlap notices, and stops above 650 words unless a required project template or material risk justifies a recorded exception. A larger diff needs a tighter briefing and links to detail, not a longer narration.
 
-Read [bstack's router](../../shared/router/WORKFLOW.md) and apply [bstack's unslop](../../shared/unslop/SKILL.md) to the title, body, captions, and commit prose. This entry replaces PStack's Opening a PR workflow. Do not run both.
+Read [bstack's router](../../shared/router/WORKFLOW.md) and apply [bstack's unslop](../../shared/unslop/INSTRUCTIONS.md) to the title, body, captions, and commit prose. This entry replaces PStack's Opening a PR workflow. Do not run both.
 
 ## Establish the change
 
@@ -23,7 +23,7 @@ Run the [project PR policy checker](../../shared/pr_policy.py) against the actua
 
 When this workflow starts before implementation, capture a useful baseline early. Use a real screenshot, command output, or measurement with enough context to compare it later. If the earlier state is gone, say that. A reconstruction or a generated illustration cannot count as observed baseline evidence.
 
-Keep unrelated work intact. Use an isolated checkout if needed. Inspect the final diff for unintended changes and sensitive data. Run [deslop](../deslop/SKILL.md) before committing and [no-comments](../no-comments/SKILL.md) before review. Complete the selected workflow's required tests and independent review. Reuse review of unchanged code; refresh checks affected by later edits. If a delegate opens the PR, retain the [interrogate](../interrogate/SKILL.md) step through the router's capability contract. Record missing checks honestly.
+Keep unrelated work intact. Use an isolated checkout if needed. Inspect the final diff for unintended changes and sensitive data. Run [deslop](../deslop/INSTRUCTIONS.md) before committing and [no-comments](../no-comments/INSTRUCTIONS.md) before review. Complete the selected workflow's required tests and independent review. Reuse review of unchanged code; refresh checks affected by later edits. If a delegate opens the PR, retain the [interrogate](../interrogate/INSTRUCTIONS.md) step through the router's capability contract. Record missing checks honestly.
 
 Keep commits coherent and ordered when commit preparation is in scope. Never discard unrelated changes, reset a worktree, or rewrite shared history to tidy a PR. For a stack, compare each child with its intended parent branch and explain the dependency.
 
@@ -48,7 +48,7 @@ Match every label, arrow, and state to the code. Label generated visuals as illu
 
 Keep PR-only visuals in the ignored `.bstack/pr/` directory. For every PR-only image on GitHub, try `gh pr edit --attach` first through the [publishing procedure](references/publishing.md). Do not commit the image to host it before that attempt. Check the published body because an upload can append the image instead of placing it beside its explanation. If attachment fails, use the diagram fallback. If displaying the image would require committing it to the repository, ask the user first. Commit a visual without that extra check only when the project itself needs the file, independent of this PR description.
 
-Use the repository's title convention. Otherwise use `type(scope): short imperative subject`, with a real changed area as the scope. Keep the briefing focused on the final change; include explored alternatives only to explain the chosen solution. Apply the sentence-level guidance from [technical-writing](../technical-writing/SKILL.md), then unslop. Its shorter PR-body target does not override this workflow's five-minute limit.
+Use the repository's title convention. Otherwise use `type(scope): short imperative subject`, with a real changed area as the scope. Keep the briefing focused on the final change; include explored alternatives only to explain the chosen solution. Apply the sentence-level guidance from [technical-writing](../technical-writing/INSTRUCTIONS.md), then unslop. Its shorter PR-body target does not override this workflow's five-minute limit.
 
 ## Check overlap and deliver
 

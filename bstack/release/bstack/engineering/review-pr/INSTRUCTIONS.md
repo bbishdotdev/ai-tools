@@ -43,7 +43,7 @@ The [rubric](references/rubric.md) distinguishes blockers, consequential human d
 
 ## Publish when authorized
 
-Directly invoking `/review-pr` for a GitHub PR authorizes posting its review outcome, including a safety-hold comment, unless the user asks for a preview or read-only review. Calling the runner's `run` command by itself only prepares an assessment and never posts. An existing publication grant for this PR also applies; do not ask again. Apply [unslop](../../shared/unslop/SKILL.md) through the review prompts, not by rewriting validated run artifacts afterward.
+Directly invoking `/review-pr` for a GitHub PR authorizes posting its review outcome, including a safety-hold comment, unless the user asks for a preview or read-only review. Calling the runner's `run` command by itself only prepares an assessment and never posts. An existing publication grant for this PR also applies; do not ask again. Apply [unslop](../../shared/unslop/INSTRUCTIONS.md) through the review prompts, not by rewriting validated run artifacts afterward.
 
 ```sh
 python3 /absolute/skill-directory/scripts/review.py publish --project /path/to/project --run /absolute/run-directory

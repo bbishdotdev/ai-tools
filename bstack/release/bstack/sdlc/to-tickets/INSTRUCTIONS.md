@@ -23,4 +23,4 @@ Create all tickets first, then use the [shared request helper](../../shared/refe
 
 Move eligible tickets to Ready with the normal claim and transition operations. Blocked successors remain Backlog until their predecessors satisfy their dependencies; do not bypass the core's readiness checks or relabel them to imply readiness. No extra triage is required for an approved breakdown. Creation and Ready state do not start implementation.
 
-Keep descriptions behavioral. Avoid brittle paths and snippets except small accepted prototype logic that carries a decision. Return created/reused ticket references and dependency order. [Implement](../../engineering/implement/SKILL.md) consumes the selected ready ticket when execution is authorized.
+Keep descriptions behavioral. Avoid brittle paths and snippets except small accepted prototype logic that carries a decision. Return created/reused ticket references and dependency order. [Implement](../../engineering/implement/INSTRUCTIONS.md) consumes the selected ready ticket when execution is authorized.

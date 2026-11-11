@@ -1,6 +1,6 @@
 # Glossary format
 
-Read a root `CONTEXT-MAP.md` first when present; follow it to the context that owns the term. Otherwise use the project's existing `CONTEXT.md`. For new private drafts, follow the location policy in [domain modeling](SKILL.md). Do not create a new bounded context just to split a long glossary.
+Read a root `CONTEXT-MAP.md` first when present; follow it to the context that owns the term. Otherwise use the project's existing `CONTEXT.md`. For new private drafts, follow the location policy in [domain modeling](INSTRUCTIONS.md). Do not create a new bounded context just to split a long glossary.
 
 ```markdown
 # Ordering

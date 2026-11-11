@@ -144,7 +144,7 @@ def helper_positions(command, helper, cwd):
     for group in groups:
         if any(value is None for value, _, _ in group):
             continue
-        if len(group) < 3 or Path(group[0][0]).name not in ("python", "python3"):
+        if len(group) < 3 or not re.fullmatch(r"python(?:3(?:\.\d+)?)?", Path(group[0][0]).name):
             continue
         path = Path(group[1][0])
         if not path.is_absolute():

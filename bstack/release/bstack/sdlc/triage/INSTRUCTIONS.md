@@ -22,7 +22,7 @@ Separate these outcomes:
 - Intentional behavior: surface the governing ADR or accepted decision. A deviation from your preference is not a bug.
 - New defect or enhancement: verify the claim before refining the design. Reproduce a bug where possible; for a proposed diff, run relevant checks. Record confirmed, failed to reproduce, or insufficient detail with evidence.
 
-Recommend a category and disposition with reasons. Human product/scope decisions remain with the user unless delegated. Trust an explicit disposition override within its authority; skip unnecessary grilling, while retaining actual evidence and required readiness checks. Use [grilling](../grilling/SKILL.md) and [domain modeling](../domain-modeling/SKILL.md) only for unresolved decisions.
+Recommend a category and disposition with reasons. Human product/scope decisions remain with the user unless delegated. Trust an explicit disposition override within its authority; skip unnecessary grilling, while retaining actual evidence and required readiness checks. Use [grilling](../grilling/INSTRUCTIONS.md) and [domain modeling](../domain-modeling/INSTRUCTIONS.md) only for unresolved decisions.
 
 ## Record the outcome
 

@@ -2,7 +2,7 @@
 
 Product choices and ADRs belong to the user by default. Reuse an existing explicit approval or delegation within its scope. Automatic routing only selects workflows; it grants no authority to make decisions, publish, or start implementation.
 
-An agent records human decisions with the actual decider and confirmation reference. Delegated decisions record the decider, scope and grant reference. Do not fabricate a human approval or widen a planning grant into implementation. Carry these limits into specs, tickets and [handoffs](../handoff/SKILL.md).
+An agent records human decisions with the actual decider and confirmation reference. Delegated decisions record the decider, scope and grant reference. Do not fabricate a human approval or widen a planning grant into implementation. Carry these limits into specs, tickets and [handoffs](../handoff/INSTRUCTIONS.md).
 
 For nontrivial planning or engineering choices, follow the shared [architecture decision process](architecture-decisions.md). Consult applicable current ADRs before exploring alternatives. Apply its high capture threshold and reconcile actual reversals; ordinary answers and prototype preferences need no ADR.
 
@@ -36,4 +36,4 @@ Use grilling's shared-understanding stopping rule, plus any user budget or scope
 
 ## Phase changes
 
-At prototype-to-implementation, use a fresh context with the durable handoff. Read [handoff](../handoff/SKILL.md) when transferring a phase. Verify any requested session/model launch capability before promising an unattended run. If the host cannot launch the required receiver, preserve the handoff and identify the needed launch action. Do not silently continue in the old context and claim a fresh session.
+At prototype-to-implementation, use a fresh context with the durable handoff. Read [handoff](../handoff/INSTRUCTIONS.md) when transferring a phase. Verify any requested session/model launch capability before promising an unattended run. If the host cannot launch the required receiver, preserve the handoff and identify the needed launch action. Do not silently continue in the old context and claim a fresh session.

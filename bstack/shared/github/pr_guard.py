@@ -14,7 +14,7 @@ from attribution_hosts import arguments, capture
 
 HELPER = Path(__file__).resolve().parents[2] / "github/pr.py"
 MESSAGE = (f"Use bstack's to-pr skill before creating a PR or replacing its body. Run its helper's scan, prepare, "
-           f"then publish steps: python3 {HELPER}")
+           f"then publish steps: {shlex.join([os.path.abspath(sys.executable), str(HELPER)])}")
 
 
 def commands(source):
@@ -127,7 +127,11 @@ def record_decision(host, payload, command, denied):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", required=True, choices=("codex", "claude", "cursor", "grok", "copilot", "opencode", "amp"))
+    parser.add_argument("--probe", action="store_true", help="Check startup without processing a tool call")
     args = parser.parse_args()
+    if args.probe:
+        print(json.dumps({"host": args.host, "purpose": "guard", "python": os.path.abspath(sys.executable)}))
+        return 0
     if os.environ.get("GROK_HOOK_EVENT") and args.host != "grok":
         print(json.dumps({"permission": "allow"} if args.host == "cursor" else {}))
         return 0

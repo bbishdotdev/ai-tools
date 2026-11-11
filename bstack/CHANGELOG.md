@@ -4,6 +4,10 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Distribute the complete release folder as one `bstack` installer skill, with no archive required. Bundled instruction files avoid duplicate nested skill discovery; the existing archive transport remains available.
+- Save and validate the selected Python 3.11+ interpreter for generated hooks. Doctor checks exact command startup after package and binding integrity, without implying native host trust or delivery.
+- Keep generated bindings local to each checkout with narrow shared ignore policy and explicit reporting for visible, tracked, or mixed host settings. Preserve the stable private-data ignore block so teammate policy changes do not invalidate installed bindings. Claude's local hooks select the active checkout in fresh sessions and preserve unrelated configuration during migration.
+
 ## Published releases
 
 | Version | Date | Notes |

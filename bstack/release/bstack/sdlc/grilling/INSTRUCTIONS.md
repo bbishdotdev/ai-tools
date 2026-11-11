@@ -19,4 +19,4 @@ For explicitly delegated autonomous grilling, follow the first-use explanation a
 
 Stop when the in-scope frontier is empty. Summarize the resulting understanding and get confirmation from the decision owner before acting on it. Reuse an explicit confirmation already given for that understanding. In autonomous mode the authorized respondent confirms within its delegated scope. Unresolved disagreement stays unresolved.
 
-The caller owns persistence. For a Wayfinder question, return the accepted answer, authority, and artifact references to [Wayfinder](../wayfinder/SKILL.md). For glossary or durable architectural decisions, use [domain modeling](../domain-modeling/SKILL.md). Finishing the interview does not itself authorize implementation.
+The caller owns persistence. For a Wayfinder question, return the accepted answer, authority, and artifact references to [Wayfinder](../wayfinder/INSTRUCTIONS.md). For glossary or durable architectural decisions, use [domain modeling](../domain-modeling/INSTRUCTIONS.md). Finishing the interview does not itself authorize implementation.

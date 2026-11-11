@@ -71,20 +71,39 @@ def desired_rule(router_path="bstack/shared/skills/bstack-router/SKILL.md"):
             + reminder.format(router_path=router_path) + "\n")
 
 
-def development_links():
+def development_skills():
     selection = json.loads((ROOT / "bstack/package/selection.json").read_text())
     skills = {name: "bstack/release/bstack/engineering/" + name for name in selection["skills"]
               if not name.startswith("principle-")}
     skills.update({name: "bstack/" + path for name, path in selection["owned_skills"].items()})
     skills.update({name: "bstack/shared/skills/" + name for name in ("bstack-router", "unslop", "verify-bstack")})
     skills.update({name: "bstack/release/bstack/shared/" + name for name in ("setup-bstack", "bstack-auto")})
+    return skills, selection["implicit_skills"]
+
+
+def development_bindings():
+    skills, implicit = development_skills()
     links = {"CLAUDE.md": "AGENTS.md"}
-    for host in (".agents", ".claude", ".cursor", ".grok"):
-        for name, source in skills.items():
-            if not (ROOT / source / "SKILL.md").is_file():
-                raise ValueError("Missing development skill; build the release first: " + source)
-            links[f"{host}/skills/{name}"] = "../../" + source
-    return links
+    files, legacy = {}, {}
+    for name, source in skills.items():
+        body = ROOT / source / "INSTRUCTIONS.md"
+        target = source
+        if source.startswith("bstack/release/") and body.is_file():
+            target = f".bstack/development/skills/{name}"
+            text = (f"---\nname: {name}\ndescription: Use bstack's {name} workflow.\n"
+                    f"disable-model-invocation: {str(name not in implicit).lower()}\n---\n\n"
+                    f"Read `{ROOT / 'bstack/shared/skills/bstack-router/SKILL.md'}` and `{body}` in full. "
+                    f"Follow the workflow under bstack's policy, resolving its references from `{body.parent}`.\n")
+            files[target + "/SKILL.md"] = text
+            files[target + "/agents/openai.yaml"] = f"policy:\n  allow_implicit_invocation: {str(name in implicit).lower()}\n"
+        elif not (ROOT / source / "SKILL.md").is_file():
+            raise ValueError("Missing development skill; build the release first: " + source)
+        for host in (".agents", ".claude", ".cursor", ".grok"):
+            relative = f"{host}/skills/{name}"
+            links[relative] = "../../" + target
+            if target != source:
+                legacy[relative] = "../../" + source
+    return links, files, legacy
 
 
 def destination(relative, *, link=False):
@@ -110,18 +129,18 @@ def destination(relative, *, link=False):
 
 
 def install(apply=False):
-    links = development_links()
+    links, wrappers, legacy = development_bindings()
     configs = configurations()
     plugins = plugin_files()
-    for relative in (".codex/config.toml", *configs, *plugins, ".cursor/rules/bstack-router.mdc"):
+    for relative in (".codex/config.toml", *configs, *plugins, *wrappers, ".cursor/rules/bstack-router.mdc"):
         destination(relative)
     for relative, target in links.items():
         path = destination(relative, link=True)
-        if (path.exists() or path.is_symlink()) and not (path.is_symlink() and path.readlink() == Path(target)):
+        if (path.exists() or path.is_symlink()) and not (path.is_symlink() and str(path.readlink()) in (target, legacy.get(relative))):
             raise ValueError(f"Existing entry would be replaced: {path}")
 
     writes = {}
-    for relative, source in plugins.items():
+    for relative, source in {**plugins, **wrappers}.items():
         path = destination(relative)
         if path.exists() and path.read_text() != source:
             raise ValueError(f"Review changed plugin before replacing: {path}")
@@ -153,7 +172,7 @@ def install(apply=False):
             raise ValueError(f"Review changed rule before replacing: {rule}")
         writes[".cursor/rules/bstack-router.mdc"] = desired_rule()
     missing_links = {relative: target for relative, target in links.items()
-                     if not (ROOT / relative).is_symlink()}
+                     if not (ROOT / relative).is_symlink() or (ROOT / relative).readlink() != Path(target)}
     if apply:
         for relative, text in writes.items():
             path = destination(relative)
@@ -162,6 +181,8 @@ def install(apply=False):
         for relative, target in missing_links.items():
             path = destination(relative, link=True)
             path.parent.mkdir(parents=True, exist_ok=True)
+            if path.is_symlink():
+                path.unlink()
             path.symlink_to(target)
     return list(writes) + list(missing_links)
 

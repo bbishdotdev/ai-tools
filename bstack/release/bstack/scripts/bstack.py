@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import shlex
+import signal
 import shutil
 import stat
 import sys
@@ -34,6 +35,8 @@ VERIFICATION_MODES = ("off", "ask", "auto")
 POINTER = "Read and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n"
 BEGIN = "<!-- bstack:begin -->"
 END = "<!-- bstack:end -->"
+IGNORE_BEGIN = "# bstack generated bindings:begin"
+IGNORE_END = "# bstack generated bindings:end"
 HISTORICAL_BASELINE_BLOCK_HASHES = {
     "7d4146f18a9eabe12f1f01c64c8e624b829a2162fcaaf514c8365acaeab928a8",
 }
@@ -155,8 +158,8 @@ def package_check(capsule, legacy=False):
                     errors.append(f"Invalid public skill: {name!r}")
                     continue
                 relative = skill.get("path")
-                if not isinstance(relative, str) or relative not in seen or not relative.endswith("/SKILL.md"):
-                    errors.append(f"Public skill must identify a hashed SKILL.md: {name}")
+                if not isinstance(relative, str) or relative not in seen or not relative.endswith(("/INSTRUCTIONS.md", "/SKILL.md")):
+                    errors.append(f"Public skill must identify a hashed instruction entry: {name}")
                 elif relative in paths:
                     errors.append(f"Duplicate public skill path: {relative}")
                 else:
@@ -200,6 +203,8 @@ def state_read(project):
     if state.get("verification", "ask") not in VERIFICATION_MODES:
         raise Conflict(f"Malformed bstack verification setting: {path}")
     state.setdefault("verification", "ask")
+    if "python" in state and (not isinstance(state["python"], str) or not Path(state["python"]).is_absolute()):
+        raise Conflict(f"Malformed bstack Python runtime: {path}")
     return state
 
 
@@ -306,12 +311,194 @@ PLUGINS = {"opencode": ((".opencode/plugins/bstack.js", "runtime/opencode-plugin
            "amp": ((".amp/plugins/bstack.ts", "runtime/amp-plugin.ts"),)}
 
 
-def plugin_source(template, host, invocation, project_arg, guard, auto):
-    return (template.replace("__BSTACK_HOOK__", json.dumps(f"{invocation} hook --host {host} {project_arg}"))
+def startup(command, *, shell=False, cwd=None, env=None):
+    with subprocess.Popen(command, shell=shell, cwd=cwd, env=env, text=True, stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True) as process:
+        try:
+            stdout, stderr = process.communicate("{}", timeout=5)
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.communicate()
+            raise
+        return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+
+
+def runtime_python(current=None, select=False):
+    executable = os.path.abspath(sys.executable) if select else (current or {}).get("python")
+    if not executable:
+        raise Conflict("This installation has no saved Python runtime; run setup with Python 3.11 or newer")
+    try:
+        result = startup([executable, "-B", "-c",
+                          "import json,sys,tomllib; print(json.dumps(list(sys.version_info[:3])))"])
+        version = json.loads(result.stdout) if result.returncode == 0 else []
+    except (OSError, subprocess.TimeoutExpired, ValueError) as error:
+        raise Conflict(f"Saved Python runtime cannot start: {executable}; run setup with Python 3.11 or newer") from error
+    if not isinstance(version, list) or len(version) != 3 or any(type(part) is not int for part in version) or version < [3, 11, 0]:
+        raise Conflict(f"Python 3.11 or newer with tomllib is required: {executable}; run setup with a supported interpreter")
+    return executable
+
+
+def hook_commands(project, capsule, hosts, auto, executable, controller="scripts/bstack.py"):
+    commands = {}
+    for host in hosts:
+        reminder = shlex.join([executable, str(capsule / controller), "hook", "--host", host,
+                               "--project", str(project)])
+        guard = shlex.join([executable, str(capsule / PR_GUARD), "--host", host])
+        launchers = {}
+        if host == "claude":
+            for purpose, command in (("reminder", reminder), ("guard", guard)):
+                launchers[f".bstack/hooks/{purpose}.sh"] = f'exec {command} "$@"\n'
+            prefix = 'test ! -f "${CLAUDE_PROJECT_DIR}/.bstack/config.json" || sh '
+            reminder = prefix + '"${CLAUDE_PROJECT_DIR}/.bstack/hooks/reminder.sh"'
+            guard = prefix + '"${CLAUDE_PROJECT_DIR}/.bstack/hooks/guard.sh"'
+        events = {event: f"{reminder} --event {event}" for event in
+                  ("sessionStart", "userPromptSubmitted", "subagentStart")} if host == "copilot" and auto else {}
+        commands[host] = {"guard": guard, "reminder": reminder, "events": events, "launchers": launchers}
+    return commands
+
+
+def probe_commands(project, commands, auto, executable):
+    checks = []
+    for host, plan in commands.items():
+        selected = [("guard", plan["guard"])]
+        if auto:
+            selected.extend(("reminder", command) for command in (list(plan["events"].values()) or [plan["reminder"]]))
+        for purpose, command in selected:
+            try:
+                completed = startup(command + " --probe", shell=True, cwd=project,
+                                    env={**os.environ, "CLAUDE_PROJECT_DIR": str(project)})
+                observed = json.loads(completed.stdout) if completed.returncode == 0 else None
+            except (OSError, subprocess.TimeoutExpired, ValueError) as error:
+                raise Conflict(f"Hook command startup failed for {host} {purpose}; run setup to repair its runtime") from error
+            if observed != {"host": host, "purpose": purpose, "python": executable}:
+                raise Conflict(f"Hook command startup failed for {host} {purpose}; run setup to repair its runtime")
+            checks.append({"host": host, "purpose": purpose, "command": command, "status": "passed"})
+    return {"status": "passed", "checks": checks,
+            "scope": "Command startup only; native host loading, trust, and delivery require a fresh host session."}
+
+
+def plugin_source(template, reminder, guard, auto):
+    return (template.replace("__BSTACK_HOOK__", json.dumps(reminder))
             .replace("__BSTACK_GUARD__", json.dumps(guard)).replace("__BSTACK_AUTO__", json.dumps(auto)))
 
 
-def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None, verification="ask"):
+def shared_settings(content):
+    obj = json.loads(content) if content else {}
+    if obj.get("hooks") == {}:
+        obj.pop("hooks")
+    return bool(obj)
+
+
+def legacy_ignore_block(content):
+    if content.count("bstack:begin") != 1 or content.count("bstack:end") != 1:
+        return None
+    match = re.search(r"(?m)^# bstack:begin\n((?:[^\n]*\n)*?)# bstack:end(?:\n|$)", content)
+    dedicated = {".bstack/", "/.bstack/", "/.cursor/rules/bstack.mdc", "/.codex/hooks.json",
+                 "/.claude/settings.local.json", "/.cursor/hooks.json", "/.grok/hooks/bstack.json",
+                 "/.github/hooks/bstack.json", *("/" + target for entries in PLUGINS.values() for target, _ in entries)}
+    if match and match.group(1) and all(pattern in dedicated or re.fullmatch(r"/\.agents/skills/[a-z0-9]+(?:-[a-z0-9]+)*/", pattern)
+                     or re.fullmatch(r"/\.(?:claude|cursor|grok)/skills/[a-z0-9]+(?:-[a-z0-9]+)*", pattern)
+                     for pattern in match.group(1).splitlines()):
+        return match
+    return None
+
+
+def merge_ignore_policy(content, rules, path):
+    match = re.search(r"(?m)^" + re.escape(IGNORE_BEGIN) + r"\n([\s\S]*?)^" + re.escape(IGNORE_END) + r"(?:\n|$)", content)
+    if IGNORE_BEGIN in content or IGNORE_END in content:
+        if content.count(IGNORE_BEGIN) != 1 or content.count(IGNORE_END) != 1 or match is None:
+            raise Conflict(f"Malformed shared bstack ignore policy: {path}. Repair its generated-bindings markers before setup")
+    lines = match.group(1).splitlines() if match else []
+    positive = sorted(set(rules["ignored"]) - set(lines))
+    negative = sorted({"!" + name for name in rules["visible"]} - set(lines))
+    if not positive and not negative:
+        return content
+    block = IGNORE_BEGIN + "\n" + "\n".join([*positive, *lines, *negative]) + "\n" + IGNORE_END + "\n"
+    return content[:match.start()] + block + content[match.end():] if match else block + content
+
+
+def local_ignores(project, records, old, public):
+    paths = {f"/.agents/skills/{name}/" for name in public}
+    visible = set()
+    for relative, record in records.items():
+        if relative.startswith(".bstack/") or relative in ("AGENTS.md", "CLAUDE.md"):
+            continue
+        if record["kind"] in ("file", "link") and not relative.startswith(".agents/skills/"):
+            paths.add("/" + relative)
+        if record["kind"] == "json":
+            path = safe_path(project, relative)
+            content = text_snapshot(snapshot(path), path)
+            remaining = json_reconcile(content, old.get(relative), None, path)
+            if shared_settings(remaining):
+                visible.add("/" + relative)
+            else:
+                paths.add("/" + relative)
+    ignore = safe_path(project, ".gitignore", follow_leaf=True)
+    key = str(ignore.relative_to(project))
+    content = text_snapshot(snapshot(ignore), ignore)
+    prior = legacy_ignore_block(content)
+    record = {"kind": "block", "text": marker_block(".bstack/", "shell"), "adopt": True}
+    if not prior and not old.get(key):
+        bare = next((match for match in re.finditer(r"(?m)^/?\.bstack/(?:\n|$)", content)
+                     if content.rfind(IGNORE_BEGIN, 0, match.start()) <= content.rfind(IGNORE_END, 0, match.start())), None)
+        if bare and content.count(bare.group()) == 1:
+            record["restore"] = bare.group()
+    if old.get(key, {}).get("restore") in (".bstack/\n", "/.bstack/\n", ".bstack/", "/.bstack/"):
+        record["restore"] = old[key]["restore"]
+    settings = {"/.codex/hooks.json", "/.claude/settings.local.json", "/.cursor/hooks.json",
+                "/.grok/hooks/bstack.json", "/.github/hooks/bstack.json"}
+    for pattern in settings & (paths | set(content.splitlines())):
+        relative = pattern[1:]
+        path = safe_path(project, relative)
+        before = snapshot(path)
+        if relative not in records and before is not None:
+            if relative not in old or shared_settings(json_reconcile(text_snapshot(before, path), old[relative], None, path)):
+                visible.add(pattern)
+    record["ignore_policy"] = {"ignored": sorted(paths), "visible": sorted(visible)}
+    records[key] = record
+
+
+def sharing_status(project, records):
+    settings = [path for path, record in records.items() if record["kind"] == "json"]
+    generated = [path for path, record in records.items() if record["kind"] in ("file", "link", "json")]
+    tracked = []
+    unignored = None
+    if shutil.which("git"):
+        result = subprocess.run(["git", "-C", str(project), "ls-files", "-z", "--", *generated],
+                                text=True, capture_output=True)
+        if result.returncode == 0:
+            tracked = sorted(filter(None, result.stdout.split("\0")))
+            result = subprocess.run(["git", "-C", str(project), "check-ignore", "-z", "--stdin"],
+                                    input="\0".join(generated) + "\0", text=True, capture_output=True)
+            if result.returncode in (0, 1):
+                unignored = sorted(set(generated) - set(result.stdout.split("\0")))
+    mixed = []
+    for relative in settings:
+        path = safe_path(project, relative)
+        content = text_snapshot(snapshot(path), path)
+        remaining = json_reconcile(content, records[relative], None, path)
+        if shared_settings(remaining):
+            mixed.append(relative)
+    result = {"tracked_generated_paths": tracked, "mixed_host_settings": mixed,
+              "unignored_generated_paths": unignored, "ignore_rules_need_setup": False}
+    for relative, record in records.items():
+        if "ignore_policy" in record:
+            path = safe_path(project, relative)
+            content = text_snapshot(snapshot(path), path)
+            try:
+                legacy = legacy_ignore_block(content)
+                result["ignore_rules_need_setup"] = (merge_ignore_policy(content, record["ignore_policy"], path) != content
+                                                       or bool(legacy and legacy.group() != marker_block(".bstack/", "shell")))
+            except Conflict as error:
+                result.update(ignore_rules_need_setup=True, ignore_policy_error=str(error))
+    if tracked or mixed or unignored or result["ignore_rules_need_setup"]:
+        result["guidance"] = ("Generated bindings belong to this checkout. Git ignores do not hide tracked changes. "
+                              "Review visible generated paths and keep unrelated shared settings. Setup updates the shared "
+                              "ignore policy without removing existing visibility exceptions.")
+    return result
+
+
+def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=None, verification="ask", executable=None):
     manifest = manifest or package_check(capsule)
     included = {entry["path"] for entry in manifest["files"]}
     for relative in (PR_GUARD, VERIFICATION_POLICY):
@@ -320,9 +507,7 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
     baseline = read_baseline(capsule, manifest) if baseline is None else baseline
     router = capsule / manifest["entrypoints"]["router"]
     unslop = capsule / manifest["entrypoints"]["unslop"]
-    script = capsule / manifest["entrypoints"]["controller"]
-    invocation = f"python3 {shlex.quote(str(script))}"
-    project_arg = f"--project {shlex.quote(str(project))}"
+    commands = hook_commands(project, capsule, hosts, auto, executable, manifest["entrypoints"]["controller"])
     records = {}
 
     def add(relative, value, instructions=False):
@@ -336,7 +521,7 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
         source = capsule / skill["path"]
         helper = f"Its helper is `{capsule / SKILL_HELPERS[name]}`. " if name in SKILL_HELPERS else ""
         body = (f"Read `{router}` and `{source}` in full, then follow the skill under that policy. {helper}"
-                f"Resolve its bundled references from `{source.parent}`, not this generated entry directory.\n\n"
+                f"Run bundled Python helpers with `{executable}`. Resolve its bundled references from `{source.parent}`, not this generated entry directory.\n\n"
                 f"This entry selects `{name}` and the dependencies needed for the user's requested deliverable. "
                 "Keep that scope. Invoking a planning, explanation, or review skill does not authorize implementation.\n")
         text = wrapper(name, skill["description"], body, manual=not skill["implicit"])
@@ -374,22 +559,22 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
     if "cursor" in hosts:
         rule = "---\ndescription: bstack prose and optional engineering routing\nalwaysApply: true\n---\n\n" + POINTER
         add(".cursor/rules/bstack.mdc", {"kind": "file", "text": rule})
-    ignore_path = safe_path(project, ".gitignore", follow_leaf=True)
-    ignore_key = str(ignore_path.relative_to(project))
-    ignore_text = text_snapshot(snapshot(ignore_path), ignore_path)
-    if ignore_key in old or "bstack:begin" in ignore_text or "bstack:end" in ignore_text or not re.search(r"(?m)^/?\.bstack/$", ignore_text):
-        add(".gitignore", {"kind": "block", "text": marker_block(".bstack/", "shell"), "adopt": True}, instructions=True)
+    if "claude" not in hosts:
+        for purpose in ("reminder", "guard"):
+            add(f".bstack/hooks/{purpose}.sh", {"kind": "file", "text": "printf '{}\\n'\n"})
 
     for host in hosts:
-        command = f"{invocation} hook --host {host} {project_arg}"
-        guard = f"python3 {shlex.quote(str(capsule / PR_GUARD))} --host {host}"
+        plan = commands[host]
+        command, guard = plan["reminder"], plan["guard"]
+        for target, text in plan["launchers"].items():
+            add(target, {"kind": "file", "text": text})
         if host in ("codex", "claude"):
             guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
             entries = {"PreToolUse": [guard_handler]}
             if auto:
                 handler = {"hooks": [{"type": "command", "command": command, "timeout": 5}]}
                 entries.update({e: [handler] for e in ("SessionStart", "UserPromptSubmit", "SubagentStart")})
-            target = ".codex/hooks.json" if host == "codex" else ".claude/settings.json"
+            target = ".codex/hooks.json" if host == "codex" else ".claude/settings.local.json"
             add(target, {"kind": "json", "entries": entries, "defaults": {}})
         elif host == "cursor":
             entries = {"beforeShellExecution": [{"command": guard, "timeout": 5}],
@@ -401,13 +586,13 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
         elif host == "copilot":
             entries = {"preToolUse": [{"type": "command", "bash": guard, "timeoutSec": 5}]}
             if auto:
-                entries.update({event: [{"type": "command", "bash": f"{command} --event {event}", "timeoutSec": 5}]
-                                for event in ("sessionStart", "userPromptSubmitted", "subagentStart")})
+                entries.update({event: [{"type": "command", "bash": event_command, "timeoutSec": 5}]
+                                for event, event_command in plan["events"].items()})
             add(".github/hooks/bstack.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
         elif host in PLUGINS:
             for target, template in PLUGINS[host]:
                 add(target, {"kind": "file", "text": plugin_source(
-                    (capsule_root() / template).read_text(), host, invocation, project_arg, guard, auto)})
+                    (capsule_root() / template).read_text(), command, guard, auto)})
         elif host == "grok":
             guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
             entries = {"PreToolUse": [guard_handler]}
@@ -433,12 +618,12 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
             if auto:
                 raise Conflict("Codex hooks are disabled. Enable them for automatic routing, or install with --auto off; "
                                "the PR guard cannot run while hooks remain disabled")
-            return records
-        if features.get("hooks") is not True:
+        elif features.get("hooks") is not True:
             if "features" in parsed:
                 add(relative, {"kind": "block", "text": marker_block("hooks = true", "shell"), "anchor": "[features]"})
             else:
                 add(relative, {"kind": "block", "text": marker_block("[features]\nhooks = true", "shell")})
+    local_ignores(project, records, old, manifest["public_skills"])
     return records
 
 
@@ -492,8 +677,9 @@ def json_reconcile(content, previous, wanted, path):
     return json.dumps(obj, indent=2, sort_keys=True) + "\n" if obj or preserve_empty else None
 
 
-def reconcile(project, previous, desired, restore_missing=()):
+def reconcile(project, previous, desired, restore_missing=(), update_ignore_policy=True):
     changes = {}
+    ignore_path = safe_path(project, ".gitignore", follow_leaf=True)
     for relative in sorted(set(previous) | set(desired)):
         path = safe_path(project, relative)
         before = snapshot(path)
@@ -509,6 +695,23 @@ def reconcile(project, previous, desired, restore_missing=()):
             after = {"kind": "link", "target": new["target"]} if new else None
         else:
             text = text_snapshot(before, path)
+            legacy_paths = []
+            inherited_ignore = None
+            if kind == "block" and path == ignore_path:
+                inherited_ignore = legacy_ignore_block(text)
+                if inherited_ignore:
+                    legacy_paths = sorted(set(inherited_ignore.group(1).splitlines()) - {".bstack/", "/.bstack/"})
+                    recorded_ignore = legacy_ignore_block(old["text"]) if old else None
+                    if recorded_ignore:
+                        old = dict(old)
+                        recorded_rules = set(recorded_ignore.group(1).splitlines())
+                        recorded_paths = recorded_rules - {".bstack/", "/.bstack/"}
+                        private_content = inherited_ignore.group(1) if recorded_rules & {".bstack/", "/.bstack/"} else text
+                        if (text.count(old["text"]) != 1 and (legacy_paths or recorded_paths)
+                                and re.search(r"(?m)^/?\.bstack/$", private_content)):
+                            old["text"] = inherited_ignore.group()
+                        if old.get("restore") not in (".bstack/\n", "/.bstack/\n", ".bstack/", "/.bstack/"):
+                            old.pop("restore", None)
             if kind == "file":
                 if old and text != old["text"]:
                     raise Conflict(f"Managed file changed or disappeared: {path}")
@@ -517,6 +720,11 @@ def reconcile(project, previous, desired, restore_missing=()):
                 output = new["text"] if new else None
             elif kind == "block":
                 previous_block = old["text"] if old and not (before is None and relative in restore_missing) else None
+                if previous_block is None and new and "ignore_policy" in new:
+                    if inherited_ignore:
+                        previous_block = inherited_ignore.group()
+                    elif new.get("restore") and text.count(new["restore"]) == 1:
+                        previous_block = new["restore"]
                 if previous_block is None and new and new.get("adopt"):
                     for block in (new["text"], *new.get("adopt_from", [])):
                         if text.count(block) == 1:
@@ -533,13 +741,20 @@ def reconcile(project, previous, desired, restore_missing=()):
                             new["text"] = "\n" + new["text"]
                         output = text.replace(previous_block, new["text"], 1)
                     else:
-                        output = surrounding or None
+                        output = text.replace(previous_block, old["restore"], 1) if old and old.get("restore") else surrounding or None
                 else:
                     output = insert_block(text, new, path) if new else (text or None)
             elif kind == "json":
                 output = json_reconcile(text, old, new, path)
             else:
                 raise Conflict(f"Unknown managed binding: {kind}")
+            if kind == "block" and path == ignore_path:
+                if not update_ignore_policy:
+                    output = text or None
+                elif (new and "ignore_policy" in new) or legacy_paths:
+                    rules = new["ignore_policy"] if new and "ignore_policy" in new else {"ignored": [], "visible": []}
+                    rules = {**rules, "ignored": [*rules["ignored"], *legacy_paths]}
+                    output = merge_ignore_policy(output or "", rules, path)
             after = {"kind": "file", "data": output.encode(), "mode": before.get("mode", 0o644) if before else 0o644} if output is not None else None
         if before != after:
             changes[relative] = (before, after)
@@ -598,7 +813,7 @@ def project_lock(project):
         os.close(descriptor)
 
 
-def configure(project, capsule, action, hosts=None, mode=None, verification=None, installation=None, locked=False):
+def configure(project, capsule, action, hosts=None, mode=None, verification=None, installation=None, locked=False, executable=None):
     with nullcontext() if locked else project_lock(project):
         current = state_read(project)
         if action != "setup" and not current:
@@ -613,17 +828,24 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
             desired = {}
             state = None
         else:
+            executable = executable or runtime_python(current, select=action == "setup")
             manifest = package_check(capsule)
             chosen_hosts = list(dict.fromkeys(hosts if hosts is not None else current["hosts"] if current else DEFAULT_HOSTS))
             enabled = mode if mode is not None else current["auto"] if current else True
             verification_mode = verification if verification is not None else current["verification"] if current else "ask"
             install_kind = installation or (current.get("installation", "external") if current else "external")
             desired = build_records(project, capsule, chosen_hosts, enabled, old, manifest=manifest,
-                                    verification=verification_mode)
+                                    verification=verification_mode, executable=executable)
+            if action != "setup":
+                ignore_key = str(safe_path(project, ".gitignore", follow_leaf=True).relative_to(project))
+                if ignore_key in old:
+                    desired[ignore_key] = {**old[ignore_key], "ignore_policy": desired[ignore_key]["ignore_policy"]}
+                else:
+                    desired.pop(ignore_key, None)
             state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled,
-                     "verification": verification_mode, "managed": desired, "installation": install_kind}
+                     "verification": verification_mode, "managed": desired, "installation": install_kind, "python": executable}
         restored = missing_instruction_blocks(project, old, desired) if action == "setup" else []
-        changes = reconcile(project, old, desired, restore_missing=restored)
+        changes = reconcile(project, old, desired, restore_missing=restored, update_ignore_policy=action in ("setup", "uninstall"))
         template_status = None
         if action == "setup" and PR_TEMPLATE in {entry["path"] for entry in manifest["files"]}:
             existing = existing_pr_templates(project)
@@ -641,8 +863,7 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
         bindings_changed = any(relative not in (".gitignore", PR_TEMPLATE_DESTINATION) for relative in changes)
         if action == "uninstall":
             retained = [p for p in (project / ".bstack").rglob("*")
-                        if (p.is_file() or p.is_symlink()) and p not in
-                        (project / STATE, project / ".bstack/instructions.md")]
+                        if (p.is_file() or p.is_symlink()) and str(p.relative_to(project)) not in {STATE, *old}]
             if retained:
                 ignore = safe_path(project, ".gitignore", follow_leaf=True)
                 key = str(ignore.relative_to(project))
@@ -663,6 +884,12 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
                 "hosts": state["hosts"] if state else [], "changes": list(changes),
                 **session_guidance(state["auto"] if state else False, state["hosts"] if state else [], bindings_changed,
                                    codex_hooks_disabled(project, state["hosts"]) if state else False)}
+        if state:
+            result["python"] = state["python"]
+            result["sharing"] = sharing_status(project, desired)
+        elif IGNORE_BEGIN in text_snapshot(snapshot(safe_path(project, ".gitignore", follow_leaf=True)), project / ".gitignore"):
+            result["sharing"] = {"retained_ignore_policy": ".gitignore",
+                                 "guidance": "Shared generated-binding ignore rules remain in .gitignore. Review them before reusing those paths for unrelated files."}
         if restored:
             result["recreated_instruction_files"] = restored
             result["recovery_warning"] = ("Recreated the missing instruction file(s) with only bstack's managed block: "
@@ -674,6 +901,7 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
 
 
 def install_offline(project, capsule, hosts=None, mode=None, verification=None):
+    executable = runtime_python(select=True)
     manifest = package_check(capsule)
     target = safe_path(project, PACKAGE)
     with project_lock(project):
@@ -701,7 +929,7 @@ def install_offline(project, capsule, hosts=None, mode=None, verification=None):
         verification_mode = verification if verification is not None else current["verification"] if current else "ask"
         previous = current["managed"] if current else {}
         desired = build_records(project, target, chosen_hosts, enabled, previous, manifest=manifest,
-                                baseline=read_baseline(capsule, manifest), verification=verification_mode)
+                                baseline=read_baseline(capsule, manifest), verification=verification_mode, executable=executable)
         preflight = dict(previous)
         if legacy:
             for relative in desired:
@@ -714,9 +942,12 @@ def install_offline(project, capsule, hosts=None, mode=None, verification=None):
                   restore_missing=missing_instruction_blocks(project, preflight, desired))
         if target == capsule:
             result = configure(project, target, "setup", hosts=chosen_hosts, mode=enabled,
-                               verification=verification_mode, installation="offline", locked=True)
+                               verification=verification_mode, installation="offline", locked=True, executable=executable)
             result["installation"] = "offline"
             result["package"] = str(target)
+            result["distribution"] = {"source": str(capsule), "installed": str(target),
+                                      "version": manifest.get("version"), "manifest_sha256": digest(target / "manifest.json"),
+                                      "independent_copy": False}
             return result
         target.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(prefix=".bstack-install-", dir=target.parent) as temporary:
@@ -738,7 +969,7 @@ def install_offline(project, capsule, hosts=None, mode=None, verification=None):
                     os.replace(legacy, old_legacy)
                 os.replace(staging, target)
                 result = configure(project, target, "setup", hosts=chosen_hosts, mode=enabled,
-                                   verification=verification_mode, installation="offline", locked=True)
+                                   verification=verification_mode, installation="offline", locked=True, executable=executable)
             except Exception:
                 if not staging.exists() and target.exists():
                     shutil.rmtree(target)
@@ -752,6 +983,10 @@ def install_offline(project, capsule, hosts=None, mode=None, verification=None):
         result["installation"] = "offline"
         result["package"] = str(target)
         result["source"] = "bundled-files-only"
+        result["distribution"] = {"source": str(capsule), "installed": str(target),
+                                  "version": manifest.get("version"), "manifest_sha256": digest(target / "manifest.json"),
+                                  "independent_copy": True,
+                                  "guidance": "The installed package is independent. Keep or remove the source through its distributor."}
         result.update(session_guidance(result["auto"], result["hosts"], result["fresh_session_required"] or package_changed,
                                        codex_hooks_disabled(project, result["hosts"])))
         return result
@@ -797,25 +1032,35 @@ def status(project, capsule, check=False):
         if current:
             if current["capsule"] != str(capsule):
                 raise Conflict("This command is from another package location; run the installed package command")
+            executable = current.get("python")
+            if not executable:
+                raise Conflict("This installation has no saved Python runtime; run setup with Python 3.11 or newer")
             expected = build_records(project, capsule, current["hosts"], current["auto"], current["managed"],
-                                     manifest=manifest, verification=current["verification"])
-            changes = reconcile(project, current["managed"], expected)
+                                     manifest=manifest, verification=current["verification"], executable=executable)
+            changes = reconcile(project, current["managed"], expected, update_ignore_policy=False)
             if changes:
                 raise Conflict("Bindings need setup reconciliation: " + ", ".join(changes))
+            runtime_python(current)
+            result["python"] = executable
+            result["hook_commands"] = probe_commands(project, hook_commands(project, capsule, current["hosts"],
+                                                                            current["auto"], executable, manifest["entrypoints"]["controller"]),
+                                                     current["auto"], executable)
+            result["sharing"] = sharing_status(project, expected)
         result["package_integrity"] = "passed"
         result["bindings"] = "passed" if current else "not_configured"
     return result
 
 
-def run_hook(project, capsule, host, event=None):
-    current = state_read(project)
-    if not current or not current["auto"] or host not in current["hosts"]:
-        print("{}")
-        return 0
-    if current["capsule"] != str(capsule):
-        print("{}")
-        print("bstack stale hook ignored; run setup from the installed package", file=sys.stderr)
-        return 0
+def run_hook(project, capsule, host, event=None, probe=False):
+    if not probe:
+        current = state_read(project)
+        if not current or not current["auto"] or host not in current["hosts"]:
+            print("{}")
+            return 0
+        if current["capsule"] != str(capsule):
+            print("{}")
+            print("bstack stale hook ignored; run setup from the installed package", file=sys.stderr)
+            return 0
     manifest = package_check(capsule)
     path = capsule / manifest["entrypoints"]["reminder"]
     spec = importlib.util.spec_from_file_location("bstack_reminder", path)
@@ -826,6 +1071,9 @@ def run_hook(project, capsule, host, event=None):
         spec.loader.exec_module(module)
     finally:
         sys.dont_write_bytecode = bytecode
+    if probe:
+        print(json.dumps({"host": host, "purpose": "reminder", "python": os.path.abspath(sys.executable)}))
+        return 0
     module.ROOT = project
     module.ROUTER = capsule / manifest["entrypoints"]["router"]
     module.TEMPLATE = capsule / "runtime/reminder.txt"
@@ -861,6 +1109,7 @@ def main():
     hook = commands.add_parser("hook")
     hook.add_argument("--host", required=True, choices=HOSTS)
     hook.add_argument("--event")
+    hook.add_argument("--probe", action="store_true", help="Check startup without delivering a reminder")
     for command in commands.choices.values():
         command.add_argument("--project", type=Path, default=Path.cwd())
     args = parser.parse_args()
@@ -883,7 +1132,7 @@ def main():
         if not project.is_dir():
             raise Conflict(f"Project directory does not exist: {project}")
         if args.command == "hook":
-            return run_hook(project, capsule, args.host, args.event)
+            return run_hook(project, capsule, args.host, args.event, probe=args.probe)
         if args.command in ("install", "setup"):
             result = install_offline(project, capsule, hosts=args.hosts,
                                      mode=None if args.auto is None else args.auto == "on",
