@@ -92,6 +92,12 @@ def new_id(prefix):
     return prefix + "_" + uuid.uuid4().hex
 
 
+def answer_source(question):
+    answer = question["answer"] if question["state"] == "resolved" else None
+    return {"questionId": question["id"], "answerId": answer["id"] if answer else None,
+            "revision": answer["revision"] if answer else None}
+
+
 def _has_git_marker(project):
     device = project.stat().st_dev
     for candidate in (project, *project.parents):
@@ -324,7 +330,9 @@ class Workspace:
                         db.execute("SAVEPOINT mutation")
                         try:
                             value = tx.mutate(op, envelope["input"], actor)
-                            tx.kanban.invalidate_question_changes()
+                            changed = tx.changed_sources()
+                            if changed:
+                                tx.kanban.invalidate_question_changes(changed)
                             tx.flush(actor)
                             seq = db.execute("UPDATE workspace SET change_seq=change_seq+1 RETURNING change_seq").fetchone()[0]
                             result = {"ok": True, "changeSeq": seq, "value": value}
@@ -354,10 +362,23 @@ class Transaction:
         self.change_seq = db.execute("SELECT change_seq FROM workspace").fetchone()[0]
         self.maps = {row[0]: json.loads(row[1]) for row in db.execute("SELECT id,data FROM maps")}
         self.questions = {row[0]: json.loads(row[1]) for row in db.execute("SELECT id,data FROM questions")}
-        self.edges = {(row[0], row[1], row[2]) for row in db.execute("SELECT kind,source,target FROM relationships")}
+        self.edges, self.blockers = set(), {}
+        for edge in db.execute("SELECT kind,source,target FROM relationships"):
+            self.link(edge)
+        self.sources = {key: answer_source(question) for key, question in self.questions.items()}
         self.changed_maps, self.changed_questions = set(), set()
-        from .kanban import Kanban
-        self.kanban = Kanban(self)
+        self.board = None
+
+    @property
+    def kanban(self):
+        if self.board is None:
+            from .kanban import Kanban
+            self.board = Kanban(self)
+        return self.board
+
+    def changed_sources(self):
+        return {key for key in self.changed_questions
+                if key in self.sources and self.sources[key] != answer_source(self.questions[key])}
 
     def get_map(self, identifier):
         identity(identifier, "mapId")
@@ -375,8 +396,18 @@ class Transaction:
         claim = question.get("lease")
         return claim if claim and claim["expiresAt"] > self.now else None
 
+    def link(self, edge):
+        self.edges.add(edge)
+        if edge[0] == "blocks":
+            self.blockers.setdefault(edge[2], set()).add(edge[1])
+
+    def unlink(self, edge):
+        self.edges.remove(edge)
+        if edge[0] == "blocks":
+            self.blockers[edge[2]].remove(edge[1])
+
     def prerequisites(self, identifier):
-        return sorted(source for kind, source, target in self.edges if kind == "blocks" and target == identifier)
+        return sorted(self.blockers.get(identifier, ()))
 
     def question_view(self, question):
         view = {key: value for key, value in question.items() if key not in {"lease", "fence", "reviewed"}}
@@ -398,8 +429,11 @@ class Transaction:
         view["status"], view["ready"] = status, status == "Ready"
         return view
 
-    def map_view(self, mapping):
-        questions = [self.question_view(q) for q in self.questions.values() if q["mapId"] == mapping["id"]]
+    def map_questions(self, mapping):
+        return [self.question_view(q) for q in self.questions.values() if q["mapId"] == mapping["id"]]
+
+    def map_view(self, mapping, questions=None):
+        questions = self.map_questions(mapping) if questions is None else questions
         counts = {"total": len(questions), "resolved": 0, "ready": 0, "blocked": 0, "waiting": 0, "reviewing": 0}
         for q in questions:
             counts["resolved"] += q["state"] == "resolved"
@@ -423,8 +457,8 @@ class Transaction:
         if op == "map.read":
             fields(data, {"mapId"}, {"mapId"})
             mapping = self.get_map(data["mapId"])
-            return {"map": self.map_view(mapping), "questions": [self.question_view(q) for q in self.questions.values()
-                    if q["mapId"] == mapping["id"]], "relationships": self.relationships(mapping["id"])}
+            questions = self.map_questions(mapping)
+            return {"map": self.map_view(mapping, questions), "questions": questions, "relationships": self.relationships(mapping["id"])}
         if op == "question.read":
             fields(data, {"questionId"}, {"questionId"})
             question = self.get_question(data["questionId"])
@@ -641,12 +675,12 @@ class Transaction:
                 fail("cycle", "Relationship would create a cycle")
             if len(self.edges) + len(self.kanban.edges) >= 50000:
                 fail("validation", "Workspace relationship limit reached")
-            self.edges.add(edge)
+            self.link(edge)
             self.db.execute("INSERT INTO relationships VALUES (?,?,?,?)", (mapping["id"], *edge))
         else:
             if edge not in self.edges:
                 fail("not_found", "Relationship not found")
-            self.edges.remove(edge)
+            self.unlink(edge)
             self.db.execute("DELETE FROM relationships WHERE kind=? AND source=? AND target=?", edge)
         if kind == "blocks":
             self.invalidate({target_id} | self.descendants([target_id]))
@@ -725,7 +759,8 @@ class Transaction:
         return {result_key: view(question), **result}
 
     def flush(self, actor):
-        self.kanban.flush(actor)
+        if self.board is not None:
+            self.board.flush(actor)
         for identifier in self.changed_maps:
             mapping = self.maps[identifier]
             self.db.execute("INSERT INTO maps VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data", (identifier, canonical(mapping)))

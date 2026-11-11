@@ -2548,17 +2548,17 @@
     {
       "mode": 420,
       "path": "workspace/wayfinder/core.py",
-      "sha256": "e189cd1b30599f183bdbd96b77e79bf4d8e72f141c95f228f0eaf9a291faa921",
+      "sha256": "5d25c2a82faa406905d227e1fff7e6938825cac17e158d6b9882e1409cacb46b",
       "source": "bstack/workspace/wayfinder/core.py",
-      "source_sha256": "e189cd1b30599f183bdbd96b77e79bf4d8e72f141c95f228f0eaf9a291faa921",
+      "source_sha256": "5d25c2a82faa406905d227e1fff7e6938825cac17e158d6b9882e1409cacb46b",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "workspace/wayfinder/kanban.py",
-      "sha256": "ea02887dcb3952735ff171f40089a02cf83fb6b5c4a82290ef3b99d9667e9109",
+      "sha256": "d4c60fe408cb085c7ba78289e3a69d3e220cf8aba452c08244c86227dea94fcc",
       "source": "bstack/workspace/wayfinder/kanban.py",
-      "source_sha256": "ea02887dcb3952735ff171f40089a02cf83fb6b5c4a82290ef3b99d9667e9109",
+      "source_sha256": "d4c60fe408cb085c7ba78289e3a69d3e220cf8aba452c08244c86227dea94fcc",
       "transforms": []
     },
     {
