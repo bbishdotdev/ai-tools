@@ -1,0 +1,29 @@
+bstack/workspace/tests/test_core.py
+  s_123ed7c0166e50::t_bd1e536bad9557 204,212
+bstack/workspace/wayfinder/core.py
+  s_123ed7c0166e50::t_bd1e536bad9557 95-100,333-335,365-368,370-381,399-408,410,432-436,460-461,678,683,762-763
+bstack/workspace/wayfinder/kanban.py
+  s_123ed7c0166e50::t_bd1e536bad9557 4,87,196
+bstack/release/bstack/workspace/wayfinder/core.py
+  s_123ed7c0166e50::t_bd1e536bad9557 95-100,333-335,365-368,370-381,399-408,410,432-436,460-461,678,683,762-763
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_bd1e536bad9557 2612,2614,2620,2622
+bstack/release/bstack/workspace/wayfinder/kanban.py
+  s_123ed7c0166e50::t_bd1e536bad9557 4,87,196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0d7809895b247d4056dbc1c384677708681d26e3",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
