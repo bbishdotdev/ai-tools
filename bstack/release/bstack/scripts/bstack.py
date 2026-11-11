@@ -35,6 +35,8 @@ VERIFICATION_MODES = ("off", "ask", "auto")
 POINTER = "Read and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n"
 BEGIN = "<!-- bstack:begin -->"
 END = "<!-- bstack:end -->"
+IGNORE_BEGIN = "# bstack generated bindings:begin"
+IGNORE_END = "# bstack generated bindings:end"
 HISTORICAL_BASELINE_BLOCK_HASHES = {
     "7d4146f18a9eabe12f1f01c64c8e624b829a2162fcaaf514c8365acaeab928a8",
 }
@@ -387,8 +389,37 @@ def shared_settings(content):
     return bool(obj)
 
 
+def legacy_ignore_block(content):
+    if content.count("bstack:begin") != 1 or content.count("bstack:end") != 1:
+        return None
+    match = re.search(r"(?m)^# bstack:begin\n((?:[^\n]*\n)*?)# bstack:end(?:\n|$)", content)
+    dedicated = {".bstack/", "/.bstack/", "/.cursor/rules/bstack.mdc", "/.codex/hooks.json",
+                 "/.claude/settings.local.json", "/.cursor/hooks.json", "/.grok/hooks/bstack.json",
+                 "/.github/hooks/bstack.json", *("/" + target for entries in PLUGINS.values() for target, _ in entries)}
+    if match and match.group(1) and all(pattern in dedicated or re.fullmatch(r"/\.agents/skills/[a-z0-9]+(?:-[a-z0-9]+)*/", pattern)
+                     or re.fullmatch(r"/\.(?:claude|cursor|grok)/skills/[a-z0-9]+(?:-[a-z0-9]+)*", pattern)
+                     for pattern in match.group(1).splitlines()):
+        return match
+    return None
+
+
+def merge_ignore_policy(content, rules, path):
+    match = re.search(r"(?m)^" + re.escape(IGNORE_BEGIN) + r"\n([\s\S]*?)^" + re.escape(IGNORE_END) + r"(?:\n|$)", content)
+    if IGNORE_BEGIN in content or IGNORE_END in content:
+        if content.count(IGNORE_BEGIN) != 1 or content.count(IGNORE_END) != 1 or match is None:
+            raise Conflict(f"Malformed shared bstack ignore policy: {path}. Repair its generated-bindings markers before setup")
+    lines = match.group(1).splitlines() if match else []
+    positive = sorted(set(rules["ignored"]) - set(lines))
+    negative = sorted({"!" + name for name in rules["visible"]} - set(lines))
+    if not positive and not negative:
+        return content
+    block = IGNORE_BEGIN + "\n" + "\n".join([*positive, *lines, *negative]) + "\n" + IGNORE_END + "\n"
+    return content[:match.start()] + block + content[match.end():] if match else block + content
+
+
 def local_ignores(project, records, old, public):
     paths = {f"/.agents/skills/{name}/" for name in public}
+    visible = set()
     for relative, record in records.items():
         if relative.startswith(".bstack/") or relative in ("AGENTS.md", "CLAUDE.md"):
             continue
@@ -398,38 +429,32 @@ def local_ignores(project, records, old, public):
             path = safe_path(project, relative)
             content = text_snapshot(snapshot(path), path)
             remaining = json_reconcile(content, old.get(relative), None, path)
-            if not shared_settings(remaining):
+            if shared_settings(remaining):
+                visible.add("/" + relative)
+            else:
                 paths.add("/" + relative)
     ignore = safe_path(project, ".gitignore", follow_leaf=True)
     key = str(ignore.relative_to(project))
     content = text_snapshot(snapshot(ignore), ignore)
-    if old.get(key):
-        content = without_block(content, old[key], ignore)
-    if "bstack:begin" in content or not re.search(r"(?m)^/?\.bstack/$", content):
-        paths.add(".bstack/")
-    inherited = old.get(key, {}).get("restore", "")
-    prior = re.search(r"(?m)^# bstack:begin\n((?:[^\n]*\n)*?)# bstack:end\n", content) if key not in old else None
-    setting_paths = {"/.codex/hooks.json", "/.claude/settings.local.json", "/.cursor/hooks.json",
-                     "/.grok/hooks/bstack.json", "/.github/hooks/bstack.json"}
-    dedicated = {".bstack/", "/.cursor/rules/bstack.mdc", *setting_paths,
-                 *("/" + target for entries in PLUGINS.values() for target, _ in entries)}
-    if prior:
-        patterns = prior.group(1).splitlines()
-        if all(pattern in dedicated or re.fullmatch(r"/\.agents/skills/[a-z0-9]+(?:-[a-z0-9]+)*/", pattern)
-               or re.fullmatch(r"/\.(?:claude|cursor|grok)/skills/[a-z0-9]+(?:-[a-z0-9]+)*", pattern)
-               for pattern in patterns):
-            inherited = prior.group(0)
-    if inherited:
-        paths.update(inherited.splitlines()[1:-1])
-        for pattern in paths & setting_paths:
-            relative = pattern.removeprefix("/")
-            path = safe_path(project, relative)
-            remaining = json_reconcile(text_snapshot(snapshot(path), path), old.get(relative), None, path)
-            if shared_settings(remaining):
-                paths.remove(pattern)
-    record = {"kind": "block", "text": marker_block("\n".join(sorted(paths)), "shell"), "adopt": True}
-    if inherited:
-        record.update(restore=inherited, adopt_from=[inherited])
+    prior = legacy_ignore_block(content)
+    record = {"kind": "block", "text": marker_block(".bstack/", "shell"), "adopt": True}
+    if not prior and not old.get(key):
+        bare = next((match for match in re.finditer(r"(?m)^/?\.bstack/(?:\n|$)", content)
+                     if content.rfind(IGNORE_BEGIN, 0, match.start()) <= content.rfind(IGNORE_END, 0, match.start())), None)
+        if bare and content.count(bare.group()) == 1:
+            record["restore"] = bare.group()
+    if old.get(key, {}).get("restore") in (".bstack/\n", "/.bstack/\n", ".bstack/", "/.bstack/"):
+        record["restore"] = old[key]["restore"]
+    settings = {"/.codex/hooks.json", "/.claude/settings.local.json", "/.cursor/hooks.json",
+                "/.grok/hooks/bstack.json", "/.github/hooks/bstack.json"}
+    for pattern in settings & (paths | set(content.splitlines())):
+        relative = pattern[1:]
+        path = safe_path(project, relative)
+        before = snapshot(path)
+        if relative not in records and before is not None:
+            if relative not in old or shared_settings(json_reconcile(text_snapshot(before, path), old[relative], None, path)):
+                visible.add(pattern)
+    record["ignore_policy"] = {"ignored": sorted(paths), "visible": sorted(visible)}
     records[key] = record
 
 
@@ -437,11 +462,16 @@ def sharing_status(project, records):
     settings = [path for path, record in records.items() if record["kind"] == "json"]
     generated = [path for path, record in records.items() if record["kind"] in ("file", "link", "json")]
     tracked = []
+    unignored = None
     if shutil.which("git"):
         result = subprocess.run(["git", "-C", str(project), "ls-files", "-z", "--", *generated],
                                 text=True, capture_output=True)
         if result.returncode == 0:
             tracked = sorted(filter(None, result.stdout.split("\0")))
+            result = subprocess.run(["git", "-C", str(project), "check-ignore", "-z", "--stdin"],
+                                    input="\0".join(generated) + "\0", text=True, capture_output=True)
+            if result.returncode in (0, 1):
+                unignored = sorted(set(generated) - set(result.stdout.split("\0")))
     mixed = []
     for relative in settings:
         path = safe_path(project, relative)
@@ -449,10 +479,22 @@ def sharing_status(project, records):
         remaining = json_reconcile(content, records[relative], None, path)
         if shared_settings(remaining):
             mixed.append(relative)
-    result = {"tracked_generated_paths": tracked, "mixed_host_settings": mixed}
-    if tracked or mixed:
+    result = {"tracked_generated_paths": tracked, "mixed_host_settings": mixed,
+              "unignored_generated_paths": unignored, "ignore_rules_need_setup": False}
+    for relative, record in records.items():
+        if "ignore_policy" in record:
+            path = safe_path(project, relative)
+            content = text_snapshot(snapshot(path), path)
+            try:
+                legacy = legacy_ignore_block(content)
+                result["ignore_rules_need_setup"] = (merge_ignore_policy(content, record["ignore_policy"], path) != content
+                                                       or bool(legacy and legacy.group() != marker_block(".bstack/", "shell")))
+            except Conflict as error:
+                result.update(ignore_rules_need_setup=True, ignore_policy_error=str(error))
+    if tracked or mixed or unignored or result["ignore_rules_need_setup"]:
         result["guidance"] = ("Generated bindings belong to this checkout. Git ignores do not hide tracked changes. "
-                              "Review tracked generated paths and keep unrelated shared settings; rerun setup in each checkout.")
+                              "Review visible generated paths and keep unrelated shared settings. Setup updates the shared "
+                              "ignore policy without removing existing visibility exceptions.")
     return result
 
 
@@ -635,8 +677,9 @@ def json_reconcile(content, previous, wanted, path):
     return json.dumps(obj, indent=2, sort_keys=True) + "\n" if obj or preserve_empty else None
 
 
-def reconcile(project, previous, desired, restore_missing=()):
+def reconcile(project, previous, desired, restore_missing=(), update_ignore_policy=True):
     changes = {}
+    ignore_path = safe_path(project, ".gitignore", follow_leaf=True)
     for relative in sorted(set(previous) | set(desired)):
         path = safe_path(project, relative)
         before = snapshot(path)
@@ -652,6 +695,23 @@ def reconcile(project, previous, desired, restore_missing=()):
             after = {"kind": "link", "target": new["target"]} if new else None
         else:
             text = text_snapshot(before, path)
+            legacy_paths = []
+            inherited_ignore = None
+            if kind == "block" and path == ignore_path:
+                inherited_ignore = legacy_ignore_block(text)
+                if inherited_ignore:
+                    legacy_paths = sorted(set(inherited_ignore.group(1).splitlines()) - {".bstack/", "/.bstack/"})
+                    recorded_ignore = legacy_ignore_block(old["text"]) if old else None
+                    if recorded_ignore:
+                        old = dict(old)
+                        recorded_rules = set(recorded_ignore.group(1).splitlines())
+                        recorded_paths = recorded_rules - {".bstack/", "/.bstack/"}
+                        private_content = inherited_ignore.group(1) if recorded_rules & {".bstack/", "/.bstack/"} else text
+                        if (text.count(old["text"]) != 1 and (legacy_paths or recorded_paths)
+                                and re.search(r"(?m)^/?\.bstack/$", private_content)):
+                            old["text"] = inherited_ignore.group()
+                        if old.get("restore") not in (".bstack/\n", "/.bstack/\n", ".bstack/", "/.bstack/"):
+                            old.pop("restore", None)
             if kind == "file":
                 if old and text != old["text"]:
                     raise Conflict(f"Managed file changed or disappeared: {path}")
@@ -660,6 +720,11 @@ def reconcile(project, previous, desired, restore_missing=()):
                 output = new["text"] if new else None
             elif kind == "block":
                 previous_block = old["text"] if old and not (before is None and relative in restore_missing) else None
+                if previous_block is None and new and "ignore_policy" in new:
+                    if inherited_ignore:
+                        previous_block = inherited_ignore.group()
+                    elif new.get("restore") and text.count(new["restore"]) == 1:
+                        previous_block = new["restore"]
                 if previous_block is None and new and new.get("adopt"):
                     for block in (new["text"], *new.get("adopt_from", [])):
                         if text.count(block) == 1:
@@ -683,6 +748,13 @@ def reconcile(project, previous, desired, restore_missing=()):
                 output = json_reconcile(text, old, new, path)
             else:
                 raise Conflict(f"Unknown managed binding: {kind}")
+            if kind == "block" and path == ignore_path:
+                if not update_ignore_policy:
+                    output = text or None
+                elif (new and "ignore_policy" in new) or legacy_paths:
+                    rules = new["ignore_policy"] if new and "ignore_policy" in new else {"ignored": [], "visible": []}
+                    rules = {**rules, "ignored": [*rules["ignored"], *legacy_paths]}
+                    output = merge_ignore_policy(output or "", rules, path)
             after = {"kind": "file", "data": output.encode(), "mode": before.get("mode", 0o644) if before else 0o644} if output is not None else None
         if before != after:
             changes[relative] = (before, after)
@@ -764,10 +836,16 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
             install_kind = installation or (current.get("installation", "external") if current else "external")
             desired = build_records(project, capsule, chosen_hosts, enabled, old, manifest=manifest,
                                     verification=verification_mode, executable=executable)
+            if action != "setup":
+                ignore_key = str(safe_path(project, ".gitignore", follow_leaf=True).relative_to(project))
+                if ignore_key in old:
+                    desired[ignore_key] = {**old[ignore_key], "ignore_policy": desired[ignore_key]["ignore_policy"]}
+                else:
+                    desired.pop(ignore_key, None)
             state = {"schema": SCHEMA, "capsule": str(capsule), "hosts": chosen_hosts, "auto": enabled,
                      "verification": verification_mode, "managed": desired, "installation": install_kind, "python": executable}
         restored = missing_instruction_blocks(project, old, desired) if action == "setup" else []
-        changes = reconcile(project, old, desired, restore_missing=restored)
+        changes = reconcile(project, old, desired, restore_missing=restored, update_ignore_policy=action in ("setup", "uninstall"))
         template_status = None
         if action == "setup" and PR_TEMPLATE in {entry["path"] for entry in manifest["files"]}:
             existing = existing_pr_templates(project)
@@ -809,6 +887,9 @@ def configure(project, capsule, action, hosts=None, mode=None, verification=None
         if state:
             result["python"] = state["python"]
             result["sharing"] = sharing_status(project, desired)
+        elif IGNORE_BEGIN in text_snapshot(snapshot(safe_path(project, ".gitignore", follow_leaf=True)), project / ".gitignore"):
+            result["sharing"] = {"retained_ignore_policy": ".gitignore",
+                                 "guidance": "Shared generated-binding ignore rules remain in .gitignore. Review them before reusing those paths for unrelated files."}
         if restored:
             result["recreated_instruction_files"] = restored
             result["recovery_warning"] = ("Recreated the missing instruction file(s) with only bstack's managed block: "
@@ -956,7 +1037,7 @@ def status(project, capsule, check=False):
                 raise Conflict("This installation has no saved Python runtime; run setup with Python 3.11 or newer")
             expected = build_records(project, capsule, current["hosts"], current["auto"], current["managed"],
                                      manifest=manifest, verification=current["verification"], executable=executable)
-            changes = reconcile(project, current["managed"], expected)
+            changes = reconcile(project, current["managed"], expected, update_ignore_policy=False)
             if changes:
                 raise Conflict("Bindings need setup reconciliation: " + ", ".join(changes))
             runtime_python(current)

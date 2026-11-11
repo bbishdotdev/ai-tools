@@ -39,9 +39,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "8c14bc2b2bc82c6031bf34fccb038d27bf7ba09ceb2826709e514082be6cad5b",
+      "sha256": "f1c089a06cbf52e5a837080febef76e01d41f87f81f71d0c394d252e259605cc",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "1296e071fe35fb7a7ef8f9316ba3a8415bf44516a0cce126c57586c64f2c5ee8",
+      "source_sha256": "a520a439af33d0c06520eaf387ea5ccda9d64f3c67f9199141e18d10dd6bd36b",
       "transforms": [
         "render-release-template"
       ]
@@ -49,9 +49,9 @@
     {
       "mode": 420,
       "path": "SKILL.md",
-      "sha256": "c0dfa708395f1a27414784cc14693974f2a3796e39df869082008c8283c0ad30",
+      "sha256": "55d03d4553e86b2e6494d7c77e4e9454145bb0eadc49b35df6336d090e440c96",
       "source": "bstack/package/templates/folder-install.md",
-      "source_sha256": "38092f06a6df8b829b67d57e84067fd175811cb1c4545bd819aa6066eb4a0a72",
+      "source_sha256": "fd01c1f96fee194da23a5d2f9709d93aa58ca8ce7ee32b6683ddda251c4c84a0",
       "transforms": [
         "render-release-template"
       ]
@@ -1774,9 +1774,9 @@
     {
       "mode": 420,
       "path": "scripts/bstack.py",
-      "sha256": "ddaadb821e5df33f074b2d7ec06f97e99cd05df269ff9163c2dab8b179d94b1e",
+      "sha256": "4a0f3876eb56b493b48879c3bd1eb51c319aaa50f5560f458edc03a6e0760560",
       "source": "bstack/package/runtime.py",
-      "source_sha256": "ddaadb821e5df33f074b2d7ec06f97e99cd05df269ff9163c2dab8b179d94b1e",
+      "source_sha256": "4a0f3876eb56b493b48879c3bd1eb51c319aaa50f5560f458edc03a6e0760560",
       "transforms": []
     },
     {
@@ -2409,9 +2409,9 @@
     {
       "mode": 420,
       "path": "shared/setup-bstack/INSTRUCTIONS.md",
-      "sha256": "e83a51cc29fc632f2fd274a9cae521ef2b699fa848ab83fd41f0b39fbcdd49a3",
+      "sha256": "573683ff470025cc73f707e92c0269afd9305baf747291cffb559ac8df0ebd96",
       "source": "bstack/package/templates/setup.md",
-      "source_sha256": "e83a51cc29fc632f2fd274a9cae521ef2b699fa848ab83fd41f0b39fbcdd49a3",
+      "source_sha256": "573683ff470025cc73f707e92c0269afd9305baf747291cffb559ac8df0ebd96",
       "transforms": [
         "render-release-template",
         "public-skill-invocation-policy"

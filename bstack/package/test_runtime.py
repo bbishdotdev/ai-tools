@@ -275,6 +275,137 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(json.loads((self.project / ".cursor/hooks.json").read_text()), shared)
         self.assertEqual((self.project / ".agents/skills/custom/SKILL.md").read_text(), "Custom skill\n")
 
+    def test_existing_checkouts_share_ignore_policy_without_sharing_ownership(self):
+        self.run_cli("install", "--hosts", "codex")
+        other = self.root / "teammate checkout"
+        other.mkdir()
+        self.run_cli("install", "--hosts", "claude", project=other)
+        original = (self.project / ".gitignore").read_text()
+        shutil.copyfile(other / ".gitignore", self.project / ".gitignore")
+        before = self.files()
+        doctor = self.run_cli("doctor")
+        self.assertEqual(doctor["bindings"], "passed")
+        self.assertEqual(self.files(), before)
+        self.assertTrue(doctor["sharing"]["ignore_rules_need_setup"])
+        self.run_cli("auto", "off")
+        self.assertEqual((self.project / ".gitignore").read_text(), (other / ".gitignore").read_text())
+        self.run_cli("setup")
+        shared = (self.project / ".gitignore").read_text()
+        self.assertIn("/.claude/skills/how\n", shared)
+        self.assertIn("/.codex/hooks.json\n", shared)
+        self.assertNotEqual(shared, original)
+        shutil.copyfile(self.project / ".gitignore", other / ".gitignore")
+        self.assertEqual(self.run_cli("doctor", project=other)["bindings"], "passed")
+        self.run_cli("verification", "auto", project=other)
+        self.assertEqual(self.run_cli("install", project=other)["changes"], [])
+        state = json.loads((other / ".bstack/config.json").read_text())
+        self.assertEqual(state["managed"][".gitignore"]["text"], "# bstack:begin\n.bstack/\n# bstack:end\n")
+        subprocess.run(["git", "init", "--quiet", str(other)], check=True)
+        self.assertEqual(subprocess.run(["git", "-C", str(other), "check-ignore", "--quiet", ".claude/skills/how"]).returncode, 0)
+
+    def test_shared_ignore_exceptions_keep_mixed_settings_visible_for_teammates(self):
+        subprocess.run(["git", "init", "--quiet", str(self.project)], check=True)
+        self.write(".gitignore", "!/.agents/skills/how/\n")
+        self.run_cli("install", "--hosts", "cursor")
+        path = self.project / ".cursor/hooks.json"
+        value = json.loads(path.read_text())
+        own = {"command": "printf shared"}
+        value["hooks"]["sessionStart"].insert(0, own)
+        path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+        before = self.files()
+        doctor = self.run_cli("doctor")
+        self.assertEqual(doctor["bindings"], "passed")
+        self.assertTrue(doctor["sharing"]["ignore_rules_need_setup"])
+        self.assertEqual(doctor["sharing"]["mixed_host_settings"], [".cursor/hooks.json"])
+        self.assertEqual(self.files(), before)
+        self.run_cli("setup")
+        self.assertIn(own, json.loads(path.read_text())["hooks"]["sessionStart"])
+        for relative in (".cursor/hooks.json", ".agents/skills/how/SKILL.md"):
+            self.assertEqual(subprocess.run(["git", "-C", str(self.project), "check-ignore", "--quiet", relative]).returncode, 1)
+        other = self.root / "pure cursor checkout"
+        other.mkdir()
+        subprocess.run(["git", "init", "--quiet", str(other)], check=True)
+        self.run_cli("install", "--hosts", "cursor", project=other)
+        shutil.copyfile(self.project / ".gitignore", other / ".gitignore")
+        shared = (other / ".gitignore").read_bytes()
+        self.run_cli("setup", project=other)
+        self.assertEqual((other / ".gitignore").read_bytes(), shared)
+        self.assertEqual(subprocess.run(["git", "-C", str(other), "check-ignore", "--quiet", ".cursor/hooks.json"]).returncode, 1)
+        report = self.run_cli("doctor", project=other)["sharing"]
+        self.assertEqual(report["mixed_host_settings"], [])
+        self.assertIn(".cursor/hooks.json", report["unignored_generated_paths"])
+
+    def test_shared_ignore_policy_is_checkout_scoped_in_linked_worktrees(self):
+        subprocess.run(["git", "init", "--quiet", str(self.project)], check=True)
+        self.write(".gitignore", "node_modules/\n")
+        subprocess.run(["git", "-C", str(self.project), "add", ".gitignore"], check=True)
+        subprocess.run(["git", "-C", str(self.project), "-c", "user.name=BStack test", "-c", "user.email=test@example.invalid",
+                        "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "-m", "fixture"], check=True)
+        other = self.root / "linked worktree"
+        subprocess.run(["git", "-C", str(self.project), "worktree", "add", "--quiet", "-b", "teammate", str(other)], check=True)
+        metadata = {name: (self.project / ".git" / name).read_bytes() for name in ("config", "info/exclude")}
+        self.run_cli("install", "--hosts", "claude")
+        self.run_cli("install", "--hosts", "codex", project=other)
+        original = (self.project / ".gitignore").read_bytes()
+        shutil.copyfile(self.project / ".gitignore", other / ".gitignore")
+        self.assertEqual(self.run_cli("doctor", project=other)["bindings"], "passed")
+        self.run_cli("setup", project=other)
+        self.assertEqual((self.project / ".gitignore").read_bytes(), original)
+        self.assertEqual(subprocess.run(["git", "-C", str(other), "check-ignore", "--quiet", ".codex/hooks.json"]).returncode, 0)
+        self.assertEqual(subprocess.run(["git", "-C", str(self.project), "check-ignore", "--quiet", ".codex/hooks.json"]).returncode, 1)
+        self.assertEqual({name: (self.project / ".git" / name).read_bytes() for name in metadata}, metadata)
+
+    def test_setup_migrates_changed_legacy_ignore_blocks_before_package_swap(self):
+        stable = "# bstack:begin\n.bstack/\n# bstack:end\n"
+        expanded = stable.replace("# bstack:end", "/.agents/skills/how/\n# bstack:end")
+        for name, recorded, outside in (("fixed receipt", stable, ""), ("expanded receipt", expanded, ""),
+                                         ("bare private rule", expanded.replace(".bstack/\n", ""), ".bstack/\n")):
+            with self.subTest(recorded=recorded, outside=outside):
+                project = self.root / name
+                project.mkdir()
+                self.run_cli("install", "--hosts", "claude", project=project)
+                state_path = project / ".bstack/config.json"
+                state = json.loads(state_path.read_text())
+                state["managed"][".gitignore"] = {"kind": "block", "text": recorded, "adopt": True}
+                state_path.write_text(json.dumps(state))
+                inherited = expanded.replace("# bstack:end", "/.claude/skills/previous-workflow\n# bstack:end")
+                if outside:
+                    inherited = inherited.replace(".bstack/\n", "")
+                (project / ".gitignore").write_text(outside + "node_modules/\n" + inherited)
+                before = (project / ".gitignore").read_bytes()
+                doctor = self.run_cli("doctor", project=project)
+                self.assertEqual(doctor["bindings"], "passed")
+                self.assertTrue(doctor["sharing"]["ignore_rules_need_setup"])
+                self.assertEqual((project / ".gitignore").read_bytes(), before)
+                self.run_cli("auto", "off", project=project)
+                self.assertEqual((project / ".gitignore").read_bytes(), before)
+                self.run_cli("install", project=project)
+                actual = (project / ".gitignore").read_text()
+                self.assertIn(stable, actual)
+                self.assertIn("/.claude/skills/previous-workflow\n", actual)
+                self.assertIn(outside + "node_modules/\n", actual)
+                self.assertEqual(self.run_cli("install", project=project)["changes"], [])
+                self.assertEqual(self.run_cli("doctor", project=project)["bindings"], "passed")
+
+    def test_ignore_policy_errors_do_not_weaken_private_binding_checks(self):
+        self.run_cli("install", "--hosts", "claude")
+        original = (self.project / ".gitignore").read_text()
+        self.write(".gitignore", original.replace("# bstack generated bindings:end", "# damaged policy end"))
+        before = self.files()
+        report = self.run_cli("doctor")
+        self.assertEqual(report["bindings"], "passed")
+        self.assertIn("Malformed shared bstack ignore policy", report["sharing"]["ignore_policy_error"])
+        self.assertEqual(self.files(), before)
+        self.run_cli("setup", success=False)
+        self.assertEqual(self.files(), before)
+        for private in ("", "*\n", "/.agents/skills/how/\n"):
+            with self.subTest(private=private):
+                self.write(".gitignore", ".bstack/\n" + original.replace("# bstack:begin\n.bstack/\n", "# bstack:begin\n" + private))
+                before = self.files()
+                self.run_cli("doctor", success=False)
+                self.run_cli("setup", success=False)
+                self.assertEqual(self.files(), before)
+
     def test_doctor_with_model_helper_can_run_twice_without_mutating_installed_package(self):
         shutil.copyfile(BSTACK / "shared/model_cli.py", self.capsule / "shared/model_cli.py")
         wayfinder = self.capsule / "workspace/wayfinder"
@@ -619,7 +750,8 @@ class RuntimeTests(unittest.TestCase):
             self.run_cli(*args)
             for name in ("AGENTS.md", "CLAUDE.md"):
                 self.assertEqual((self.project / name).read_text().count(BASELINE), 1)
-        self.run_cli("uninstall")
+        before_ignore = (self.project / ".gitignore").read_text()
+        result = self.run_cli("uninstall")
         self.assertEqual((self.project / "AGENTS.md").read_text(), before_agents)
         self.assertEqual((self.project / "CLAUDE.md").read_text(), "Claude preferences\n")
         self.assertEqual(json.loads((self.project / ".claude/settings.json").read_text()), original)
@@ -627,7 +759,8 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual((self.project / ".bstack/work/private.md").read_text(), "keep me")
         self.assertFalse((self.project / ".bstack/config.json").exists())
         self.assertFalse((self.project / ".agents/skills/unslop/SKILL.md").exists())
-        self.assertEqual((self.project / ".gitignore").read_text(), "node_modules/\n.bstack/\n")
+        self.assertEqual((self.project / ".gitignore").read_text(), before_ignore.replace("# bstack:begin\n.bstack/\n# bstack:end\n", ".bstack/\n"))
+        self.assertEqual(result["sharing"]["retained_ignore_policy"], ".gitignore")
         self.assertEqual(self.run_cli("uninstall")["changes"], [])
         self.run_cli("setup")
         self.assertEqual((self.project / ".gitignore").read_text().count(".bstack/"), 1)
@@ -951,6 +1084,10 @@ class RuntimeTests(unittest.TestCase):
 
     def test_offline_upgrade_rolls_back_capsule_when_setup_fails(self):
         self.run_cli("install")
+        settings = self.project / ".cursor/hooks.json"
+        value = json.loads(settings.read_text())
+        value["project_setting"] = "preserve"
+        settings.write_text(json.dumps(value))
         before = self.files()
         updated = self.root / "failed update"
         self.make_capsule(updated)
@@ -959,7 +1096,15 @@ class RuntimeTests(unittest.TestCase):
         spec = importlib.util.spec_from_file_location("runtime_rollback_test", SOURCE / "runtime.py")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        with mock.patch.object(module, "configure", side_effect=OSError("setup write failed")):
+        real_replace = module.replace
+        failed = False
+        def fail_once(path, value):
+            nonlocal failed
+            if path == self.project / ".bstack/config.json" and not failed:
+                failed = True
+                raise OSError("setup write failed")
+            return real_replace(path, value)
+        with mock.patch.object(module, "replace", side_effect=fail_once):
             with self.assertRaisesRegex(OSError, "setup write failed"):
                 module.install_offline(self.project, updated)
         self.assertEqual(self.files(), before)
@@ -992,9 +1137,12 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.run_cli("setup", project=other)["changes"], [])
         self.assertTrue(self.run_cli("auto", "status", project=other)["auto"])
         self.assertFalse(self.run_cli("auto", "status")["auto"])
-        self.run_cli("uninstall", project=other)
+        installed_ignore = (other / ".gitignore").read_text()
+        result = self.run_cli("uninstall", project=other)
         self.assertEqual((other / "AGENTS.md").read_text(), "Shared project instructions\n")
-        self.assertEqual((other / ".gitignore").read_text(), inherited_ignore)
+        self.assertEqual((other / ".gitignore").read_text(), installed_ignore.replace("# bstack:begin\n.bstack/\n# bstack:end\n", ""))
+        self.assertIn("/.agents/skills/previous-workflow/\n", (other / ".gitignore").read_text())
+        self.assertEqual(result["sharing"]["retained_ignore_policy"], ".gitignore")
 
     def test_fresh_clone_adopts_old_pointer_block_without_ownership_state(self):
         pointer = "<!-- bstack:begin -->\nRead and follow `.bstack/instructions.md` for bstack project instructions. Resolve this path from the project root.\n<!-- bstack:end -->\n"
