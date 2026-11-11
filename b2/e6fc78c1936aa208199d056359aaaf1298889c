@@ -1,0 +1,57 @@
+bstack/package/templates/README.md
+  s_123ed7c0166e50::t_3df8362e1f11e7 32
+bstack/release/bstack/README.md
+  s_123ed7c0166e50::t_38f3f2cb6d8e47 32
+bstack/release/bstack/SKILL.md
+  s_123ed7c0166e50::t_38f3f2cb6d8e47 30
+bstack/release/bstack/scripts/bstack.py
+  s_123ed7c0166e50::t_38f3f2cb6d8e47 38-39,392-419,422,432-434,439-457,465,471-474,482-494,496-497,680,682,698-706,710,712-714,723-727,751-757,839-844,848,890-892,1040
+  s_123ed7c0166e50::t_e5227a7ffc2e91 707-709,711
+bstack/shared/skills/verify-bstack/features/installation.md
+  s_123ed7c0166e50::t_3df8362e1f11e7 55-56
+bstack/package/templates/folder-install.md
+  s_123ed7c0166e50::t_3df8362e1f11e7 30
+bstack/package/runtime.py
+  s_123ed7c0166e50::t_58be158917c5d7 399,704-705,754
+  s_123ed7c0166e50::t_1c9e59f0e409f3 442-443
+  s_123ed7c0166e50::t_f8a5a6c4478db5 441,445,452-455,489-491,680,682,698-703,706,712-714,723-727,751-753,755-757,890-892,1040
+  s_123ed7c0166e50::t_a202400feecbdb 710,839-844,848
+  s_123ed7c0166e50::t_b1625ace64912c 38-39,392-398,400-419,422,432-434,439-440,444,446-451,456-457,465,471-474,482-488,492-494,496-497
+  s_123ed7c0166e50::t_20d37b40a26ff9 707-708
+  s_123ed7c0166e50::t_dc7b675a13dc24 709,711
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_e5227a7ffc2e91 1777,1779
+  s_123ed7c0166e50::t_38f3f2cb6d8e47 42,44,52,54,2412,2414
+bstack/CHANGELOG.md
+  s_123ed7c0166e50::t_3df8362e1f11e7 9
+bstack/package/test_runtime.py
+  s_123ed7c0166e50::t_1c9e59f0e409f3 314
+  s_123ed7c0166e50::t_07523217e88e2d 361-364,372-374,386,403
+  s_123ed7c0166e50::t_5e5cebec0750c5 313
+  s_123ed7c0166e50::t_6a773d77a267cd 753-754,762-763,1087-1090,1099-1107,1140-1141,1143-1145
+  s_123ed7c0166e50::t_a202400feecbdb 291
+  s_123ed7c0166e50::t_959ca193b94e93 278-290,292-302,408
+  s_123ed7c0166e50::t_be9771568d0331 303-312,315-360,365-371,375-385,387-402,404-407
+bstack/package/templates/setup.md
+  s_123ed7c0166e50::t_3df8362e1f11e7 21-22
+bstack/INSTALL.md
+  s_123ed7c0166e50::t_3df8362e1f11e7 35-37
+bstack/release/bstack/shared/setup-bstack/INSTRUCTIONS.md
+  s_123ed7c0166e50::t_38f3f2cb6d8e47 21-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b2e6fc78c1936aa208199d056359aaaf1298889c",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
