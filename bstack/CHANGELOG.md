@@ -4,14 +4,11 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- Distribute the complete release folder as one `bstack` installer skill, with no archive required. Bundled instruction files avoid duplicate nested skill discovery; the existing archive transport remains available.
-- Save and validate the selected Python 3.11+ interpreter for generated hooks. Doctor checks exact command startup after package and binding integrity, without implying native host trust or delivery.
-- Keep generated bindings local to each checkout with narrow shared ignore policy and explicit reporting for visible, tracked, or mixed host settings. Preserve the stable private-data ignore block so teammate policy changes do not invalidate installed bindings. Claude's local hooks select the active checkout in fresh sessions and preserve unrelated configuration during migration.
-
 ## Published releases
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [3.4.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.0) | 2026-11-10 | [Complete-folder installs and reliable local hooks](release-notes/3.4.0.md) |
 | [3.3.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.3.0) | 2026-11-06 | [Automatic model attribution for pull requests](release-notes/3.3.0.md) |
 | [3.2.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.2.0) | 2026-11-02 | [Measured desktop support and a computer-use verification kit](release-notes/3.2.0.md) |
 | [3.1.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.1.0) | 2026-10-29 | [Measured CLI compatibility and native workflow guards](release-notes/3.1.0.md) |

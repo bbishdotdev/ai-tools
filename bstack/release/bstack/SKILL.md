@@ -7,7 +7,7 @@ metadata:
 
 # Install bstack
 
-This folder is the complete bstack 3.3.0 release. Keep its scripts, workflows, references, manifest, and license notices together. Bundled workflow bodies use `INSTRUCTIONS.md`, so only this installer appears before setup creates the project skills. It needs Python 3.11 or newer; no archive extraction or upstream download is required.
+This folder is the complete bstack 3.4.0 release. Keep its scripts, workflows, references, manifest, and license notices together. Bundled workflow bodies use `INSTRUCTIONS.md`, so only this installer appears before setup creates the project skills. It needs Python 3.11 or newer; no archive extraction or upstream download is required.
 
 Target the Git repository containing the work. Resolve it with `git rev-parse --show-toplevel`, even if this installer lives elsewhere. Resolve [scripts/bstack.py](scripts/bstack.py) relative to this skill folder, choose an available Python 3.11+ interpreter, then run:
 
