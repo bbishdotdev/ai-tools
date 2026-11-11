@@ -1,7 +1,7 @@
 from collections import deque
 import json
 
-from .core import canonical, fail, fields, identity, integer, labels, new_id, text, KINDS
+from .core import answer_source, canonical, fail, fields, identity, integer, labels, new_id, text, KINDS
 
 TICKET_STATES = {'backlog', 'ready', 'in-progress', 'review', 'done'}
 TRANSITIONS = {'backlog': {'ready'}, 'ready': {'backlog', 'in-progress'},
@@ -81,14 +81,10 @@ class Kanban:
         self.edges = set(self.db.execute('SELECT kind,source,target FROM ticket_relationships'))
         self.changed_specs, self.changed_tickets, self.new_revisions = set(), set(), []
         self.spec, self.ticket = Records(self, 'spec'), Records(self, 'ticket')
-        self.question_sources = {key: self.question_source(key) for key in tx.questions}
         self._satisfaction = None
 
     def question_source(self, identifier):
-        question = self.tx.get_question(identifier)
-        answer = question['answer'] if question['state'] == 'resolved' else None
-        return {'questionId': identifier, 'answerId': answer['id'] if answer else None,
-                'revision': answer['revision'] if answer else None}
+        return answer_source(self.tx.get_question(identifier))
 
     def question_issues(self, sources):
         issues = []
@@ -197,11 +193,7 @@ class Kanban:
         self.invalidate_tickets(direct={key for key, ticket in self.tickets.items()
                                        if ticket['sources']['spec'] and ticket['sources']['spec']['specId'] in identifiers})
 
-    def invalidate_question_changes(self):
-        changed = {key for key in self.tx.changed_questions if key in self.question_sources
-                   and self.question_sources[key] != self.question_source(key)}
-        if not changed:
-            return
+    def invalidate_question_changes(self, changed):
         specs = {key for key, spec in self.specs.items() if changed.intersection(spec['questionIds'])
                  or changed.intersection(source['questionId'] for source in self.revisions.get((key, spec['acceptedRevision']), {}).get('questionSources', []))}
         self.invalidate_specs(specs)

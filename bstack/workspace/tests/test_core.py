@@ -201,7 +201,7 @@ class CoreTests(unittest.TestCase):
         b = self.change('question.update', b, patch={'progress': 'Already investigated'})
         c = self.change('wait.set', c, reason='Ask owner')
         claim = self.write('claim.acquire', actor=AGENT, questionId=c['id'], expectedRev=c['rev'])
-        self.connect(a, b)
+        self.assertEqual(self.connect(a, b)['map']['counts']['blocked'], 2)
         self.assertEqual(self.read(b)['state'], 'needs-review')
         current = self.read(c)
         self.assertEqual(current['state'], 'needs-review')
@@ -209,7 +209,7 @@ class CoreTests(unittest.TestCase):
         self.assertIsNone(current['claim'])
         self.error(self.call('claim.renew', {'questionId': c['id'], 'claimToken': claim['claimToken'], 'fence': claim['fence']}, actor=AGENT), 'stale_claim')
         old_rev = current['rev']
-        self.connect(a, b, remove=True)
+        self.assertEqual(self.connect(a, b, remove=True)['map']['counts']['blocked'], 1)
         self.assertGreater(self.read(c)['rev'], old_rev)
 
     def test_agent_claim_required_human_takeover_and_stale_fence(self):
