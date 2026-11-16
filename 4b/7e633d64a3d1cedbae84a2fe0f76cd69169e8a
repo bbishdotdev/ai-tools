@@ -1,0 +1,24 @@
+bstack/github/tests/test_restricted_cli.py
+  s_123ed7c0166e50::t_bad8589851770c 6,22,94-186
+  s_123ed7c0166e50::t_aea7ee5a5e4110 187
+bstack/shared/tests/test_model_cli.py
+  s_123ed7c0166e50::t_aa6371a031c79e 138
+  s_123ed7c0166e50::t_97e6245defecfd 2,15-16,33-35,106-122
+  s_123ed7c0166e50::t_0be5a03fecf1a7 123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4b7e633d64a3d1cedbae84a2fe0f76cd69169e8a",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
