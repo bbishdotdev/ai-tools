@@ -94,6 +94,15 @@ if name in {"codex", "claude"} and "--output-schema" not in args and "--json-sch
         print(json.dumps({"result": "BSTACK_MODEL_READY", "modelUsage": {args[args.index("--model") + 1]: {}}}))
     raise SystemExit(0)
 schema = json.loads(Path(args[args.index("--output-schema") + 1]).read_text()) if name == "codex" else json.loads(args[args.index("--json-schema") + 1])
+
+def fail_auth(exit_code):
+    print("Warning: Ignoring extra certificates from missing-ca.pem: load failed", file=sys.stderr)
+    print(json.dumps({"is_error": True, "subtype": "error_during_execution", "result": "Failed to authenticate: OAuth session expired and could not be refreshed. credential=" + os.environ.get("REVIEW_TEST_API_KEY", "fake-review-secret-credential")}))
+    raise SystemExit(exit_code)
+
+if name == "claude" and ((state.get("auth_failure_stage") == "doctor" and "ready" in schema["properties"])
+                         or (state.get("auth_failure_stage") == "preflight" and "decision" in schema["properties"])):
+    fail_auth(0)
 if "decision" in schema["properties"]:
     assert name == "claude" and args[args.index("--tools") + 1] == ""
     assert "--safe-mode" in args and "--restricted" in args and "--strict-mcp-config" in args
@@ -172,8 +181,7 @@ if state.get("target_evidence"):
     assert "only their own" in browser_text("read_file", {"tree": "target", "path": "docs/adr/ownership.md"})
     finding["evidence"] = [{"path": "docs/adr/ownership.md", "line": 1, "side": "target", "reason": "The accepted target decision requires ownership checks."}]
 if scenario == "stdout_failure" and name == "claude":
-    print(json.dumps({"is_error": True, "subtype": "error_during_execution", "result": "Failed to authenticate: OAuth session expired and could not be refreshed. credential=" + os.environ.get("REVIEW_TEST_API_KEY", "fake-review-secret-credential")}))
-    raise SystemExit(7)
+    fail_auth(7)
 if scenario == "reviewer_failure" and name == "codex":
     print("authentication unavailable", file=sys.stderr)
     raise SystemExit(1)
@@ -633,6 +641,20 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.assertIn("Security preflight model failed", denied["error"])
         self.assertFalse((self.home / "claude-calls.txt").exists())
 
+    def test_doctor_and_preflight_report_authentication_from_successful_process_errors(self):
+        for stage in ("doctor", "preflight"):
+            with self.subTest(stage=stage):
+                self.state["auth_failure_stage"] = stage
+                self.save()
+                failed = self.cli("doctor", "--live", success=False) if stage == "doctor" else self.run_review(success=False)
+                self.assertEqual(failed["status"], "incomplete")
+                self.assertRegex(failed["error"].lower(), r"authenticat|not logged in")
+                self.assertNotIn("certificate", failed["error"].lower())
+                self.assertNotIn(self.env["REVIEW_TEST_API_KEY"], json.dumps(failed))
+                self.assertFalse((self.home / "claude-calls.txt").exists())
+                self.assertFalse((self.home / "codex-calls.txt").exists())
+        self.assertEqual(json.loads((self.home / "published.json").read_text()), [])
+
     def test_forwarding_worker_fails_outside_file_canary(self):
         config = self.project / ".bstack/review.json"
         config.parent.mkdir()
@@ -844,6 +866,8 @@ class ReviewLifecycleTests(unittest.TestCase):
                 self.assertEqual(pointer.read_text(), original)
                 if scenario == "stdout_failure":
                     self.assertIn("Restricted claude invocation failed", failed["error"])
+                    self.assertRegex(failed["error"].lower(), r"authenticat|not logged in")
+                    self.assertNotIn("certificate", failed["error"].lower())
                     self.assertNotIn(self.env["REVIEW_TEST_API_KEY"], failed["error"])
                     failure_run = Path(failed["error"].rsplit("Evidence: ", 1)[1])
                     self.assertFalse((failure_run / "reviewer_a.raw").exists())
