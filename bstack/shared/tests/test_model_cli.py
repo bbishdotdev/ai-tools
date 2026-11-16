@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import shlex
 import subprocess
@@ -11,6 +12,8 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "shared"))
 import model_cli
+sys.path.insert(0, str(ROOT / "engineering/review-pr/scripts"))
+from security import worker_environment
 
 
 FAKE = '''import json
@@ -27,6 +30,9 @@ if "--version" in args:
 elif "--model" in args and args[args.index("--model") + 1] == "bad-model":
     print("model unavailable", file=sys.stderr)
     raise SystemExit(1)
+elif client == "claude-auth-error":
+    print("Warning: Ignoring extra certificates from missing-ca.pem", file=sys.stderr)
+    print(json.dumps({"is_error": True, "result": "Not logged in. BSTACK_MODEL_READY credential=fake-auth-secret"}))
 elif client == "codex":
     Path(args[args.index("--output-last-message") + 1]).write_text("BSTACK_MODEL_READY")
 elif client.startswith("claude"):
@@ -97,6 +103,24 @@ class ModelCommandTests(unittest.TestCase):
         self.assertIn("Choose an exact model", result["workflows"]["review-pr"]["reason"])
         self.assertEqual(len(calls), 2)
 
+    def test_probe_reports_authentication_errors_without_exposing_response(self):
+        self.set_client("claude", "claude-auth-error")
+        result = model_cli.probe(self.project, "claude", "model-a")
+        self.assertEqual(result["status"], "failed")
+        self.assertRegex(result["reason"].lower(), r"authenticat|login")
+        self.assertIn("headless command", result["reason"])
+        self.assertNotIn("Sign in", result["reason"])
+        self.assertNotIn("certificate", result["reason"].lower())
+        self.assertNotIn("fake-auth-secret", json.dumps(result))
+
+    def test_review_environment_preserves_oauth_token_without_other_claude_controls(self):
+        token = "fake-oauth-token-for-review"
+        with mock.patch.dict(os.environ, {"CLAUDE_CODE_OAUTH_TOKEN": token,
+                                          "CLAUDE_CODE_UNRELATED_SETTING": "blocked"}, clear=True):
+            result = worker_environment()
+        self.assertEqual(set(result), {"CLAUDE_CODE_OAUTH_TOKEN"})
+        self.assertTrue(result["CLAUDE_CODE_OAUTH_TOKEN"] == token)
+
     def test_review_doctor_does_not_accept_model_access_without_restricted_browsing(self):
         self.set_client("claude")
         self.set_client("codex")
@@ -111,7 +135,7 @@ class ModelCommandTests(unittest.TestCase):
         with mock.patch.object(model_cli.subprocess, "run", side_effect=incomplete_boundary):
             result = model_cli.diagnose(self.project, "review-pr", live=True)
         self.assertEqual(result["status"], "needs_setup")
-        self.assertIn("restricted repository tools", result["workflows"]["review-pr"]["reason"])
+        self.assertIn("only the allowed tools", result["workflows"]["review-pr"]["reason"])
 
     def test_command_template_requires_a_single_argument_slot(self):
         with self.assertRaises(model_cli.ModelCLIError):
