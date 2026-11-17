@@ -1,0 +1,20 @@
+bstack/scripts/test_package.py
+  s_123ed7c0166e50::t_b387632f7d2b9a 414-428,430-438
+  s_123ed7c0166e50::t_605bf313d374fd 429
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8ebab52975e28f1a73fe8cd8468ba4db219cc8dd",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
