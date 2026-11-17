@@ -1,0 +1,25 @@
+bstack/engineering/review-pr/scripts/host.py
+  s_123ed7c0166e50::t_6296526aa52589 25,28,47
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_e511da76480b39 1235,1237
+bstack/release/bstack/engineering/review-pr/scripts/host.py
+  s_123ed7c0166e50::t_e511da76480b39 25,28,47
+.github/workflows/ci.yml
+  s_123ed7c0166e50::t_9821fe3e5f422b 26-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "33a1dd499cb40e2bdd848c7470671cd595297998",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
