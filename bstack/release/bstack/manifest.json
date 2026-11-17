@@ -1136,9 +1136,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/INSTRUCTIONS.md",
-      "sha256": "180e10cb387da113a312685e6d3cc0daa736d06eb1422805d62b9da8a5c51afb",
+      "sha256": "01f6d7997f89813815237288ca98868aca2e0459d93671f998208e8e3076da3a",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "b6118026210738468f66c6aa936d710ec94bd6d12e252402514e2591ef61cc30",
+      "source_sha256": "72b657544988de834c146c7c680fa665e8510e36bc4d233fc4ca6876b203ea52",
       "transforms": [
         "rewrite-local-markdown-links",
         "private-workflow-filename",
@@ -1184,17 +1184,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "e550c267f4aa9d64f9380785aa870cd44aaed4072dfbbc1ede26a4ea1c94a214",
+      "sha256": "00b545e6970bf93374a1ad6949ed503845f76282440f7739e8366703b711818e",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "e550c267f4aa9d64f9380785aa870cd44aaed4072dfbbc1ede26a4ea1c94a214",
+      "source_sha256": "00b545e6970bf93374a1ad6949ed503845f76282440f7739e8366703b711818e",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "dbbce0bbcb016c5196a0be4cf7e1b634b12230f2c7528129fdd978c2f1af0904",
+      "sha256": "a6b116ecf4a3f105e92c3eaec9bd51160dc4b76f9c02713425db39a30fe227c0",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "dbbce0bbcb016c5196a0be4cf7e1b634b12230f2c7528129fdd978c2f1af0904",
+      "source_sha256": "a6b116ecf4a3f105e92c3eaec9bd51160dc4b76f9c02713425db39a30fe227c0",
       "transforms": []
     },
     {
@@ -1224,9 +1224,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/contracts.py",
-      "sha256": "dcd1b8c674c180c3123c45bd9bb4d651cd8f52cb15d7640daf5db181376bd8d8",
+      "sha256": "623f1aedbd09fba9a1aeb1bcbfc3df188306da0e4d62fc20a71ac8a552a39a09",
       "source": "bstack/engineering/review-pr/scripts/contracts.py",
-      "source_sha256": "dcd1b8c674c180c3123c45bd9bb4d651cd8f52cb15d7640daf5db181376bd8d8",
+      "source_sha256": "623f1aedbd09fba9a1aeb1bcbfc3df188306da0e4d62fc20a71ac8a552a39a09",
       "transforms": []
     },
     {
@@ -1248,17 +1248,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/preflight.py",
-      "sha256": "6e6c39974149e52ca0994e7bebe661e4ae02e58810021eb26ef1edab03325b79",
+      "sha256": "b828845141cba8e893b714b98e2ab9ccb780c8f1c7712baef0b9fe2474da17eb",
       "source": "bstack/engineering/review-pr/scripts/preflight.py",
-      "source_sha256": "6e6c39974149e52ca0994e7bebe661e4ae02e58810021eb26ef1edab03325b79",
+      "source_sha256": "b828845141cba8e893b714b98e2ab9ccb780c8f1c7712baef0b9fe2474da17eb",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/publication.py",
-      "sha256": "f7365f6fe3f2cf9e436214bee486aaa3db44f589e3f40c5a6c1f57063d256371",
+      "sha256": "71c847623b8a31e1a4c58e7311a860b68deb238f766f5ec6621d625b319a1afa",
       "source": "bstack/engineering/review-pr/scripts/publication.py",
-      "source_sha256": "f7365f6fe3f2cf9e436214bee486aaa3db44f589e3f40c5a6c1f57063d256371",
+      "source_sha256": "71c847623b8a31e1a4c58e7311a860b68deb238f766f5ec6621d625b319a1afa",
       "transforms": []
     },
     {
@@ -1280,9 +1280,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/review.py",
-      "sha256": "d46bd083365ab1dcd9894f6b5e87441d2ebdc6f70008668c4d851d31f2d7c818",
+      "sha256": "3b9f57a0c88003e5996ebd9a10bd97986d5a8890de1c0135ff8e53917640c5a8",
       "source": "bstack/engineering/review-pr/scripts/review.py",
-      "source_sha256": "d46bd083365ab1dcd9894f6b5e87441d2ebdc6f70008668c4d851d31f2d7c818",
+      "source_sha256": "3b9f57a0c88003e5996ebd9a10bd97986d5a8890de1c0135ff8e53917640c5a8",
       "transforms": []
     },
     {
@@ -1304,9 +1304,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/security_eval.py",
-      "sha256": "e4cd56767637bf8faf82ec73629387e1f6b2c32b36189caa7bbcceab3539a0c9",
+      "sha256": "f54239dd65a50807f44c857c1ec560f53f2f03413d9fee92b8962679ae90eff0",
       "source": "bstack/engineering/review-pr/scripts/security_eval.py",
-      "source_sha256": "e4cd56767637bf8faf82ec73629387e1f6b2c32b36189caa7bbcceab3539a0c9",
+      "source_sha256": "f54239dd65a50807f44c857c1ec560f53f2f03413d9fee92b8962679ae90eff0",
       "transforms": []
     },
     {

@@ -15,6 +15,11 @@ SAFETY_LABELS = {"agent-instruction": "Instructions aimed at the reviewer", "sec
                  "external-endpoint": "External destination needs inspection", "unsafe-execution": "Execution behavior needs inspection",
                  "opaque-executable": "Executable content could not be inspected as text",
                  "unverified-signal": "The safety check raised a concern without a verifiable line"}
+SAFETY_MECHANISMS = {
+    "change_review": "Asks the reviewer to change its verdict or suppress findings",
+    "access_outside_review": "Asks the reviewer to access private data or send information outside the review",
+    "execute_or_reconfigure": "Asks the reviewer to execute commands or change its allowed tools",
+}
 
 
 def now():
@@ -153,7 +158,8 @@ def plan_actions(result, user):
         for item in result["safety_hold"]:
             evidence = {"path": item["path"], "line": item["line"], "side": "head"}
             label = "Related PR text" if item["source"] == "open-pr" else "PR text or discussion" if item["path"] == "@pr" else "Changed file" if item["source"] == "file" else "Added line"
-            points.append(f"- {SAFETY_LABELS[item['category']]}: [{label}]({evidence_link(result, evidence)})")
+            explanation = SAFETY_MECHANISMS.get(item.get("mechanism"), SAFETY_LABELS[item["category"]])
+            points.append(f"- {explanation}: [{label}]({evidence_link(result, evidence)})")
         body = ("⚠️ I paused automated review so a person can inspect these security concerns first. "
                 "I did not run the independent reviewers or execute this PR.\n\n" + "\n".join(points) +
                 "\n\n<sub><i>🤖 BStack security preflight · No independent review performed</i></sub>")
