@@ -1,0 +1,47 @@
+bstack/INSTALL.md
+  s_123ed7c0166e50::t_8c9db6348055e4 5-6
+bstack/release/bstack/README.md
+  s_123ed7c0166e50::t_248e9c2d3abdb5 5-6
+bstack/scripts/security_eval.py
+  s_123ed7c0166e50::t_8c9db6348055e4 4-7
+bstack/scripts/browsing_eval.py
+  s_123ed7c0166e50::t_8c9db6348055e4 13-15,77
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_248e9c2d3abdb5 42,44,49-56,100,153,174,196,218,240,262,283,369,391,413,455,477,538,559,593,1021,1058,1079,1101,1123,1161,1203,1205,1337,1375,1397,1419,1441,1463,1501,1534,1677,1711,1812,1835,1858,1881,1904,1927,1950,1989,2012,2041,2062,2109,2156,2425,2447,2468
+bstack/package/selection.json
+  s_123ed7c0166e50::t_8c9db6348055e4 103
+bstack/engineering/review-pr/references/security.md
+  s_123ed7c0166e50::t_8c9db6348055e4 37,40-41,48
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_123ed7c0166e50::t_248e9c2d3abdb5 37,40-41,48
+bstack/scripts/package.py
+  s_123ed7c0166e50::t_8c9db6348055e4 365-366
+bstack/README.md
+  s_123ed7c0166e50::t_2426d6837e1422 29
+  s_123ed7c0166e50::t_a14e9a19316fb9 30
+bstack/SECURITY.md
+  s_123ed7c0166e50::t_8c9db6348055e4 1-22,24-31
+  s_123ed7c0166e50::t_2426d6837e1422 23
+bstack/package/templates/README.md
+  s_123ed7c0166e50::t_8c9db6348055e4 5-6
+bstack/CHANGELOG.md
+  s_123ed7c0166e50::t_8c9db6348055e4 7-8
+bstack/release/bstack/SECURITY.md
+  s_123ed7c0166e50::t_248e9c2d3abdb5 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a669083b5cbc4785c2878bd7efd89bc0c1461ddd",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
