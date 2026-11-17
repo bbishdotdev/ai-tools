@@ -33,6 +33,18 @@ class Attribution:
     def record(self):
         return asdict(self)
 
+    def notice(self):
+        if self.model is not None:
+            return None
+        if self.reason == "no_host_context":
+            return ("No model information reached prepare. Use a literal absolute helper path, confirm BStack's "
+                    "attribution hook is installed, enabled and trusted, then start a fresh session and rerun prepare.")
+        if self.reason in ("model_not_exposed", "vscode_model_not_exposed_during_tool_call"):
+            return (f"The host did not expose its model for this tool call ({self.reason}). "
+                    "Attribution remains unavailable.")
+        return (f"BStack could not verify this tool call's model ({self.reason}). "
+                "Check the host's native metadata for this call.")
+
 
 def unavailable(host, reason):
     return Attribution(None, host, "unavailable", reason)
