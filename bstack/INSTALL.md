@@ -62,10 +62,10 @@ There are two steps: skills.sh downloads `install-bstack`; asking your agent to 
 
 ### Install a published version
 
-The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 3.4.0:
+The short command above reads the committed installer on `main`. It can include a prepared package before that version is published. To install a specific release through skills.sh, pin its tag. For example, to install 3.4.1:
 
 ```sh
-npx skills add 'bbishdotdev/ai-tools#v3.4.0' --skill install-bstack
+npx skills add 'bbishdotdev/ai-tools#v3.4.1' --skill install-bstack
 ```
 
 Then ask your agent to install bstack as usual. Use the tag of the release you want when upgrading, and review its [release notes](CHANGELOG.md). The release ZIP below provides the same versioned package without skills.sh. Neither route updates an installed project just because `main` changes.
@@ -170,7 +170,13 @@ If another tool changes or removes a managed block, `doctor` reports it and setu
 
 ## Check optional model workflows
 
-Normal `doctor` checks package integrity and owned bindings before starting each selected host's exact hook command in a harmless probe mode. It checks imports and the saved Python runtime without routing, model calls, or verification receipts. Native host loading, trust, and reminder delivery remain separate checks. It then lists which CLI launchers it can find. It doesn't spend model calls or block basic BStack use when an optional CLI is missing. Before a model-backed workflow, check the one you plan to use:
+Normal `doctor` checks package integrity and owned bindings before starting each selected host's exact hook command in a harmless probe mode. It checks imports and the saved Python runtime without routing, model calls, or verification receipts. Native host loading, trust, and reminder delivery remain separate checks. It lists available CLI launchers and resolves the workflow's model settings without sending model prompts. Missing optional CLIs do not block basic BStack use.
+
+For a full setup, your agent offers PR review, PR visuals, and grilling model configuration. Before you keep or change PR review settings, it shows the CLI, exact model, and effort for both reviewers and the final checker, including project overrides. PR visuals have their own check; their model does not determine the PR's creator attribution.
+
+You can save and test the grilling interviewer and respondent for later while keeping work human-guided. Setup does not enable autonomous answers or start an interview. Each autonomous run still needs your explicit request or scoped delegation. Basic installation and manual work need no optional model configuration.
+
+Live checks send small model requests and may incur usage. They do not start a review, create a PR, or run an interview. Check each workflow you plan to use:
 
 ```sh
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr
@@ -178,11 +184,11 @@ python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workf
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow to-pr
 ```
 
-The live check sends a short prompt to the configured model for each role. A failed role stops that workflow and tells you whether to fix login, choose another model, or correct the launcher. The PR review runner also checks its roles before a new full review. Autonomous grilling's normal preflight checks its CLI roles before planning writes. The `to-pr` check proves Codex can answer a text prompt; its image tool and the final picture still need a real visual attempt.
+The live check sends a short prompt to the configured model for each role. A failed role blocks that workflow and reports the failed step and next check. Setup reports each selected workflow separately as passed, not checked, or blocked. The PR review runner also checks its roles before a new full review. Autonomous grilling's normal preflight checks its CLI roles before planning writes. The `to-pr` check proves Codex can answer a text prompt; its image tool and the final picture still need a real visual attempt.
 
 `review-pr` includes a repository browser for its headless reviewers. They can search and read all files in the pinned snapshot, including unchanged callers, while general shell, filesystem, web, and unrelated integration tools are disabled. BStack handles browsing automatically; no extra system packages, global MCP setup, or per-file approvals are needed. Run the review runner's `doctor --live` to check its restricted launches, logins, and selected models. The safety preflight still runs first. Optional app or test execution needs a separately configured, credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md) before automating reviews.
 
-If a tool is launched through a local wrapper, tell your agent the working terminal command. For example, a wrapper that runs `launch claude -- <arguments>` can be saved once:
+Before the first live check, setup reuses saved launch commands or asks how you run each required CLI headlessly. Give it a working terminal command, such as `claude -p "say hi"`, `codex exec "say hi"`, or `launch claude -- -p "say hi"`. BStack supplies the prompt, model, and output flags. For example, a wrapper that runs `launch claude -- <arguments>` can be saved once:
 
 ```sh
 python3 .bstack/package/shared/model_cli.py --project "$PWD" configure \
@@ -190,7 +196,9 @@ python3 .bstack/package/shared/model_cli.py --project "$PWD" configure \
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr
 ```
 
-`{args}` is one argument slot. BStack passes the normal CLI flags there as separate arguments; it never evaluates this setting as shell code. The private `.bstack/model-clis.json` file stays out of Git. You can configure Codex, Claude, Cursor, and Grok separately. Only the workflows that use a CLI need its launcher. If a first check fails, fix that launcher's command and rerun the live check. A project with no extra model workflow needs none of this setup.
+`{args}` is one argument slot. BStack passes the normal CLI flags there as separate arguments; it never evaluates this setting as shell code. The private `.bstack/model-clis.json` file stays out of Git. You can configure Codex, Claude, Cursor, and Grok separately. Only the workflows that use a CLI need its launcher. After changing a launcher, rerun the live check. BStack does not silently retry the plain binary or switch models after a failure.
+
+Claude headless calls load user authentication and provider settings while restricting model tools and excluding project settings. If your normal command authenticates but BStack's call does not, check the saved command and launch settings. That failure does not mean you were logged out. Live checks verify the configured combination; they do not prove every custom wrapper or CLI version works.
 
 Keep credentials in the CLI's normal login or environment, not in the saved command template.
 If the wrapper executable lives in the project, a relative executable path is resolved from the project root. Use absolute paths for any separate script files passed to that executable.
