@@ -5,7 +5,7 @@ import tempfile
 
 from contracts import PREFLIGHT, ReviewError, canonical, validate
 from host import command
-from models import launcher_argv
+from models import launcher_argv, model_cli
 from security import trusted_executable, worker_environment
 
 
@@ -93,10 +93,7 @@ def preflight_role(config):
 
 
 def run_model(role, payload, project, timeout):
-    args = ["--print", "--safe-mode", "--restricted", "--tools", "", "--permission-mode", "dontAsk",
-            "--setting-sources", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
-            "--no-session-persistence", "--model", role["model"], "--effort", role["effort"],
-            "--output-format", "json", "--json-schema", canonical(PREFLIGHT)]
+    args = model_cli.claude_arguments(role["model"], role["effort"], schema=PREFLIGHT)
     with tempfile.TemporaryDirectory(prefix="bstack-review-preflight-") as directory:
         try:
             invocation = launcher_argv(project, "claude", args)
@@ -105,11 +102,14 @@ def run_model(role, payload, project, timeout):
                           data=PROMPT + "\n\n<untrusted-pr-data>\n" + canonical(payload) + "\n</untrusted-pr-data>",
                           timeout=timeout, env=worker_environment(), inherit_env=False)
         except ReviewError as exc:
-            raise ReviewError("Security preflight model failed; check the configured Claude CLI and login") from exc
+            reason = model_cli.failure_hint("claude", "", str(exc))
+            raise ReviewError(f"PR safety check failed: {reason}") from exc
     try:
         envelope = json.loads(raw)
-        if envelope.get("is_error") or not isinstance(envelope.get("structured_output"), dict):
-            raise ReviewError("Security preflight model did not return a structured result")
+        if isinstance(envelope, dict) and envelope.get("is_error"):
+            raise ReviewError(f"PR safety check failed: {model_cli.failure_hint('claude', raw.decode(), '', 0)}")
+        if not isinstance(envelope, dict) or not isinstance(envelope.get("structured_output"), dict):
+            raise ReviewError("PR safety check returned an unexpected reply. Confirm the saved headless command returns JSON.")
         observed = list(envelope.get("modelUsage", {}))
         if observed and role["model"] not in observed:
             raise ReviewError("Security preflight used a different model than configured")

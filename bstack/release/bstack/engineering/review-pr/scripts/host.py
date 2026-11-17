@@ -21,19 +21,30 @@ def diagnostic_text(data):
 
 
 def command_failure(output, error):
-    detail = diagnostic_text(error).strip()
-    if not detail:
-        detail = diagnostic_text(output).strip()
-        try:
-            envelope = json.loads(detail)
-            if isinstance(envelope, dict):
-                value = envelope.get("error") or envelope.get("result") or envelope.get("errors") or envelope.get("message")
-                if isinstance(value, dict):
-                    value = value.get("message") or value
-                if value:
-                    detail = value if isinstance(value, str) else json.dumps(value)
-        except ValueError:
-            pass
+    output_text = diagnostic_text(output).strip()
+    error_text = diagnostic_text(error).strip()
+    try:
+        envelope = json.loads(output_text)
+        if isinstance(envelope, dict) and (envelope.get("is_error") is True or not error_text):
+            value = envelope.get("error") or envelope.get("errors") or envelope.get("message")
+            if envelope.get("is_error"):
+                value = value or envelope.get("result")
+            if isinstance(value, dict):
+                known_codes = {"rate_limit_error", "overloaded_error", "api_error", "insufficient_quota",
+                               "authentication_error", "permission_error", "invalid_request_error", "not_found_error",
+                               "connection_error", "timeout_error", "econnrefused", "econnreset", "enotfound", "eai_again"}
+                parts = [value["message"]] if isinstance(value.get("message"), str) else []
+                for key in ("type", "code", "status", "status_code"):
+                    item = value.get(key)
+                    if ((key in {"type", "code"} and isinstance(item, str) and item.casefold() in known_codes)
+                            or (key in {"status", "status_code"} and str(item).isdigit() and 100 <= int(item) < 600)):
+                        parts.append(f"{key}: {item}")
+                value = "\n".join(parts) or "The command reported an error without details"
+            if value:
+                return (value if isinstance(value, str) else json.dumps(value))[-2000:]
+    except ValueError:
+        pass
+    detail = error_text or output_text
     return detail[-2000:] or "No error text was returned"
 
 

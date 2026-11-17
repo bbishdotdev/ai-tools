@@ -39,9 +39,25 @@ python3 <absolute-package-path>/workspace/cli.py --project <project-root> serve
 
 The workspace stores maps, specs and Kanban tickets privately under its owning project's `.bstack/workspace/`. Git worktrees share that owner's store. Read [workspace access](../references/workspace.md) before writing artifacts. Read existing domain documents and ADR conventions when work needs them; setup does not create a second documentation system.
 
-Ordinary manual work needs no model configuration. The default delegation policy remains `inherit-parent`. Do not ask every new installer to choose optional models. When someone first chooses a model-backed workflow, explain its roles and run that workflow's live doctor before it starts. `review-pr` has two independent reviewers and a third model that checks their findings; its defaults use Claude Code and Codex. Autonomous grilling has one model challenging the plan and another answering. `to-pr` prefers Codex for an explanatory image when the project permits Codex to see its code, but can use the current host's image tool or a useful diagram when that is unavailable. Run `python3 <absolute-package-path>/scripts/bstack.py doctor --project <project-root> --live --workflow review-pr|grilling|to-pr` for the chosen and permitted workflow. A failed optional workflow should not block ordinary setup.
+Ordinary manual work needs no model configuration. The default delegation policy remains `inherit-parent`. A basic installation does not need an optional-model picker. If the user asks for a full setup, offer `review-pr`, `to-pr` visuals, and autonomous grilling before concluding. Honor workflows they already selected. Explain the defaults without making them choose every model:
 
-If a developer's CLI requires a wrapper, ask for its actual terminal command. For example, run `python3 <absolute-package-path>/shared/model_cli.py --project <project-root> configure --cli claude --command 'launch claude -- {args}'`. The helper saves the argument prefix privately in `.bstack/model-clis.json`. It does not use a shell, so arguments after `{args}` are passed separately. Recheck the selected workflow live after changing it. Never silently try the plain binary again or replace the chosen model after a wrapper or login failure. Auto routing does not grant product or ADR decision authority. Wayfinder and tickets have [independent adapter choices](../references/work-adapters.md), each defaulting to the implemented local adapter. External adapters remain unsupported until implemented and verified; a Git remote is not a provider selection.
+- `review-pr` uses two independent reviewers and a third model to check their findings. Its defaults use Claude Code and Codex.
+- `to-pr` prefers Codex for an explanatory image when the project permits Codex to see its code. It can use the current host's image tool or a useful diagram when Codex image generation is unavailable.
+- Autonomous grilling uses one model to challenge a plan and another to answer. Human-guided grilling needs no model-role setup.
+
+Before the first live check for a selected workflow, reuse its saved launch commands or a working command already established in this session. Otherwise ask how the developer runs each required CLI headlessly in their terminal. Examples are `claude -p "say hi"`, `codex exec "say hi"`, and `launch claude -- -p "say hi"`. Ask for the command only, never credentials or a complete settings file. Explain that BStack supplies the prompt, model and output flags. Save the executable and any wrapper arguments around `{args}`, for example:
+
+```sh
+python3 <absolute-package-path>/shared/model_cli.py --project <project-root> configure --cli claude --command 'launch claude -- {args}'
+```
+
+The plain equivalent is `claude {args}`. The helper saves the command privately in `.bstack/model-clis.json` and inserts native arguments at `{args}` without a shell. Do not infer the launch command from the CLI being present on `PATH`.
+
+Run `python3 <absolute-package-path>/scripts/bstack.py doctor --project <project-root> --live --workflow <workflow>` for each chosen and permitted workflow: `review-pr`, `grilling`, or `to-pr`. Recheck after changing a launch command. A failed optional workflow does not block basic installation, but that workflow remains blocked until its check passes. Never silently retry the plain binary or replace a chosen model after a launcher or authentication failure.
+
+If the normal terminal command works but BStack cannot authenticate, say that BStack could not use the working login and check its launch command and settings. Do not claim the user was logged out or tell them to change certificates, shell files or login settings based on an incidental warning. Report the actual failed step and the next check in plain language. Keep basic installation and each selected workflow separate in the result: passed, not checked, or blocked. The `to-pr` live check proves text access only; image generation still needs a real visual attempt.
+
+Auto routing does not grant product or ADR decision authority. Wayfinder and tickets have [independent adapter choices](../references/work-adapters.md), each defaulting to the implemented local adapter. External adapters remain unsupported until implemented and verified; a Git remote is not a provider selection.
 
 ## Optional personal memory
 

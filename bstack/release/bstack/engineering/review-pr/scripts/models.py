@@ -20,7 +20,8 @@ import model_cli
 DEFAULTS = model_cli.REVIEW_DEFAULTS
 REQUIRED = {
     "codex": ["--ignore-user-config", "--ignore-rules", "--ephemeral", "--output-schema", "--output-last-message", "--sandbox", "--strict-config"],
-    "claude": ["--safe-mode", "--restricted", "--tools", "--json-schema", "--effort", "--no-session-persistence", "--strict-mcp-config", "--setting-sources", "--disable-slash-commands", "--settings"],
+    "claude": ["--safe-mode", "--tools", "--json-schema", "--effort", "--no-session-persistence", "--strict-mcp-config",
+               "--setting-sources", "--disable-slash-commands", "--settings", "--permission-mode", "--permission-prompts", "--no-chrome", "--allowedTools"],
 }
 
 
@@ -122,7 +123,7 @@ def doctor(config, project=None, live=False):
         for name, role in config["roles"].items():
             checks[name] = probe_review_role(role, project, config)
             if checks[name]["status"] != "passed":
-                raise ReviewError(f"{name} is not ready: {checks[name]['reason']}. Check the selected model, login and .bstack/model-clis.json wrapper command before review")
+                raise ReviewError(f"{name} is not ready: {checks[name]['reason']}")
     status = "ready" if live else "ready_for_runtime_check"
     limits = []
     limits.extend(["No provider substitution will be attempted."] if live else
@@ -194,7 +195,8 @@ def run_model(role, schema, work, project, config, data, timeout, capture=None):
         return command(args, cwd=work, data=data, timeout=timeout,
                        env=worker_environment(), inherit_env=False)
     except ReviewError as error:
-        raise ReviewError(f"Restricted {role['cli']} invocation failed; check the selected CLI, wrapper and login: {error}") from error
+        reason = model_cli.failure_hint(role["cli"], "", str(error))
+        raise ReviewError(f"{role['cli'].capitalize()} review command failed: {reason}") from error
 
 
 def probe_review_role(role, project, config=None):
@@ -216,6 +218,10 @@ def probe_review_role(role, project, config=None):
                 observed = []
             else:
                 envelope = json.loads(raw)
+                if not isinstance(envelope, dict):
+                    raise ReviewError("Claude returned an unexpected reply. Confirm the saved headless command returns JSON.")
+                if envelope.get("is_error"):
+                    raise ReviewError(model_cli.failure_hint("claude", raw.decode(), "", 0))
                 observed = list(envelope.get("modelUsage", {}))
                 report = envelope.get("structured_output")
             if report != {"ready": model_cli.READY, "probe": nonce}:
@@ -250,8 +256,10 @@ def invoke(role, schema, prompt, context, snapshots, config, output, project):
                 report = read_json(work / "answer.json")
             else:
                 envelope = json.loads(raw)
+                if not isinstance(envelope, dict):
+                    raise ReviewError("Claude returned an unexpected reply. Confirm the saved headless command returns JSON.")
                 if envelope.get("is_error"):
-                    raise ReviewError(f"Claude returned a failed result: {envelope.get('subtype', 'unknown')}")
+                    raise ReviewError(model_cli.failure_hint("claude", raw.decode(), "", 0))
                 observed = list(envelope.get("modelUsage", {}))
                 if observed and role["model"] not in observed:
                     raise ReviewError(f"Claude reported different models: {observed}; requested {role['model']}")

@@ -137,17 +137,68 @@ def availability(project, client):
     return {"status": "available", "command": command[0], "version": lines[0][:160] if lines else "unknown"}
 
 
-def failure_hint(client, output, error, exit_code):
-    detail = (error + "\n" + output).casefold()
-    if any(word in detail for word in ("authentication", "not authenticated", "not logged in", "session expired", "oauth", "unauthorized", "401")):
-        return f"{client} could not authenticate. Sign in through that CLI, then rerun the live doctor."
-    if any(word in detail for word in ("model not found", "unknown model", "model unavailable", "not available", "model is not supported")):
+def failure_hint(client, output, error, exit_code=None):
+    client = {"claude": "Claude", "codex": "Codex", "cursor": "Cursor", "grok": "Grok"}.get(client, client)
+    detail = output + "\n" + error
+    try:
+        envelope = json.loads(output)
+        if isinstance(envelope, dict):
+            cause = envelope.get("error") or envelope.get("errors") or envelope.get("message")
+            if envelope.get("is_error"):
+                cause = cause or envelope.get("result")
+            if cause:
+                if isinstance(cause, dict):
+                    cause = {key: cause[key] for key in ("message", "type", "code", "status", "status_code") if key in cause}
+                detail = cause if isinstance(cause, str) else json.dumps(cause)
+    except (TypeError, ValueError):
+        pass
+    detail = detail.casefold()
+    status = re.search(r'\b(?:http(?: status)?|status(?:_code)?|api error)["\s:=]*(401|429|5\d\d)\b', detail)
+    http_status = f" (HTTP {status[1]})" if status else ""
+    if any(word in detail for word in ("authenticat", "not logged in", "session expired", "oauth", "unauthorized")) or (status and status[1] == "401"):
+        return (f"{client} could not use your login for this check. Confirm the saved headless command works in your terminal. "
+                "If it does, BStack's launch settings may be incompatible with your login.")
+    if any(word in detail for word in ("insufficient_quota", "quota exhausted", "quota exceeded", "exceeded your current quota", "credit balance", "insufficient credits")):
+        return f"{client}'s provider reports exhausted quota or credits{http_status}. Check the account's usage and billing before retrying."
+    if any(word in detail for word in ("connection_error", "connection error", "connection refused", "connection failed", "econnrefused", "econnreset", "enotfound", "eai_again", "getaddrinfo", "dns resolution", "network error", "network_error", "unable to connect")):
+        return f"{client} could not connect to its provider. Check your network, proxy, and provider availability, then retry."
+    if any(word in detail for word in ("rate_limit", "rate limit", "too many requests")) or (status and status[1] == "429"):
+        return f"{client}'s provider hit a rate limit{http_status}. Wait for the limit to reset, then retry."
+    if any(word in detail for word in ("overloaded", "service unavailable", "internal server error", "bad gateway")) or (status and status[1].startswith("5")):
+        return f"{client}'s provider is busy or unavailable{http_status}. Check the provider's status and retry later."
+    if any(word in detail for word in ("model not found", "unknown model", "model unavailable", "model not available", "model is not supported")):
         return f"The selected model is unavailable to {client}. Choose an exact model this account can run, then retry."
     if any(word in detail for word in ("unknown option", "unexpected argument", "unrecognized option", "unknown flag")):
         return f"{client} rejected a CLI argument. Check its --help output and the configured wrapper's {{args}} position."
+    if "timed out" in detail or "timeout_error" in detail:
+        return f"{client} did not answer before the time limit. Check your network and the provider's status, then retry."
+    if any(word in detail for word in ("required executable not found", "command not found")):
+        return f"{client} could not start because its executable was not found. Check the saved headless command and your PATH."
+    if "api_error" in detail:
+        return f"{client}'s provider reported a service error. Check the provider's status and retry later."
     if exit_code == 0:
-        return f"{client} answered without the expected probe text. Check whether the wrapper changes output or prompt arguments."
-    return f"{client} exited {exit_code}. Check CLI login, model access and the configured wrapper's argument pass-through."
+        return f"{client} returned no usable answer. BStack could not identify the cause; check the CLI's own error message."
+    return f"{client} could not finish the request. BStack could not identify the cause; check the CLI's own error message."
+
+
+def claude_arguments(model=None, effort=None, *, schema=None, browser=None):
+    settings = {"disableAllHooks": True, "autoMemoryEnabled": False, "claudeMdExcludes": ["**"],
+                "outputStyle": "default", "agent": ""}
+    args = ["--print", "--tools", "", "--permission-mode", "dontAsk", "--permission-prompts", "none",
+            "--setting-sources", "user", "--strict-mcp-config", "--mcp-config",
+            str(browser) if browser is not None else '{"mcpServers":{}}', "--disable-slash-commands",
+            "--settings", json.dumps(settings), "--no-session-persistence", "--no-chrome", "--output-format", "json"]
+    if browser is None:
+        args.append("--safe-mode")
+    else:
+        args.extend(["--allowedTools", "mcp__bstack_repo__*"])
+    if model:
+        args.extend(["--model", model])
+    if effort:
+        args.extend(["--effort", effort])
+    if schema is not None:
+        args.extend(["--json-schema", json.dumps(schema)])
+    return args
 
 
 def probe_arguments(client, model, effort, work):
@@ -161,13 +212,7 @@ def probe_arguments(client, model, effort, work):
         args.append("-")
         return args, prompt
     if client == "claude":
-        args = ["--print", "--safe-mode", "--restricted", "--tools", "", "--setting-sources", "",
-                "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--no-session-persistence",
-                *model_arg, "--output-format", "json"]
-        if effort:
-            args.extend(["--effort", effort])
-        args.append(prompt)
-        return args, None
+        return [*claude_arguments(model, effort), prompt], None
     if client == "cursor":
         return ["--print", "--mode", "ask", "--trust", *model_arg, "--output-format", "text", prompt], None
     args = ["--single", prompt, "--permission-mode", "plan", "--no-subagents", "--disable-web-search",
@@ -198,18 +243,28 @@ def probe(project, client, model=None, effort=None, timeout=90):
             result = subprocess.run(command, input=data, capture_output=True, text=True, timeout=timeout, cwd=work)
         except subprocess.TimeoutExpired:
             return {"status": "failed", "cli": client, "model": model, "reason": f"The model did not answer within {timeout} seconds"}
+        except FileNotFoundError:
+            return {"status": "failed", "cli": client, "model": model,
+                    "reason": failure_hint(client, "", "Required executable not found")}
         except OSError:
             return {"status": "failed", "cli": client, "model": model, "reason": "The configured command could not start"}
         output = (work / "answer.txt").read_text() if client == "codex" and (work / "answer.txt").exists() else result.stdout
         observed = None
+        failed_result = False
         if client == "claude" and result.returncode == 0:
             try:
                 envelope = json.loads(output)
-                observed = list(envelope.get("modelUsage", {}))
-                output = envelope.get("result", "")
+                if isinstance(envelope, dict):
+                    failed_result = bool(envelope.get("is_error"))
+                    if not failed_result:
+                        observed = list(envelope.get("modelUsage", {}))
+                        answer = envelope.get("result", "")
+                        output = answer if isinstance(answer, str) else ""
+                else:
+                    failed_result = True
             except (TypeError, ValueError):
                 pass
-        if result.returncode or READY not in output:
+        if result.returncode or failed_result or READY not in output:
             return {"status": "failed", "cli": client, "model": model,
                     "reason": failure_hint(client, output, result.stderr, result.returncode), "exit_code": result.returncode}
         if observed and model and model not in observed:
@@ -261,9 +316,9 @@ def review_diagnose(project, roles):
         if (process.returncode == 0 and report.get("status") == "ready"
                 and report.get("isolation") == "restricted_repository_tools" and complete):
             return {"status": "passed", "roles": checks, "restriction": "restricted_repository_tools"}
-        reason = report.get("error") or "The review doctor did not verify every selected role and its restricted repository tools. Rerun review.py doctor --live."
+        reason = report.get("error") or "The review setup check could not confirm that every selected model can read the review files with only the allowed tools. Rerun doctor --live --workflow review-pr."
     except subprocess.TimeoutExpired:
-        reason = "The review doctor did not finish within eight minutes. Check the selected CLI logins and wrapper commands, then retry."
+        reason = "The review setup check did not finish within eight minutes. Confirm the saved headless commands work in your terminal, then retry."
     except (OSError, ValueError):
         reason = "The bundled review doctor could not return a valid result. Check the BStack package and rerun review.py doctor --live."
     if not isinstance(reason, str):
