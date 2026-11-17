@@ -83,7 +83,11 @@ if name == "gh":
     elif "/contents/bstack-pr-policy.md?ref=" in endpoint:
         commit = endpoint.rsplit("?ref=", 1)[1]
         source = subprocess.run([real_git, "-C", str(home / "repository"), "show", commit + ":bstack-pr-policy.md"], capture_output=True)
-        print(json.dumps({"type": "file", "encoding": "base64", "content": base64.b64encode(source.stdout).decode()} if source.returncode == 0 else {"message": "Not Found"}))
+        if source.returncode:
+            print(json.dumps({"message": "Not Found"}))
+            print("gh: Not Found (HTTP 404)", file=sys.stderr)
+            raise SystemExit(1)
+        print(json.dumps({"type": "file", "encoding": "base64", "content": base64.b64encode(source.stdout).decode()}))
     else:
         raise RuntimeError(endpoint)
     raise SystemExit(0)
