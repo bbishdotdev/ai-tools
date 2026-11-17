@@ -8,6 +8,8 @@ These are examples, not a required sequence. Choose only the steps that help wit
 | Fix a bug or build a clear feature | State the task normally with auto mode on, invoke `poteto-mode` for manual engineering routing, or use `implement` for an accepted plan. |
 | Shape an idea | `grill-me` for questions, `grill-with-docs` when source material matters, or `wayfinder` when several decisions need a persistent map. |
 | Compare a product or UI direction | `prototype` for disposable variants and iteration; a choice can then move through `handoff` to a clean implementation context. |
+| Compare several attempts at the same task | `arena` produces competing proposals or implementations within the requested scope, compares them, and combines the strongest result. The agent explains the participant count and model choices before starting. |
+| Challenge existing work | `interrogate` asks separate reviewers to look for consequential problems and returns findings without applying fixes. The agent states the reviewer lineup and any limits on model diversity. |
 | Turn decisions into buildable work | `to-spec` for accepted scope; `to-tickets` when slices and a board help. Either can be skipped when the request is already clear. |
 | Work on a PR | `to-pr` to prepare it, `review-pr` for independent review, and `resolve-pr` to assess feedback on the author's side. Each can be used on its own. |
 

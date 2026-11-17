@@ -39,9 +39,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "b97b8897e79a5849d46939650d32ac77ec4b0b40700c735ed403f148c504cf65",
+      "sha256": "1ee5d06c24f889eea1739f7ad4b0343f7fe2234dc9d3b2180b3927217971ad50",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "a520a439af33d0c06520eaf387ea5ccda9d64f3c67f9199141e18d10dd6bd36b",
+      "source_sha256": "370c65b973b8a2ca4817167ff48d5da00099d551fed5489cf701c103eba9957d",
       "transforms": [
         "render-release-template"
       ]
@@ -49,9 +49,9 @@
     {
       "mode": 420,
       "path": "SKILL.md",
-      "sha256": "77919f0f55990e1387d699286064aa1569bc51700f8b4e1549e43bad3bc84ac9",
+      "sha256": "8e1edc3eb91896e47ff5e062a89efd5d96c44dd1795579dbd3bb56281e05a77a",
       "source": "bstack/package/templates/folder-install.md",
-      "source_sha256": "12895287960a86c0d64957cd4cf7c6407e1d75fc0a58efc50e3cf8c212272113",
+      "source_sha256": "34c59f3df672baeda1efe8d54fdbae7c91d17972ca1d2e163495840f97de90da",
       "transforms": [
         "render-release-template"
       ]
@@ -2083,17 +2083,17 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/references/routes.md",
-      "sha256": "3fd1b71352d03cf843039dcc403bb67fe24f6d385990c70888ce359388fa9f50",
+      "sha256": "07941e2f5b79e8661cec32395dae6f0c6fe4e77a3a8ce028341d107c258b46ec",
       "source": "bstack/shared/skills/bstack-guide/references/routes.md",
-      "source_sha256": "3fd1b71352d03cf843039dcc403bb67fe24f6d385990c70888ce359388fa9f50",
+      "source_sha256": "07941e2f5b79e8661cec32395dae6f0c6fe4e77a3a8ce028341d107c258b46ec",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "shared/bstack-guide/references/walkthrough.md",
-      "sha256": "0ca1f379b17476823eb08a2c4bfd63a7371e93d8553347cbd8e1cb7d703bcc5b",
+      "sha256": "245822a98ac0b8a9d76e78e9143db9b880f2ae44b6ff552eaae8405e381b6966",
       "source": "bstack/shared/skills/bstack-guide/references/walkthrough.md",
-      "source_sha256": "0ca1f379b17476823eb08a2c4bfd63a7371e93d8553347cbd8e1cb7d703bcc5b",
+      "source_sha256": "245822a98ac0b8a9d76e78e9143db9b880f2ae44b6ff552eaae8405e381b6966",
       "transforms": []
     },
     {
@@ -2283,9 +2283,9 @@
     {
       "mode": 420,
       "path": "shared/model_cli.py",
-      "sha256": "29f4c799fb438aa1af9572f6669640f1e63476a4e6889fbedd9aaa73bc8dac19",
+      "sha256": "00a58c84eb3324bf13fb5ce20215d6160d4329fb7adb04b1f89f77895b9525f3",
       "source": "bstack/shared/model_cli.py",
-      "source_sha256": "29f4c799fb438aa1af9572f6669640f1e63476a4e6889fbedd9aaa73bc8dac19",
+      "source_sha256": "00a58c84eb3324bf13fb5ce20215d6160d4329fb7adb04b1f89f77895b9525f3",
       "transforms": []
     },
     {
@@ -2317,9 +2317,9 @@
     {
       "mode": 420,
       "path": "shared/references/decision-authority.md",
-      "sha256": "886c50d4be767988f7cdeaf9d7004ac3943154d6427c6af487b9346dae57b33e",
+      "sha256": "43de3bda7f5df58ed47a19818c8ac4fa7680693df50e4532775444f1cc57f81c",
       "source": "bstack/shared/references/decision-authority.md",
-      "source_sha256": "898c81d8cd54c991818f3e64da54022c5db8bc66218ba529ddd77694f066d6f2",
+      "source_sha256": "54986d5fa1abaa2cdf4ece9ff5676b8fb300ffcadffdaf55e138b113101a6317",
       "transforms": [
         "rewrite-local-markdown-links"
       ]
@@ -2345,9 +2345,9 @@
     {
       "mode": 420,
       "path": "shared/references/setup-requirements.md",
-      "sha256": "9d4e60c700e4bc80ce3e16e8caa0f5dcae05ac566cea6109d8da78b449c69a6a",
+      "sha256": "9817fa537bbfc7f9402ce3a6a734902b9b93429e52a4bf588e5f6c9a18650160",
       "source": "bstack/shared/references/setup-requirements.md",
-      "source_sha256": "9d4e60c700e4bc80ce3e16e8caa0f5dcae05ac566cea6109d8da78b449c69a6a",
+      "source_sha256": "9817fa537bbfc7f9402ce3a6a734902b9b93429e52a4bf588e5f6c9a18650160",
       "transforms": []
     },
     {
@@ -2387,9 +2387,9 @@
     {
       "mode": 420,
       "path": "shared/router/WORKFLOW.md",
-      "sha256": "6de70132d6f529524522fde3cf8d67d78fce55565c4c7246a47ea6aa8ec1bd0f",
+      "sha256": "a75f79e0f0456bd86b89634fd6d7b50581e8c7f79d5ae4465f21898a2f4647c8",
       "source": "bstack/shared/skills/bstack-router/SKILL.md",
-      "source_sha256": "c4f3d988d06115e818ad58347b89e91eabbc2f85f5c17bf091bbde76efe82bde",
+      "source_sha256": "cef1c803d05662cb44ef04dfeb57c89eef168e4974d2e09b2240abb9398e07a9",
       "transforms": [
         "rewrite-local-markdown-links",
         "rewrite-attribution-metadata",
@@ -2417,9 +2417,9 @@
     {
       "mode": 420,
       "path": "shared/setup-bstack/INSTRUCTIONS.md",
-      "sha256": "dd168d2c69a68b82f7316af50b5968f4759832a4556b9adc672484604a6fdff1",
+      "sha256": "b7187cfd6a8baf2149ac4040d583cfe4cbfef7378f33de399417c0c602f413ce",
       "source": "bstack/package/templates/setup.md",
-      "source_sha256": "dd168d2c69a68b82f7316af50b5968f4759832a4556b9adc672484604a6fdff1",
+      "source_sha256": "b7187cfd6a8baf2149ac4040d583cfe4cbfef7378f33de399417c0c602f413ce",
       "transforms": [
         "render-release-template",
         "public-skill-invocation-policy"

@@ -2,7 +2,7 @@
 
 Teach BStack as a set of useful entry points, not a required pipeline. It brings together pinned work from Lauren Tan's PStack and Matt Pocock's skills, then adds BStack's own connections, local workspace, PR workflows, project baseline, and optional memory. Give the person a short map before going deep: they can enter at planning, code understanding, implementation, or a PR. Load only the skills that fit their task.
 
-The project baseline is there from the start. Its seven rules push agents to challenge weak assumptions, find root causes, weigh implementation trade-offs, write meaningful tests, and explain work plainly. `unslop` applies to prose. Manual engineering routing is the default: invoke a named skill or `poteto-mode`. `bstack-auto on` lets ordinary engineering prompts enter that router. Neither mode loads the whole collection into every prompt or gives an agent authority to make product decisions.
+The project baseline is there from the start. Its seven rules push agents to challenge weak assumptions, find root causes, weigh implementation trade-offs, write meaningful tests, and explain work plainly. `unslop` applies to prose. New installs enable automatic engineering routing; upgrades keep the saved choice. `bstack-auto off` leaves named skills and `poteto-mode` available for manual use. Automatic routing selects workflows for ordinary prompts; it does not enable autonomous grilling or give an agent authority to make product decisions. Neither routing mode loads the whole collection into every prompt.
 
 Use a couple of these journeys to make the connections concrete. Pick the ones that match the person's work; don't recite all three by default.
 
