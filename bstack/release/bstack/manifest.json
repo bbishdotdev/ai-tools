@@ -1454,9 +1454,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/INSTRUCTIONS.md",
-      "sha256": "466b768607bf00e9626d2d6456389444605f9a2c64144cfa570d41151a2b4f16",
+      "sha256": "a384a5e1a78f0245dab3fc9ed9f52c826a90bd9058c07e3db0fa996743ddfdf3",
       "source": "bstack/engineering/to-pr/SKILL.md",
-      "source_sha256": "efceb3434f49a986b4698321241bd7c4e91977c1da12532bbdd3e1d25269c274",
+      "source_sha256": "6df1849948a0f7b29026164e3acea5042ddfdfd577e7fd618a81ae7305503a86",
       "transforms": [
         "rewrite-local-markdown-links",
         "private-workflow-filename",
@@ -1476,9 +1476,9 @@
     {
       "mode": 420,
       "path": "engineering/to-pr/references/publishing.md",
-      "sha256": "086b43f62be2fa0d4d88489e5efaf31cde743491275f500001be39163c54f8b4",
+      "sha256": "c1d38660a8614bd38e7fd1c07fd13e7ab899ece15f29153eacfa8051f9661f6b",
       "source": "bstack/engineering/to-pr/references/publishing.md",
-      "source_sha256": "086b43f62be2fa0d4d88489e5efaf31cde743491275f500001be39163c54f8b4",
+      "source_sha256": "c1d38660a8614bd38e7fd1c07fd13e7ab899ece15f29153eacfa8051f9661f6b",
       "transforms": []
     },
     {
@@ -2122,9 +2122,9 @@
     {
       "mode": 420,
       "path": "shared/github/attribution.py",
-      "sha256": "fd4e36e6820ced5ef4cde775ec5c7d254fbe8410e7a21dde5178d7e49a6393bd",
+      "sha256": "bfd709186786f2a9538c7aa48121baf8bd211efc2a193e907caf43d275964c0a",
       "source": "bstack/shared/github/attribution.py",
-      "source_sha256": "fd4e36e6820ced5ef4cde775ec5c7d254fbe8410e7a21dde5178d7e49a6393bd",
+      "source_sha256": "bfd709186786f2a9538c7aa48121baf8bd211efc2a193e907caf43d275964c0a",
       "transforms": []
     },
     {

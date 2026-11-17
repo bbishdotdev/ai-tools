@@ -38,7 +38,9 @@ class Attribution:
             return None
         if self.reason == "no_host_context":
             return ("No model information reached prepare. Use a literal absolute helper path, confirm BStack's "
-                    "attribution hook is installed, enabled and trusted, then start a fresh session and rerun prepare.")
+                    "attribution hook is installed, enabled and trusted in your current host, then retry there. "
+                    "Use a fresh session with the same host and model if needed. If identity remains unavailable, "
+                    "report it; do not delegate preparation or switch models to obtain attribution.")
         if self.reason in ("model_not_exposed", "vscode_model_not_exposed_during_tool_call"):
             return (f"The host did not expose its model for this tool call ({self.reason}). "
                     "Attribution remains unavailable.")
