@@ -1,0 +1,60 @@
+bstack/engineering/review-pr/SKILL.md
+  s_123ed7c0166e50::t_3ed2453e3cc09e 28
+  s_123ed7c0166e50::t_f1ef6d2af73181 36,42
+bstack/release/bstack/engineering/review-pr/scripts/preflight.py
+  s_123ed7c0166e50::t_604eacbd3ba5e8 6,9,17-18,20-53,85-86,94-96,115-116,143,147-149,151,157-163
+bstack/release/bstack/engineering/review-pr/scripts/review.py
+  s_123ed7c0166e50::t_604eacbd3ba5e8 24-25,77-78,226-227
+bstack/engineering/review-pr/references/security.md
+  s_123ed7c0166e50::t_e30e651de2fbae 48
+  s_123ed7c0166e50::t_3ed2453e3cc09e 21
+  s_123ed7c0166e50::t_f1ef6d2af73181 19,23-25
+  s_123ed7c0166e50::t_3a47fb11abda5f 22
+bstack/release/bstack/engineering/review-pr/scripts/security_eval.py
+  s_123ed7c0166e50::t_604eacbd3ba5e8 9-11,26-46,80,82-83,88,91
+bstack/engineering/review-pr/scripts/security_eval.py
+  s_123ed7c0166e50::t_2bdf06a0591aeb 9-11,26-46,80,82-83,88,91
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_604eacbd3ba5e8 1139,1141,1187,1189,1227,1229,1251,1253,1259,1261,1283,1285,1307,1309
+  s_123ed7c0166e50::t_e30e651de2fbae 1195,1197
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_123ed7c0166e50::t_e30e651de2fbae 48
+  s_123ed7c0166e50::t_604eacbd3ba5e8 19,21-25
+bstack/release/bstack/engineering/review-pr/scripts/contracts.py
+  s_123ed7c0166e50::t_604eacbd3ba5e8 52-53,56-57,59
+bstack/release/bstack/engineering/review-pr/INSTRUCTIONS.md
+  s_123ed7c0166e50::t_604eacbd3ba5e8 28,36,42
+bstack/release/bstack/engineering/review-pr/scripts/publication.py
+  s_123ed7c0166e50::t_604eacbd3ba5e8 18-22,161-162
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_123ed7c0166e50::t_604eacbd3ba5e8 68,74-76
+bstack/engineering/review-pr/references/running.md
+  s_123ed7c0166e50::t_3ed2453e3cc09e 68,74
+  s_123ed7c0166e50::t_f1ef6d2af73181 75-76
+bstack/engineering/review-pr/scripts/publication.py
+  s_123ed7c0166e50::t_cc24da4d21c2c6 18-22,161-162
+bstack/engineering/review-pr/scripts/preflight.py
+  s_123ed7c0166e50::t_cc24da4d21c2c6 6,9,17-18,20-53,85-86,94-96,115-116,143,147-149,151,157-163
+bstack/engineering/review-pr/scripts/review.py
+  s_123ed7c0166e50::t_cc24da4d21c2c6 24-25,77-78,226-227
+bstack/github/tests/test_review.py
+  s_123ed7c0166e50::t_8acee14752ea35 109,111,120-122,409,450,549-550,558,582,588,609,628,643,657
+bstack/engineering/review-pr/scripts/contracts.py
+  s_123ed7c0166e50::t_cc24da4d21c2c6 52-53,56-57,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0ebb630b2f7d2dc1dfc2fb794b199f35f5d25dcb",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
