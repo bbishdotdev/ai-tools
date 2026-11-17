@@ -1192,9 +1192,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "996759fa19bfc9f7e2e686a128e8e8a7b78bff1d9cb4905f94aed3bbe897bed2",
+      "sha256": "dbbce0bbcb016c5196a0be4cf7e1b634b12230f2c7528129fdd978c2f1af0904",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "996759fa19bfc9f7e2e686a128e8e8a7b78bff1d9cb4905f94aed3bbe897bed2",
+      "source_sha256": "dbbce0bbcb016c5196a0be4cf7e1b634b12230f2c7528129fdd978c2f1af0904",
       "transforms": []
     },
     {
