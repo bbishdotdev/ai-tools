@@ -108,6 +108,39 @@ class ModelCommandTests(unittest.TestCase):
         self.assertIn("Choose an exact model", result["workflows"]["review-pr"]["reason"])
         self.assertEqual(len(calls), 2)
 
+    def test_static_review_inspection_reports_effective_roles_without_model_requests(self):
+        for client in ("claude", "codex"):
+            self.set_client(client)
+        actual_run = subprocess.run
+        calls = []
+
+        def record(command, **kwargs):
+            calls.append(command)
+            return actual_run(command, **kwargs)
+
+        with mock.patch.object(model_cli.subprocess, "run", side_effect=record):
+            result = model_cli.diagnose(self.project, "review-pr")
+            roles = result["workflows"]["review-pr"]["roles"]
+            self.assertFalse(result["live"])
+            for role, expected in model_cli.REVIEW_DEFAULTS.items():
+                self.assertEqual({key: roles[role][key] for key in ("cli", "model", "effort")}, expected)
+
+            (self.project / ".bstack/review.json").write_text(json.dumps({"roles": {
+                "reviewer_a": {"model": "custom-reviewer", "effort": "low"},
+                "reviewer_b": {"effort": "high"},
+            }}))
+            result = model_cli.diagnose(self.project, "review-pr")
+            roles = result["workflows"]["review-pr"]["roles"]
+            self.assertEqual(roles["reviewer_a"]["cli"], "claude")
+            self.assertEqual(roles["reviewer_a"]["model"], "custom-reviewer")
+            self.assertEqual(roles["reviewer_a"]["effort"], "low")
+            self.assertEqual(roles["reviewer_b"]["model"], model_cli.REVIEW_DEFAULTS["reviewer_b"]["model"])
+            self.assertEqual(roles["reviewer_b"]["effort"], "high")
+            self.assertEqual(roles["adjudicator"]["effort"], model_cli.REVIEW_DEFAULTS["adjudicator"]["effort"])
+        model_calls = [command for command in calls if str(self.fake) in command]
+        self.assertTrue(model_calls)
+        self.assertTrue(all(command[-1] == "--version" for command in model_calls), model_calls)
+
     def test_probe_reports_authentication_errors_without_exposing_response(self):
         self.set_client("claude", "claude-auth-error")
         result = model_cli.probe(self.project, "claude", "model-a")

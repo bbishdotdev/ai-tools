@@ -373,7 +373,7 @@ def diagnose(project, workflow=None, live=False):
                 elif launch_status == "missing":
                     hint = clients[client]["hint"]
                 checks[role] = {"status": "ready_for_live_check" if launch_status in {"available", "version_unavailable"} else "launcher_failed",
-                                "cli": client, "model": model, "hint": hint}
+                                "cli": client, "model": model, "effort": effort, "hint": hint}
         good = all(item["status"] == "passed" for item in checks.values()) if live else all(item["status"] == "ready_for_live_check" for item in checks.values())
         workflows[name] = {"status": "passed" if good and live else "ready_for_live_check" if good else "needs_setup", "roles": checks}
         if name == "to-pr":

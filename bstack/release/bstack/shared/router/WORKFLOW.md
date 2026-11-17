@@ -75,6 +75,8 @@ For feature and bug work, follow the project's [verification setting](../referen
 
 The default delegation model policy is **inherit-parent**, including the coding delegate. Omit an explicit model unless a supported role override is configured or the user requests one. Imported provider names, model identifiers, agent types, transcript paths, and external destinations are examples of upstream bindings, not requirements or authorization.
 
+Before launching Arena or Interrogate, use the [workflow start guidance](../references/setup-requirements.md#explain-the-work-before-launching) to explain the result, scope, and actual participant lineup. Keep that explanation brief and proceed within existing authorization; it is not another confirmation gate.
+
 Do not load `~/.cursor/rules/pstack-models.mdc` or select an imported default model slug. For a workflow that actually requires independent model families, verify two usable model bindings on this host before claiming that benefit; a same-model check is a narrower result. If a named agent type or background lifecycle is missing, delegate through the host's supported API or report that step unavailable. The retired upstream `poteto-agent` definition is not bundled.
 
 Before an imported instruction needs delegation, a service, a host-specific tool, or a helper script, read [the capability contract](references/capabilities.md). Resolve the operation against capabilities actually available in this environment. Pass this router's path and relevant policy to delegates. They must apply bstack's layer before following imported instructions.

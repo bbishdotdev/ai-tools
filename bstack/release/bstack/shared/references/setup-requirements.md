@@ -2,7 +2,7 @@
 
 BStack's local planning, tickets, basic engineering skills, and manual grilling do not need a model-role picker or an external tracker. Install the package, select the agent hosts you use, and start a fresh agent session so its skill catalog refreshes. New installs enable automatic routing; upgrades keep the previous choice. `bstack-auto off` leaves named skills available.
 
-Check a requirement when the requested workflow needs it. Explain what the missing tool does, why this step needs it, and the smallest way to proceed. Basic installation does not require optional integrations. For an explicitly requested full setup, offer PR review, PR visuals, and autonomous grilling before concluding. Explain their defaults, honor workflows already chosen, and avoid a separate picker for every model.
+Check a requirement when the requested workflow needs it. Explain what the missing tool does, why this step needs it, and the smallest way to proceed. Basic installation does not require optional integrations. For an explicitly requested full setup, offer PR review, PR visuals, and grilling model configuration before concluding. Show the effective model choices and efforts before offering to keep or change them. Honor workflows already chosen and avoid a separate picker for every model. Grilling models can be saved and tested for later while work stays human-guided; setup does not start an autonomous interview.
 
 | When you do this | What you need | If it is missing |
 | --- | --- | --- |
@@ -17,6 +17,14 @@ Check a requirement when the requested workflow needs it. Explain what the missi
 | Create or maintain a project verifier | A real app path to exercise and the project's verification setting | `off` skips verifier edits, `ask` proposes a concrete change, and `auto` maintains the affected recipe. If the app cannot run, record the limit and run the available checks. |
 
 The `quarantined_playbooks` in the installed `index.json` are not active. Their implementations remain in the pinned development sources and are excluded from the consumer bundle. Do not revive their watcher, cleanup, cloud, or orchestration helpers through a fallback guess. Use the owned `worktree-cleanup` skill for a portable worktree audit. Offer a supported narrower workflow and state which capability would have to be ported.
+
+## Explain the work before launching
+
+Arena produces competing versions of the requested artifact, compares them, and combines the strongest parts into one result. Interrogate reviews existing work from independent perspectives and returns findings; it does not apply fixes. Explain that distinction when helping the user choose. For Arena, name whether the candidates will produce proposals, prototypes, or implementation, using the scope already authorized. Asking for ideas does not authorize code changes.
+
+Before launching either workflow, state the candidate or reviewer count, any separate judge, and the actual models or inherited-model policy the host supports. Name model identities only when available; do not guess an underlying model from an Auto setting. Explain that several attempts consume more model usage than one. Same-model attempts are separate attempts, not evidence of model-family diversity. Use existing model choices and scope without asking again; ask only when a missing choice changes what can actually run. The PR review and grilling role settings do not configure Arena or Interrogate.
+
+## Check the selected tools
 
 Host hook setup differs. Claude Code, Cursor, and Grok can load their configured project hooks in a fresh session. Codex requires hook support to be enabled and local hook trust to be reviewed. A passing package `doctor` check confirms installed files and bindings, not live hook delivery, model access, or a full workflow run. Run the relevant live verification before claiming those behaviors work.
 
