@@ -1136,9 +1136,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/INSTRUCTIONS.md",
-      "sha256": "5d317e45fc721c4218b7312c03f80ff47d451f0c5dedf8f56cb81bf4a4653e02",
+      "sha256": "180e10cb387da113a312685e6d3cc0daa736d06eb1422805d62b9da8a5c51afb",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "716d9cd88d42a2e07275ea164dea9fecb4d2b4e02551c2b8af28648934024cbb",
+      "source_sha256": "b6118026210738468f66c6aa936d710ec94bd6d12e252402514e2591ef61cc30",
       "transforms": [
         "rewrite-local-markdown-links",
         "private-workflow-filename",
@@ -1184,9 +1184,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "5db3858ce65708cc0464f5cdbef77952b9236c73c45fbd4f6bd6f79b18c31e37",
+      "sha256": "e550c267f4aa9d64f9380785aa870cd44aaed4072dfbbc1ede26a4ea1c94a214",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "5db3858ce65708cc0464f5cdbef77952b9236c73c45fbd4f6bd6f79b18c31e37",
+      "source_sha256": "e550c267f4aa9d64f9380785aa870cd44aaed4072dfbbc1ede26a4ea1c94a214",
       "transforms": []
     },
     {
