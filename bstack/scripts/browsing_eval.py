@@ -10,6 +10,9 @@ import secrets
 import sys
 import threading
 
+SCRIPTS = Path(__file__).resolve().parents[1] / "engineering/review-pr/scripts"
+sys.path.insert(0, str(SCRIPTS))
+
 from contracts import REVIEW, ReviewError, object_schema, text_schema, validate, validate_review
 from host import diagnostic_text, read_json, write_json
 from models import configuration, invoke, rendered
@@ -71,7 +74,7 @@ def cross_file_fixture(directory):
         "checks": {"checks": [], "statuses": []}, "coverage_limits": [],
         "project_pr_policy": {}, "human_review_required": [], "runtime_verification": {"status": "skipped"},
     }
-    references = Path(__file__).parent.parent / "references"
+    references = SCRIPTS.parent / "references"
     prompt = rendered(references / "rubric.md") + "\n\n" + rendered(references / "reviewer.md")
     prompt += "\nUse code search to follow the changed public symbol through the complete repository. Do not assume the changed file is the only affected file. No code execution or human approval is needed."
     return snapshots, context, prompt

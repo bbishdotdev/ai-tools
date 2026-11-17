@@ -1,6 +1,10 @@
 import argparse
 import json
 from pathlib import Path
+import sys
+
+SCRIPTS = Path(__file__).resolve().parents[1] / "engineering/review-pr/scripts"
+sys.path.insert(0, str(SCRIPTS))
 
 from models import configuration
 from preflight import assess

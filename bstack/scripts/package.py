@@ -362,9 +362,8 @@ def assemble(root=ROOT):
         directory = root / "shared/skills" / skill
         selected.extend("shared/skills/" + skill + "/" + path for path in sorted(layers.tree_files(directory))
                         if not path.startswith("agents/"))
-    verify_scripts = root / "shared/skills/verify-bstack/scripts"
-    selected.extend("shared/skills/verify-bstack/scripts/" + path for path in sorted(layers.tree_files(verify_scripts))
-                    if "__pycache__" not in PurePosixPath(path).parts and path.endswith(".py"))
+    selected.extend("shared/skills/verify-bstack/scripts/" + name
+                    for name in ("installation.py", "verify.py", "fallback.py", "codex_hooks.py"))
     mapping = {source: package_path(source, upstream) for source in selected}
     for name, source in selection["owned_skills"].items():
         upstream_entry = upstream + "/skills/" + name + "/SKILL.md"

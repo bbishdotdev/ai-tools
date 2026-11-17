@@ -2,6 +2,8 @@
 
 bstack installs one package and a set of directly invocable skills. Poteto Mode is an engineering entry within that collection. The package contains the exact reviewed dependencies and customizations; installation never fetches newer upstream sources.
 
+The [security overview](SECURITY.md) covers the complete release folder, including bundled browser assets, installed hooks, and workflows that contact external services.
+
 The controller requires Python 3.11+ on macOS or Linux. It installs the full collection per project. The installer skill alone can live at user scope. Windows and native plugin-manager installation are not supported by this package; desktop skill discovery needs a separate check after setup.
 
 | If you have... | Use... |
