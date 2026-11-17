@@ -147,24 +147,38 @@ def failure_hint(client, output, error, exit_code=None):
             if envelope.get("is_error"):
                 cause = cause or envelope.get("result")
             if cause:
+                if isinstance(cause, dict):
+                    cause = {key: cause[key] for key in ("message", "type", "code", "status", "status_code") if key in cause}
                 detail = cause if isinstance(cause, str) else json.dumps(cause)
     except (TypeError, ValueError):
         pass
     detail = detail.casefold()
-    if any(word in detail for word in ("authenticat", "not logged in", "session expired", "oauth", "unauthorized", "401")):
+    status = re.search(r'\b(?:http(?: status)?|status(?:_code)?|api error)["\s:=]*(401|429|5\d\d)\b', detail)
+    http_status = f" (HTTP {status[1]})" if status else ""
+    if any(word in detail for word in ("authenticat", "not logged in", "session expired", "oauth", "unauthorized")) or (status and status[1] == "401"):
         return (f"{client} could not use your login for this check. Confirm the saved headless command works in your terminal. "
                 "If it does, BStack's launch settings may be incompatible with your login.")
-    if any(word in detail for word in ("model not found", "unknown model", "model unavailable", "not available", "model is not supported")):
+    if any(word in detail for word in ("insufficient_quota", "quota exhausted", "quota exceeded", "exceeded your current quota", "credit balance", "insufficient credits")):
+        return f"{client}'s provider reports exhausted quota or credits{http_status}. Check the account's usage and billing before retrying."
+    if any(word in detail for word in ("connection_error", "connection error", "connection refused", "connection failed", "econnrefused", "econnreset", "enotfound", "eai_again", "getaddrinfo", "dns resolution", "network error", "network_error", "unable to connect")):
+        return f"{client} could not connect to its provider. Check your network, proxy, and provider availability, then retry."
+    if any(word in detail for word in ("rate_limit", "rate limit", "too many requests")) or (status and status[1] == "429"):
+        return f"{client}'s provider hit a rate limit{http_status}. Wait for the limit to reset, then retry."
+    if any(word in detail for word in ("overloaded", "service unavailable", "internal server error", "bad gateway")) or (status and status[1].startswith("5")):
+        return f"{client}'s provider is busy or unavailable{http_status}. Check the provider's status and retry later."
+    if any(word in detail for word in ("model not found", "unknown model", "model unavailable", "model not available", "model is not supported")):
         return f"The selected model is unavailable to {client}. Choose an exact model this account can run, then retry."
     if any(word in detail for word in ("unknown option", "unexpected argument", "unrecognized option", "unknown flag")):
         return f"{client} rejected a CLI argument. Check its --help output and the configured wrapper's {{args}} position."
-    if "timed out" in detail:
-        return f"{client} did not answer before the time limit. Confirm the saved headless command works in your terminal, then retry."
+    if "timed out" in detail or "timeout_error" in detail:
+        return f"{client} did not answer before the time limit. Check your network and the provider's status, then retry."
     if any(word in detail for word in ("required executable not found", "command not found")):
         return f"{client} could not start because its executable was not found. Check the saved headless command and your PATH."
+    if "api_error" in detail:
+        return f"{client}'s provider reported a service error. Check the provider's status and retry later."
     if exit_code == 0:
-        return f"{client} returned no usable answer. Confirm the saved headless command preserves the prompt and output arguments."
-    return f"{client} could not finish the request. Confirm the saved headless command and selected model work in your terminal."
+        return f"{client} returned no usable answer. BStack could not identify the cause; check the CLI's own error message."
+    return f"{client} could not finish the request. BStack could not identify the cause; check the CLI's own error message."
 
 
 def claude_arguments(model=None, effort=None, *, schema=None, browser=None):

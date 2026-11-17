@@ -29,7 +29,16 @@ def command_failure(output, error):
             if envelope.get("is_error"):
                 value = value or envelope.get("result")
             if isinstance(value, dict):
-                value = value.get("message") or value
+                known_codes = {"rate_limit_error", "overloaded_error", "api_error", "insufficient_quota",
+                               "authentication_error", "permission_error", "invalid_request_error", "not_found_error",
+                               "connection_error", "timeout_error", "econnrefused", "econnreset", "enotfound", "eai_again"}
+                parts = [value["message"]] if isinstance(value.get("message"), str) else []
+                for key in ("type", "code", "status", "status_code"):
+                    item = value.get(key)
+                    if ((key in {"type", "code"} and isinstance(item, str) and item.casefold() in known_codes)
+                            or (key in {"status", "status_code"} and str(item).isdigit() and 100 <= int(item) < 600)):
+                        parts.append(f"{key}: {item}")
+                value = "\n".join(parts) or "The command reported an error without details"
             if value:
                 return (value if isinstance(value, str) else json.dumps(value))[-2000:]
     except ValueError:

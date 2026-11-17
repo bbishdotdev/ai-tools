@@ -1232,9 +1232,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/host.py",
-      "sha256": "7cef2e3ebb67af03eb47b462d54c6d343101feff6927ae26b4ad78855ea55da0",
+      "sha256": "984a5c7fdd88aa36c19c85113ec2bca6ff734caf3410bb6e05ebc65c31f95149",
       "source": "bstack/engineering/review-pr/scripts/host.py",
-      "source_sha256": "7cef2e3ebb67af03eb47b462d54c6d343101feff6927ae26b4ad78855ea55da0",
+      "source_sha256": "984a5c7fdd88aa36c19c85113ec2bca6ff734caf3410bb6e05ebc65c31f95149",
       "transforms": []
     },
     {
@@ -2275,9 +2275,9 @@
     {
       "mode": 420,
       "path": "shared/model_cli.py",
-      "sha256": "e7b749dc381ed5bfde5a81fb8676fb9e4b605cc9a551b3d699f2242dcf8feae3",
+      "sha256": "29f4c799fb438aa1af9572f6669640f1e63476a4e6889fbedd9aaa73bc8dac19",
       "source": "bstack/shared/model_cli.py",
-      "source_sha256": "e7b749dc381ed5bfde5a81fb8676fb9e4b605cc9a551b3d699f2242dcf8feae3",
+      "source_sha256": "29f4c799fb438aa1af9572f6669640f1e63476a4e6889fbedd9aaa73bc8dac19",
       "transforms": []
     },
     {

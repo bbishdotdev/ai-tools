@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "shared"))
 import model_cli
 sys.path.insert(0, str(ROOT / "engineering/review-pr/scripts"))
 from security import worker_environment
+from host import command_failure
 
 
 FAKE = '''import json
@@ -135,7 +136,7 @@ class ModelCommandTests(unittest.TestCase):
             ({"type": "insufficient_quota", "message": "Quota exhausted"}, r"quota|credit|billing"),
             ({"type": "connection_error", "message": "connect ECONNREFUSED"}, r"connect|network"),
             ({"type": "api_error", "message": "getaddrinfo ENOTFOUND"}, r"dns|network|connect"),
-            ({"type": "unexpected_error", "message": "Unidentified failure"}, r"failed|could not finish"),
+            ({"type": "unexpected_error", "message": "Unidentified failure in build1401"}, r"failed|could not finish"),
         )
         for error, expected in cases:
             with self.subTest(error=error):
@@ -143,10 +144,16 @@ class ModelCommandTests(unittest.TestCase):
                 (self.project / "failure.json").write_text(json.dumps(response))
                 result = model_cli.probe(self.project, "claude", "model-a")
                 self.assertEqual(result["status"], "failed")
-                self.assertRegex(result["reason"].lower(), expected)
-                self.assertNotIn("login", result["reason"].lower())
-                self.assertNotIn("selected model", result["reason"].lower())
-                self.assertNotIn("saved headless command", result["reason"].lower())
+                process_error = command_failure(json.dumps(response).encode(), b"Warning: authentication helper advisory")
+                self.assertNotIn("child-only-provider-secret", process_error)
+                hints = {"probe": result["reason"], "review_process": model_cli.failure_hint("claude", "", process_error, 1)}
+                for source, hint in hints.items():
+                    with self.subTest(source=source):
+                        self.assertRegex(hint.lower(), expected)
+                        self.assertNotIn("login", hint.lower())
+                        self.assertNotIn("selected model", hint.lower())
+                        self.assertNotIn("saved headless command", hint.lower())
+                        self.assertNotIn("child-only-provider-secret", hint)
                 self.assertNotIn("child-only-provider-secret", json.dumps(result))
 
     def test_review_doctor_does_not_accept_model_access_without_restricted_browsing(self):
