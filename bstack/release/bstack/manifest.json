@@ -1232,9 +1232,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/host.py",
-      "sha256": "984a5c7fdd88aa36c19c85113ec2bca6ff734caf3410bb6e05ebc65c31f95149",
+      "sha256": "3bf966c463bc581adcbb4ab2d053a6a992e12f6403bdf66097f422ab7fccc3af",
       "source": "bstack/engineering/review-pr/scripts/host.py",
-      "source_sha256": "984a5c7fdd88aa36c19c85113ec2bca6ff734caf3410bb6e05ebc65c31f95149",
+      "source_sha256": "3bf966c463bc581adcbb4ab2d053a6a992e12f6403bdf66097f422ab7fccc3af",
       "transforms": []
     },
     {

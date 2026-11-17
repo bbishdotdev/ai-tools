@@ -22,9 +22,10 @@ def diagnostic_text(data):
 
 def command_failure(output, error):
     output_text = diagnostic_text(output).strip()
+    error_text = diagnostic_text(error).strip()
     try:
         envelope = json.loads(output_text)
-        if isinstance(envelope, dict):
+        if isinstance(envelope, dict) and (envelope.get("is_error") is True or not error_text):
             value = envelope.get("error") or envelope.get("errors") or envelope.get("message")
             if envelope.get("is_error"):
                 value = value or envelope.get("result")
@@ -43,7 +44,7 @@ def command_failure(output, error):
                 return (value if isinstance(value, str) else json.dumps(value))[-2000:]
     except ValueError:
         pass
-    detail = diagnostic_text(error).strip() or output_text
+    detail = error_text or output_text
     return detail[-2000:] or "No error text was returned"
 
 
