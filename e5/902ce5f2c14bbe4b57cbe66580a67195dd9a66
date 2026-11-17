@@ -1,0 +1,65 @@
+bstack/shared/model_cli.py
+  s_123ed7c0166e50::t_ba807f85de3df1 376
+bstack/package/templates/README.md
+  s_123ed7c0166e50::t_e095d0d56305ba 103
+bstack/release/bstack/shared/references/decision-authority.md
+  s_123ed7c0166e50::t_091db1c9e0705f 11,19,30
+bstack/release/bstack/shared/bstack-guide/references/walkthrough.md
+  s_123ed7c0166e50::t_091db1c9e0705f 5
+bstack/release/bstack/README.md
+  s_123ed7c0166e50::t_091db1c9e0705f 103
+bstack/release/bstack/shared/bstack-guide/references/routes.md
+  s_123ed7c0166e50::t_091db1c9e0705f 11-12
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_123ed7c0166e50::t_091db1c9e0705f 5,21-27
+  s_123ed7c0166e50::t_1c3009ef0923d2 28
+bstack/package/templates/install.md
+  s_123ed7c0166e50::t_ba807f85de3df1 34
+bstack/shared/skills/bstack-guide/references/walkthrough.md
+  s_123ed7c0166e50::t_284fdb7157c2fb 5
+bstack/package/templates/folder-install.md
+  s_123ed7c0166e50::t_ba807f85de3df1 34
+bstack/release/bstack/shared/router/WORKFLOW.md
+  s_123ed7c0166e50::t_091db1c9e0705f 78-79
+bstack/shared/skills/bstack-guide/references/routes.md
+  s_123ed7c0166e50::t_284fdb7157c2fb 11-12
+bstack/release/bstack/SKILL.md
+  s_123ed7c0166e50::t_091db1c9e0705f 34
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_091db1c9e0705f 42,44,52,54,2086,2088,2094,2096,2286,2288,2320,2322,2348,2350,2390,2392,2420,2422
+bstack/release/bstack/shared/model_cli.py
+  s_123ed7c0166e50::t_091db1c9e0705f 376
+bstack/release/bstack/shared/setup-bstack/INSTRUCTIONS.md
+  s_123ed7c0166e50::t_091db1c9e0705f 13,16,19-20,44-46,48-50,60,64-65,74
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_123ed7c0166e50::t_091db1c9e0705f 34
+bstack/shared/skills/bstack-router/SKILL.md
+  s_123ed7c0166e50::t_284fdb7157c2fb 78-79
+bstack/shared/references/setup-requirements.md
+  s_123ed7c0166e50::t_284fdb7157c2fb 5,21-27
+  s_123ed7c0166e50::t_896bcda927ec8d 28
+bstack/package/templates/setup.md
+  s_123ed7c0166e50::t_7f32f71b37d69e 48
+  s_123ed7c0166e50::t_ba807f85de3df1 13,16,19-20,44,50,60,64-65,74
+  s_123ed7c0166e50::t_610a52dfbdd56f 46
+  s_123ed7c0166e50::t_fda4967b4f4cae 45
+  s_123ed7c0166e50::t_3fdf74d3f39def 49
+bstack/shared/references/decision-authority.md
+  s_123ed7c0166e50::t_ba807f85de3df1 11,19,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e5902ce5f2c14bbe4b57cbe66580a67195dd9a66",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
