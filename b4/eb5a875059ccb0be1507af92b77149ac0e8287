@@ -1,0 +1,27 @@
+bstack/engineering/review-pr/SKILL.md
+  s_123ed7c0166e50::t_0210783bb34bba 32-34
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_78ed3ba76a41bf 1139,1141,1187,1189
+bstack/engineering/review-pr/references/running.md
+  s_123ed7c0166e50::t_1262e9fc1ec245 52,62
+bstack/release/bstack/engineering/review-pr/INSTRUCTIONS.md
+  s_123ed7c0166e50::t_78ed3ba76a41bf 32-34
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_123ed7c0166e50::t_78ed3ba76a41bf 52,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b4eb5a875059ccb0be1507af92b77149ac0e8287",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
