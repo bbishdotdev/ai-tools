@@ -21,7 +21,8 @@ from artifacts import coverage
 from budget import reserve
 from host import GitHub, changed_paths, diff, fetch_snapshot, git, is_ancestor, materialize, parse_pr, read_json, write_json
 from models import configuration, doctor, invoke, rendered
-from preflight import MAX_DIFF_BYTES, assess as assess_safety
+from preflight import (MAX_DIFF_BYTES, OPAQUE_EXECUTABLE_MODES, OPAQUE_EXECUTABLE_SUFFIXES,
+                       assess as assess_safety, policy_fingerprint as preflight_policy_fingerprint)
 from runtime_verification import run_runtime_verification
 from security import allowed_target, validate_public_report
 from shared import config_digest, context_digest, matching_context, model_state
@@ -73,7 +74,8 @@ def policy():
                     visit(candidate)
     for name in ("rubric", "reviewer", "adjudicator"):
         visit(ROOT / "references" / (name + ".md"))
-    fingerprint = digest({"analysis_version": ANALYSIS_VERSION, "prompts": sorted(digest(text) for text in files.values())})
+    fingerprint = digest({"analysis_version": ANALYSIS_VERSION, "prompts": sorted(digest(text) for text in files.values()),
+                          "preflight": preflight_policy_fingerprint()})
     prompts = {name: rendered(ROOT / "references" / (name + ".md")) for name in ("rubric", "reviewer", "adjudicator")}
     prompts["rubric"] += "\n\n" + (ROOT.parent.parent / "shared/references/pr-standards.md").read_text()
     return fingerprint, prompts
@@ -219,10 +221,10 @@ def perform_run(project, pr_url, config_path, fresh=False, prior_run=None, pass_
                     raise ReviewError("PR diff exceeds the review limit of 1000 paths or 640 KiB; split or narrow it before running models")
                 safety_patch = patch if scope["from"] == merge_base else diff(repository, merge_base, head)
                 write_json(output / "budget.json", reserve(root, target, config.get("max_model_calls_24h", 60), calls=1))
-                opaque_suffixes = {".wasm", ".so", ".dll", ".dylib", ".exe", ".jar", ".class", ".node", ".pyc"}
                 opaque_paths = [path for path in full_changes if path in trees["head"] and
                                 trees["head"][path]["lines"] is None and
-                                (trees["head"][path]["mode"] == "100755" or Path(path).suffix.lower() in opaque_suffixes)]
+                                (trees["head"][path]["mode"] in OPAQUE_EXECUTABLE_MODES or
+                                 Path(path).suffix.lower() in OPAQUE_EXECUTABLE_SUFFIXES)]
                 safety = assess_safety(config, project, state, safety_patch, full_changes, opaque_paths)
                 write_json(output / "preflight.json", safety)
                 if context_digest(github.state(), github.checks(head)) != context_id:

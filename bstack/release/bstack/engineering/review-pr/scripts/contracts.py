@@ -49,18 +49,14 @@ FEEDBACK = object_schema({"kind": {"type": "string", "enum": ["comments", "inlin
 ARTIFACT_ASSESSMENT = object_schema({"id": text_schema(100), "material": {"type": "boolean"}, "reason": text_schema(1000)})
 JUDGMENT = object_schema({"coverage": COVERAGE, "decisions": array_schema(DECISION, 200), "findings": array_schema(FINDING, 30),
     "feedback": array_schema(FEEDBACK, 100), "new_findings": array_schema(text_schema(100), 30), "artifact_assessments": array_schema(ARTIFACT_ASSESSMENT, 500)})
-PREFLIGHT_CONCERN = object_schema({
-    "category": {"type": "string", "enum": ["agent-instruction", "secret-exfiltration", "external-endpoint", "unsafe-execution", "opaque-executable"]},
-    "source": {"type": "string", "enum": ["diff", "file", "pr", "discussion", "open-pr"]},
+PREFLIGHT_INSTRUCTION = object_schema({
+    "source": {"type": "string", "enum": ["diff", "pr", "discussion", "open-pr"]},
     "path": text_schema(500),
     "line": {"type": "integer", "minimum": 1},
+    "mechanism": {"type": "string", "enum": ["change_review", "access_outside_review", "execute_or_reconfigure"]},
+    "reason": {**text_schema(400), "minLength": 20},
 })
-PREFLIGHT_SIGNAL = object_schema({"index": {"type": "integer", "minimum": 0},
-                                  "disposition": {"type": "string", "enum": ["clear", "hold"]},
-                                  "reason": text_schema(300)})
-PREFLIGHT = object_schema({"decision": {"type": "string", "enum": ["pass", "hold"]},
-                           "concerns": array_schema(PREFLIGHT_CONCERN, 20),
-                           "signals": array_schema(PREFLIGHT_SIGNAL, 100)})
+PREFLIGHT = object_schema({"instructions": array_schema(PREFLIGHT_INSTRUCTION, 20)})
 
 
 def validate(value, schema, path="result"):
