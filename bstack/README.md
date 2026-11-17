@@ -90,6 +90,8 @@ Invoke a skill with your tool's native prefix, such as `$how` in Codex or `/how`
 
 Some workflows need more than the host running your chat. For example, [review-pr](engineering/review-pr/SKILL.md) calls authenticated GitHub, Codex, and Claude Code CLIs. Installing bstack does not sign in to those services. The [model doctor](INSTALL.md#check-optional-model-workflows) tests the selected models and supports local wrapper commands. Reviewers autonomously search and read the entire pinned repository through a bundled browser, with general-purpose tools disabled. No extra system packages or file-read approvals are needed. Running the app or tests during review is optional and needs a separate credential-free worker.
 
+Full setup shows the current PR review models and effort before asking you to keep or change them. It also offers PR visuals and lets you save grilling models for later while keeping work human-guided. These checks send small model requests; they do not start the workflows. Before Arena or Interrogate starts, your agent explains what it will produce, who will participate, and the extra model usage.
+
 ### What loads into context
 
 Setup writes the seven-rule baseline and a short package pointer into the project's `AGENTS.md` and, for Claude, `CLAUDE.md`. Each public skill has a small discovery entry that points the agent to its bundled instructions. Those instructions call for only the dependencies the task needs; the whole collection is not inserted into every prompt. Customized `unslop` applies to prose.

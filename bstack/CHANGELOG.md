@@ -8,6 +8,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [3.4.1](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.1) | 2026-11-17 | [Clearer setup and corrected PR workflow checks](release-notes/3.4.1.md) |
 | [3.4.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.0) | 2026-11-10 | [Complete-folder installs and reliable local hooks](release-notes/3.4.0.md) |
 | [3.3.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.3.0) | 2026-11-06 | [Automatic model attribution for pull requests](release-notes/3.3.0.md) |
 | [3.2.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.2.0) | 2026-11-02 | [Measured desktop support and a computer-use verification kit](release-notes/3.2.0.md) |
