@@ -52,6 +52,7 @@ class RuntimeTests(unittest.TestCase):
         for directory in ("scripts", "runtime", "shared/router", "shared/references", "shared/github", "github"):
             (root / directory).mkdir(parents=True, exist_ok=True)
         shutil.copyfile(SOURCE / "runtime.py", root / "scripts/bstack.py")
+        shutil.copyfile(BSTACK / "shared/host_hooks.py", root / "shared/host_hooks.py")
         shutil.copyfile(BSTACK / "shared/router/hook.py", root / "runtime/reminder.py")
         shutil.copyfile(BSTACK / "shared/router/reminder.txt", root / "runtime/reminder.txt")
         for template in ("opencode-plugin.js", "opencode-plugin-v2.js", "amp-plugin.ts"):

@@ -20,6 +20,8 @@ import tempfile
 import tomllib
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shared"))
+from host_hooks import configuration
 
 SCHEMA = 1
 HOSTS = ("codex", "claude", "cursor", "grok", "amp", "copilot", "opencode")
@@ -568,38 +570,17 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
         command, guard = plan["reminder"], plan["guard"]
         for target, text in plan["launchers"].items():
             add(target, {"kind": "file", "text": text})
-        if host in ("codex", "claude"):
-            guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
-            entries = {"PreToolUse": [guard_handler]}
-            if auto:
-                handler = {"hooks": [{"type": "command", "command": command, "timeout": 5}]}
-                entries.update({e: [handler] for e in ("SessionStart", "UserPromptSubmit", "SubagentStart")})
-            target = ".codex/hooks.json" if host == "codex" else ".claude/settings.local.json"
-            add(target, {"kind": "json", "entries": entries, "defaults": {}})
-        elif host == "cursor":
-            entries = {"beforeShellExecution": [{"command": guard, "timeout": 5}],
-                       "preToolUse": [{"matcher": "Shell", "command": guard, "timeout": 5}]}
-            if auto:
-                handler = {"command": command, "timeout": 5}
-                entries.update({e: [handler] for e in ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")})
-            add(".cursor/hooks.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
-        elif host == "copilot":
-            entries = {"preToolUse": [{"type": "command", "bash": guard, "timeoutSec": 5}]}
-            if auto:
-                entries.update({event: [{"type": "command", "bash": event_command, "timeoutSec": 5}]
-                                for event, event_command in plan["events"].items()})
-            add(".github/hooks/bstack.json", {"kind": "json", "entries": entries, "defaults": {"version": 1}})
-        elif host in PLUGINS:
+        if host in PLUGINS:
             for target, template in PLUGINS[host]:
                 add(target, {"kind": "file", "text": plugin_source(
                     (capsule_root() / template).read_text(), command, guard, auto)})
-        elif host == "grok":
-            guard_handler = {"matcher": "Bash", "hooks": [{"type": "command", "command": guard, "timeout": 5}]}
-            entries = {"PreToolUse": [guard_handler]}
-            if auto:
-                handler = {"hooks": [{"type": "command", "command": command, "timeout": 5}]}
-                entries.update({e: [handler] for e in ("UserPromptSubmit", "PostToolUse")})
-            add(".grok/hooks/bstack.json", {"kind": "json", "entries": entries, "defaults": {}})
+        else:
+            paths = {"codex": ".codex/hooks.json", "claude": ".claude/settings.local.json",
+                     "cursor": ".cursor/hooks.json", "copilot": ".github/hooks/bstack.json",
+                     "grok": ".grok/hooks/bstack.json"}
+            config = configuration(host, command, guard, auto, plan["events"])
+            entries = config.pop("hooks")
+            add(paths[host], {"kind": "json", "entries": entries, "defaults": config})
     if "codex" in hosts:
         relative = ".codex/config.toml"
         path = safe_path(project, relative)

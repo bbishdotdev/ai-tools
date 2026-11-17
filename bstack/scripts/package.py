@@ -417,6 +417,7 @@ def assemble(root=ROOT):
     assets["ATTRIBUTION.md"] = attribution_asset(root, mapping, sources)
     for source, target in (("LICENSE", "LICENSE"),
                            ("bstack/package/runtime.py", ENTRYPOINTS["controller"]),
+                           ("bstack/shared/host_hooks.py", "shared/host_hooks.py"),
                            ("bstack/shared/router/hook.py", ENTRYPOINTS["reminder"]),
                            ("bstack/shared/router/reminder.txt", "runtime/reminder.txt"),
                            ("bstack/shared/router/opencode-plugin.js", "runtime/opencode-plugin.js"),

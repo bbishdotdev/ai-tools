@@ -490,7 +490,8 @@ def prepare_bundle(scan_path, review_path, title, body_path, out, media_path=Non
     save_state(directory, {"version": VERSION, "status": "prepared", "attempted": False, "pr": None, "events": []})
     return {"status": "prepared", "bundle": str(directory), "scanId": scan["scanId"],
             "retainDraft": bundle["retainDraft"], "assessment": assessment, "media": len(media_records),
-            "bodyWords": words, "lengthException": length_exception, "attribution": attribution.record()}
+            "bodyWords": words, "lengthException": length_exception, "attribution": attribution.record(),
+            "attributionNotice": attribution.notice()}
 
 
 def load_bundle(directory):
