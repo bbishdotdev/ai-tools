@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
+import sys
 
-from contracts import ReviewError, canonical
+from contracts import ReviewError
 from host import command, read_json, write_json
 from repo_browser import TOOL_DEFINITIONS
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared"))
+import model_cli
 
 CODEX_DISABLED_FEATURES = (
     "shell_tool", "unified_exec", "apps", "plugins", "remote_plugin", "browser_use",
@@ -12,14 +16,6 @@ CODEX_DISABLED_FEATURES = (
     "multi_agent_v2", "goals", "code_mode", "code_mode_only",
     "workspace_dependencies", "realtime_conversation", "sleep_tool", "skill_search", "hooks",
 )
-
-CLAUDE_SETTINGS = {
-    "disableAllHooks": True,
-    "autoMemoryEnabled": False,
-    "claudeMdExcludes": ["**"],
-    "enabledPlugins": {},
-}
-
 
 def toml_value(value):
     if isinstance(value, str):
@@ -93,13 +89,7 @@ def build_command(role, schema, work, project, launcher_argv):
         args.extend(["--output-schema", str(work / "schema.json"), "--output-last-message", str(work / "answer.json"), "-"])
         return launcher_argv(project, "codex", args)
     if role["cli"] == "claude":
-        args = ["--print", "--restricted", "--tools", "", "--permission-mode", "dontAsk",
-                "--permission-prompts", "none", "--setting-sources", "", "--strict-mcp-config",
-                "--mcp-config", str(work / "mcp.json"), "--disable-slash-commands",
-                "--settings", canonical(CLAUDE_SETTINGS), "--no-session-persistence", "--no-chrome",
-                "--model", role["model"], "--effort", role["effort"], "--output-format", "json",
-                "--json-schema", canonical(schema)]
-        if server:
-            args.extend(["--allowedTools", "mcp__bstack_repo__*"])
+        args = model_cli.claude_arguments(role["model"], role["effort"], schema=schema,
+                                         browser=work / "mcp.json" if server else None)
         return launcher_argv(project, "claude", args)
     raise ReviewError("Restricted PR review supports only Codex and Claude model CLIs")

@@ -74,10 +74,13 @@ class RestrictedCLI(unittest.TestCase):
         args = restricted_cli.build_command(self.role("claude"), self.schema, self.work, self.project, self.launcher)
         self.assertEqual(args[:3], ["launch", "claude", "--"])
         self.assertEqual(args[args.index("--tools") + 1], "")
-        self.assertEqual(args[args.index("--setting-sources") + 1], "")
+        self.assertEqual(args[args.index("--setting-sources") + 1], "user")
         self.assertEqual(args[args.index("--allowedTools") + 1], "mcp__bstack_repo__*")
-        self.assertEqual(json.loads(args[args.index("--settings") + 1]), restricted_cli.CLAUDE_SETTINGS)
+        self.assertEqual(json.loads(args[args.index("--settings") + 1]),
+                         {"disableAllHooks": True, "autoMemoryEnabled": False, "claudeMdExcludes": ["**"],
+                          "outputStyle": "default", "agent": ""})
         self.assertNotIn("--safe-mode", args)
+        self.assertNotIn("--restricted", args)
         self.assertNotIn("--bare", args)
 
     def test_missing_metadata_and_extra_servers_fail_without_model_substitution(self):

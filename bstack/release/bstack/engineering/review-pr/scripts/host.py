@@ -21,19 +21,20 @@ def diagnostic_text(data):
 
 
 def command_failure(output, error):
-    detail = diagnostic_text(error).strip()
-    if not detail:
-        detail = diagnostic_text(output).strip()
-        try:
-            envelope = json.loads(detail)
-            if isinstance(envelope, dict):
-                value = envelope.get("error") or envelope.get("result") or envelope.get("errors") or envelope.get("message")
-                if isinstance(value, dict):
-                    value = value.get("message") or value
-                if value:
-                    detail = value if isinstance(value, str) else json.dumps(value)
-        except ValueError:
-            pass
+    output_text = diagnostic_text(output).strip()
+    try:
+        envelope = json.loads(output_text)
+        if isinstance(envelope, dict):
+            value = envelope.get("error") or envelope.get("errors") or envelope.get("message")
+            if envelope.get("is_error"):
+                value = value or envelope.get("result")
+            if isinstance(value, dict):
+                value = value.get("message") or value
+            if value:
+                return (value if isinstance(value, str) else json.dumps(value))[-2000:]
+    except ValueError:
+        pass
+    detail = diagnostic_text(error).strip() or output_text
     return detail[-2000:] or "No error text was returned"
 
 

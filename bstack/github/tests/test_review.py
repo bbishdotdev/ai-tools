@@ -39,7 +39,7 @@ if "--version" in args:
     print(name + " test-version")
     raise SystemExit(0)
 if "--help" in args:
-    print("--ignore-user-config --ignore-rules --ephemeral --output-schema --output-last-message --sandbox --strict-config --safe-mode --restricted --tools --json-schema --effort --no-session-persistence --strict-mcp-config --setting-sources --disable-slash-commands --settings")
+    print("--ignore-user-config --ignore-rules --ephemeral --output-schema --output-last-message --sandbox --strict-config --safe-mode --tools --json-schema --effort --no-session-persistence --strict-mcp-config --setting-sources --disable-slash-commands --settings --permission-mode --permission-prompts --no-chrome --allowedTools")
     raise SystemExit(0)
 if name == "codex" and args[:2] == ["debug", "models"]:
     print(json.dumps({"models": [{"slug": slug, "display_name": slug, "description": "Review test model",
@@ -105,8 +105,8 @@ if name == "claude" and ((state.get("auth_failure_stage") == "doctor" and "ready
     fail_auth(0)
 if "decision" in schema["properties"]:
     assert name == "claude" and args[args.index("--tools") + 1] == ""
-    assert "--safe-mode" in args and "--restricted" in args and "--strict-mcp-config" in args
-    assert args[args.index("--setting-sources") + 1] == ""
+    assert "--safe-mode" in args and "--restricted" not in args and "--strict-mcp-config" in args
+    assert args[args.index("--setting-sources") + 1] == "user"
     count = home / "preflight-calls.txt"
     count.write_text(str(int(count.read_text()) + 1 if count.exists() else 1))
     if state.get("preflight_failure"):
@@ -638,7 +638,7 @@ class ReviewLifecycleTests(unittest.TestCase):
         self.state["preflight_failure"] = True
         self.save()
         denied = self.cli("run", "--pr", "https://github.com/example/project/pull/1", success=False)
-        self.assertIn("Security preflight model failed", denied["error"])
+        self.assertIn("PR safety check failed", denied["error"])
         self.assertFalse((self.home / "claude-calls.txt").exists())
 
     def test_doctor_and_preflight_report_authentication_from_successful_process_errors(self):
@@ -648,7 +648,7 @@ class ReviewLifecycleTests(unittest.TestCase):
                 self.save()
                 failed = self.cli("doctor", "--live", success=False) if stage == "doctor" else self.run_review(success=False)
                 self.assertEqual(failed["status"], "incomplete")
-                self.assertRegex(failed["error"].lower(), r"authenticat|not logged in")
+                self.assertRegex(failed["error"].lower(), r"authenticat|login")
                 self.assertNotIn("certificate", failed["error"].lower())
                 self.assertNotIn(self.env["REVIEW_TEST_API_KEY"], json.dumps(failed))
                 self.assertFalse((self.home / "claude-calls.txt").exists())
@@ -865,8 +865,8 @@ class ReviewLifecycleTests(unittest.TestCase):
                 self.assertEqual(failed["status"], "incomplete")
                 self.assertEqual(pointer.read_text(), original)
                 if scenario == "stdout_failure":
-                    self.assertIn("Restricted claude invocation failed", failed["error"])
-                    self.assertRegex(failed["error"].lower(), r"authenticat|not logged in")
+                    self.assertIn("Claude review command failed", failed["error"])
+                    self.assertRegex(failed["error"].lower(), r"authenticat|login")
                     self.assertNotIn("certificate", failed["error"].lower())
                     self.assertNotIn(self.env["REVIEW_TEST_API_KEY"], failed["error"])
                     failure_run = Path(failed["error"].rsplit("Evidence: ", 1)[1])

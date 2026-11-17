@@ -2,7 +2,7 @@
 
 BStack's local planning, tickets, basic engineering skills, and manual grilling do not need a model-role picker or an external tracker. Install the package, select the agent hosts you use, and start a fresh agent session so its skill catalog refreshes. New installs enable automatic routing; upgrades keep the previous choice. `bstack-auto off` leaves named skills available.
 
-Check a requirement only when the requested workflow reaches it. Explain what the missing tool does, why this step needs it, and the smallest way to proceed. Do not ask someone to configure every optional integration during installation.
+Check a requirement when the requested workflow needs it. Explain what the missing tool does, why this step needs it, and the smallest way to proceed. Basic installation does not require optional integrations. For an explicitly requested full setup, offer PR review, PR visuals, and autonomous grilling before concluding. Explain their defaults, honor workflows already chosen, and avoid a separate picker for every model.
 
 | When you do this | What you need | If it is missing |
 | --- | --- | --- |
@@ -20,4 +20,8 @@ The `quarantined_playbooks` in the installed `index.json` are not active. Their 
 
 Host hook setup differs. Claude Code, Cursor, and Grok can load their configured project hooks in a fresh session. Codex requires hook support to be enabled and local hook trust to be reviewed. A passing package `doctor` check confirms installed files and bindings, not live hook delivery, model access, or a full workflow run. Run the relevant live verification before claiming those behaviors work.
 
-For a wrapped CLI, use `python3 .bstack/package/shared/model_cli.py --project "$PWD" configure --cli claude --command 'launch claude -- {args}'`, replacing the command with the developer's real launcher. The `{args}` slot is required; BStack inserts the native CLI arguments there without a shell. This private setting applies to model probes, PR reviews and Codex PR visuals. Run the selected workflow's live doctor after changing it. Ordinary setup stays usable when an optional model workflow is unavailable.
+Before a selected workflow's first live check, reuse saved launch commands or commands already established in the session. Otherwise ask for the actual working headless terminal command for each required CLI. Examples are `claude -p "say hi"`, `codex exec "say hi"`, and `launch claude -- -p "say hi"`. Request command syntax only, never credentials or complete settings files. BStack supplies the prompt, model and output flags, so save only the executable and wrapper arguments around `{args}`.
+
+For a wrapped CLI, use `python3 .bstack/package/shared/model_cli.py --project "$PWD" configure --cli claude --command 'launch claude -- {args}'`, replacing the command with the developer's real launcher. The plain equivalent is `claude {args}`. BStack inserts native arguments at `{args}` without a shell. This private setting applies to model probes, PR reviews and Codex PR visuals. Run the selected workflow's live doctor after changing it; do not silently retry the plain binary or switch models.
+
+If the normal terminal command authenticates but BStack's call does not, say that BStack could not use the working login and check its launch command and settings. That result does not establish logout. An incidental certificate warning is not enough reason to edit certificates, shell files or login settings. Name the failed step and give the smallest useful next check. Report basic installation and each selected workflow separately as passed, not checked, or blocked. Ordinary setup stays usable when an optional model workflow is unavailable, and a passing `to-pr` text probe still leaves image generation unverified.
