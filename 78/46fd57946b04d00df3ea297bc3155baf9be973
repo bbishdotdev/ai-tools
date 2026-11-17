@@ -1,0 +1,25 @@
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_123ed7c0166e50::t_159f8346c09e18 13-15,40-42
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_159f8346c09e18 1195,1197
+bstack/engineering/review-pr/references/security.md
+  s_123ed7c0166e50::t_95e70148f1f2f7 42
+  s_123ed7c0166e50::t_00fe9e2ecc5b7f 13-15,40
+  s_123ed7c0166e50::t_3c2282576c7edc 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7846fd57946b04d00df3ea297bc3155baf9be973",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
