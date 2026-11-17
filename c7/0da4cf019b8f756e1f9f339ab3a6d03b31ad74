@@ -1,0 +1,59 @@
+.github/workflows/ci.yml
+  s_123ed7c0166e50::t_6b6354f65739ff 23-24
+bstack/package/test_runtime.py
+  s_123ed7c0166e50::t_41df3da16fb01b 55
+bstack/release/bstack/github/pr.py
+  s_123ed7c0166e50::t_f3fdb74ca0c75c 493-494
+bstack/README.md
+  s_123ed7c0166e50::t_6b6354f65739ff 124-125
+bstack/engineering/to-pr/references/publishing.md
+  s_123ed7c0166e50::t_59fa571a58ac4a 84-85
+.grok/hooks/bstack.json
+  s_123ed7c0166e50::t_026b1a67f95c5a 24-35
+bstack/shared/router/install.py
+  s_123ed7c0166e50::t_6b6354f65739ff 7-10,30-33,115-116,118-120,154-159,179,181
+.claude/settings.json
+  s_123ed7c0166e50::t_026b1a67f95c5a 35-46
+.cursor/hooks.json
+  s_123ed7c0166e50::t_026b1a67f95c5a 33-45
+bstack/shared/host_hooks.py
+  s_123ed7c0166e50::t_6b6354f65739ff 1-24
+bstack/shared/github/attribution.py
+  s_123ed7c0166e50::t_bb52031e3d8a38 36-47
+.github/hooks/bstack.json
+  s_123ed7c0166e50::t_026b1a67f95c5a 1-12
+bstack/package/runtime.py
+  s_123ed7c0166e50::t_6b6354f65739ff 23-24,573,577-583
+.codex/hooks.json
+  s_123ed7c0166e50::t_026b1a67f95c5a 35-46
+bstack/github/pr.py
+  s_123ed7c0166e50::t_bb52031e3d8a38 493-494
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_f3fdb74ca0c75c 92,145,166,188,210,232,254,275,361,383,405,447,469,530,551,585,1013,1050,1071,1093,1115,1153,1345,1383,1405,1427,1449,1471,1479,1481,1509,1542,1685,1701,1703,1777,1779,1820,1843,1866,1889,1912,1935,1958,1997,2020,2049,2070,2117,2125,2127,2164,2169-2176,2433,2455,2476
+bstack/release/bstack/engineering/to-pr/references/publishing.md
+  s_123ed7c0166e50::t_f3fdb74ca0c75c 84-85
+bstack/release/bstack/scripts/bstack.py
+  s_123ed7c0166e50::t_f3fdb74ca0c75c 23-24,573,577-583
+bstack/release/bstack/shared/github/attribution.py
+  s_123ed7c0166e50::t_f3fdb74ca0c75c 36-47
+bstack/release/bstack/shared/host_hooks.py
+  s_123ed7c0166e50::t_f3fdb74ca0c75c 1-24
+bstack/scripts/package.py
+  s_123ed7c0166e50::t_6b6354f65739ff 420
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c70da4cf019b8f756e1f9f339ab3a6d03b31ad74",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
