@@ -28,6 +28,42 @@ class InstallTests(unittest.TestCase):
             entry.parent.mkdir(parents=True, exist_ok=True)
             entry.write_text("Fixture skill\n")
 
+    def test_committed_host_configs_include_generated_hooks(self):
+        for relative, expected in install.configurations().items():
+            with self.subTest(path=relative):
+                path = install.ROOT / relative
+                self.assertTrue(path.is_file(), f"Missing committed host configuration: {relative}")
+                actual = json.loads(path.read_text())
+                for event, groups in expected["hooks"].items():
+                    for group in groups:
+                        self.assertIn(group, actual.get("hooks", {}).get(event, []), f"Missing {event} in {relative}")
+
+    def test_configs_only_repairs_hooks_without_touching_conflicting_skills(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(install, "ROOT", Path(folder)):
+            root = Path(folder)
+            skill = root / ".agents/skills/no-comments"
+            skill.parent.mkdir(parents=True)
+            skill.symlink_to("../../custom/no-comments")
+            settings = root / ".claude/settings.json"
+            settings.parent.mkdir()
+            custom = {"hooks": [{"type": "command", "command": "keep-me"}]}
+            settings.write_text(json.dumps({"hooks": {"PreToolUse": [custom], "Stop": [custom]}}))
+            before = self.snapshot(root)
+            changes = install.install(configs_only=True)
+            self.assertIn(".codex/hooks.json", changes)
+            self.assertEqual(self.snapshot(root), before)
+            self.assertEqual(install.install(True, configs_only=True), changes)
+            self.assertEqual(skill.readlink(), Path("../../custom/no-comments"))
+            hooks = json.loads(settings.read_text())["hooks"]
+            self.assertEqual(hooks["Stop"], [custom])
+            self.assertIn(custom, hooks["PreToolUse"])
+            self.assertTrue(any("pr_guard.py" in json.dumps(group) for group in hooks["PreToolUse"]))
+            self.assertFalse((root / ".bstack").exists())
+            self.assertFalse((root / ".amp").exists())
+            self.assertFalse((root / ".opencode").exists())
+            self.assertFalse((root / ".cursor/rules").exists())
+            self.assertEqual(install.install(configs_only=True), [])
+
     def test_migrate_known_rule_and_preserve_other_hooks(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(install, "ROOT", Path(folder)):
             root = Path(folder)
