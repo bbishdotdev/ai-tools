@@ -1,0 +1,76 @@
+bstack/engineering/review-pr/scripts/security.py
+  s_123ed7c0166e50::t_aa6371a031c79e 70
+bstack/shared/model_cli.py
+  s_123ed7c0166e50::t_261f6a074de2ca 170-187,201
+  s_123ed7c0166e50::t_12d05064cb1726 141,146-148,155,163-164,232-234,249-250
+  s_123ed7c0166e50::t_aa6371a031c79e 140,142-145,149-154,156,161-162,166-167,239,243-248,253,305,307
+  s_123ed7c0166e50::t_9b0e668c0ad1f0 168-169
+bstack/package/templates/folder-install.md
+  s_123ed7c0166e50::t_42b8627b55bdf7 36
+  s_123ed7c0166e50::t_93f6a04c33d119 32-35
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_123ed7c0166e50::t_aae1d9ec0ae803 34-38
+bstack/engineering/review-pr/scripts/host.py
+  s_123ed7c0166e50::t_12d05064cb1726 28-30
+  s_123ed7c0166e50::t_aa6371a031c79e 24-27,31-37
+bstack/shared/references/setup-requirements.md
+  s_123ed7c0166e50::t_42b8627b55bdf7 27
+  s_123ed7c0166e50::t_93f6a04c33d119 5,23-26
+bstack/package/templates/setup.md
+  s_123ed7c0166e50::t_93f6a04c33d119 42,44-57,59-60
+  s_123ed7c0166e50::t_42b8627b55bdf7 58
+bstack/engineering/review-pr/scripts/preflight.py
+  s_123ed7c0166e50::t_261f6a074de2ca 96
+  s_123ed7c0166e50::t_12d05064cb1726 106,110,112
+  s_123ed7c0166e50::t_aa6371a031c79e 8,105,109,111
+bstack/release/bstack/SKILL.md
+  s_123ed7c0166e50::t_aae1d9ec0ae803 32-36
+bstack/engineering/review-pr/scripts/restricted_cli.py
+  s_123ed7c0166e50::t_261f6a074de2ca 3,5,9-11,92-93
+bstack/github/tests/test_restricted_cli.py
+  s_123ed7c0166e50::t_261f6a074de2ca 77,79-81,83
+bstack/release/bstack/engineering/review-pr/scripts/restricted_cli.py
+  s_123ed7c0166e50::t_aae1d9ec0ae803 3,5,9-11,92-93
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_123ed7c0166e50::t_aae1d9ec0ae803 70
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_123ed7c0166e50::t_aae1d9ec0ae803 23-24,126,198-199,221-224,259-260,262
+bstack/release/bstack/shared/model_cli.py
+  s_123ed7c0166e50::t_aae1d9ec0ae803 140-156,161-164,166-187,201,232-234,239,243-250,253,305,307
+bstack/release/bstack/engineering/review-pr/scripts/preflight.py
+  s_123ed7c0166e50::t_aae1d9ec0ae803 8,96,105-106,109-112
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_123ed7c0166e50::t_aae1d9ec0ae803 5,23-27
+bstack/package/templates/install.md
+  s_123ed7c0166e50::t_42b8627b55bdf7 38
+  s_123ed7c0166e50::t_93f6a04c33d119 34-37
+bstack/release/bstack/manifest.json
+  s_123ed7c0166e50::t_aae1d9ec0ae803 52,54,1235,1237,1243,1245,1251,1253,1275,1277,1299,1301,2278,2280,2340,2342,2412,2414
+bstack/release/bstack/shared/setup-bstack/INSTRUCTIONS.md
+  s_123ed7c0166e50::t_aae1d9ec0ae803 42,44-60
+bstack/github/tests/test_review.py
+  s_123ed7c0166e50::t_12d05064cb1726 641,651,868-869
+  s_123ed7c0166e50::t_261f6a074de2ca 42,108-109
+bstack/engineering/review-pr/scripts/models.py
+  s_123ed7c0166e50::t_12d05064cb1726 199,221-223,259-260
+  s_123ed7c0166e50::t_aa6371a031c79e 126,198,224,262
+  s_123ed7c0166e50::t_261f6a074de2ca 23-24
+bstack/release/bstack/engineering/review-pr/scripts/host.py
+  s_123ed7c0166e50::t_aae1d9ec0ae803 24-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7d553222f01454889e04818f8bb35fc1e9a4a5b9",
+  "prompts": {},
+  "sessions": {
+    "s_123ed7c0166e50": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c14f-cf4e-71e3-9d27-d1b898f5e382",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
