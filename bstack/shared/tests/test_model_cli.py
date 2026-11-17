@@ -33,6 +33,10 @@ elif "--model" in args and args[args.index("--model") + 1] == "bad-model":
 elif client == "claude-auth-error":
     print("Warning: Ignoring extra certificates from missing-ca.pem", file=sys.stderr)
     print(json.dumps({"is_error": True, "result": "Not logged in. BSTACK_MODEL_READY credential=fake-auth-secret"}))
+elif client == "claude-provider-error":
+    print("Warning: authentication helper advisory", file=sys.stderr)
+    print(Path(__file__).with_name("failure.json").read_text())
+    raise SystemExit(1)
 elif client == "codex":
     Path(args[args.index("--output-last-message") + 1]).write_text("BSTACK_MODEL_READY")
 elif client.startswith("claude"):
@@ -120,6 +124,30 @@ class ModelCommandTests(unittest.TestCase):
             result = worker_environment()
         self.assertEqual(set(result), {"CLAUDE_CODE_OAUTH_TOKEN"})
         self.assertTrue(result["CLAUDE_CODE_OAUTH_TOKEN"] == token)
+
+    def test_probe_reports_provider_failures_without_blaming_launch_configuration(self):
+        self.set_client("claude", "claude-provider-error")
+        cases = (
+            ({"type": "rate_limit_error", "message": "Too many requests"}, r"rate limit"),
+            ({"status": 429, "message": "Request rejected"}, r"rate limit.*429|429.*rate limit"),
+            ({"type": "overloaded_error", "message": "Overloaded"}, r"provider.*(?:busy|unavailable)"),
+            ({"type": "api_error", "status": 503, "message": "Service unavailable"}, r"503"),
+            ({"type": "insufficient_quota", "message": "Quota exhausted"}, r"quota|credit|billing"),
+            ({"type": "connection_error", "message": "connect ECONNREFUSED"}, r"connect|network"),
+            ({"type": "api_error", "message": "getaddrinfo ENOTFOUND"}, r"dns|network|connect"),
+            ({"type": "unexpected_error", "message": "Unidentified failure"}, r"failed|could not finish"),
+        )
+        for error, expected in cases:
+            with self.subTest(error=error):
+                response = {"is_error": True, "error": {**error, "credential": "child-only-provider-secret"}}
+                (self.project / "failure.json").write_text(json.dumps(response))
+                result = model_cli.probe(self.project, "claude", "model-a")
+                self.assertEqual(result["status"], "failed")
+                self.assertRegex(result["reason"].lower(), expected)
+                self.assertNotIn("login", result["reason"].lower())
+                self.assertNotIn("selected model", result["reason"].lower())
+                self.assertNotIn("saved headless command", result["reason"].lower())
+                self.assertNotIn("child-only-provider-secret", json.dumps(result))
 
     def test_review_doctor_does_not_accept_model_access_without_restricted_browsing(self):
         self.set_client("claude")

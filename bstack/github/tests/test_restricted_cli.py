@@ -171,19 +171,24 @@ class RestrictedCLI(unittest.TestCase):
                     write_json(config / "settings.json", settings)
                     native_config = config / ".claude.json"
                     write_json(native_config, {**(read_json(native_config) if native_config.exists() else {}), **unrelated})
-                    args = restricted_cli.build_command({"cli": "claude", "model": "claude-opus-4-6", "effort": "high"},
-                                                        self.schema, self.work, self.project, lambda project, cli, args: [executable, *args])
-                    result = subprocess.run([*args, "--", "Return an empty JSON object."], cwd=self.work,
-                                            env=environment, capture_output=True, timeout=30)
-                    self.assertTrue(captured, "Claude did not reach the local provider: " +
-                                    (result.stdout + result.stderr).decode(errors="replace")[-2000:])
-                    expected = {"StructuredOutput"} | {"mcp__bstack_repo__" + name for name in restricted_cli.TOOL_DEFINITIONS}
-                    for key, bearer, payload in captured:
-                        self.assertEqual(key if auth_source == "user_settings" else bearer,
-                                         "synthetic-local-key" if auth_source == "user_settings" else "Bearer synthetic-local-oauth")
-                        self.assertEqual({tool.get("name") or tool.get("type") for tool in payload.get("tools", [])}, expected)
-                        self.assertNotRegex(json.dumps(payload), r"BSTACK_NATIVE_(?:SKILL|STYLE|AGENT|MEMORY)_SENTINEL")
-                    self.assertFalse(marker.exists(), "A user hook or unrelated MCP server ran")
+                    browser_args = restricted_cli.build_command({"cli": "claude", "model": "claude-opus-4-6", "effort": "high"},
+                                                                self.schema, self.work, self.project, lambda project, cli, args: [executable, *args])
+                    probe_args, probe_input = restricted_cli.model_cli.probe_arguments("claude", "claude-opus-4-6", "high", self.work)
+                    browser_tools = {"StructuredOutput"} | {"mcp__bstack_repo__" + name for name in restricted_cli.TOOL_DEFINITIONS}
+                    commands = {"browser": ([*browser_args, "--", "Return an empty JSON object."], None, browser_tools),
+                                "tool_free": ([executable, *probe_args], probe_input, set())}
+                    for branch, (args, data, expected) in commands.items():
+                        with self.subTest(branch=branch):
+                            captured.clear()
+                            result = subprocess.run(args, input=data, cwd=self.work, env=environment, capture_output=True, timeout=30)
+                            self.assertTrue(captured, "Claude did not reach the local provider: " +
+                                            (result.stdout + result.stderr).decode(errors="replace")[-2000:])
+                            for key, bearer, payload in captured:
+                                self.assertEqual(key if auth_source == "user_settings" else bearer,
+                                                 "synthetic-local-key" if auth_source == "user_settings" else "Bearer synthetic-local-oauth")
+                                self.assertEqual({tool.get("name") or tool.get("type") for tool in payload.get("tools", [])}, expected)
+                                self.assertNotRegex(json.dumps(payload), r"BSTACK_NATIVE_(?:SKILL|STYLE|AGENT|MEMORY)_SENTINEL")
+                            self.assertFalse(marker.exists(), "A user hook or unrelated MCP server ran")
         finally:
             server.shutdown()
             server.server_close()
