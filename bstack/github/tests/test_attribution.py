@@ -217,6 +217,30 @@ class AttributionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Invalid host"):
             resolve(encode(reported("claude", "actual-model", "unavailable")))
 
+    def test_prepare_explains_missing_context_separately_from_host_metadata_gap(self):
+        cases = (
+            ("missing", None, "no_host_context", "No model information reached prepare"),
+            ("vscode", encode(unavailable("copilot", "vscode_model_not_exposed_during_tool_call")),
+             "vscode_model_not_exposed_during_tool_call", "did not expose its model for this tool call"),
+        )
+        for name, context, reason, explanation in cases:
+            with self.subTest(source=name):
+                directory = self.root / name
+                result = test_pr.pr.prepare_bundle(self.scan, self.review, "Fix target", self.body, directory,
+                                                   host_context=context)
+                self.assertEqual(result["attribution"]["reason"], reason)
+                self.assertIn(explanation, result["attributionNotice"])
+                if context is None:
+                    for action in ("literal absolute", "installed", "enabled", "trusted", "fresh session"):
+                        self.assertIn(action, result["attributionNotice"])
+                else:
+                    self.assertIn(reason, result["attributionNotice"])
+                    self.assertNotIn("install", result["attributionNotice"])
+                bundle = json.loads((directory / "bundle.json").read_text())
+                self.assertEqual(bundle["attribution"], result["attribution"])
+                self.assertEqual(set(bundle["attribution"]), {"model", "host", "evidence", "reason"})
+                self.assertIn("Model attribution unavailable", (directory / "body.fallback.md").read_text())
+
     def test_copied_private_context_is_rejected_before_preparation(self):
         command = self.command("stale") + " --host-context " + encode(reported("claude", "old-model", "response-model"))
         payload = self.payload("claude", command)
@@ -300,6 +324,7 @@ execFileSync("/bin/bash", ["-c", changed], {stdio:"pipe"})
         self.assertEqual((directory / "body.fallback.md").read_bytes(), before)
         self.assertIn("prepared-model", gh.raw[99]["body"])
         self.assertEqual(result["attribution"]["model"], "prepared-model")
+        self.assertIsNone(result["attributionNotice"])
 
 
 if __name__ == "__main__":

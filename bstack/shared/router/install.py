@@ -4,6 +4,10 @@ import argparse
 import json
 from pathlib import Path
 import shlex
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from host_hooks import configuration
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -23,30 +27,10 @@ def guard_command(host):
 
 
 def configurations():
-    result = {}
-    for host, path in (("codex", ".codex/hooks.json"), ("claude", ".claude/settings.json")):
-        handler = {"type": "command", "command": command(host), "timeout": 5}
-        events = {name: [{"hooks": [handler.copy()]}] for name in
-                  ("SessionStart", "UserPromptSubmit", "SubagentStart")}
-        events["PreToolUse"] = [{"matcher": "Bash", "hooks": [
-            {"type": "command", "command": guard_command(host), "timeout": 5}]}]
-        result[path] = {"hooks": events}
-    result[".cursor/hooks.json"] = {"version": 1, "hooks": {
-        name: [{"command": command("cursor"), "timeout": 5}]
-        for name in ("sessionStart", "sessionEnd", "beforeSubmitPrompt", "preCompact", "postToolUse")
-    }}
-    result[".grok/hooks/bstack.json"] = {"hooks": {name: [{"hooks": [
-        {"type": "command", "command": command("grok"), "timeout": 5}
-    ]}] for name in ("UserPromptSubmit", "PostToolUse")}}
-    result[".grok/hooks/bstack.json"]["hooks"]["PreToolUse"] = [{"matcher": "Bash", "hooks": [
-        {"type": "command", "command": guard_command("grok"), "timeout": 5}]}]
-    result[".cursor/hooks.json"]["hooks"].update({
-        "beforeShellExecution": [{"command": guard_command("cursor"), "timeout": 5}],
-        "preToolUse": [{"matcher": "Shell", "command": guard_command("cursor"), "timeout": 5}],
-    })
-    result[".github/hooks/bstack.json"] = {"version": 1, "hooks": {"preToolUse": [
-        {"type": "command", "bash": guard_command("copilot"), "timeoutSec": 5}]}}
-    return result
+    paths = {"codex": ".codex/hooks.json", "claude": ".claude/settings.json",
+             "cursor": ".cursor/hooks.json", "grok": ".grok/hooks/bstack.json",
+             "copilot": ".github/hooks/bstack.json"}
+    return {path: configuration(host, command(host), guard_command(host), True) for host, path in paths.items()}
 
 
 def plugin_files():
@@ -128,11 +112,12 @@ def destination(relative, *, link=False):
     return path
 
 
-def install(apply=False):
-    links, wrappers, legacy = development_bindings()
+def install(apply=False, configs_only=False):
+    links, wrappers, legacy = ({}, {}, {}) if configs_only else development_bindings()
     configs = configurations()
-    plugins = plugin_files()
-    for relative in (".codex/config.toml", *configs, *plugins, *wrappers, ".cursor/rules/bstack-router.mdc"):
+    plugins = {} if configs_only else plugin_files()
+    rules = () if configs_only else (".cursor/rules/bstack-router.mdc",)
+    for relative in (".codex/config.toml", *configs, *plugins, *wrappers, *rules):
         destination(relative)
     for relative, target in links.items():
         path = destination(relative, link=True)
@@ -166,11 +151,12 @@ def install(apply=False):
                 existing.extend(groups)
         if not path.exists() or json.loads(path.read_text()) != current:
             writes[relative] = json.dumps(current, indent=2) + "\n"
-    rule = ROOT / ".cursor/rules/bstack-router.mdc"
-    if not rule.exists() or rule.read_text() != desired_rule():
-        if rule.exists() and rule.read_text() != desired_rule("bstack/engineering/skills/poteto-mode/SKILL.md"):
-            raise ValueError(f"Review changed rule before replacing: {rule}")
-        writes[".cursor/rules/bstack-router.mdc"] = desired_rule()
+    for relative in rules:
+        rule = ROOT / relative
+        if not rule.exists() or rule.read_text() != desired_rule():
+            if rule.exists() and rule.read_text() != desired_rule("bstack/engineering/skills/poteto-mode/SKILL.md"):
+                raise ValueError(f"Review changed rule before replacing: {rule}")
+            writes[relative] = desired_rule()
     missing_links = {relative: target for relative, target in links.items()
                      if not (ROOT / relative).is_symlink() or (ROOT / relative).readlink() != Path(target)}
     if apply:
@@ -190,7 +176,8 @@ def install(apply=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--configs-only", action="store_true", help="Check or repair portable host configuration without skill or plugin changes")
     args = parser.parse_args()
-    changes = install(args.apply)
+    changes = install(args.apply, args.configs_only)
     print(json.dumps({"applied": args.apply, "changes": changes}, indent=2))
     raise SystemExit(0 if args.apply or not changes else 1)

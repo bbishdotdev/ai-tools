@@ -121,6 +121,8 @@ Paths below are relative to this `bstack/` folder:
 
 The repository's root `AGENTS.md`, `CLAUDE.md`, and hidden host configuration support development of bstack. Private work and runtime evidence stay in the repository's gitignored `.bstack/` folder.
 
+Check the tracked host configuration with `python3 -B bstack/shared/router/install.py --configs-only`. Add `--apply` to repair missing BStack hooks while preserving other hooks. This mode leaves skill links, plugins, and rules alone; run the installer without `--configs-only` for complete development setup. CI checks these portable configurations against the same hook definitions used by consumer setup. Configuration does not grant Codex hook trust or prove live delivery; verify a real PR preparation call in the host after setup.
+
 ## Maintain and verify
 
 Keep customizations separate from the frozen sources. Follow [upstream updates](UPSTREAM.md) to compare a new snapshot or adopt a selected improvement. [layers.json](layers.json) records the sources and active adaptations.

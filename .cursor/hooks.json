@@ -30,6 +30,19 @@
         "command": "python3 bstack/shared/router/hook.py --host cursor",
         "timeout": 5
       }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python3 bstack/shared/github/pr_guard.py --host cursor",
+        "timeout": 5
+      }
+    ],
+    "preToolUse": [
+      {
+        "matcher": "Shell",
+        "command": "python3 bstack/shared/github/pr_guard.py --host cursor",
+        "timeout": 5
+      }
     ]
   }
 }

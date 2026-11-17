@@ -32,6 +32,18 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PROJECT_DIR}/bstack/shared/github/pr_guard.py\" --host claude",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }
