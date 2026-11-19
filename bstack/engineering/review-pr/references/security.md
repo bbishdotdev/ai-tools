@@ -6,13 +6,13 @@ The [agent-owasp-compliance skill](https://github.com/github/awesome-copilot/blo
 
 ## Review boundary
 
-The controller captures complete Git trees without running project hooks or code. Review models browse those pinned files through BStack's bundled browser. It can list, search, read, and compare source, including unchanged callers. It rejects outside paths, symlinks, and unsupported operations. A repository string cannot become a shell command or URL fetch through this interface. Requests run automatically without developer approval.
+The controller captures complete Git trees without running project hooks or code, and skips symlinks. It copies those pinned files, the PR context, and BStack's review policy into a private temporary directory and starts each reviewer CLI there. Reviewers list, search, and read source with their own tools, including unchanged callers.
 
-The CLIs launch with general machine tools and unrelated integrations disabled at the model interface. BStack supplies its baseline, review principles, and writing policy through allowlisted `read_policy` paths. Project PR policy and source are explicit review context; they do not configure new tools. Codex may use pure V8 orchestration to call the browser, without host filesystem or network APIs. The browser uses stdio, opens no listening network service, and adds no global MCP configuration. Static review requires no OS worker or extra system packages.
+BStack asks each client for its read-only mode and adds nothing on top. Claude roles get `Read`, `Grep`, and `Glob` in `dontAsk` mode with hooks, memory, custom instructions, plugins, and MCP servers off; Claude Code denies reads outside the working directory. Codex roles run with `--sandbox read-only`, user config and project instructions ignored, and web search off. That sandbox blocks writes and network access. It does not stop Codex from running read-only commands, including code from the PR, or from reading any file your user can read.
 
-These are application-level restrictions, not an OS sandbox. The model CLI still authenticates and contacts its provider. The installed CLI, wrapper command, BStack runtime, Claude user settings, and administrator-managed policy are trusted local inputs. Claude loads user settings so its authentication and provider configuration remain available after a wrapper runs. BStack excludes project settings and separately overrides model tools, unrelated integrations, hooks, memory, custom instructions, the selected agent, and output style. This does not disable every installed plugin; the restrictions apply to what the review session can load and use.
+This is not a sandbox built by BStack. The model CLI still authenticates and contacts its provider. The installed CLI, wrapper command, BStack runtime, Claude user settings, and administrator-managed policy are trusted local inputs. Claude loads user settings so its authentication and provider configuration remain available after a wrapper runs.
 
-A modified CLI, a wrapper that drops restrictions, or policy that adds capabilities can invalidate the boundary. `doctor --live` checks a snapshot read and denied traversal through the configured launch. It does not inspect the full advertised tool inventory or certify that a wrapper exposes no other tools. Optional OS isolation may add protection. A script that merely forwards arguments does not.
+What BStack does guard is the target: it reviews only PRs from the selected project's origin or an explicitly configured repository. Inside that repository, a hostile PR can still try to steer a reviewer, for example into quoting a local file in its findings, which the controller would then post. The preflight below is the only check against that, and it can be fooled. Decide which PRs are safe to review on a given machine. For PRs from people you do not trust, use a machine without secrets or configure an isolating `worker`. `doctor --live` checks that each role can log in and read a snapshot file; it does not test any boundary.
 
 ## Safety preflight and publication
 
@@ -22,7 +22,7 @@ Hooks, package scripts, HTTP calls, and other application behavior are source to
 
 A hold saves the explanations privately and prepares a comment using fixed descriptions of the attempted reviewer action and verified source links. It never publishes model-written reasons or quotes the suspicious instruction. Malformed output, missing explanations, and invalid locations stop as incomplete checks with a local error. They produce no publishable security finding, and reviewers do not proceed.
 
-A pass grants no execution permission and does not certify the PR's safety. Injection can evade a judge or distort a model's conclusion. The restricted browser limits available actions even when the model follows a malicious instruction; it does not establish immunity.
+A pass grants no execution permission and does not certify the PR's safety. Injection can evade a judge or distort a model's conclusion.
 
 The target is checked against the selected project's origin or explicit target configuration before `gh` contacts it. `--project` determines that boundary, even when BStack is installed elsewhere. The controller keeps GitHub publication authority; the review models receive no GitHub tool. The publisher validates findings, escapes model prose, creates evidence links itself, and rechecks freshness. Public receipts contain reproducible hashes, not signatures or proof that another checkout's models ran. Other developers' reviews remain discussion evidence.
 
@@ -34,16 +34,15 @@ Without a runtime worker, the result is a static review using source and existin
 
 ## Maintainer checks
 
-Run `doctor --live` through the actual configured launchers to check an installed package. The fuller evaluations below are maintainer tools in the development repository and are not bundled with consumer releases. Run them from the repository root to check code navigation and synthetic escape attempts through the configured model providers:
+Run `doctor --live` through the actual configured launchers to check an installed package. The fuller evaluations below are maintainer tools in the development repository and are not bundled with consumer releases. Run this one from the repository root to check that reviewers follow a change into unchanged code through the configured model providers:
 
 ```sh
-python3 -B bstack/scripts/browsing_eval.py --project /path/to/project --cli codex claude --case cross-file
-python3 -B bstack/scripts/browsing_eval.py --project /path/to/project --cli codex claude --case escape
+python3 -B bstack/scripts/browsing_eval.py --project /path/to/project --cli codex claude
 ```
 
-The first requires search, a read of an unchanged caller, and a grounded breakage finding. The second checks denied reads outside the snapshot, absence of a fake canary from the report, and no contact with a synthetic collector. Results and browser traces are saved under the project's private `.bstack/review-evals/`. These checks exercise selected CLI versions and models; they do not prove that every attack or future tool change is covered.
+It passes when the reviewer reports the breakage and cites the unchanged caller. Results are saved under the project's private `.bstack/review-evals/`. This exercises the selected CLI versions and models on one synthetic repository; it does not measure review quality in general.
 
-Native maintainer fixtures inspect the tool inventory sent by Codex and Claude to a local fake provider. The Claude fixture was verified against Claude Code 2.1.322. It checks the exact advertised tools, authentication from synthetic user settings and an OAuth environment variable, and exclusion of the fixture's user and plugin customizations. These version-specific checks are broader than the browser behavior checked by `doctor --live`; rerun them when changing CLI versions or launch controls. Browser path validation has separate coverage.
+A native maintainer fixture inspects the tools Claude sends to a local fake provider. It was verified against Claude Code 2.1.322 and checks the exact advertised tools, authentication from synthetic user settings and an OAuth environment variable, and exclusion of the fixture's user and plugin customizations. Rerun it when changing CLI versions or launch flags.
 
 Exercise the live preflight judge separately with `python3 -B bstack/scripts/security_eval.py --project /path/to/project`. Its fixtures pair ordinary hooks, scripts, network code, and archives with instructions that try to control the reviewer or expose data. They also cover source and discussion injections, inert attack fixtures, and direct agent-rule overrides. Lifecycle tests separately check the mandatory opaque-executable hold. This is a regression check of one configured model, not a measure of general attack-detection accuracy. End-to-end coverage also includes a held PR posting one sanitized comment and a hostile runtime command running only in a disposable sandbox.
 
