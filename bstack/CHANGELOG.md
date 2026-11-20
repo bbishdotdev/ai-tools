@@ -4,14 +4,11 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
-- New installs no longer copy the baseline into both `AGENTS.md` and `CLAUDE.md`. When the project has no `CLAUDE.md`, setup creates one that imports `AGENTS.md`. Existing files and existing installations keep their managed block.
-- The package README opens with what bstack is and does, so a team that receives only the `release/bstack/` folder gets the overview and the supported-tools graphic.
-- Consumer packages omit maintainer model evaluations and policy test tools. Installation verification, review tools, the offline guide, and the workspace app remain bundled. A packaged security overview explains the files, installation effects, and network behavior for onboarding reviews.
-
 ## Published releases
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [3.5.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.5.0) | 2026-11-20 | [PR review without an MCP server](release-notes/3.5.0.md) |
 | [3.4.1](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.1) | 2026-11-17 | [Clearer setup and corrected PR workflow checks](release-notes/3.4.1.md) |
 | [3.4.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.0) | 2026-11-10 | [Complete-folder installs and reliable local hooks](release-notes/3.4.0.md) |
 | [3.3.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.3.0) | 2026-11-06 | [Automatic model attribution for pull requests](release-notes/3.3.0.md) |
