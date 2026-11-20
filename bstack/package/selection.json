@@ -102,6 +102,7 @@
   "owned_resources": [
     "SECURITY.md",
     "assets/compatibility.svg",
+    "assets/supported-tools.svg",
     "assets/workflow.svg",
     "shared/references/baseline-agents.md",
     "shared/references/workspace.md",

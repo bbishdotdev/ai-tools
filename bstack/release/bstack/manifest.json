@@ -39,9 +39,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "61f8cfa6d2ba9ff73a6e68723906411d78913978a72d938484fd3ebf6ca4f5a4",
+      "sha256": "0754a296c67ffbda5ef5cab60977c8ce8bd5e6e94d7ccd50ed8f317520b8d00b",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "66b184a348321f29c5f971b2f55983ab56a853037bf97b14bafa3347408c8fe6",
+      "source_sha256": "29f045a59a919171c04d479667f46496234ee4997dd2607a7d11d1125447966a",
       "transforms": [
         "render-release-template"
       ]
@@ -70,6 +70,14 @@
       "sha256": "21df6a0c98c7f9aa9537797c5a256cba880b9cd8afd6025e6199735b25eb974e",
       "source": "bstack/assets/compatibility.svg",
       "source_sha256": "21df6a0c98c7f9aa9537797c5a256cba880b9cd8afd6025e6199735b25eb974e",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "assets/supported-tools.svg",
+      "sha256": "701116baca3b8f479caf73aec73be759d59af23428d50d80becf40ffebb3cf58",
+      "source": "bstack/assets/supported-tools.svg",
+      "source_sha256": "701116baca3b8f479caf73aec73be759d59af23428d50d80becf40ffebb3cf58",
       "transforms": []
     },
     {
@@ -1700,7 +1708,7 @@
       "path": "index.json",
       "sha256": "8cee27f6dd8b6fb95bc5668e6ed12de8085cdd29995fcb5fb12ba8a0bf91b03e",
       "source": "bstack/package/selection.json",
-      "source_sha256": "839d6c93386d0b9662b0d03edef0eb21b786057e49d27d94185d3ebe7be6f44b",
+      "source_sha256": "5e6e75089ddc1e4bc1e0faaa9f3a5d7044a4cd0e39bad656108e6d422ba1fd69",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
