@@ -4,12 +4,15 @@ bstack/release/bstack/manifest.json
   s_8122339cef63aa::t_c469b98530da9f 1147,1149,1195,1197,1243,1245,1251,1253,1272-1277,2270,2272,2332,2334
   s_8122339cef63aa::t_adbe388854e35f 1761,1763
   s_8122339cef63aa::t_64bdab0e47d169 1278-1279
+  s_8122339cef63aa::t_305b379be1dd0c 42,44,52,54,1203,1205
 bstack/release/bstack/engineering/review-pr/references/security.md
   s_8122339cef63aa::t_c469b98530da9f 9,11,13,15,25,43,45
+  s_8122339cef63aa::t_305b379be1dd0c 37,40
 bstack/package/runtime.py
   s_8122339cef63aa::t_f07919d395c0ef 5-10
 bstack/engineering/review-pr/references/security.md
   s_8122339cef63aa::t_830051ff0f6ba3 9,11,13,15,25,43,45
+  s_8122339cef63aa::t_f9844c9391a182 37,40
 .github/workflows/ci.yml
   s_8122339cef63aa::t_d19c776db18f48 37
 bstack/release/bstack/shared/references/setup-requirements.md
@@ -34,6 +37,7 @@ bstack/release/bstack/engineering/review-pr/INSTRUCTIONS.md
   s_8122339cef63aa::t_c469b98530da9f 26
 bstack/release/bstack/engineering/review-pr/scripts/reviewer_cli.py
   s_8122339cef63aa::t_c469b98530da9f 5,10-18,22-29,32-38,44-49,51-53
+  s_8122339cef63aa::t_305b379be1dd0c 1-4,6-9,19-21,30-31,39-43,50
 bstack/release/bstack/engineering/review-pr/references/running.md
   s_8122339cef63aa::t_c469b98530da9f 5,7,28,48,50,62,76
 bstack/release/bstack/scripts/bstack.py
@@ -63,6 +67,7 @@ bstack/github/tests/test_review.py
   s_8122339cef63aa::t_7964e6b57c7c3b 385,487,512
 bstack/engineering/review-pr/scripts/reviewer_cli.py
   s_8122339cef63aa::t_314a943a194bf5 5,10-18,22-29,32-38,44-49,51-53
+  s_8122339cef63aa::t_305b379be1dd0c 1-4,6-9,19-21,30-31,39-43,50
 bstack/INSTALL.md
   s_8122339cef63aa::t_b587e843d3826b 191
 bstack/engineering/review-pr/SKILL.md
