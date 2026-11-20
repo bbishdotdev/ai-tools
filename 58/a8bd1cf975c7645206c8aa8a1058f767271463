@@ -1,0 +1,90 @@
+bstack/shared/references/setup-requirements.md
+  s_8122339cef63aa::t_830051ff0f6ba3 11
+bstack/release/bstack/manifest.json
+  s_8122339cef63aa::t_c469b98530da9f 1147,1149,1195,1197,1243,1245,1251,1253,1272-1277,2270,2272,2332,2334
+  s_8122339cef63aa::t_adbe388854e35f 1761,1763
+  s_8122339cef63aa::t_64bdab0e47d169 1278-1279
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_8122339cef63aa::t_c469b98530da9f 9,11,13,15,25,43,45
+bstack/package/runtime.py
+  s_8122339cef63aa::t_f07919d395c0ef 5-10
+bstack/engineering/review-pr/references/security.md
+  s_8122339cef63aa::t_830051ff0f6ba3 9,11,13,15,25,43,45
+.github/workflows/ci.yml
+  s_8122339cef63aa::t_d19c776db18f48 37
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_8122339cef63aa::t_c469b98530da9f 11
+docs/adr/0001-restricted-static-review-tools.md
+  s_8122339cef63aa::t_830051ff0f6ba3 3-5
+bstack/engineering/review-pr/scripts/models.py
+  s_8122339cef63aa::t_db09cf1bcffaa4 200-202,205-206
+  s_8122339cef63aa::t_73dfca247dd3b3 6,87-96,108
+  s_8122339cef63aa::t_314a943a194bf5 13,24,142,182,196-199,203-204,213-215,218-219,221,227,235,238-243
+  s_8122339cef63aa::t_f858bd564bff5a 122
+bstack/shared/tests/test_model_cli.py
+  s_8122339cef63aa::t_7d66b31d17f6a2 192,206
+  s_8122339cef63aa::t_7964e6b57c7c3b 93,95,100-101
+bstack/engineering/review-pr/scripts/preflight.py
+  s_8122339cef63aa::t_314a943a194bf5 20,22
+bstack/github/tests/test_reviewer_cli.py
+  s_8122339cef63aa::t_d19c776db18f48 1-144
+docs/adr/0002-client-read-only-review-tools.md
+  s_8122339cef63aa::t_830051ff0f6ba3 1-17
+bstack/release/bstack/engineering/review-pr/INSTRUCTIONS.md
+  s_8122339cef63aa::t_c469b98530da9f 26
+bstack/release/bstack/engineering/review-pr/scripts/reviewer_cli.py
+  s_8122339cef63aa::t_c469b98530da9f 5,10-18,22-29,32-38,44-49,51-53
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_8122339cef63aa::t_c469b98530da9f 5,7,28,48,50,62,76
+bstack/release/bstack/scripts/bstack.py
+  s_8122339cef63aa::t_adbe388854e35f 5-10
+bstack/shared/model_cli.py
+  s_8122339cef63aa::t_314a943a194bf5 184,187,190-191,315-317,328
+  s_8122339cef63aa::t_468e16ced28227 185-186
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_8122339cef63aa::t_c469b98530da9f 13,24,142,182,196-199,203-204,213-215,218-219,221,227,235,238-243
+  s_8122339cef63aa::t_31aa2e092f6c0d 122
+  s_8122339cef63aa::t_adbe388854e35f 6,87-96,108,200-202,205-206
+bstack/release/bstack/shared/model_cli.py
+  s_8122339cef63aa::t_c469b98530da9f 184,187,190-191,315-317,328
+  s_8122339cef63aa::t_adbe388854e35f 185-186
+bstack/release/bstack/engineering/review-pr/scripts/preflight.py
+  s_8122339cef63aa::t_c469b98530da9f 20,22
+bstack/README.md
+  s_8122339cef63aa::t_c469b98530da9f 93
+bstack/release/bstack/README.md
+  s_8122339cef63aa::t_c469b98530da9f 79
+bstack/scripts/browsing_eval.py
+  s_8122339cef63aa::t_b66fdd71ab1f9d 12-13
+  s_8122339cef63aa::t_3e1b08ef0cbf92 75,80-88,90,96,106,113,115
+bstack/github/tests/test_review.py
+  s_8122339cef63aa::t_edcf8ac2abcb3b 141
+  s_8122339cef63aa::t_21562c09e31be7 127,129-131,134-140,142-144
+  s_8122339cef63aa::t_7964e6b57c7c3b 385,487,512
+bstack/engineering/review-pr/scripts/reviewer_cli.py
+  s_8122339cef63aa::t_314a943a194bf5 5,10-18,22-29,32-38,44-49,51-53
+bstack/INSTALL.md
+  s_8122339cef63aa::t_b587e843d3826b 191
+bstack/engineering/review-pr/SKILL.md
+  s_8122339cef63aa::t_2beb06ff46824d 26
+bstack/engineering/review-pr/references/running.md
+  s_8122339cef63aa::t_86034755623c1c 5,7,28,48,50,62,76
+bstack/package/templates/README.md
+  s_8122339cef63aa::t_24c13f3790895d 79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "58a8bd1cf975c7645206c8aa8a1058f767271463",
+  "prompts": {},
+  "sessions": {
+    "s_8122339cef63aa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bcbb0231-629a-46df-bad7-ff7a695ddb8c",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
