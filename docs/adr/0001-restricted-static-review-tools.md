@@ -1,6 +1,8 @@
 # Restricted tools for static PR review
 
-Status: Accepted
+Status: superseded
+
+Superseded by: [0002: Client read-only tools for static PR review](0002-client-read-only-review-tools.md)
 
 Date: 2026-10-26
 

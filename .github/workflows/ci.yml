@@ -34,4 +34,4 @@ jobs:
           npm install --prefix "$claude_test_prefix" --ignore-scripts --no-audit --no-fund --package-lock=false --registry=https://registry.npmjs.org @anthropic-ai/claude-code-linux-x64@2.1.322
           export PATH="$claude_test_prefix/node_modules/@anthropic-ai/claude-code-linux-x64:$PATH"
           claude --version
-          python3 -B -m unittest test_restricted_cli.RestrictedCLI.test_native_claude_preserves_auth_without_loading_user_customizations
+          python3 -B -m unittest test_reviewer_cli.ReviewerCLI.test_native_claude_preserves_auth_without_loading_user_customizations

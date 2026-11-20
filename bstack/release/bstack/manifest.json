@@ -39,9 +39,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "de110d43533c8a6aafe5ceb9636299cdf45385d2d783594169b305fe84759020",
+      "sha256": "61f8cfa6d2ba9ff73a6e68723906411d78913978a72d938484fd3ebf6ca4f5a4",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "7f27cda2401eb3cd3268bc87b75722ddf432ec3cbae288f45650f1b60b879920",
+      "source_sha256": "66b184a348321f29c5f971b2f55983ab56a853037bf97b14bafa3347408c8fe6",
       "transforms": [
         "render-release-template"
       ]
@@ -49,9 +49,9 @@
     {
       "mode": 420,
       "path": "SECURITY.md",
-      "sha256": "49873daa50d4b9e912853989d9900ecd454ee354422fb570b89c4fc6ce4ec0ae",
+      "sha256": "e94b62fd90008f90078f219025541c0aa546ebe789381071e9890bf16569557b",
       "source": "bstack/SECURITY.md",
-      "source_sha256": "49873daa50d4b9e912853989d9900ecd454ee354422fb570b89c4fc6ce4ec0ae",
+      "source_sha256": "e94b62fd90008f90078f219025541c0aa546ebe789381071e9890bf16569557b",
       "transforms": []
     },
     {
@@ -1144,9 +1144,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/INSTRUCTIONS.md",
-      "sha256": "01f6d7997f89813815237288ca98868aca2e0459d93671f998208e8e3076da3a",
+      "sha256": "663e9e7ea0d17eea59bb2ac51e78710c60e8b1d505a6c34082453d9a482ac841",
       "source": "bstack/engineering/review-pr/SKILL.md",
-      "source_sha256": "72b657544988de834c146c7c680fa665e8510e36bc4d233fc4ca6876b203ea52",
+      "source_sha256": "1a165e2523773329f7e0e70dff2ddbcc9ebc612e899157966318251ee5805424",
       "transforms": [
         "rewrite-local-markdown-links",
         "private-workflow-filename",
@@ -1192,17 +1192,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "00b545e6970bf93374a1ad6949ed503845f76282440f7739e8366703b711818e",
+      "sha256": "69ba24f66e355e909d0ead03bef41c6f0426dea008f189c52303aa9e54a7c1e2",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "00b545e6970bf93374a1ad6949ed503845f76282440f7739e8366703b711818e",
+      "source_sha256": "69ba24f66e355e909d0ead03bef41c6f0426dea008f189c52303aa9e54a7c1e2",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/references/security.md",
-      "sha256": "fb8c6912cae5ab9f49b2fcb3ea421bac532e58d7306123c2a39beff644faa5f7",
+      "sha256": "93897ede3fd76bf627161b0952a4b59a11ea02454ff9b9763190d3bb30d4e628",
       "source": "bstack/engineering/review-pr/references/security.md",
-      "source_sha256": "fb8c6912cae5ab9f49b2fcb3ea421bac532e58d7306123c2a39beff644faa5f7",
+      "source_sha256": "93897ede3fd76bf627161b0952a4b59a11ea02454ff9b9763190d3bb30d4e628",
       "transforms": []
     },
     {
@@ -1240,17 +1240,17 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/models.py",
-      "sha256": "2d4ebe2819fd4932d44cdffd21af8411411fd9f52bb142ce3f725234b06e737e",
+      "sha256": "7468d74f27424605ba0da33be9f9864344c11c94ad425311956ee31752dc67f7",
       "source": "bstack/engineering/review-pr/scripts/models.py",
-      "source_sha256": "2d4ebe2819fd4932d44cdffd21af8411411fd9f52bb142ce3f725234b06e737e",
+      "source_sha256": "7468d74f27424605ba0da33be9f9864344c11c94ad425311956ee31752dc67f7",
       "transforms": []
     },
     {
       "mode": 420,
       "path": "engineering/review-pr/scripts/preflight.py",
-      "sha256": "b828845141cba8e893b714b98e2ab9ccb780c8f1c7712baef0b9fe2474da17eb",
+      "sha256": "2b5397fa3d3d7872629103e9874533ba4db7bea4fb9a9e054c54494bc035d3de",
       "source": "bstack/engineering/review-pr/scripts/preflight.py",
-      "source_sha256": "b828845141cba8e893b714b98e2ab9ccb780c8f1c7712baef0b9fe2474da17eb",
+      "source_sha256": "2b5397fa3d3d7872629103e9874533ba4db7bea4fb9a9e054c54494bc035d3de",
       "transforms": []
     },
     {
@@ -1263,26 +1263,18 @@
     },
     {
       "mode": 420,
-      "path": "engineering/review-pr/scripts/repo_browser.py",
-      "sha256": "4371bec7d3050ecbe2c35c262ad7e9679ff33ce09b80bed2f88efe2935645022",
-      "source": "bstack/engineering/review-pr/scripts/repo_browser.py",
-      "source_sha256": "4371bec7d3050ecbe2c35c262ad7e9679ff33ce09b80bed2f88efe2935645022",
-      "transforms": []
-    },
-    {
-      "mode": 420,
-      "path": "engineering/review-pr/scripts/restricted_cli.py",
-      "sha256": "fe2435bc4af740dbe6d9f7b4203be042f40809dd0768de4eb309233b76b11449",
-      "source": "bstack/engineering/review-pr/scripts/restricted_cli.py",
-      "source_sha256": "fe2435bc4af740dbe6d9f7b4203be042f40809dd0768de4eb309233b76b11449",
-      "transforms": []
-    },
-    {
-      "mode": 420,
       "path": "engineering/review-pr/scripts/review.py",
       "sha256": "3b9f57a0c88003e5996ebd9a10bd97986d5a8890de1c0135ff8e53917640c5a8",
       "source": "bstack/engineering/review-pr/scripts/review.py",
       "source_sha256": "3b9f57a0c88003e5996ebd9a10bd97986d5a8890de1c0135ff8e53917640c5a8",
+      "transforms": []
+    },
+    {
+      "mode": 420,
+      "path": "engineering/review-pr/scripts/reviewer_cli.py",
+      "sha256": "d657e03ca7aac860c51075ed4199c91480939f8663e2372bd08cbacdb42e422a",
+      "source": "bstack/engineering/review-pr/scripts/reviewer_cli.py",
+      "source_sha256": "d657e03ca7aac860c51075ed4199c91480939f8663e2372bd08cbacdb42e422a",
       "transforms": []
     },
     {
@@ -1766,9 +1758,9 @@
     {
       "mode": 420,
       "path": "scripts/bstack.py",
-      "sha256": "941d4d061334c944b2f26b845bb2dc5748b4a1bed8d3c54c17b257a1ef9d377d",
+      "sha256": "ebbb6b8e631ef8ada52687c3ebc709d2c0aa381dda90b37d47fd062c0db816a3",
       "source": "bstack/package/runtime.py",
-      "source_sha256": "941d4d061334c944b2f26b845bb2dc5748b4a1bed8d3c54c17b257a1ef9d377d",
+      "source_sha256": "ebbb6b8e631ef8ada52687c3ebc709d2c0aa381dda90b37d47fd062c0db816a3",
       "transforms": []
     },
     {
@@ -2275,9 +2267,9 @@
     {
       "mode": 420,
       "path": "shared/model_cli.py",
-      "sha256": "00a58c84eb3324bf13fb5ce20215d6160d4329fb7adb04b1f89f77895b9525f3",
+      "sha256": "51c802429205eb6eda81c07ab6340ef4a6c2e52845345377786b54448eb4617b",
       "source": "bstack/shared/model_cli.py",
-      "source_sha256": "00a58c84eb3324bf13fb5ce20215d6160d4329fb7adb04b1f89f77895b9525f3",
+      "source_sha256": "51c802429205eb6eda81c07ab6340ef4a6c2e52845345377786b54448eb4617b",
       "transforms": []
     },
     {
@@ -2337,9 +2329,9 @@
     {
       "mode": 420,
       "path": "shared/references/setup-requirements.md",
-      "sha256": "9817fa537bbfc7f9402ce3a6a734902b9b93429e52a4bf588e5f6c9a18650160",
+      "sha256": "e1a57bd2d7688a73ef0394b01a15ee8bb177ceff00b195553fb20b97fedac7b6",
       "source": "bstack/shared/references/setup-requirements.md",
-      "source_sha256": "9817fa537bbfc7f9402ce3a6a734902b9b93429e52a4bf588e5f6c9a18650160",
+      "source_sha256": "e1a57bd2d7688a73ef0394b01a15ee8bb177ceff00b195553fb20b97fedac7b6",
       "transforms": []
     },
     {

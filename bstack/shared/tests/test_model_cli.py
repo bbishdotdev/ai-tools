@@ -90,15 +90,15 @@ class ModelCommandTests(unittest.TestCase):
                 body = {"status": "incomplete", "error": "reviewer_b is not ready: The selected model is unavailable. Choose an exact model this account can run, then retry."}
                 return subprocess.CompletedProcess(command, 1, json.dumps(body), "")
             checks = {name: {"status": "passed", "model": binding["model"],
-                             "browsing": "snapshot_read_and_traversal_denial"} for name, binding in roles.items()}
+                             "snapshot_read": True} for name, binding in roles.items()}
             return subprocess.CompletedProcess(command, 0, json.dumps({"status": "ready", "model_checks": checks,
-                                                                        "isolation": "restricted_repository_tools"}), "")
+                                                                        "isolation": "client_read_only_tools"}), "")
 
         with mock.patch.object(model_cli.subprocess, "run", side_effect=review_doctor):
             result = model_cli.diagnose(self.project, "review-pr", live=True)
             self.assertEqual(result["status"], "passed", result)
-            self.assertEqual(result["workflows"]["review-pr"]["restriction"], "restricted_repository_tools")
-            self.assertEqual(result["workflows"]["review-pr"]["roles"]["reviewer_b"]["browsing"], "snapshot_read_and_traversal_denial")
+            self.assertEqual(result["workflows"]["review-pr"]["restriction"], "client_read_only_tools")
+            self.assertEqual(result["workflows"]["review-pr"]["roles"]["reviewer_b"]["snapshot_read"], True)
             roles = self.project / ".bstack/review.json"
             roles.write_text(json.dumps({"roles": {"reviewer_b": {"model": "bad-model"}}}))
             result = model_cli.diagnose(self.project, "review-pr", live=True)
@@ -189,7 +189,7 @@ class ModelCommandTests(unittest.TestCase):
                         self.assertNotIn("child-only-provider-secret", hint)
                 self.assertNotIn("child-only-provider-secret", json.dumps(result))
 
-    def test_review_doctor_does_not_accept_model_access_without_restricted_browsing(self):
+    def test_review_doctor_does_not_accept_model_access_without_a_snapshot_read(self):
         self.set_client("claude")
         self.set_client("codex")
         actual_run = subprocess.run
@@ -203,7 +203,7 @@ class ModelCommandTests(unittest.TestCase):
         with mock.patch.object(model_cli.subprocess, "run", side_effect=incomplete_boundary):
             result = model_cli.diagnose(self.project, "review-pr", live=True)
         self.assertEqual(result["status"], "needs_setup")
-        self.assertIn("only the allowed tools", result["workflows"]["review-pr"]["reason"])
+        self.assertIn("read the review files", result["workflows"]["review-pr"]["reason"])
 
     def test_command_template_requires_a_single_argument_slot(self):
         with self.assertRaises(model_cli.ModelCLIError):

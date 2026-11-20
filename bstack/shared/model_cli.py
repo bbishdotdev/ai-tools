@@ -181,17 +181,15 @@ def failure_hint(client, output, error, exit_code=None):
     return f"{client} could not finish the request. BStack could not identify the cause; check the CLI's own error message."
 
 
-def claude_arguments(model=None, effort=None, *, schema=None, browser=None):
+CLAUDE_READ_TOOLS = ("Read", "Grep", "Glob")
+
+
+def claude_arguments(model=None, effort=None, *, schema=None, tools=()):
     settings = {"disableAllHooks": True, "autoMemoryEnabled": False, "claudeMdExcludes": ["**"],
                 "outputStyle": "default", "agent": ""}
-    args = ["--print", "--tools", "", "--permission-mode", "dontAsk", "--permission-prompts", "none",
-            "--setting-sources", "user", "--strict-mcp-config", "--mcp-config",
-            str(browser) if browser is not None else '{"mcpServers":{}}', "--disable-slash-commands",
+    args = ["--print", "--safe-mode", "--tools", ",".join(tools), "--permission-mode", "dontAsk", "--permission-prompts", "none",
+            "--setting-sources", "user", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands",
             "--settings", json.dumps(settings), "--no-session-persistence", "--no-chrome", "--output-format", "json"]
-    if browser is None:
-        args.append("--safe-mode")
-    else:
-        args.extend(["--allowedTools", "mcp__bstack_repo__*"])
     if model:
         args.extend(["--model", model])
     if effort:
@@ -314,9 +312,9 @@ def review_diagnose(project, roles):
         complete = isinstance(checks, dict) and set(checks) == set(roles) and all(
             isinstance(check, dict) and check.get("status") == "passed" for check in checks.values())
         if (process.returncode == 0 and report.get("status") == "ready"
-                and report.get("isolation") == "restricted_repository_tools" and complete):
-            return {"status": "passed", "roles": checks, "restriction": "restricted_repository_tools"}
-        reason = report.get("error") or "The review setup check could not confirm that every selected model can read the review files with only the allowed tools. Rerun doctor --live --workflow review-pr."
+                and report.get("isolation") == "client_read_only_tools" and complete):
+            return {"status": "passed", "roles": checks, "restriction": "client_read_only_tools"}
+        reason = report.get("error") or "The review setup check could not confirm that every selected model can read the review files. Rerun doctor --live --workflow review-pr."
     except subprocess.TimeoutExpired:
         reason = "The review setup check did not finish within eight minutes. Confirm the saved headless commands work in your terminal, then retry."
     except (OSError, ValueError):
@@ -327,7 +325,7 @@ def review_diagnose(project, roles):
     checks = {name: {"status": "failed" if failed_role in {None, name} else "not_checked",
                      "cli": binding.get("cli"), "model": binding.get("model"), "reason": reason}
               for name, binding in roles.items()}
-    return {"status": "needs_setup", "roles": checks, "restriction": "restricted_repository_tools", "reason": reason}
+    return {"status": "needs_setup", "roles": checks, "restriction": "client_read_only_tools", "reason": reason}
 
 
 def diagnose(project, workflow=None, live=False):

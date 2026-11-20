@@ -2,6 +2,12 @@
 """Install and configure the bstack package for one local project."""
 from __future__ import annotations
 
+import sys
+
+if sys.version_info < (3, 11):
+    sys.exit(f"BStack needs Python 3.11 or newer, but this is Python {sys.version_info.major}.{sys.version_info.minor}. "
+             "Run the same command with a newer interpreter, for example python3.11.")
+
 import argparse
 from contextlib import contextmanager, nullcontext
 import hashlib
@@ -14,7 +20,6 @@ import shlex
 import signal
 import shutil
 import stat
-import sys
 import subprocess
 import tempfile
 import tomllib

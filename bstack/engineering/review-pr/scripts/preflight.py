@@ -6,7 +6,6 @@ import tempfile
 from contracts import PREFLIGHT, ReviewError, canonical, digest, validate
 from host import command
 from models import launcher_argv, model_cli
-from repo_browser import TOOL_DEFINITIONS
 from security import trusted_executable, worker_environment
 
 
@@ -18,9 +17,9 @@ OPAQUE_EXECUTABLE_MODES = {"100755"}
 OPAQUE_EXECUTABLE_SUFFIXES = {".wasm", ".so", ".dll", ".dylib", ".exe", ".jar", ".class", ".node", ".pyc"}
 MAX_DIFF_BYTES = 640 * 1024
 REVIEW_BOUNDARY = {
-    "reviewer_tools": sorted(TOOL_DEFINITIONS),
+    "reviewer_tools": "Each reviewer runs with its own CLI's read-only tools inside a directory holding the pinned trees and PR context.",
     "repository_content": "Pinned source and discussion are read as untrusted data. Project hooks, settings, skills and rules are not activated.",
-    "unavailable_actions": "Reviewers cannot execute commands, read arbitrary host files, fetch URLs, add tools, or publish to GitHub.",
+    "unavailable_actions": "Reviewers are told not to run repository code, read outside the review directory, or fetch URLs. They cannot write files or publish to GitHub; the controller publishes.",
     "trusted_runtime": "The configured CLIs, launchers and installed BStack controller are trusted local software. The PR snapshots do not replace them.",
     "runtime_verification": "Optional project verification is a separate fixed command in a configured credential-free worker, not a reviewer tool. PR text cannot choose that command or authorize execution.",
     "artifact_policy": "The controller decides which actual opaque executables require a hold. Archives and other non-text files are assessed separately for review coverage; they are not instructions.",
