@@ -1,12 +1,23 @@
 # bstack
 
-Version 3.4.1. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
+![bstack works with Claude Code, Codex, Cursor, OpenCode, and GitHub Copilot in their CLIs and desktop apps, and with Grok and Amp in their CLIs](assets/supported-tools.svg)
 
-For package contents, installation effects, and network behavior, read the [security overview](SECURITY.md).
+bstack is an opinionated suite of skills, agents, and tools for planning, building, and reviewing software with AI coding agents. This folder is the complete package, version 3.4.1. It installs into a project from these files alone, with no downloads, and works the same way across the tools above.
 
-The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
+It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tree/main/pstack) and [Matt Pocock's skills](https://github.com/mattpocock/skills). Some workflows reuse their work directly and others adapt it. [Attribution](ATTRIBUTION.md) records what comes from where.
+
+## What bstack does
 
 ![Plan, build, and review with connected handoffs, architecture decisions, shared memory, and a local workspace](assets/workflow.svg)
+
+- **Plan.** `grill-me` and `wayfinder` question a plan until the unknowns are settled. `to-spec` and `to-tickets` turn accepted scope into work. A local workspace app holds the maps, decisions, specs, and Kanban tickets, with no external tracker.
+- **Build.** `poteto-mode` picks an engineering workflow for the task: bug fix, feature, investigation, or performance work. `how` and `why` explain existing code, `architect` and `prototype` compare designs, and `implement` builds approved work. A project verifier can drive the real app to check the result.
+- **Review.** `to-pr` writes a short visual PR briefing and checks open PRs for overlap. `review-pr` runs two independent model reviewers and an adjudicator. `resolve-pr` works through feedback on your own PR. A committed project policy sets what needs a human.
+- **Keep context.** Handoffs carry work between sessions, the ADR process records the few decisions worth keeping, and optional shared memory follows you across tools.
+
+Setup also adds a seven-rule [baseline](shared/references/baseline-agents.md) to the project's agent instructions. Each skill loads only what its task needs; the collection is not inserted into every prompt.
+
+Skills are grouped under `engineering/`, `sdlc/` for planning, and `shared/` for controls and writing. Principles and playbooks stay internal and load on demand. For package contents, installation effects, and network behavior, read the [security overview](SECURITY.md).
 
 ## Tool compatibility
 

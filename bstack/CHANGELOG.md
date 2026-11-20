@@ -4,6 +4,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- The package README opens with what bstack is and does, so a team that receives only the `release/bstack/` folder gets the overview and the supported-tools graphic.
 - Consumer packages omit maintainer model evaluations and policy test tools. Installation verification, review tools, the offline guide, and the workspace app remain bundled. A packaged security overview explains the files, installation effects, and network behavior for onboarding reviews.
 
 ## Published releases
