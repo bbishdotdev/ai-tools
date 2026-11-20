@@ -1,0 +1,110 @@
+bstack/shared/references/setup-requirements.md
+  s_8122339cef63aa::t_830051ff0f6ba3 11
+bstack/release/bstack/manifest.json
+  s_8122339cef63aa::t_c469b98530da9f 1203,1205,1251,1253,1259,1261,1280-1285,2278,2280,2340,2342
+  s_8122339cef63aa::t_adbe388854e35f 1769,1771
+  s_8122339cef63aa::t_64bdab0e47d169 1286-1287
+  s_8122339cef63aa::t_305b379be1dd0c 52,54
+  s_8122339cef63aa::t_898b2a05388568 1155,1157,1211,1213
+  s_8122339cef63aa::t_97996416fa3305 42,44,75-82,1711
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_8122339cef63aa::t_c469b98530da9f 9,11,13,25,43,45
+  s_8122339cef63aa::t_305b379be1dd0c 37,40
+  s_8122339cef63aa::t_898b2a05388568 15
+bstack/package/runtime.py
+  s_8122339cef63aa::t_f07919d395c0ef 5-10
+bstack/engineering/review-pr/references/security.md
+  s_8122339cef63aa::t_830051ff0f6ba3 9,11,13,25,43,45
+  s_8122339cef63aa::t_f9844c9391a182 37,40
+  s_8122339cef63aa::t_898b2a05388568 15
+.github/workflows/ci.yml
+  s_8122339cef63aa::t_d19c776db18f48 37
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_8122339cef63aa::t_c469b98530da9f 11
+docs/adr/0001-restricted-static-review-tools.md
+  s_8122339cef63aa::t_830051ff0f6ba3 3-5
+bstack/engineering/review-pr/scripts/models.py
+  s_8122339cef63aa::t_db09cf1bcffaa4 200-202,205-206
+  s_8122339cef63aa::t_73dfca247dd3b3 6,87-96,108
+  s_8122339cef63aa::t_314a943a194bf5 13,24,142,182,196-199,203-204,213-215,218-219,221,227,235,238-243
+  s_8122339cef63aa::t_f858bd564bff5a 122
+bstack/shared/tests/test_model_cli.py
+  s_8122339cef63aa::t_7d66b31d17f6a2 192,206
+  s_8122339cef63aa::t_7964e6b57c7c3b 93,95,100-101
+bstack/engineering/review-pr/scripts/preflight.py
+  s_8122339cef63aa::t_314a943a194bf5 20,22
+bstack/github/tests/test_reviewer_cli.py
+  s_8122339cef63aa::t_d19c776db18f48 1-144
+docs/adr/0002-client-read-only-review-tools.md
+  s_8122339cef63aa::t_830051ff0f6ba3 1-16
+  s_8122339cef63aa::t_898b2a05388568 17
+bstack/release/bstack/engineering/review-pr/scripts/reviewer_cli.py
+  s_8122339cef63aa::t_c469b98530da9f 5,10-18,22-29,32-38,44-49,51-53
+  s_8122339cef63aa::t_305b379be1dd0c 1-4,6-9,19-21,30-31,39-43,50
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_8122339cef63aa::t_c469b98530da9f 5,7,28,48,50,62,76
+bstack/release/bstack/scripts/bstack.py
+  s_8122339cef63aa::t_adbe388854e35f 5-10
+bstack/shared/model_cli.py
+  s_8122339cef63aa::t_314a943a194bf5 184,187,190-191,315-317,328
+  s_8122339cef63aa::t_468e16ced28227 185-186
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_8122339cef63aa::t_c469b98530da9f 13,24,142,182,196-199,203-204,213-215,218-219,221,227,235,238-243
+  s_8122339cef63aa::t_31aa2e092f6c0d 122
+  s_8122339cef63aa::t_adbe388854e35f 6,87-96,108,200-202,205-206
+bstack/release/bstack/shared/model_cli.py
+  s_8122339cef63aa::t_c469b98530da9f 184,187,190-191,315-317,328
+  s_8122339cef63aa::t_adbe388854e35f 185-186
+bstack/release/bstack/engineering/review-pr/scripts/preflight.py
+  s_8122339cef63aa::t_c469b98530da9f 20,22
+bstack/README.md
+  s_8122339cef63aa::t_c469b98530da9f 93
+bstack/release/bstack/README.md
+  s_8122339cef63aa::t_c469b98530da9f 90
+  s_8122339cef63aa::t_97996416fa3305 3,5,7-9,13-20
+  s_8122339cef63aa::t_0aedaf688eb5cb 21
+bstack/scripts/browsing_eval.py
+  s_8122339cef63aa::t_b66fdd71ab1f9d 12-13
+  s_8122339cef63aa::t_3e1b08ef0cbf92 75,80-88,90,96,106,113,115
+bstack/github/tests/test_review.py
+  s_8122339cef63aa::t_edcf8ac2abcb3b 141
+  s_8122339cef63aa::t_21562c09e31be7 127,129-131,134-140,142-144
+  s_8122339cef63aa::t_7964e6b57c7c3b 385,487,512
+bstack/engineering/review-pr/scripts/reviewer_cli.py
+  s_8122339cef63aa::t_314a943a194bf5 5,10-18,22-29,32-38,44-49,51-53
+  s_8122339cef63aa::t_305b379be1dd0c 1-4,6-9,19-21,30-31,39-43,50
+bstack/INSTALL.md
+  s_8122339cef63aa::t_b587e843d3826b 191
+bstack/engineering/review-pr/references/running.md
+  s_8122339cef63aa::t_86034755623c1c 5,7,28,48,50,62,76
+bstack/package/templates/README.md
+  s_8122339cef63aa::t_24c13f3790895d 90
+  s_8122339cef63aa::t_97996416fa3305 3,5,7-9,13-20
+  s_8122339cef63aa::t_15afb42a722267 21
+bstack/release/bstack/engineering/review-pr/INSTRUCTIONS.md
+  s_8122339cef63aa::t_898b2a05388568 26
+bstack/engineering/review-pr/SKILL.md
+  s_8122339cef63aa::t_898b2a05388568 26
+bstack/package/selection.json
+  s_8122339cef63aa::t_97996416fa3305 105
+bstack/release/bstack/assets/supported-tools.svg
+  s_8122339cef63aa::t_97996416fa3305 1-14
+bstack/CHANGELOG.md
+  s_8122339cef63aa::t_9864c618c8dd2e 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7ece7a07c3067c748ce4e28ac824ee6fded7790c",
+  "prompts": {},
+  "sessions": {
+    "s_8122339cef63aa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bcbb0231-629a-46df-bad7-ff7a695ddb8c",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
