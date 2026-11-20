@@ -489,8 +489,10 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(result["native_hook_trust"], "not_checked")
         self.assertEqual(result["hosts"], ["codex", "claude", "cursor", "grok"])
         instructions = (self.project / ".bstack/instructions.md").read_text()
-        for name in ("AGENTS.md", "CLAUDE.md"):
-            self.assertEqual((self.project / name).read_text().count(BASELINE), 1)
+        self.assertEqual((self.project / "AGENTS.md").read_text().count(BASELINE), 1)
+        claude = (self.project / "CLAUDE.md").read_text()
+        self.assertIn("@AGENTS.md", claude)
+        self.assertNotIn(BASELINE, claude)
         self.assertIn("unslop/SKILL.md", instructions)
         self.assertIn("router/WORKFLOW.md", instructions)
         self.assertNotIn("Engineering routing is manual", instructions)
@@ -766,6 +768,25 @@ class RuntimeTests(unittest.TestCase):
         self.run_cli("setup")
         self.assertEqual((self.project / ".gitignore").read_text().count(".bstack/"), 1)
 
+    def test_claude_import_keeps_user_notes_and_installed_projects_keep_their_block(self):
+        self.run_cli("setup")
+        path = self.project / "CLAUDE.md"
+        path.write_text(path.read_text() + "Claude-only notes\n")
+        for args in (("setup",), ("auto", "off"), ("auto", "on")):
+            self.run_cli(*args)
+            self.assertEqual(path.read_text().count("@AGENTS.md"), 1)
+            self.assertNotIn(BASELINE, path.read_text())
+        self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
+        state = json.loads((self.project / ".bstack/config.json").read_text())
+        state["managed"]["CLAUDE.md"] = dict(state["managed"]["AGENTS.md"])
+        (self.project / ".bstack/config.json").write_text(json.dumps(state))
+        path.write_text(state["managed"]["AGENTS.md"]["text"] + "Claude-only notes\n")
+        self.run_cli("setup")
+        self.assertEqual(path.read_text().count(BASELINE), 1)
+        self.assertNotIn("@AGENTS.md", path.read_text())
+        self.run_cli("uninstall")
+        self.assertEqual(path.read_text(), "Claude-only notes\n")
+
     def test_internal_instruction_symlink_updates_target_once(self):
         self.write("AGENTS.md", "Existing\n")
         (self.project / "CLAUDE.md").symlink_to("AGENTS.md")
@@ -1020,15 +1041,12 @@ class RuntimeTests(unittest.TestCase):
         self.refresh_manifest(updated)
         result = self.run_cli("install", capsule=updated)
         self.assertTrue(result["auto"])
-        self.assertEqual(set(result["changes"]), {"AGENTS.md", "CLAUDE.md", ".bstack/config.json"})
+        self.assertEqual(set(result["changes"]), {"AGENTS.md", ".bstack/config.json"})
         self.assertTrue(result["fresh_session_required"])
         self.assertFalse(self.run_cli("install", capsule=updated)["fresh_session_required"])
         self.assertEqual((installed / "manifest.json").read_bytes(), (updated / "manifest.json").read_bytes())
         self.assertEqual((installed / "shared/router/WORKFLOW.md").read_text(), "# Updated reviewed router\n")
-        for name in ("AGENTS.md", "CLAUDE.md"):
-            text = (self.project / name).read_text()
-            self.assertEqual(text.count(baseline), 1)
-            self.assertNotIn(BASELINE, text)
+        self.assertNotIn(baseline, (self.project / "CLAUDE.md").read_text())
         self.assertEqual(path.read_text(), content.replace(BASELINE, baseline))
         self.assertEqual(self.run_cli("doctor", capsule=installed)["bindings"], "passed")
         self.run_cli("uninstall")
@@ -1062,8 +1080,8 @@ class RuntimeTests(unittest.TestCase):
         self.assertIn("cannot recover project guidance", result["recovery_warning"])
         self.assertEqual(result["hosts"], ["codex", "claude"])
         self.assertTrue(result["auto"])
-        for name in ("AGENTS.md", "CLAUDE.md"):
-            self.assertIn(BASELINE, (self.project / name).read_text())
+        self.assertIn(BASELINE, (self.project / "AGENTS.md").read_text())
+        self.assertIn("@AGENTS.md", (self.project / "CLAUDE.md").read_text())
         self.assertNotIn("Project-only guidance", (self.project / "AGENTS.md").read_text())
         self.assertEqual(self.run_cli("doctor")["bindings"], "passed")
         self.assertNotIn("recreated_instruction_files", self.run_cli("install", capsule=updated))

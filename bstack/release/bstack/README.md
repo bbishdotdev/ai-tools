@@ -29,7 +29,7 @@ Partial means a known gap or pending live validation; not supported means no bst
 
 Python 3.11+ on macOS or Linux is required. Folder and archive routes install the same bundled package.
 
-Setup adds the seven-rule [baseline](shared/references/baseline-agents.md) directly to managed blocks in `AGENTS.md` and, when Claude is selected, `CLAUDE.md`. It creates missing files and preserves existing project text and shared symlinks. The baseline applies with auto mode off. Add project-specific guidance outside the blocks; native tool init is optional and never runs automatically. Run `doctor` after an init to detect changed or missing blocks. Updates and uninstall touch only the owned blocks.
+Setup adds the seven-rule [baseline](shared/references/baseline-agents.md) directly to a managed block in `AGENTS.md`. When Claude is selected and the project has no `CLAUDE.md`, setup creates one that only imports `AGENTS.md`, so the baseline lives in one place. An existing `CLAUDE.md`, and one from an earlier BStack install, gets the managed block. Setup preserves existing project text and shared symlinks. The baseline applies with auto mode off. Add project-specific guidance outside the blocks; native tool init is optional and never runs automatically. Run `doctor` after an init to detect changed or missing blocks. Updates and uninstall touch only the owned blocks.
 
 ### Use this complete folder
 

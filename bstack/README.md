@@ -96,7 +96,7 @@ Full setup shows the current PR review models and effort before asking you to ke
 
 ### What loads into context
 
-Setup writes the seven-rule baseline and a short package pointer into the project's `AGENTS.md` and, for Claude, `CLAUDE.md`. Each public skill has a small discovery entry that points the agent to its bundled instructions. Those instructions call for only the dependencies the task needs; the whole collection is not inserted into every prompt. Customized `unslop` applies to prose.
+Setup writes the seven-rule baseline and a short package pointer into the project's `AGENTS.md`. For Claude, a new `CLAUDE.md` imports that file; an existing one gets the same block. Each public skill has a small discovery entry that points the agent to its bundled instructions. Those instructions call for only the dependencies the task needs; the whole collection is not inserted into every prompt. Customized `unslop` applies to prose.
 
 Automatic engineering routing is on for a new install; upgrades keep the project's existing choice. Use `bstack-auto off` for manual routing. Its hooks carry a short reminder to load the router when needed; they do not inject the full skill corpus. The [installation guide](INSTALL.md#direct-skills-and-automatic-routing) covers the mode, session refresh, and host-specific limits.
 

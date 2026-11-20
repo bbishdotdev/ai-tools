@@ -39,9 +39,9 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "0754a296c67ffbda5ef5cab60977c8ce8bd5e6e94d7ccd50ed8f317520b8d00b",
+      "sha256": "c2ebc011c24d40abd6154f8ffe0c91d64b88f882a5925e39fa052179419c9364",
       "source": "bstack/package/templates/README.md",
-      "source_sha256": "29f045a59a919171c04d479667f46496234ee4997dd2607a7d11d1125447966a",
+      "source_sha256": "e7b6ac796767c60c98643a4c7f55e41dbbd1b7dd63c467a507ffb33c771f6108",
       "transforms": [
         "render-release-template"
       ]
@@ -1766,9 +1766,9 @@
     {
       "mode": 420,
       "path": "scripts/bstack.py",
-      "sha256": "ebbb6b8e631ef8ada52687c3ebc709d2c0aa381dda90b37d47fd062c0db816a3",
+      "sha256": "3ebc01ef33cd0be111454f2b04a7787dbc0ebfc84163db4849e136c8f19ef4a5",
       "source": "bstack/package/runtime.py",
-      "source_sha256": "ebbb6b8e631ef8ada52687c3ebc709d2c0aa381dda90b37d47fd062c0db816a3",
+      "source_sha256": "3ebc01ef33cd0be111454f2b04a7787dbc0ebfc84163db4849e136c8f19ef4a5",
       "transforms": []
     },
     {
@@ -2409,9 +2409,9 @@
     {
       "mode": 420,
       "path": "shared/setup-bstack/INSTRUCTIONS.md",
-      "sha256": "b7187cfd6a8baf2149ac4040d583cfe4cbfef7378f33de399417c0c602f413ce",
+      "sha256": "7260759ff4656e67f80478fea8fa108a98a459501fa3673590ef342e58362055",
       "source": "bstack/package/templates/setup.md",
-      "source_sha256": "b7187cfd6a8baf2149ac4040d583cfe4cbfef7378f33de399417c0c602f413ce",
+      "source_sha256": "7260759ff4656e67f80478fea8fa108a98a459501fa3673590ef342e58362055",
       "transforms": [
         "render-release-template",
         "public-skill-invocation-policy"
