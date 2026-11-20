@@ -156,7 +156,7 @@ Check for an existing `install-bstack` skill before using a third-party installe
 
 ## Project instructions
 
-Setup writes the seven-rule [bstack baseline](shared/references/baseline-agents.md) directly into a managed block in `AGENTS.md`. When Claude is selected, it also adds the block to `CLAUDE.md`. Missing files are created; existing project instructions stay intact. A `CLAUDE.md` link to `AGENTS.md` keeps one shared block. Baseline rules apply even when automatic routing is off.
+Setup writes the seven-rule [bstack baseline](shared/references/baseline-agents.md) directly into a managed block in `AGENTS.md`. When Claude is selected and the project has no `CLAUDE.md`, setup creates one that only imports `AGENTS.md`, so the baseline lives in one place. An existing `CLAUDE.md`, and one from an earlier BStack install, gets the managed block. Existing project instructions stay intact. A `CLAUDE.md` link to `AGENTS.md` keeps one shared block. Baseline rules apply even when automatic routing is off.
 
 Keep project-specific guidance outside `<!-- bstack:begin -->` and `<!-- bstack:end -->`. Updates replace only the owned block; uninstall removes it and preserves your guidance. A repository with only `CLAUDE.md` also gets `AGENTS.md` so the other tools have a shared entry. Setup does not stage or commit these project files. Review new root instruction files and commit them if they should travel with the repository; until then, Git lists them as untracked.
 

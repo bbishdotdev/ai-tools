@@ -562,7 +562,13 @@ def build_records(project, capsule, hosts, auto, old, manifest=None, baseline=No
         instruction_record["adopt_from"] = [marker_block(POINTER)]
     add("AGENTS.md", dict(instruction_record), instructions=True)
     if "claude" in hosts:
-        add("CLAUDE.md", dict(instruction_record), instructions=True)
+        claude_path = safe_path(project, "CLAUDE.md", follow_leaf=True)
+        claude_key = str(claude_path.relative_to(project))
+        agents_import = {"kind": "block", "text": marker_block("@AGENTS.md"), "adopt": True}
+        previous = old.get(claude_key)
+        imports_agents = previous["text"].strip() == agents_import["text"].strip() if previous else snapshot(claude_path) is None
+        shares_agents_file = claude_key in records
+        add("CLAUDE.md", agents_import if imports_agents and not shares_agents_file else dict(instruction_record), instructions=True)
     if "cursor" in hosts:
         rule = "---\ndescription: bstack prose and optional engineering routing\nalwaysApply: true\n---\n\n" + POINTER
         add(".cursor/rules/bstack.mdc", {"kind": "file", "text": rule})
