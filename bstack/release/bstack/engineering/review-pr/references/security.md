@@ -34,17 +34,17 @@ Without a runtime worker, the result is a static review using source and existin
 
 ## Maintainer checks
 
-Run `doctor --live` through the actual configured launchers. Use these provider-backed evaluations from an installed package to check code navigation and synthetic escape attempts:
+Run `doctor --live` through the actual configured launchers to check an installed package. The fuller evaluations below are maintainer tools in the development repository and are not bundled with consumer releases. Run them from the repository root to check code navigation and synthetic escape attempts through the configured model providers:
 
 ```sh
-python3 -B engineering/review-pr/scripts/browsing_eval.py --project /path/to/project --cli codex claude --case cross-file
-python3 -B engineering/review-pr/scripts/browsing_eval.py --project /path/to/project --cli codex claude --case escape
+python3 -B bstack/scripts/browsing_eval.py --project /path/to/project --cli codex claude --case cross-file
+python3 -B bstack/scripts/browsing_eval.py --project /path/to/project --cli codex claude --case escape
 ```
 
 The first requires search, a read of an unchanged caller, and a grounded breakage finding. The second checks denied reads outside the snapshot, absence of a fake canary from the report, and no contact with a synthetic collector. Results and browser traces are saved under the project's private `.bstack/review-evals/`. These checks exercise selected CLI versions and models; they do not prove that every attack or future tool change is covered.
 
 Native maintainer fixtures inspect the tool inventory sent by Codex and Claude to a local fake provider. The Claude fixture was verified against Claude Code 2.1.322. It checks the exact advertised tools, authentication from synthetic user settings and an OAuth environment variable, and exclusion of the fixture's user and plugin customizations. These version-specific checks are broader than the browser behavior checked by `doctor --live`; rerun them when changing CLI versions or launch controls. Browser path validation has separate coverage.
 
-Exercise the live preflight judge separately with `python3 -B engineering/review-pr/scripts/security_eval.py --project /path/to/project`. Its fixtures pair ordinary hooks, scripts, network code, and archives with instructions that try to control the reviewer or expose data. They also cover source and discussion injections, inert attack fixtures, and direct agent-rule overrides. Lifecycle tests separately check the mandatory opaque-executable hold. This is a regression check of one configured model, not a measure of general attack-detection accuracy. End-to-end coverage also includes a held PR posting one sanitized comment and a hostile runtime command running only in a disposable sandbox.
+Exercise the live preflight judge separately with `python3 -B bstack/scripts/security_eval.py --project /path/to/project`. Its fixtures pair ordinary hooks, scripts, network code, and archives with instructions that try to control the reviewer or expose data. They also cover source and discussion injections, inert attack fixtures, and direct agent-rule overrides. Lifecycle tests separately check the mandatory opaque-executable hold. This is a regression check of one configured model, not a measure of general attack-detection accuracy. End-to-end coverage also includes a held PR posting one sanitized comment and a hostile runtime command running only in a disposable sandbox.
 
 The controller caps inputs and model-call volume and uses a local per-PR lock. A callback service must still authenticate GitHub webhook requests, restrict event types and target repositories, and deduplicate delivery IDs. BStack supplies neither a public webhook endpoint nor cross-machine rate limiting.

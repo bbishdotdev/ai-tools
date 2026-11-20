@@ -26,6 +26,8 @@ Full docs and overview: [bstack guide](https://www.bbish.dev/bstack).
 
 The complete `release/bstack/` folder also works as one `/bstack` installer skill without an archive. Keep the whole folder together; setup creates the project skills. All routes install the same bundled skills, dependencies, and customizations. Python 3.11+ on macOS or Linux is required. The full [installation guide](INSTALL.md) covers host selection, upgrades, and removal.
 
+The [security overview](SECURITY.md) explains package contents, installation effects, and network behavior.
+
 Installation includes a concise [seven-rule baseline](shared/references/baseline-agents.md) in your project instructions, even with automatic routing off. Existing guidance is preserved; project-specific initialization is optional. See [project instructions](INSTALL.md#project-instructions).
 
 ### With skills.sh

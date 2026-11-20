@@ -2,6 +2,8 @@
 
 Version @VERSION@. bstack is the collection; Poteto Mode is one engineering skill within it. The package groups public engineering skills under `engineering/`, planning skills under `sdlc/`, and shared controls and writing skills under `shared/`. Principles and playbooks stay internal and load only when needed.
 
+For package contents, installation effects, and network behavior, read the [security overview](SECURITY.md).
+
 The local workspace app supports Wayfinder maps, accepted decisions, specs and Kanban tickets. The PR workflow provides a visual briefing, final overlap review, and optional GitHub publishing. Optional shared memory installs a separate user runtime from this bundle.
 
 ![Plan, build, and review with connected handoffs, architecture decisions, shared memory, and a local workspace](assets/workflow.svg)

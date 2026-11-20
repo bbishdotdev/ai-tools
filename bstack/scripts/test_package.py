@@ -411,6 +411,31 @@ class PackageTests(unittest.TestCase):
                 self.assertEqual(stat.S_IMODE(archive.getinfo(path).external_attr >> 16), asset.mode)
                 self.assertTrue(stat.S_ISREG(archive.getinfo(path).external_attr >> 16))
 
+    def test_consumer_package_omits_maintainer_evaluations_and_runs_installation_verifier(self):
+        maintenance = (
+            "engineering/review-pr/scripts/security_eval.py",
+            "engineering/review-pr/scripts/browsing_eval.py",
+            "shared/verify-bstack/scripts/policy.py",
+            "shared/verify-bstack/scripts/test_policy.py",
+            "shared/verify-bstack/scripts/compact.py",
+        )
+        with tempfile.TemporaryDirectory(prefix="bstack consumer verification ") as directory:
+            consumer = Path(directory) / "package"
+            data = self.assets[package.TRANSPORT + "/assets/bstack.zip"].data
+            with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                archive.extractall(consumer)
+            for path in maintenance:
+                with self.subTest(path=path):
+                    self.assertFalse("bstack/" + path in self.assets, path)
+                    self.assertFalse((consumer / path).exists())
+            verifier = subprocess.run(
+                [sys.executable, "-B", str(consumer / "shared/verify-bstack/scripts/installation.py"), "--help"],
+                cwd=directory, capture_output=True, text=True,
+            )
+            self.assertEqual(verifier.returncode, 0, verifier.stderr)
+            self.assertIn("--release", verifier.stdout)
+            self.assertIn("--methods", verifier.stdout)
+
     def test_build_is_deterministic_and_independent_of_output_location(self):
         with tempfile.TemporaryDirectory(prefix="bstack build ") as directory:
             first, second = Path(directory) / "one", Path(directory) / "two"
