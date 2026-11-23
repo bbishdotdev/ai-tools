@@ -39,7 +39,7 @@
     {
       "mode": 420,
       "path": "README.md",
-      "sha256": "bb86476d938c87459639fc4097365e4a975bd4a47d602ac04719ac145be2e20a",
+      "sha256": "8aeb4196010d80698029c849a880c0664d54de02b976fc181b0e2beef4eee27e",
       "source": "bstack/package/templates/README.md",
       "source_sha256": "e7b6ac796767c60c98643a4c7f55e41dbbd1b7dd63c467a507ffb33c771f6108",
       "transforms": [
@@ -57,7 +57,7 @@
     {
       "mode": 420,
       "path": "SKILL.md",
-      "sha256": "0d32f2c11843c7808f209a683902563f6c042ef28b0eb9e4ae6990d8ef48d869",
+      "sha256": "e066099e309525a2f244a0f409e43f163f121e7299753d4f27da4d32106a5987",
       "source": "bstack/package/templates/folder-install.md",
       "source_sha256": "34c59f3df672baeda1efe8d54fdbae7c91d17972ca1d2e163495840f97de90da",
       "transforms": [
@@ -1708,7 +1708,7 @@
       "path": "index.json",
       "sha256": "8cee27f6dd8b6fb95bc5668e6ed12de8085cdd29995fcb5fb12ba8a0bf91b03e",
       "source": "bstack/package/selection.json",
-      "source_sha256": "a85432fd3c42333b7dd098147105856e602fe6a82f96d5a8dbacb5bcfd021a88",
+      "source_sha256": "5003bafdbdb9faaefd60eec25e09874a18c999f36e143f4bbc0e3669dfe8c931",
       "transforms": [
         "resolve-selected-workflows-and-overrides"
       ]
@@ -2067,9 +2067,9 @@
     {
       "mode": 420,
       "path": "shared/bstack-guide/assets/overview.html",
-      "sha256": "77344470eee48b23788621abefbf03ae8bdab2bd90d6fdf1e0e76bd5830572b6",
+      "sha256": "500c4fa9b8c5eab178666f6324beb1e96082a5432189b4def09ff64765b9875b",
       "source": "bstack/shared/skills/bstack-guide/assets/overview.html",
-      "source_sha256": "77344470eee48b23788621abefbf03ae8bdab2bd90d6fdf1e0e76bd5830572b6",
+      "source_sha256": "500c4fa9b8c5eab178666f6324beb1e96082a5432189b4def09ff64765b9875b",
       "transforms": []
     },
     {
@@ -2871,5 +2871,5 @@
   "source_repository": "https://github.com/cursor/plugins",
   "source_revision": "e31650eea443aaea1e84cc15d88c13f40080b275",
   "upstream_updates": "reviewed-build-only",
-  "version": "3.5.0"
+  "version": "3.5.1"
 }
