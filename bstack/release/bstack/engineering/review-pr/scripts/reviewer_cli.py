@@ -7,6 +7,13 @@ from host import write_json
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared"))
 import model_cli
 
+CODEX_DISABLED_FEATURES = (
+    "unified_exec", "apps", "plugins", "remote_plugin", "browser_use", "browser_use_external", "browser_use_full_cdp_access",
+    "computer_use", "in_app_browser", "in_app_local_automation", "image_generation", "view_image", "memories",
+    "multi_agent", "multi_agent_v2", "goals", "code_mode", "code_mode_only", "workspace_dependencies",
+    "realtime_conversation", "sleep_tool", "skill_search", "hooks",
+)
+
 READ_ONLY_PROMPT = (
     "The current directory holds everything for this review. Start by reading context.json in full; it holds the PR "
     "context, and its long text appears as text_lines arrays. The base, head and target directories hold the full pinned "
@@ -45,7 +52,9 @@ def build_command(role, schema, work, project, launcher_argv):
             "exec", "--ignore-user-config", "--ignore-rules", "--ephemeral", "--strict-config", "--skip-git-repo-check",
             "--json", "--sandbox", "read-only", "--model", role["model"],
             "-c", f'model_reasoning_effort="{role["effort"]}"', "-c", "project_doc_max_bytes=0",
-            "-c", 'web_search="disabled"', "-c", "mcp_servers={}",
+            "-c", 'web_search="disabled"', "-c", "mcp_servers={}", "-c", "agents.enabled=false",
+            "-c", 'shell_environment_policy.inherit="core"', "-c", "features.skip_host_skill_discovery=true",
+            *(part for name in CODEX_DISABLED_FEATURES for part in ("-c", f"features.{name}=false")),
             "--output-schema", str(work / "schema.json"), "--output-last-message", str(work / "answer.json"), "-"])
     if role["cli"] == "claude":
         return launcher_argv(project, "claude", model_cli.claude_arguments(

@@ -4,6 +4,9 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 ## Unreleased
 
+- Codex reviewers again start with connected apps, plugins, browser and computer use, subagents, hooks, memories, goals, image tools, and skill discovery turned off. 3.5.0 dropped that list along with the MCP browser. The shell stays on because Codex has no other way to read files.
+- Commands a Codex reviewer runs no longer see provider credentials from the environment, and each reviewer CLI starts without the other provider's variables.
+- The security overview says a passing live doctor does not prove reads are contained.
 ## Published releases
 
 | Version | Date | Notes |

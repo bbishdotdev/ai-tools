@@ -155,9 +155,16 @@ class ModelCommandTests(unittest.TestCase):
         token = "fake-oauth-token-for-review"
         with mock.patch.dict(os.environ, {"CLAUDE_CODE_OAUTH_TOKEN": token,
                                           "CLAUDE_CODE_UNRELATED_SETTING": "blocked"}, clear=True):
-            result = worker_environment()
+            result = worker_environment("claude")
         self.assertEqual(set(result), {"CLAUDE_CODE_OAUTH_TOKEN"})
         self.assertTrue(result["CLAUDE_CODE_OAUTH_TOKEN"] == token)
+
+    def test_review_environment_withholds_the_other_clients_credentials(self):
+        secrets = {"ANTHROPIC_API_KEY": "a", "CLAUDE_CODE_OAUTH_TOKEN": "b", "OPENAI_API_KEY": "c",
+                   "CODEX_API_KEY": "d", "AWS_PROFILE": "e"}
+        with mock.patch.dict(os.environ, secrets, clear=True):
+            self.assertEqual(set(worker_environment("codex")), {"OPENAI_API_KEY", "CODEX_API_KEY", "AWS_PROFILE"})
+            self.assertEqual(set(worker_environment("claude")), {"ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "AWS_PROFILE"})
 
     def test_probe_reports_provider_failures_without_blaming_launch_configuration(self):
         self.set_client("claude", "claude-provider-error")

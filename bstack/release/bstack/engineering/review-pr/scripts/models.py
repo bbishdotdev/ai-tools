@@ -187,7 +187,7 @@ def run_model(role, schema, work, project, config, data, timeout, capture=None):
         args = worker_argv(config, args)
     try:
         return command(args, cwd=work, data=data, timeout=timeout,
-                       env=worker_environment(), inherit_env=False)
+                       env=worker_environment(role["cli"]), inherit_env=False)
     except ReviewError as error:
         reason = model_cli.failure_hint(role["cli"], "", str(error))
         raise ReviewError(f"{role['cli'].capitalize()} review command failed: {reason}") from error

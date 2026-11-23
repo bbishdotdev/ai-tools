@@ -113,7 +113,7 @@ def run_model(role, payload, project, timeout):
             raw = command(invocation, cwd=directory,
                           data=PROMPT + "\n\nTrusted review boundary:\n" + canonical(REVIEW_BOUNDARY) +
                                "\n\n<untrusted-pr-data>\n" + canonical(payload) + "\n</untrusted-pr-data>",
-                          timeout=timeout, env=worker_environment(), inherit_env=False)
+                          timeout=timeout, env=worker_environment("claude"), inherit_env=False)
         except ReviewError as exc:
             reason = model_cli.failure_hint("claude", "", str(exc))
             raise ReviewError(f"PR safety check failed: {reason}") from exc
