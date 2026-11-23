@@ -2,7 +2,7 @@
 
 ![bstack works with Claude Code, Codex, Cursor, OpenCode, and GitHub Copilot in their CLIs and desktop apps, and with Grok and Amp in their CLIs](assets/supported-tools.svg)
 
-bstack is an opinionated suite of skills, agents, and tools for planning, building, and reviewing software with AI coding agents. This folder is the complete package, version 3.5.0. It installs into a project from these files alone, with no downloads, and works the same way across the tools above.
+bstack is an opinionated suite of skills, agents, and tools for planning, building, and reviewing software with AI coding agents. This folder is the complete package, version 3.5.1. It installs into a project from these files alone, with no downloads, and works the same way across the tools above.
 
 It builds on [Lauren "poteto" Tan's PStack](https://github.com/cursor/plugins/tree/main/pstack) and [Matt Pocock's skills](https://github.com/mattpocock/skills). Some workflows reuse their work directly and others adapt it. [Attribution](ATTRIBUTION.md) records what comes from where.
 

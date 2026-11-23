@@ -11,6 +11,7 @@ User-visible changes collect under **Unreleased** until a version is published. 
 
 | Version | Date | Notes |
 | --- | --- | --- |
+| [3.5.1](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.5.1) | 2026-11-23 | [Codex reviewer restrictions restored](release-notes/3.5.1.md) |
 | [3.5.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.5.0) | 2026-11-20 | [PR review without an MCP server](release-notes/3.5.0.md) |
 | [3.4.1](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.1) | 2026-11-17 | [Clearer setup and corrected PR workflow checks](release-notes/3.4.1.md) |
 | [3.4.0](https://github.com/bbishdotdev/ai-tools/releases/tag/v3.4.0) | 2026-11-10 | [Complete-folder installs and reliable local hooks](release-notes/3.4.0.md) |
