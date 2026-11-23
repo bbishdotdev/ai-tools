@@ -1,6 +1,8 @@
 # Client read-only tools for static PR review
 
-Status: accepted
+Status: superseded
+
+Superseded by: [0003: Minimal reviewer capabilities for static PR review](0003-minimal-reviewer-capabilities.md)
 
 Date: 2026-11-19
 
