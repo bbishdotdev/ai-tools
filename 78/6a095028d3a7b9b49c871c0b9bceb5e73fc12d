@@ -1,0 +1,56 @@
+bstack/release/bstack/engineering/review-pr/scripts/reviewer_cli.py
+  s_8122339cef63aa::t_6206937848b6f5 10-16,55-57
+bstack/shared/tests/test_model_cli.py
+  s_8122339cef63aa::t_16064802bd6be3 158,162-167
+  s_8122339cef63aa::t_7984f8211b0914 168
+bstack/release/bstack/engineering/review-pr/scripts/security.py
+  s_8122339cef63aa::t_6206937848b6f5 66-72,79-81
+bstack/release/bstack/manifest.json
+  s_8122339cef63aa::t_6206937848b6f5 52,54,1211,1213,1251,1253,1259,1261,1283,1285,1299,1301
+bstack/release/bstack/engineering/review-pr/scripts/preflight.py
+  s_8122339cef63aa::t_6206937848b6f5 116
+bstack/engineering/review-pr/scripts/security.py
+  s_8122339cef63aa::t_af63bb9ea16caa 66-72,79-81
+bstack/github/tests/test_reviewer_cli.py
+  s_8122339cef63aa::t_a041c26f39cd8e 196
+  s_8122339cef63aa::t_f7e03ea6431f17 179-190,192-194
+  s_8122339cef63aa::t_5ce65ce9eac96f 173
+  s_8122339cef63aa::t_1a8c9cf52f5b5b 4,43-44,46,149-172,174-178,191,195,197-200
+  s_8122339cef63aa::t_16064802bd6be3 45,47
+  s_8122339cef63aa::t_c60251a08cebe8 201-202
+bstack/engineering/review-pr/references/security.md
+  s_8122339cef63aa::t_6206937848b6f5 11-15
+bstack/engineering/review-pr/scripts/preflight.py
+  s_8122339cef63aa::t_af63bb9ea16caa 116
+bstack/SECURITY.md
+  s_8122339cef63aa::t_6206937848b6f5 29
+bstack/engineering/review-pr/scripts/models.py
+  s_8122339cef63aa::t_af63bb9ea16caa 190
+bstack/CHANGELOG.md
+  s_8122339cef63aa::t_6206937848b6f5 7-9
+bstack/engineering/review-pr/scripts/reviewer_cli.py
+  s_8122339cef63aa::t_16064802bd6be3 11
+  s_8122339cef63aa::t_af63bb9ea16caa 10,12-16,55-57
+bstack/release/bstack/engineering/review-pr/scripts/models.py
+  s_8122339cef63aa::t_6206937848b6f5 190
+bstack/release/bstack/SECURITY.md
+  s_8122339cef63aa::t_6206937848b6f5 29
+bstack/release/bstack/engineering/review-pr/references/security.md
+  s_8122339cef63aa::t_6206937848b6f5 11-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "786a095028d3a7b9b49c871c0b9bceb5e73fc12d",
+  "prompts": {},
+  "sessions": {
+    "s_8122339cef63aa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bcbb0231-629a-46df-bad7-ff7a695ddb8c",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
