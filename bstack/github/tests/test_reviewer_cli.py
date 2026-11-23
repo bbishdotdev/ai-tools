@@ -1,6 +1,7 @@
 import http.server
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import shutil
@@ -39,6 +40,11 @@ class ReviewerCLI(unittest.TestCase):
         self.assertEqual(args[args.index("--sandbox") + 1], "read-only")
         self.assertEqual(args[args.index("--model") + 1], "exact-review-model")
         self.assertIn("mcp_servers={}", args)
+        self.assertIn("agents.enabled=false", args)
+        self.assertIn('shell_environment_policy.inherit="core"', args)
+        for feature in ("unified_exec", "apps", "plugins", "browser_use", "computer_use", "multi_agent", "hooks", "memories", "code_mode"):
+            self.assertIn(f"features.{feature}=false", args)
+        self.assertNotIn("features.shell_tool=false", args)
         args = reviewer_cli.build_command({**role, "cli": "claude"}, self.schema, self.work, self.project, self.launcher)
         self.assertEqual(args[:3], ["launch", "claude", "--"])
         self.assertEqual(args[args.index("--tools") + 1], "Read,Grep,Glob")
@@ -138,6 +144,60 @@ class ReviewerCLI(unittest.TestCase):
         finally:
             server.shutdown()
             server.server_close()
+
+
+    @unittest.skipUnless(os.environ.get("BSTACK_TEST_CODEX_NATIVE") == "1" and shutil.which("codex"),
+                         "Set BSTACK_TEST_CODEX_NATIVE=1 for the local fake-provider tool-inventory check")
+    def test_native_codex_advertises_only_its_shell_and_inert_helpers(self):
+        captured = []
+
+        class Capture(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                captured.append(json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(b'{"error":{"message":"Local inventory probe; no model was called","type":"invalid_request_error"}}')
+
+            def log_message(self, *args):
+                pass
+
+        server = http.server.HTTPServer(("127.0.0.1", 0), Capture)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        reviewer_cli.prepare_files(self.work, self.schema, {}, {})
+        role = {"cli": "codex", "model": os.environ.get("BSTACK_TEST_CODEX_MODEL", "gpt-6-astra"), "effort": "low"}
+        args = reviewer_cli.build_command(role, self.schema, self.work, self.project, lambda project, cli, args: [cli, *args])
+        provider = ('{name="Local inventory probe",base_url="http://127.0.0.1:%d/v1",'
+                    'env_key="BSTACK_LOCAL_TEST_KEY",wire_api="responses"}' % server.server_port)
+        args = args[:-1] + ["-c", 'model_provider="bstack_test"', "-c", "model_providers.bstack_test=" + provider, "Return {}."]
+        try:
+            result = subprocess.run(args, cwd=self.work, stdin=subprocess.DEVNULL, capture_output=True, timeout=60,
+                                    env={**worker_environment("codex"), "BSTACK_LOCAL_TEST_KEY": "synthetic-local-test"})
+        finally:
+            server.shutdown()
+            server.server_close()
+        self.assertTrue(captured, "The native CLI did not reach the local fake provider: " + result.stderr.decode(errors="replace")[-2000:])
+        advertised = []
+
+        def collect(value):
+            if isinstance(value, dict):
+                advertised.extend(value["tools"] if isinstance(value.get("tools"), list) else [])
+                for item in value.values():
+                    collect(item)
+            elif isinstance(value, list):
+                for item in value:
+                    collect(item)
+
+        collect(captured[0])
+        declared = set()
+        for tool in advertised:
+            if tool.get("type") != "namespace":
+                declared.add(tool.get("name") or tool.get("type"))
+            declared.update(re.findall(r"declare const tools: \{ ([A-Za-z0-9_]+)\(", tool.get("description", "")))
+        shell = {"shell", "shell_command", "local_shell", "exec_command", "write_stdin"}
+        inert = {"exec", "wait", "request_user_input", "request_user_input_async", "tool_search", "apply_patch",
+                 "list_mcp_resources", "list_mcp_resource_templates", "read_mcp_resource", "clock__curr_time"}
+        self.assertTrue(declared & shell, declared)
+        self.assertLessEqual(declared, shell | inert)
 
 
 if __name__ == "__main__":
