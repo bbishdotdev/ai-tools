@@ -1,0 +1,55 @@
+bstack/shared/skills/verify-bstack/features/model-doctor.md
+  s_8122339cef63aa::t_22ba7102880dec 5,11
+bstack/release/bstack/manifest.json
+  s_8122339cef63aa::t_c6c1c887bc4d20 1203,1205,2278,2280,2312,2314,2340,2342,2412,2414
+bstack/INSTALL.md
+  s_8122339cef63aa::t_22ba7102880dec 193,197
+bstack/CHANGELOG.md
+  s_8122339cef63aa::t_22ba7102880dec 7
+bstack/shared/tests/test_model_cli.py
+  s_8122339cef63aa::t_22ba7102880dec 217,219,257,260
+bstack/package/templates/setup.md
+  s_8122339cef63aa::t_22ba7102880dec 52,55
+bstack/docs/PORTABILITY-AUDIT.md
+  s_8122339cef63aa::t_22ba7102880dec 27
+bstack/release/bstack/shared/references/decision-authority.md
+  s_8122339cef63aa::t_c6c1c887bc4d20 17
+bstack/release/bstack/engineering/review-pr/references/running.md
+  s_8122339cef63aa::t_c6c1c887bc4d20 52
+bstack/release/bstack/shared/setup-bstack/INSTRUCTIONS.md
+  s_8122339cef63aa::t_c6c1c887bc4d20 52,55
+bstack/release/skills-sh/install-bstack/SKILL.md
+  s_8122339cef63aa::t_c6c1c887bc4d20 36
+bstack/shared/model_cli.py
+  s_8122339cef63aa::t_22ba7102880dec 50
+bstack/github/tests/test_reviewer_cli.py
+  s_8122339cef63aa::t_22ba7102880dec 34,39,49
+bstack/release/bstack/shared/references/setup-requirements.md
+  s_8122339cef63aa::t_c6c1c887bc4d20 31,33
+bstack/engineering/review-pr/references/running.md
+  s_8122339cef63aa::t_22ba7102880dec 52
+bstack/release/bstack/shared/model_cli.py
+  s_8122339cef63aa::t_c6c1c887bc4d20 50
+bstack/package/templates/install.md
+  s_8122339cef63aa::t_22ba7102880dec 36
+bstack/shared/references/setup-requirements.md
+  s_8122339cef63aa::t_22ba7102880dec 31,33
+bstack/shared/references/decision-authority.md
+  s_8122339cef63aa::t_22ba7102880dec 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4a27a7d89b3bd2d46f2558715cb3f0ebfd4271d2",
+  "prompts": {},
+  "sessions": {
+    "s_8122339cef63aa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bcbb0231-629a-46df-bad7-ff7a695ddb8c",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Brenden Bishop <btbishop93@gmail.com>"
+    }
+  }
+}
