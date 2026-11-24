@@ -1200,9 +1200,9 @@
     {
       "mode": 420,
       "path": "engineering/review-pr/references/running.md",
-      "sha256": "69ba24f66e355e909d0ead03bef41c6f0426dea008f189c52303aa9e54a7c1e2",
+      "sha256": "fe2e394dd2823b5ad0f9ed851a0265d5b8fcd0a7942cb4ade5814f09574900c3",
       "source": "bstack/engineering/review-pr/references/running.md",
-      "source_sha256": "69ba24f66e355e909d0ead03bef41c6f0426dea008f189c52303aa9e54a7c1e2",
+      "source_sha256": "fe2e394dd2823b5ad0f9ed851a0265d5b8fcd0a7942cb4ade5814f09574900c3",
       "transforms": []
     },
     {
@@ -2275,9 +2275,9 @@
     {
       "mode": 420,
       "path": "shared/model_cli.py",
-      "sha256": "51c802429205eb6eda81c07ab6340ef4a6c2e52845345377786b54448eb4617b",
+      "sha256": "c66f07c731b602b2ea4a52bf154508471ffcbf8099584c7c5e5596fa7882f9f2",
       "source": "bstack/shared/model_cli.py",
-      "source_sha256": "51c802429205eb6eda81c07ab6340ef4a6c2e52845345377786b54448eb4617b",
+      "source_sha256": "c66f07c731b602b2ea4a52bf154508471ffcbf8099584c7c5e5596fa7882f9f2",
       "transforms": []
     },
     {
@@ -2309,9 +2309,9 @@
     {
       "mode": 420,
       "path": "shared/references/decision-authority.md",
-      "sha256": "43de3bda7f5df58ed47a19818c8ac4fa7680693df50e4532775444f1cc57f81c",
+      "sha256": "f866318b277423ddf620f20d6b08159c909cbebe17ebf336df2bd87e1fa379c1",
       "source": "bstack/shared/references/decision-authority.md",
-      "source_sha256": "54986d5fa1abaa2cdf4ece9ff5676b8fb300ffcadffdaf55e138b113101a6317",
+      "source_sha256": "632f125d6c9fc2b5486839dba644e14cfaa950570388431db4ebdc47fbe01cda",
       "transforms": [
         "rewrite-local-markdown-links"
       ]
@@ -2337,9 +2337,9 @@
     {
       "mode": 420,
       "path": "shared/references/setup-requirements.md",
-      "sha256": "e1a57bd2d7688a73ef0394b01a15ee8bb177ceff00b195553fb20b97fedac7b6",
+      "sha256": "a38a7c7f78f4ce794d9e12d142f94baccff3ff77f55dd291b11bf6b22d3bf40d",
       "source": "bstack/shared/references/setup-requirements.md",
-      "source_sha256": "e1a57bd2d7688a73ef0394b01a15ee8bb177ceff00b195553fb20b97fedac7b6",
+      "source_sha256": "a38a7c7f78f4ce794d9e12d142f94baccff3ff77f55dd291b11bf6b22d3bf40d",
       "transforms": []
     },
     {
@@ -2409,9 +2409,9 @@
     {
       "mode": 420,
       "path": "shared/setup-bstack/INSTRUCTIONS.md",
-      "sha256": "7260759ff4656e67f80478fea8fa108a98a459501fa3673590ef342e58362055",
+      "sha256": "3069c55e7e19f020d137f369fb3385ba4ee3ba79ee38b1ec9f936913b22321e9",
       "source": "bstack/package/templates/setup.md",
-      "source_sha256": "7260759ff4656e67f80478fea8fa108a98a459501fa3673590ef342e58362055",
+      "source_sha256": "3069c55e7e19f020d137f369fb3385ba4ee3ba79ee38b1ec9f936913b22321e9",
       "transforms": [
         "render-release-template",
         "public-skill-invocation-policy"

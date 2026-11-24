@@ -214,9 +214,9 @@ class ModelCommandTests(unittest.TestCase):
 
     def test_command_template_requires_a_single_argument_slot(self):
         with self.assertRaises(model_cli.ModelCLIError):
-            model_cli.configure(self.project, "claude", "launch claude --")
+            model_cli.configure(self.project, "claude", "wrapper claude")
         with self.assertRaises(model_cli.ModelCLIError):
-            model_cli.configure(self.project, "claude", "launch claude -- {args} {args}")
+            model_cli.configure(self.project, "claude", "wrapper claude {args} {args}")
         with self.assertRaises(model_cli.ModelCLIError):
             model_cli.configure(self.project, "claude", "sh -c 'claude $@' {args}")
 
@@ -254,10 +254,10 @@ class ModelCommandTests(unittest.TestCase):
         self.assertEqual(set(result["workflows"]["grilling"]["roles"]), {"interviewer", "respondent"})
 
     def test_project_relative_wrapper_runs_from_isolated_probe_directory(self):
-        launcher = self.project / "launch"
+        launcher = self.project / "wrapper"
         launcher.write_text("#!/usr/bin/env python3\n" + FAKE)
         launcher.chmod(0o755)
-        parts = ["./launch", str(self.log), "claude", "--", "{args}"]
+        parts = ["./wrapper", str(self.log), "claude", "--", "{args}"]
         model_cli.configure(self.project, "claude", shlex.join(parts))
         self.assertEqual(model_cli.probe(self.project, "claude", "model-a")["status"], "passed")
         self.assertEqual(json.loads(self.log.read_text())["client"], "claude")

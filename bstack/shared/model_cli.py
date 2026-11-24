@@ -47,7 +47,7 @@ def config_path(project):
 def validate_template(parts):
     if (not isinstance(parts, list) or not 2 <= len(parts) <= 32
             or parts.count("{args}") != 1 or parts[0] == "{args}"):
-        raise ModelCLIError("Command must be an argv list with one {args} placeholder, for example: launch claude -- {args}")
+        raise ModelCLIError("Command must be an executable followed by arguments that include {args} exactly once")
     for part in parts:
         if not isinstance(part, str) or not part or len(part) > 512 or any(ord(char) < 32 for char in part):
             raise ModelCLIError("Command arguments must be short, nonempty strings without control characters")
