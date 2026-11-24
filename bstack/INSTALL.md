@@ -190,11 +190,11 @@ The live check sends a short prompt to the configured model for each role. A fai
 
 `review-pr` launches its headless reviewers with each CLI's own read-only tools inside a pinned snapshot of the PR, so they can search and read every file, including unchanged callers. No extra system packages, MCP setup, or per-file approvals are needed. BStack does not sandbox the reviewer CLIs; see the security notes before reviewing PRs from people you do not trust. Run the review runner's `doctor --live` to check logins, selected models, and snapshot access. The safety preflight still runs first. Optional app or test execution needs a separately configured, credential-free runtime worker. See [review setup](engineering/review-pr/references/running.md) before automating reviews.
 
-Before the first live check, setup reuses saved launch commands or asks how you run each required CLI headlessly. Give it a working terminal command, such as `claude -p "say hi"`, `codex exec "say hi"`, or `launch claude -- -p "say hi"`. BStack supplies the prompt, model, and output flags. For example, a wrapper that runs `launch claude -- <arguments>` can be saved once:
+Before the first live check, setup reuses saved launch commands or asks how you run each required CLI headlessly. Type the command you use in your terminal for each tool. BStack supplies the prompt, model, and output flags where `{args}` appears. To save or change a command yourself:
 
 ```sh
 python3 .bstack/package/shared/model_cli.py --project "$PWD" configure \
-  --cli claude --command 'launch claude -- {args}'
+  --cli <name> --command '<your command> {args}'
 python3 .bstack/package/scripts/bstack.py doctor --project "$PWD" --live --workflow review-pr
 ```
 

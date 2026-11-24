@@ -31,12 +31,12 @@ class ReviewerCLI(unittest.TestCase):
 
     def launcher(self, project, cli, args):
         self.assertEqual(project, self.project)
-        return ["launch", cli, "--", *args]
+        return ["wrapper", cli, *args]
 
     def test_commands_keep_wrappers_and_launch_each_client_read_only(self):
         role = {"cli": "codex", "model": "exact-review-model", "effort": "high"}
         args = reviewer_cli.build_command(role, self.schema, self.work, self.project, self.launcher)
-        self.assertEqual(args[:4], ["launch", "codex", "--", "exec"])
+        self.assertEqual(args[:3], ["wrapper", "codex", "exec"])
         self.assertEqual(args[args.index("--sandbox") + 1], "read-only")
         self.assertEqual(args[args.index("--model") + 1], "exact-review-model")
         self.assertIn("mcp_servers={}", args)
@@ -46,7 +46,7 @@ class ReviewerCLI(unittest.TestCase):
             self.assertIn(f"features.{feature}=false", args)
         self.assertNotIn("features.shell_tool=false", args)
         args = reviewer_cli.build_command({**role, "cli": "claude"}, self.schema, self.work, self.project, self.launcher)
-        self.assertEqual(args[:3], ["launch", "claude", "--"])
+        self.assertEqual(args[:2], ["wrapper", "claude"])
         self.assertEqual(args[args.index("--tools") + 1], "Read,Grep,Glob")
         self.assertEqual(args[args.index("--permission-mode") + 1], "dontAsk")
         self.assertEqual(args[args.index("--setting-sources") + 1], "user")

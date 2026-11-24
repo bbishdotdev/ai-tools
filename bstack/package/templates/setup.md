@@ -49,10 +49,10 @@ Use the installed controller's normal `doctor --project <project-root>` output b
 
 For grilling, ask whether to configure the interviewer and respondent now for later use, independently of whether the user wants an autonomous interview. Show any saved choices; otherwise explain that one model challenges the plan and a different model answers, then obtain their model choices without inventing defaults. Follow [decision authority](../references/decision-authority.md) to save the roles and check the supported participants. Human-guided mode remains the default. Keeping it manual must not skip requested model configuration or erase saved choices. An autonomous interview still needs an explicit request or scoped delegation for that run; setup creates no persistent autonomy toggle.
 
-Before the first live check for a selected workflow, reuse its saved launch commands or a working command already established in this session. Otherwise ask how the developer runs each required CLI headlessly in their terminal. Examples are `claude -p "say hi"`, `codex exec "say hi"`, and `launch claude -- -p "say hi"`. Ask for the command only, never credentials or a complete settings file. Explain that BStack supplies the prompt, model and output flags. Save the executable and any wrapper arguments around `{args}`, for example:
+Before the first live check for a selected workflow, reuse its saved launch commands or a working command already established in this session. Otherwise ask the developer to type the command they use to run each required CLI headlessly in their terminal. Do not suggest or prefill a command. Ask for the command only, never credentials or a complete settings file. Explain that BStack supplies the prompt, model and output flags. Save the executable and any wrapper arguments around `{args}`:
 
 ```sh
-python3 <absolute-package-path>/shared/model_cli.py --project <project-root> configure --cli claude --command 'launch claude -- {args}'
+python3 <absolute-package-path>/shared/model_cli.py --project <project-root> configure --cli <name> --command '<their command> {args}'
 ```
 
 The plain equivalent is `claude {args}`. The helper saves the command privately in `.bstack/model-clis.json` and inserts native arguments at `{args}` without a shell. Do not infer the launch command from the CLI being present on `PATH`.
